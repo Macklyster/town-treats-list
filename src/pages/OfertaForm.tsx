@@ -95,6 +95,18 @@ export default function OfertaForm() {
       return;
     }
     if (!storeId) return;
+    if (!sub.isActive) {
+      toast.error("Você precisa de uma assinatura ativa para publicar ofertas.");
+      return;
+    }
+    if (!isEdit && sub.offerCount >= sub.maxOffers) {
+      toast.error(`Limite do plano atingido (${sub.maxOffers} ofertas).`);
+      return;
+    }
+    if (form.featured && !isEdit && sub.featuredCount >= sub.featuredSlots) {
+      toast.error(`Seu plano permite apenas ${sub.featuredSlots} oferta(s) em destaque.`);
+      return;
+    }
     setLoading(true);
     const payload = {
       ...form,
@@ -110,6 +122,9 @@ export default function OfertaForm() {
     toast.success(isEdit ? "Oferta atualizada" : "Oferta enviada para aprovação");
     navigate("/painel-lojista");
   };
+
+  const featureDisabled = !sub.isActive || sub.featuredSlots === 0 || (!isEdit && !sub.canFeature && !form.featured);
+  const blocked = !sub.loading && !isEdit && (!sub.isActive || sub.offerCount >= sub.maxOffers);
 
   return (
     <div className="flex min-h-screen flex-col bg-muted/20">
