@@ -46,7 +46,7 @@ export default function Admin() {
     load();
   }, []);
 
-  const updateOffer = async (id: string, patch: Partial<AdminOffer & { status: string }>) => {
+  const updateOffer = async (id: string, patch: { status?: "pending" | "approved" | "rejected" | "paused"; featured?: boolean }) => {
     const { error } = await supabase.from("offers").update(patch).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Atualizado");
