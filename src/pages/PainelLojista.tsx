@@ -38,6 +38,7 @@ export default function PainelLojista() {
   const [offers, setOffers] = useState<OfferRow[]>([]);
   const [sub, setSub] = useState<Sub | null>(null);
   const [loading, setLoading] = useState(true);
+  const subInfo = useSubscription(store?.id ?? null);
 
   const load = async () => {
     if (!user) return;
