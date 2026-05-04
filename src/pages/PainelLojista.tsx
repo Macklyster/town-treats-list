@@ -171,10 +171,10 @@ export default function PainelLojista() {
                 <CardTitle className="flex items-center gap-2"><Tag className="h-5 w-5" /> Resumo</CardTitle>
               </CardHeader>
               <CardContent className="space-y-1 text-sm">
-                <div>Total de ofertas: <strong>{offers.length}</strong></div>
+                <div>Total de ofertas: <strong>{offers.length}{subInfo.maxOffers ? ` / ${subInfo.maxOffers}` : ""}</strong></div>
                 <div>Aprovadas: <strong>{offers.filter((o) => o.status === "approved").length}</strong></div>
                 <div>Pendentes: <strong>{offers.filter((o) => o.status === "pending").length}</strong></div>
-                <div>Em destaque: <strong>{offers.filter((o) => o.featured).length}</strong></div>
+                <div>Em destaque: <strong>{offers.filter((o) => o.featured).length}{subInfo.featuredSlots ? ` / ${subInfo.featuredSlots}` : ""}</strong></div>
               </CardContent>
             </Card>
 
