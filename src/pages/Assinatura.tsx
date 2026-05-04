@@ -56,14 +56,33 @@ export default function Assinatura() {
 
   useEffect(() => {
     load();
-    if (params.get("success")) toast.success("Pagamento concluído! Sua assinatura está ativa.");
+    if (params.get("success")) toast.success("Pagamento concluído! Aguardando confirmação...");
     if (params.get("canceled")) toast.info("Pagamento cancelado.");
-    // refresh subscription after returning from Stripe
     if (params.get("success")) {
-      const t = setTimeout(load, 1500);
-      return () => clearTimeout(t);
+      // poll a few times for webhook to update sub
+      let tries = 0;
+      const iv = setInterval(() => {
+        tries++;
+        load();
+        if (tries >= 10) clearInterval(iv);
+      }, 2000);
+      return () => clearInterval(iv);
     }
   }, [user?.id]);
+
+  // realtime updates from webhook
+  useEffect(() => {
+    if (!storeId) return;
+    const ch = supabase
+      .channel(`assinatura-${storeId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "subscriptions", filter: `store_id=eq.${storeId}` },
+        () => load()
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [storeId]);
 
   const subscribe = async (planId: string) => {
     if (!storeId) {
