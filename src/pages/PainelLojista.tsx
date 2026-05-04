@@ -225,6 +225,7 @@ export default function PainelLojista() {
               </CardContent>
             </Card>
           </div>
+          </>
         )}
       </main>
       <Footer />
