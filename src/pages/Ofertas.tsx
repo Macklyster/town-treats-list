@@ -83,8 +83,21 @@ const Ofertas = () => {
         <header className="mb-10">
           <h1 className="text-3xl font-bold text-primary md:text-4xl">Ofertas</h1>
           <p className="mt-2 text-muted-foreground">
-            {loading ? "Carregando…" : `${list.length} oferta${list.length !== 1 ? "s" : ""} encontrada${list.length !== 1 ? "s" : ""}.`}
+            {!city
+              ? "Selecione uma cidade para ver ofertas."
+              : loading
+              ? "Carregando…"
+              : `${list.length} oferta${list.length !== 1 ? "s" : ""} encontrada${list.length !== 1 ? "s" : ""} em ${city.city}.`}
           </p>
+          {!city && (
+            <button
+              type="button"
+              onClick={openSelector}
+              className="mt-4 inline-flex items-center justify-center rounded-full bg-accent px-5 py-2 text-sm font-semibold text-accent-foreground shadow-pop hover:opacity-90"
+            >
+              Escolher cidade
+            </button>
+          )}
         </header>
 
         <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
