@@ -1,33 +1,62 @@
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { OfferCard } from "@/components/site/OfferCard";
 import {
-  getOfferById,
-  getOffersByCategory,
-  getOffersByStore,
+  fetchOfferById,
+  fetchOffers,
+  fetchStoreById,
   discountPct,
   formatBRL,
-} from "@/data/offers";
-import { stores } from "@/data/stores";
+  UIOffer,
+} from "@/lib/offers-api";
 import { Button } from "@/components/ui/button";
 import { Clock, MapPin, Phone, Instagram, MessageCircle, ArrowLeft } from "lucide-react";
 import NotFound from "./NotFound";
 
 const OfferDetail = () => {
   const { id } = useParams();
-  const offer = id ? getOfferById(id) : undefined;
-  if (!offer) return <NotFound />;
-  const store = stores[offer.storeId];
-  const pct = discountPct(offer);
-  const related = [
-    ...getOffersByStore(offer.storeId, offer.id),
-    ...getOffersByCategory(offer.category, offer.id),
-  ]
-    .filter((o, i, arr) => arr.findIndex((x) => x.id === o.id) === i)
-    .slice(0, 4);
+  const [offer, setOffer] = useState<UIOffer | null>(null);
+  const [store, setStore] = useState<any>(null);
+  const [related, setRelated] = useState<UIOffer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-  const waLink = `https://wa.me/${store?.whatsapp}?text=${encodeURIComponent(
+  useEffect(() => {
+    if (!id) return;
+    (async () => {
+      const o = await fetchOfferById(id);
+      if (!o) {
+        setNotFound(true);
+        setLoading(false);
+        return;
+      }
+      setOffer(o);
+      const [s, all] = await Promise.all([fetchStoreById(o.storeId), fetchOffers()]);
+      setStore(s);
+      setRelated(
+        all
+          .filter((x) => x.id !== o.id && (x.storeId === o.storeId || x.category === o.category))
+          .slice(0, 4)
+      );
+      setLoading(false);
+    })();
+  }, [id]);
+
+  if (notFound) return <NotFound />;
+  if (loading || !offer) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container py-20 text-center text-muted-foreground">Carregando…</main>
+        <Footer />
+      </div>
+    );
+  }
+
+  const pct = discountPct(offer);
+  const waLink = `https://wa.me/${store?.whatsapp ?? ""}?text=${encodeURIComponent(
     `Olá! Vi a oferta "${offer.title}" no Helpfy e quero garantir.`
   )}`;
 
@@ -54,24 +83,30 @@ const OfferDetail = () => {
             </div>
 
             <div className="mt-10 space-y-6">
-              <div>
-                <h2 className="text-xl font-semibold text-primary">Sobre a oferta</h2>
-                <p className="mt-3 text-muted-foreground">{offer.description}</p>
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-primary">Condições</h2>
-                <p className="mt-3 text-muted-foreground">{offer.conditions}</p>
-              </div>
-              <div className="rounded-xl bg-secondary p-4 text-sm text-primary">
-                <strong>Validade:</strong> {offer.validUntil}
-              </div>
+              {offer.description && (
+                <div>
+                  <h2 className="text-xl font-semibold text-primary">Sobre a oferta</h2>
+                  <p className="mt-3 text-muted-foreground">{offer.description}</p>
+                </div>
+              )}
+              {offer.conditions && (
+                <div>
+                  <h2 className="text-xl font-semibold text-primary">Condições</h2>
+                  <p className="mt-3 text-muted-foreground">{offer.conditions}</p>
+                </div>
+              )}
+              {offer.validUntil && (
+                <div className="rounded-xl bg-secondary p-4 text-sm text-primary">
+                  <strong>Validade:</strong> {offer.validUntil}
+                </div>
+              )}
             </div>
           </div>
 
           <aside className="space-y-6">
             <div className="rounded-2xl bg-card p-6 shadow-card">
               <span className="text-xs font-semibold uppercase tracking-wider text-accent-strong">
-                {store?.name}
+                {offer.storeName}
               </span>
               <h1 className="mt-2 text-2xl font-bold leading-tight text-primary md:text-3xl">
                 {offer.title}
@@ -88,52 +123,58 @@ const OfferDetail = () => {
               </div>
 
               <div className="mt-6 space-y-3">
-                <Button asChild variant="accent" size="lg" className="w-full">
-                  <a href={waLink} target="_blank" rel="noreferrer">
-                    <MessageCircle className="h-5 w-5" /> Pegar Oferta no WhatsApp
-                  </a>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="w-full">
-                  <a href={`tel:${store?.phone}`}>
-                    <Phone className="h-5 w-5" /> Ligar para a Loja
-                  </a>
-                </Button>
+                {store?.whatsapp && (
+                  <Button asChild variant="accent" size="lg" className="w-full">
+                    <a href={waLink} target="_blank" rel="noreferrer">
+                      <MessageCircle className="h-5 w-5" /> Pegar Oferta no WhatsApp
+                    </a>
+                  </Button>
+                )}
+                {store?.phone && (
+                  <Button asChild variant="outline" size="lg" className="w-full">
+                    <a href={`tel:${store.phone}`}>
+                      <Phone className="h-5 w-5" /> Ligar para a Loja
+                    </a>
+                  </Button>
+                )}
               </div>
             </div>
 
-            <div className="rounded-2xl bg-card p-6 shadow-card">
-              <h3 className="text-lg font-semibold text-primary">Sobre a loja</h3>
-              <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-                <li className="flex items-start gap-3">
-                  <MapPin className="mt-0.5 h-4 w-4 text-accent-strong" />
-                  <span>{store?.address}</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Clock className="mt-0.5 h-4 w-4 text-accent-strong" />
-                  <span>{store?.hours}</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Phone className="mt-0.5 h-4 w-4 text-accent-strong" />
-                  <span>{store?.phone}</span>
-                </li>
-                {store?.instagram && (
-                  <li className="flex items-start gap-3">
-                    <Instagram className="mt-0.5 h-4 w-4 text-accent-strong" />
-                    <span>{store.instagram}</span>
-                  </li>
+            {store && (
+              <div className="rounded-2xl bg-card p-6 shadow-card">
+                <h3 className="text-lg font-semibold text-primary">Sobre a loja</h3>
+                <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
+                  {store.address && (
+                    <li className="flex items-start gap-3">
+                      <MapPin className="mt-0.5 h-4 w-4 text-accent-strong" />
+                      <span>{store.address}</span>
+                    </li>
+                  )}
+                  {store.phone && (
+                    <li className="flex items-start gap-3">
+                      <Phone className="mt-0.5 h-4 w-4 text-accent-strong" />
+                      <span>{store.phone}</span>
+                    </li>
+                  )}
+                  {store.instagram && (
+                    <li className="flex items-start gap-3">
+                      <Instagram className="mt-0.5 h-4 w-4 text-accent-strong" />
+                      <span>{store.instagram}</span>
+                    </li>
+                  )}
+                </ul>
+                {store.address && (
+                  <div className="mt-5 overflow-hidden rounded-xl border border-border">
+                    <iframe
+                      title={`Mapa de ${store.name}`}
+                      src={`https://www.google.com/maps?q=${encodeURIComponent(store.address)}&output=embed`}
+                      className="h-48 w-full"
+                      loading="lazy"
+                    />
+                  </div>
                 )}
-              </ul>
-              <div className="mt-5 overflow-hidden rounded-xl border border-border">
-                <iframe
-                  title={`Mapa de ${store?.name}`}
-                  src={`https://www.google.com/maps?q=${encodeURIComponent(
-                    store?.address ?? ""
-                  )}&output=embed`}
-                  className="h-48 w-full"
-                  loading="lazy"
-                />
               </div>
-            </div>
+            )}
           </aside>
         </div>
 

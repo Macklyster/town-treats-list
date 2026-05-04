@@ -3,11 +3,19 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider } from "@/hooks/useAuth";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Ofertas from "./pages/Ofertas.tsx";
 import OfferDetail from "./pages/OfferDetail.tsx";
 import Anuncie from "./pages/Anuncie.tsx";
+import Auth from "./pages/Auth.tsx";
+import PainelLojista from "./pages/PainelLojista.tsx";
+import OfertaForm from "./pages/OfertaForm.tsx";
+import LojaForm from "./pages/LojaForm.tsx";
+import Admin from "./pages/Admin.tsx";
+import Assinatura from "./pages/Assinatura.tsx";
 
 const queryClient = new QueryClient();
 
@@ -17,14 +25,57 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/ofertas" element={<Ofertas />} />
-          <Route path="/oferta/:id" element={<OfferDetail />} />
-          <Route path="/anuncie" element={<Anuncie />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/ofertas" element={<Ofertas />} />
+            <Route path="/oferta/:id" element={<OfferDetail />} />
+            <Route path="/anuncie" element={<Anuncie />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route
+              path="/painel-lojista"
+              element={
+                <ProtectedRoute requireRole="lojista">
+                  <PainelLojista />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/painel-lojista/loja"
+              element={
+                <ProtectedRoute requireRole="lojista">
+                  <LojaForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/painel-lojista/oferta/:id?"
+              element={
+                <ProtectedRoute requireRole="lojista">
+                  <OfertaForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/painel-lojista/assinatura"
+              element={
+                <ProtectedRoute requireRole="lojista">
+                  <Assinatura />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requireRole="admin">
+                  <Admin />
+                </ProtectedRoute>
+              }
+            />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

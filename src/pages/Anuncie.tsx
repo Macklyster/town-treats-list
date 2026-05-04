@@ -195,7 +195,7 @@ const Anuncie = () => {
                       variant={p.highlight ? "accent" : "outline"}
                       className="mt-8 w-full"
                     >
-                      <a href="#contato">Quero esse plano</a>
+                      <a href="/painel-lojista/assinatura">Quero esse plano</a>
                     </Button>
                   </div>
                 );
