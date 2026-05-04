@@ -117,6 +117,24 @@ export default function LojaForm() {
                 <Label>Endereço</Label>
                 <Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
               </div>
+              <div className="grid gap-4 sm:grid-cols-[1fr_120px]">
+                <div>
+                  <Label>Cidade *</Label>
+                  <Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} required />
+                </div>
+                <div>
+                  <Label>UF *</Label>
+                  <select
+                    value={form.state}
+                    onChange={(e) => setForm({ ...form, state: e.target.value })}
+                    required
+                    className="mt-0 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">--</option>
+                    {UFS.map((uf) => <option key={uf} value={uf}>{uf}</option>)}
+                  </select>
+                </div>
+              </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label>Telefone</Label>
