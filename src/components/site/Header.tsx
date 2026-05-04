@@ -1,7 +1,16 @@
-import { Link, NavLink, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { LogOut, Menu, User as UserIcon, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import logo from "@/assets/helpfy-logo.jpeg";
 
 const navItems = [
@@ -14,6 +23,8 @@ const navItems = [
 export const Header = () => {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
+  const { user, isAdmin, isLojista, signOut } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/85 backdrop-blur">
@@ -38,10 +49,48 @@ export const Header = () => {
           ))}
         </nav>
 
-        <div className="hidden md:block">
-          <Button asChild variant="accent" size="sm">
-            <Link to="/anuncie">Anuncie Conosco</Link>
-          </Button>
+        <div className="hidden items-center gap-3 md:flex">
+          {!user ? (
+            <>
+              <Button asChild variant="ghost" size="sm">
+                <Link to="/auth">Entrar</Link>
+              </Button>
+              <Button asChild variant="accent" size="sm">
+                <Link to="/anuncie">Anuncie Conosco</Link>
+              </Button>
+            </>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <UserIcon className="h-4 w-4" /> Minha conta
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 bg-popover">
+                <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {isLojista && (
+                  <DropdownMenuItem onClick={() => navigate("/painel-lojista")}>
+                    Painel do Lojista
+                  </DropdownMenuItem>
+                )}
+                {isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate("/admin")}>
+                    Painel Admin
+                  </DropdownMenuItem>
+                )}
+                {!isLojista && (
+                  <DropdownMenuItem onClick={() => navigate("/anuncie")}>
+                    Tornar-se lojista
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={async () => { await signOut(); navigate("/"); }}>
+                  <LogOut className="mr-2 h-4 w-4" /> Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         <button
