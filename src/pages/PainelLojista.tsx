@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { formatBRLNumber } from "@/lib/format";
 import { toast } from "sonner";
 
