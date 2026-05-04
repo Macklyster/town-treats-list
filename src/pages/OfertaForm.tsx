@@ -216,8 +216,24 @@ export default function OfertaForm() {
                 <Input type="date" value={form.valid_until} onChange={(e) => setForm({ ...form, valid_until: e.target.value })} />
               </div>
 
+              <div className="flex items-center justify-between rounded-md border p-3">
+                <div>
+                  <Label className="text-sm">Destacar oferta</Label>
+                  <p className="text-xs text-muted-foreground">
+                    {sub.featuredSlots > 0
+                      ? `${sub.featuredCount}/${sub.featuredSlots} destaques usados`
+                      : "Seu plano não inclui destaques"}
+                  </p>
+                </div>
+                <Switch
+                  checked={form.featured}
+                  disabled={featureDisabled}
+                  onCheckedChange={(v) => setForm({ ...form, featured: v })}
+                />
+              </div>
+
               <div className="flex gap-3 pt-2">
-                <Button type="submit" variant="accent" disabled={loading}>Salvar</Button>
+                <Button type="submit" variant="accent" disabled={loading || blocked}>Salvar</Button>
                 <Button type="button" variant="ghost" onClick={() => navigate("/painel-lojista")}>Cancelar</Button>
               </div>
             </form>
