@@ -56,14 +56,33 @@ export default function Assinatura() {
 
   useEffect(() => {
     load();
-    if (params.get("success")) toast.success("Pagamento concluído! Sua assinatura está ativa.");
+    if (params.get("success")) toast.success("Pagamento concluído! Aguardando confirmação...");
     if (params.get("canceled")) toast.info("Pagamento cancelado.");
-    // refresh subscription after returning from Stripe
     if (params.get("success")) {
-      const t = setTimeout(load, 1500);
-      return () => clearTimeout(t);
+      // poll a few times for webhook to update sub
+      let tries = 0;
+      const iv = setInterval(() => {
+        tries++;
+        load();
+        if (tries >= 10) clearInterval(iv);
+      }, 2000);
+      return () => clearInterval(iv);
     }
   }, [user?.id]);
+
+  // realtime updates from webhook
+  useEffect(() => {
+    if (!storeId) return;
+    const ch = supabase
+      .channel(`assinatura-${storeId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "subscriptions", filter: `store_id=eq.${storeId}` },
+        () => load()
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [storeId]);
 
   const subscribe = async (planId: string) => {
     if (!storeId) {
@@ -125,6 +144,11 @@ export default function Assinatura() {
                     <div className="mt-2 text-3xl font-bold text-primary">
                       {formatBRL(p.price_cents)}<span className="text-sm font-normal text-muted-foreground">/mês</span>
                     </div>
+                    {isCurrent && sub?.current_period_end && (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Renova em {new Date(sub.current_period_end).toLocaleDateString("pt-BR")}
+                      </p>
+                    )}
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2 text-sm">

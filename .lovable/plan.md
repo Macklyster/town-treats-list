@@ -1,72 +1,37 @@
-## Objetivo
+## Plano: Completar fluxo de assinatura
 
-Permitir que o usuário escolha **uma cidade** logo ao entrar no site. Toda navegação seguinte (Home, Ofertas, Detalhe) passa a filtrar lojas/ofertas pela cidade selecionada, evitando carregar dados de todo o país. Geolocalização opcional preenche a cidade automaticamente.
+### 1. Hook `useSubscription(storeId)` — `src/hooks/useSubscription.tsx`
+Retorna `{ subscription, plan, isActive, offerCount, canCreateOffer, canFeature, loading, refresh }`. Busca a sub mais recente da loja com join em `plans` e conta ofertas existentes. Inscreve em realtime na tabela `subscriptions` filtrando por `store_id` para refletir webhook automaticamente.
 
-## 1. Banco de dados
+### 2. Gating no Painel/Formulários
+- **`OfertaForm.tsx`**: ao montar, valida via `useSubscription`:
+  - Sem sub ativa → bloqueia criação, mostra alerta com CTA "Assinar plano".
+  - `offerCount >= plan.max_offers` (em criação, não edição) → bloqueia com mensagem de limite.
+  - Toggle "Destaque" desabilitado se `plan.featured_slots === 0` ou já atingiu o limite de destaques ativos.
+- **`PainelLojista.tsx`**: novo banner no topo quando sem sub ativa ("Assine para publicar suas ofertas") + badges mostrando `X / max_offers ofertas` e `Y / featured_slots destaques`.
 
-Migração para adicionar localização à loja (única fonte de verdade da cidade da oferta):
+### 3. `Assinatura.tsx` — UX
+- Mostrar `current_period_end` formatada em pt-BR ("Renova em 04/06/2026").
+- Após retornar com `?success=1`: polling a cada 2s por até 20s aguardando webhook atualizar a sub (substitui o `setTimeout` único).
+- Inscrever realtime na sub para atualização imediata.
+- Mostrar limites do plano atual (max_offers, featured_slots).
 
-- `stores.city` (text, not null, default `''`)
-- `stores.state` (text, 2 chars, default `''`)
-- Índice em `(city, state)` para acelerar filtro.
-- Backfill: lojas existentes recebem `'Não informado'` (lojista atualiza no painel).
+### 4. `create-checkout` edge function
+- Antes de criar sessão, verificar se já existe `subscription` com `status in ('active','trialing')` para a `store_id` → retornar erro 400 "Loja já possui assinatura ativa, use o portal para alterar plano".
+- Se `customer_id` existir em sub anterior dessa loja, reusar.
 
-## 2. Contexto global de cidade (frontend)
+### 5. Webhook — robustez
+- Tratar `invoice.payment_failed` marcando sub como `past_due`.
+- Log estruturado para facilitar debug.
 
-Novo `CityProvider` (`src/hooks/useCity.tsx`) embrulhando o app dentro de `<AuthProvider>`:
+### 6. Documentação inline (README ou comentário em `Assinatura.tsx`)
+Instruções para o lojista (admin do projeto) cadastrar o webhook no Stripe Dashboard caso ainda não esteja: endpoint `https://ougpesguavrqbeethbjl.supabase.co/functions/v1/stripe-webhook`, eventos `checkout.session.completed`, `customer.subscription.*`, `invoice.payment_failed`.
 
-- Estado `{ city: string; state: string } | null`
-- Persiste em `localStorage` (chave `helpfy:city`)
-- Expõe `setCity`, `clearCity`, `openSelector()`
-- Carrega lista de cidades disponíveis via `select distinct city,state from stores where approved`
+### Arquivos
+**Criar:** `src/hooks/useSubscription.tsx`
+**Editar:** `src/pages/OfertaForm.tsx`, `src/pages/PainelLojista.tsx`, `src/pages/Assinatura.tsx`, `supabase/functions/create-checkout/index.ts`, `supabase/functions/stripe-webhook/index.ts`
 
-## 3. Barra de destaque no topo (CityBar)
-
-Componente novo `src/components/site/CityBar.tsx`, renderizado **acima** do `Header` em todas as páginas públicas.
-
-- Sem cidade selecionada: fundo `bg-accent`, texto chamativo  
-  "📍 Selecione sua cidade para ver as melhores ofertas perto de você" + botão "Escolher cidade".
-- Com cidade selecionada: fundo neutro, "Mostrando ofertas em **São Paulo · SP**" + botão "Trocar".
-
-## 4. Modal seletor de cidade (CitySelector)
-
-Dialog acionado pela CityBar, pelo Hero ou na primeira visita (auto-abre se `localStorage` vazio).
-
-Conteúdo:
-1. Botão "Usar minha localização" → `navigator.geolocation.getCurrentPosition` → reverse geocoding via Nominatim (OpenStreetMap, sem chave) → preenche cidade/UF e salva.
-2. Campo de busca com lista filtrada das cidades cadastradas no banco.
-3. Estado vazio amigável caso ainda não haja lojas em uma cidade.
-
-A primeira escolha aciona toast: "Pronto! Mostrando ofertas em {cidade}".
-
-## 5. Filtro nas consultas
-
-`src/lib/offers-api.ts`:
-
-- `fetchOffers({ city, state })` → join com `stores` e `.eq('store.city', city).eq('store.state', state)`.
-- Mesmo filtro em `fetchOfferById` para impedir abrir oferta de outra cidade via URL antiga (mostra aviso "esta oferta é de outra cidade — trocar?").
-
-`Index.tsx` e `Ofertas.tsx` passam a usar `useCity()` e refetcham quando a cidade muda. Enquanto a cidade não estiver definida, mostram um *empty state* convidando a selecionar.
-
-## 6. Cadastro de loja
-
-`LojaForm.tsx` ganha campos obrigatórios **Cidade** e **UF** (UF como `Select` dos 27 estados). Validação Zod atualizada. Campo já vem preenchido na edição.
-
-## 7. Hero
-
-O `HeroSearch` exibe a cidade ativa abaixo do título ("Mostrando ofertas em São Paulo · trocar"). Sem cidade, o botão "Buscar" abre o seletor antes de navegar.
-
----
-
-### Detalhes técnicos
-
-- Reverse geocoding: `https://nominatim.openstreetmap.org/reverse?format=json&lat=..&lon=..&zoom=10&addressdetails=1` — extrair `address.city || address.town || address.village` e `address.state`. Sem API key, com `User-Agent` setado via header padrão do browser (chamada client-side).
-- Lista de cidades vem do banco; nenhuma lista hardcoded.
-- Nada quebra para usuários sem JS de geolocalização: a busca manual sempre funciona.
-- Sem mudanças em rotas. Sem mudanças no fluxo Stripe/Auth.
-
-### Arquivos criados/alterados
-
-Criados: `src/hooks/useCity.tsx`, `src/components/site/CityBar.tsx`, `src/components/site/CitySelector.tsx`, migração SQL.
-
-Editados: `src/App.tsx`, `src/pages/Index.tsx`, `src/pages/Ofertas.tsx`, `src/pages/OfferDetail.tsx`, `src/pages/LojaForm.tsx`, `src/components/site/HeroSearch.tsx`, `src/components/site/Header.tsx` (renderiza CityBar acima), `src/lib/offers-api.ts`.
+### Fora do escopo (ações manuais do usuário)
+- Cadastrar webhook no Stripe Dashboard e confirmar `STRIPE_WEBHOOK_SECRET` (já está nos secrets ✅, mas precisa bater com o do endpoint).
+- Criar Products/Prices no Stripe e popular `plans.stripe_price_id` (opcional — já funciona com `price_data` inline).
+- Testar com cartão `4242 4242 4242 4242`.

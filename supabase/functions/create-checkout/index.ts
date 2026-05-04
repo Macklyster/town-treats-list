@@ -31,11 +31,29 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "invalid" }), { status: 403, headers: corsHeaders });
     }
 
+    // block duplicate active subs
+    const { data: existing } = await supabase
+      .from("subscriptions")
+      .select("id,status,stripe_customer_id")
+      .eq("store_id", store_id)
+      .order("created_at", { ascending: false })
+      .limit(1);
+    const current = existing?.[0];
+    if (current && ["active", "trialing"].includes(current.status)) {
+      return new Response(
+        JSON.stringify({ error: "Loja já possui assinatura ativa. Use o portal para alterar o plano." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, { apiVersion: "2024-06-20" });
 
-    // find existing customer
-    const customers = await stripe.customers.list({ email: user.email!, limit: 1 });
-    const customerId = customers.data[0]?.id;
+    // reuse customer if known, otherwise look up by email
+    let customerId: string | undefined = current?.stripe_customer_id ?? undefined;
+    if (!customerId) {
+      const customers = await stripe.customers.list({ email: user.email!, limit: 1 });
+      customerId = customers.data[0]?.id;
+    }
 
     const origin = req.headers.get("origin") ?? "http://localhost:5173";
 

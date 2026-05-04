@@ -12,6 +12,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Switch } from "@/components/ui/switch";
+import { Link } from "react-router-dom";
+import { AlertCircle } from "lucide-react";
 
 const schema = z.object({
   title: z.string().trim().min(3).max(140),
@@ -34,6 +39,7 @@ export default function OfertaForm() {
   const [storeId, setStoreId] = useState<string | null>(null);
   const [categories, setCategories] = useState<{ slug: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
+  const sub = useSubscription(storeId);
   const [form, setForm] = useState({
     title: "",
     category_slug: "",
@@ -44,6 +50,7 @@ export default function OfertaForm() {
     description: "",
     conditions: "",
     valid_until: "",
+    featured: false,
   });
 
   useEffect(() => {
@@ -73,6 +80,7 @@ export default function OfertaForm() {
             description: data.description ?? "",
             conditions: data.conditions ?? "",
             valid_until: data.valid_until ?? "",
+            featured: !!data.featured,
           });
         }
       }
@@ -87,6 +95,18 @@ export default function OfertaForm() {
       return;
     }
     if (!storeId) return;
+    if (!sub.isActive) {
+      toast.error("Você precisa de uma assinatura ativa para publicar ofertas.");
+      return;
+    }
+    if (!isEdit && sub.offerCount >= sub.maxOffers) {
+      toast.error(`Limite do plano atingido (${sub.maxOffers} ofertas).`);
+      return;
+    }
+    if (form.featured && !isEdit && sub.featuredCount >= sub.featuredSlots) {
+      toast.error(`Seu plano permite apenas ${sub.featuredSlots} oferta(s) em destaque.`);
+      return;
+    }
     setLoading(true);
     const payload = {
       ...form,
@@ -103,6 +123,9 @@ export default function OfertaForm() {
     navigate("/painel-lojista");
   };
 
+  const featureDisabled = !sub.isActive || sub.featuredSlots === 0 || (!isEdit && !sub.canFeature && !form.featured);
+  const blocked = !sub.loading && !isEdit && (!sub.isActive || sub.offerCount >= sub.maxOffers);
+
   return (
     <div className="flex min-h-screen flex-col bg-muted/20">
       <Header />
@@ -112,6 +135,27 @@ export default function OfertaForm() {
             <CardTitle>{isEdit ? "Editar oferta" : "Nova oferta"}</CardTitle>
           </CardHeader>
           <CardContent>
+            {!sub.loading && !sub.isActive && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Assinatura necessária</AlertTitle>
+                <AlertDescription className="flex items-center justify-between gap-3">
+                  <span>Você precisa de um plano ativo para publicar ofertas.</span>
+                  <Button asChild size="sm" variant="accent">
+                    <Link to="/painel-lojista/assinatura">Assinar plano</Link>
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            )}
+            {!sub.loading && sub.isActive && !isEdit && sub.offerCount >= sub.maxOffers && (
+              <Alert className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Limite atingido</AlertTitle>
+                <AlertDescription>
+                  Seu plano permite {sub.maxOffers} oferta(s). Faça upgrade para criar mais.
+                </AlertDescription>
+              </Alert>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label>Título *</Label>
@@ -172,8 +216,24 @@ export default function OfertaForm() {
                 <Input type="date" value={form.valid_until} onChange={(e) => setForm({ ...form, valid_until: e.target.value })} />
               </div>
 
+              <div className="flex items-center justify-between rounded-md border p-3">
+                <div>
+                  <Label className="text-sm">Destacar oferta</Label>
+                  <p className="text-xs text-muted-foreground">
+                    {sub.featuredSlots > 0
+                      ? `${sub.featuredCount}/${sub.featuredSlots} destaques usados`
+                      : "Seu plano não inclui destaques"}
+                  </p>
+                </div>
+                <Switch
+                  checked={form.featured}
+                  disabled={featureDisabled}
+                  onCheckedChange={(v) => setForm({ ...form, featured: v })}
+                />
+              </div>
+
               <div className="flex gap-3 pt-2">
-                <Button type="submit" variant="accent" disabled={loading}>Salvar</Button>
+                <Button type="submit" variant="accent" disabled={loading || blocked}>Salvar</Button>
                 <Button type="button" variant="ghost" onClick={() => navigate("/painel-lojista")}>Cancelar</Button>
               </div>
             </form>
