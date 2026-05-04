@@ -44,6 +44,7 @@ Deno.serve(async (req) => {
   };
 
   try {
+    console.log("[stripe-webhook] event", event.type);
     switch (event.type) {
       case "checkout.session.completed": {
         const s = event.data.object as Stripe.Checkout.Session;
@@ -59,9 +60,17 @@ Deno.serve(async (req) => {
         await upsertSub(event.data.object as Stripe.Subscription);
         break;
       }
+      case "invoice.payment_failed": {
+        const inv = event.data.object as Stripe.Invoice;
+        if (inv.subscription) {
+          const sub = await stripe.subscriptions.retrieve(inv.subscription as string);
+          await upsertSub(sub);
+        }
+        break;
+      }
     }
   } catch (e) {
-    console.error("webhook handler error", e);
+    console.error("[stripe-webhook] handler error", e);
   }
 
   return new Response(JSON.stringify({ received: true }), {
