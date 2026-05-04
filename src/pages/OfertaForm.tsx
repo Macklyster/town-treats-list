@@ -80,6 +80,7 @@ export default function OfertaForm() {
             description: data.description ?? "",
             conditions: data.conditions ?? "",
             valid_until: data.valid_until ?? "",
+            featured: !!data.featured,
           });
         }
       }
