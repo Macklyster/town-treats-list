@@ -135,6 +135,27 @@ export default function OfertaForm() {
             <CardTitle>{isEdit ? "Editar oferta" : "Nova oferta"}</CardTitle>
           </CardHeader>
           <CardContent>
+            {!sub.loading && !sub.isActive && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Assinatura necessária</AlertTitle>
+                <AlertDescription className="flex items-center justify-between gap-3">
+                  <span>Você precisa de um plano ativo para publicar ofertas.</span>
+                  <Button asChild size="sm" variant="accent">
+                    <Link to="/painel-lojista/assinatura">Assinar plano</Link>
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            )}
+            {!sub.loading && sub.isActive && !isEdit && sub.offerCount >= sub.maxOffers && (
+              <Alert className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Limite atingido</AlertTitle>
+                <AlertDescription>
+                  Seu plano permite {sub.maxOffers} oferta(s). Faça upgrade para criar mais.
+                </AlertDescription>
+              </Alert>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label>Título *</Label>
