@@ -39,6 +39,7 @@ export default function OfertaForm() {
   const [storeId, setStoreId] = useState<string | null>(null);
   const [categories, setCategories] = useState<{ slug: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
+  const sub = useSubscription(storeId);
   const [form, setForm] = useState({
     title: "",
     category_slug: "",
@@ -49,6 +50,7 @@ export default function OfertaForm() {
     description: "",
     conditions: "",
     valid_until: "",
+    featured: false,
   });
 
   useEffect(() => {
