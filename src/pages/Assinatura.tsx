@@ -144,6 +144,11 @@ export default function Assinatura() {
                     <div className="mt-2 text-3xl font-bold text-primary">
                       {formatBRL(p.price_cents)}<span className="text-sm font-normal text-muted-foreground">/mês</span>
                     </div>
+                    {isCurrent && sub?.current_period_end && (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Renova em {new Date(sub.current_period_end).toLocaleDateString("pt-BR")}
+                      </p>
+                    )}
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2 text-sm">
