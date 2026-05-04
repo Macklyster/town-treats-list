@@ -117,7 +117,19 @@ export default function PainelLojista() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6 md:grid-cols-3">
+          <>
+            {!subInfo.loading && !subInfo.isActive && (
+              <Alert variant="destructive" className="mb-6">
+                <AlertTitle>Assine um plano para publicar suas ofertas</AlertTitle>
+                <AlertDescription className="flex items-center justify-between gap-3">
+                  <span>Sem plano ativo, suas ofertas não ficam visíveis aos clientes.</span>
+                  <Button asChild size="sm" variant="accent">
+                    <Link to="/painel-lojista/assinatura">Ver planos</Link>
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            )}
+            <div className="grid gap-6 md:grid-cols-3">
             <Card className="md:col-span-1">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Store className="h-5 w-5" /> Loja</CardTitle>
