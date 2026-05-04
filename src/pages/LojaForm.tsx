@@ -13,10 +13,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { slugify } from "@/lib/format";
 
+const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
+
 const schema = z.object({
   name: z.string().trim().min(2, "Nome muito curto").max(120),
   description: z.string().trim().max(1000).optional().or(z.literal("")),
   address: z.string().trim().max(255).optional().or(z.literal("")),
+  city: z.string().trim().min(2, "Informe a cidade").max(120),
+  state: z.string().trim().length(2, "UF é obrigatório"),
   phone: z.string().trim().max(30).optional().or(z.literal("")),
   whatsapp: z.string().trim().max(30).optional().or(z.literal("")),
   instagram: z.string().trim().max(60).optional().or(z.literal("")),
@@ -32,6 +36,8 @@ export default function LojaForm() {
     name: "",
     description: "",
     address: "",
+    city: "",
+    state: "",
     phone: "",
     whatsapp: "",
     instagram: "",
