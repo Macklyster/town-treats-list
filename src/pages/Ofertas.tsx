@@ -4,6 +4,7 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { OfferCard } from "@/components/site/OfferCard";
 import { fetchOffers, UIOffer, discountPct } from "@/lib/offers-api";
+import { useCity } from "@/hooks/useCity";
 import { categories } from "@/data/categories";
 import { Label } from "@/components/ui/label";
 import {
@@ -37,15 +38,22 @@ const Ofertas = () => {
   const type = params.get("tipo") ?? "all";
   const sort = params.get("ordem") ?? "recent";
 
+  const { city, openSelector } = useCity();
   const [all, setAll] = useState<UIOffer[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchOffers().then((o) => {
+    if (!city) {
+      setAll([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    fetchOffers(city).then((o) => {
       setAll(o);
       setLoading(false);
     });
-  }, []);
+  }, [city?.city, city?.state]);
 
   const setParam = (k: string, v: string) => {
     const next = new URLSearchParams(params);
