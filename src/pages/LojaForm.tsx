@@ -58,6 +58,8 @@ export default function LojaForm() {
           name: data.name ?? "",
           description: data.description ?? "",
           address: data.address ?? "",
+          city: data.city ?? "",
+          state: data.state ?? "",
           phone: data.phone ?? "",
           whatsapp: data.whatsapp ?? "",
           instagram: data.instagram ?? "",
