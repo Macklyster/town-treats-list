@@ -4,6 +4,7 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { OfferCard } from "@/components/site/OfferCard";
 import { fetchOffers, UIOffer, discountPct } from "@/lib/offers-api";
+import { useCity } from "@/hooks/useCity";
 import { categories } from "@/data/categories";
 import { Label } from "@/components/ui/label";
 import {
@@ -37,15 +38,22 @@ const Ofertas = () => {
   const type = params.get("tipo") ?? "all";
   const sort = params.get("ordem") ?? "recent";
 
+  const { city, openSelector } = useCity();
   const [all, setAll] = useState<UIOffer[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchOffers().then((o) => {
+    if (!city) {
+      setAll([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    fetchOffers(city).then((o) => {
       setAll(o);
       setLoading(false);
     });
-  }, []);
+  }, [city?.city, city?.state]);
 
   const setParam = (k: string, v: string) => {
     const next = new URLSearchParams(params);
@@ -75,8 +83,21 @@ const Ofertas = () => {
         <header className="mb-10">
           <h1 className="text-3xl font-bold text-primary md:text-4xl">Ofertas</h1>
           <p className="mt-2 text-muted-foreground">
-            {loading ? "Carregando…" : `${list.length} oferta${list.length !== 1 ? "s" : ""} encontrada${list.length !== 1 ? "s" : ""}.`}
+            {!city
+              ? "Selecione uma cidade para ver ofertas."
+              : loading
+              ? "Carregando…"
+              : `${list.length} oferta${list.length !== 1 ? "s" : ""} encontrada${list.length !== 1 ? "s" : ""} em ${city.city}.`}
           </p>
+          {!city && (
+            <button
+              type="button"
+              onClick={openSelector}
+              className="mt-4 inline-flex items-center justify-center rounded-full bg-accent px-5 py-2 text-sm font-semibold text-accent-foreground shadow-pop hover:opacity-90"
+            >
+              Escolher cidade
+            </button>
+          )}
         </header>
 
         <div className="grid gap-8 lg:grid-cols-[260px_1fr]">

@@ -13,10 +13,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { slugify } from "@/lib/format";
 
+const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
+
 const schema = z.object({
   name: z.string().trim().min(2, "Nome muito curto").max(120),
   description: z.string().trim().max(1000).optional().or(z.literal("")),
   address: z.string().trim().max(255).optional().or(z.literal("")),
+  city: z.string().trim().min(2, "Informe a cidade").max(120),
+  state: z.string().trim().length(2, "UF é obrigatório"),
   phone: z.string().trim().max(30).optional().or(z.literal("")),
   whatsapp: z.string().trim().max(30).optional().or(z.literal("")),
   instagram: z.string().trim().max(60).optional().or(z.literal("")),
@@ -32,6 +36,8 @@ export default function LojaForm() {
     name: "",
     description: "",
     address: "",
+    city: "",
+    state: "",
     phone: "",
     whatsapp: "",
     instagram: "",
@@ -52,6 +58,8 @@ export default function LojaForm() {
           name: data.name ?? "",
           description: data.description ?? "",
           address: data.address ?? "",
+          city: data.city ?? "",
+          state: data.state ?? "",
           phone: data.phone ?? "",
           whatsapp: data.whatsapp ?? "",
           instagram: data.instagram ?? "",
@@ -108,6 +116,24 @@ export default function LojaForm() {
               <div>
                 <Label>Endereço</Label>
                 <Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-[1fr_120px]">
+                <div>
+                  <Label>Cidade *</Label>
+                  <Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} required />
+                </div>
+                <div>
+                  <Label>UF *</Label>
+                  <select
+                    value={form.state}
+                    onChange={(e) => setForm({ ...form, state: e.target.value })}
+                    required
+                    className="mt-0 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">--</option>
+                    {UFS.map((uf) => <option key={uf} value={uf}>{uf}</option>)}
+                  </select>
+                </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>

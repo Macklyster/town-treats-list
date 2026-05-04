@@ -183,6 +183,7 @@ export type Database = {
         Row: {
           address: string | null
           approved: boolean
+          city: string
           cover_url: string | null
           created_at: string
           description: string | null
@@ -193,12 +194,14 @@ export type Database = {
           owner_id: string
           phone: string | null
           slug: string
+          state: string
           updated_at: string
           whatsapp: string | null
         }
         Insert: {
           address?: string | null
           approved?: boolean
+          city?: string
           cover_url?: string | null
           created_at?: string
           description?: string | null
@@ -209,12 +212,14 @@ export type Database = {
           owner_id: string
           phone?: string | null
           slug: string
+          state?: string
           updated_at?: string
           whatsapp?: string | null
         }
         Update: {
           address?: string | null
           approved?: boolean
+          city?: string
           cover_url?: string | null
           created_at?: string
           description?: string | null
@@ -225,6 +230,7 @@ export type Database = {
           owner_id?: string
           phone?: string | null
           slug?: string
+          state?: string
           updated_at?: string
           whatsapp?: string | null
         }

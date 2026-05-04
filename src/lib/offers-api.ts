@@ -43,12 +43,19 @@ const mapRow = (row: any): UIOffer => ({
   createdAt: row.created_at,
 });
 
-export const fetchOffers = async (): Promise<UIOffer[]> => {
-  const { data, error } = await supabase
+export type CityFilter = { city: string; state: string } | null;
+
+export const fetchOffers = async (filter?: CityFilter): Promise<UIOffer[]> => {
+  let query = supabase
     .from("offers")
-    .select("*, store:stores(name,slug)")
+    .select("*, store:stores!inner(name,slug,city,state)")
     .eq("status", "approved")
     .order("created_at", { ascending: false });
+  if (filter?.city) {
+    query = query.eq("store.city", filter.city);
+    if (filter.state) query = query.eq("store.state", filter.state);
+  }
+  const { data, error } = await query;
   if (error) {
     console.error(error);
     return [];
@@ -59,7 +66,7 @@ export const fetchOffers = async (): Promise<UIOffer[]> => {
 export const fetchOfferById = async (id: string): Promise<UIOffer | null> => {
   const { data } = await supabase
     .from("offers")
-    .select("*, store:stores(name,slug)")
+    .select("*, store:stores(name,slug,city,state)")
     .eq("id", id)
     .eq("status", "approved")
     .maybeSingle();

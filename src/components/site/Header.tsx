@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import logo from "@/assets/helpfy-logo.jpeg";
+import { CityBar } from "@/components/site/CityBar";
 
 const navItems = [
   { to: "/", label: "Início" },
@@ -28,6 +29,7 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/85 backdrop-blur">
+      <CityBar />
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2" aria-label="Helpfy — página inicial">
           <img src={logo} alt="Helpfy" className="h-9 w-auto rounded-md" />

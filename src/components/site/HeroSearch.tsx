@@ -1,15 +1,21 @@
 import { useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
+import { MapPin, Search } from "lucide-react";
 import { useState } from "react";
 import { categories } from "@/data/categories";
 import { Button } from "@/components/ui/button";
+import { useCity } from "@/hooks/useCity";
 
 export const HeroSearch = () => {
   const [q, setQ] = useState("");
   const navigate = useNavigate();
+  const { city, openSelector } = useCity();
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!city) {
+      openSelector();
+      return;
+    }
     const params = new URLSearchParams();
     if (q.trim()) params.set("q", q.trim());
     navigate(`/ofertas${params.toString() ? `?${params.toString()}` : ""}`);
@@ -35,6 +41,17 @@ export const HeroSearch = () => {
             Descubra descontos, cupons e brindes em restaurantes, salões, lojas e muito mais.
             Economize apoiando o comércio do seu bairro.
           </p>
+
+          <button
+            type="button"
+            onClick={openSelector}
+            className="mt-6 inline-flex items-center gap-2 rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground hover:border-accent"
+          >
+            <MapPin className="h-4 w-4" />
+            {city
+              ? <>Buscando em <strong>{city.city}{city.state ? ` · ${city.state}` : ""}</strong> · trocar</>
+              : "Selecionar cidade"}
+          </button>
 
           <form onSubmit={submit} className="mx-auto mt-10 flex max-w-2xl items-center gap-2 rounded-2xl bg-card p-2 shadow-pop">
             <div className="flex flex-1 items-center gap-2 px-3">
