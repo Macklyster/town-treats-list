@@ -1,9 +1,9 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { OfferCard } from "@/components/site/OfferCard";
-import { offers, discountPct } from "@/data/offers";
+import { fetchOffers, UIOffer, discountPct } from "@/lib/offers-api";
 import { categories } from "@/data/categories";
 import { Label } from "@/components/ui/label";
 import {
@@ -37,6 +37,16 @@ const Ofertas = () => {
   const type = params.get("tipo") ?? "all";
   const sort = params.get("ordem") ?? "recent";
 
+  const [all, setAll] = useState<UIOffer[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchOffers().then((o) => {
+      setAll(o);
+      setLoading(false);
+    });
+  }, []);
+
   const setParam = (k: string, v: string) => {
     const next = new URLSearchParams(params);
     if (!v || v === "all") next.delete(k);
@@ -45,7 +55,7 @@ const Ofertas = () => {
   };
 
   const list = useMemo(() => {
-    let l = offers.filter((o) => {
+    let l = all.filter((o) => {
       if (q && !`${o.title} ${o.description}`.toLowerCase().includes(q.toLowerCase())) return false;
       if (cat !== "all" && o.category !== cat) return false;
       if (type !== "all" && o.type !== type) return false;
@@ -56,7 +66,7 @@ const Ofertas = () => {
     if (sort === "discount") l = [...l].sort((a, b) => discountPct(b) - discountPct(a));
     if (sort === "recent") l = [...l].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     return l;
-  }, [q, cat, type, sort]);
+  }, [all, q, cat, type, sort]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -65,7 +75,7 @@ const Ofertas = () => {
         <header className="mb-10">
           <h1 className="text-3xl font-bold text-primary md:text-4xl">Ofertas</h1>
           <p className="mt-2 text-muted-foreground">
-            {list.length} oferta{list.length !== 1 ? "s" : ""} encontrada{list.length !== 1 ? "s" : ""}.
+            {loading ? "Carregando…" : `${list.length} oferta${list.length !== 1 ? "s" : ""} encontrada${list.length !== 1 ? "s" : ""}.`}
           </p>
         </header>
 
@@ -124,7 +134,7 @@ const Ofertas = () => {
               </div>
             </div>
 
-            {list.length === 0 ? (
+            {!loading && list.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-border p-16 text-center">
                 <p className="text-lg font-semibold text-primary">Nenhuma oferta encontrada</p>
                 <p className="mt-2 text-sm text-muted-foreground">

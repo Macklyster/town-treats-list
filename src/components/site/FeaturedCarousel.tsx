@@ -6,17 +6,16 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Offer, discountPct, formatBRL } from "@/data/offers";
-import { stores } from "@/data/stores";
+import { UIOffer, discountPct, formatBRL } from "@/lib/offers-api";
 import { Button } from "@/components/ui/button";
 
-export const FeaturedCarousel = ({ offers }: { offers: Offer[] }) => {
+export const FeaturedCarousel = ({ offers }: { offers: UIOffer[] }) => {
+  if (!offers.length) return null;
   return (
     <section className="container -mt-12 relative z-10">
       <Carousel opts={{ loop: true }} className="w-full">
         <CarouselContent>
           {offers.map((o) => {
-            const store = stores[o.storeId];
             const pct = discountPct(o);
             return (
               <CarouselItem key={o.id}>
@@ -31,7 +30,7 @@ export const FeaturedCarousel = ({ offers }: { offers: Offer[] }) => {
                   </div>
                   <div className="flex flex-col justify-center gap-4 p-8 md:p-12">
                     <span className="text-xs font-semibold uppercase tracking-wider text-accent-strong">
-                      Oferta da semana · {store?.name}
+                      Oferta da semana · {o.storeName}
                     </span>
                     <h3 className="text-2xl font-bold text-primary md:text-3xl">{o.title}</h3>
                     <p className="text-muted-foreground">{o.description}</p>

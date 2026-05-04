@@ -1,10 +1,8 @@
 import { Link } from "react-router-dom";
 import { Tag } from "lucide-react";
-import { Offer, discountPct, formatBRL } from "@/data/offers";
-import { stores } from "@/data/stores";
+import { UIOffer, discountPct, formatBRL } from "@/lib/offers-api";
 
-export const OfferCard = ({ offer }: { offer: Offer }) => {
-  const store = stores[offer.storeId];
+export const OfferCard = ({ offer }: { offer: UIOffer }) => {
   const pct = discountPct(offer);
   return (
     <Link
@@ -32,11 +30,9 @@ export const OfferCard = ({ offer }: { offer: Offer }) => {
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          {store?.name}
+          {offer.storeName}
         </p>
-        <h3 className="line-clamp-2 text-base font-semibold text-primary">
-          {offer.title}
-        </h3>
+        <h3 className="line-clamp-2 text-base font-semibold text-primary">{offer.title}</h3>
         <div className="mt-auto flex items-end justify-between pt-2">
           <div>
             {pct > 0 && (
@@ -44,9 +40,7 @@ export const OfferCard = ({ offer }: { offer: Offer }) => {
                 {formatBRL(offer.originalPrice)}
               </div>
             )}
-            <div className="text-xl font-bold text-accent-strong">
-              {formatBRL(offer.promoPrice)}
-            </div>
+            <div className="text-xl font-bold text-accent-strong">{formatBRL(offer.promoPrice)}</div>
           </div>
           <span className="text-sm font-semibold text-primary group-hover:text-accent-strong">
             Ver oferta →
