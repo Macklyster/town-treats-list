@@ -1,47 +1,56 @@
-# Atualizar Logo do Site + Branding Stripe
+## Objetivo
 
-## 1. Substituir logo nos arquivos do site
+Permitir que **somente lojistas** criem conta pelo site. Admins continuam sendo criados manualmente (promoção via banco/painel admin). O consumidor final navega sem precisar de login.
 
-**Ação:** Copiar a nova imagem enviada para `src/assets/helpfy-logo.png` (sobrescrevendo a referência atual `helpfy-logo.jpeg`).
+## Mudanças
 
-**Arquivos que serão atualizados para apontar ao novo logo:**
-- `src/components/site/Header.tsx` — logo do cabeçalho
-- `src/components/site/Footer.tsx` — logo do rodapé
-- `index.html` — adicionar `<link rel="icon">` apontando para uma versão do logo como favicon (`public/favicon.png`)
-- Atualizar meta `og:image` se desejado (mantém atual por enquanto)
+### 1. `src/pages/Auth.tsx` — Simplificar formulário de cadastro
+- Remover o checkbox "Sou lojista e quero anunciar ofertas" (não faz mais sentido — todo cadastro é de lojista).
+- Ajustar o título/copy da aba "Criar conta" para deixar claro: **"Criar conta de lojista"** com subtítulo tipo "Cadastre-se para anunciar suas ofertas no HelpfyOfertas".
+- No `handleSignup`, sempre inserir a role `lojista` para o novo usuário e redirecionar para `/painel-lojista`.
+- A aba **"Entrar"** continua igual (serve para lojista e admin).
 
-**Detalhes técnicos:**
-- A imagem enviada é horizontal (logo + wordmark). Mantém boa apresentação no Header (h-9/h-10) e Footer (h-10).
-- Para o favicon, gerar/copiar uma versão quadrada (apenas o ícone das duas pessoas) — alternativa: usar a mesma imagem horizontal (funciona, mas fica menor). Vou usar a imagem completa por simplicidade; se o usuário quiser ícone quadrado, pode enviar separado.
-- Remover/sobrescrever `public/favicon.ico` antigo.
+### 2. Trigger `handle_new_user()` — Ajustar role padrão
+Hoje o trigger insere automaticamente `consumer` em todo signup. Vamos alterá-lo para inserir `lojista` por padrão (já que só lojistas se cadastram). Assim evitamos duplicar inserts no front e no trigger.
 
-## 2. Personalizar Branding no Stripe (instruções — não é código)
+Migração SQL:
+```sql
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.profiles (id, full_name)
+  values (new.id, coalesce(new.raw_user_meta_data->>'full_name', new.email));
+  insert into public.user_roles (user_id, role) values (new.id, 'lojista');
+  return new;
+end;
+$$;
+```
 
-A personalização visual do Stripe Checkout e do Customer Portal é feita **diretamente no Dashboard do Stripe**, não via código. Vou te entregar o passo a passo:
+Com isso, o `handleSignup` não precisa mais inserir role manualmente — o trigger cuida.
 
-**Checkout / Portal Branding:**
-1. Acesse o Stripe Dashboard → **Settings** → **Branding** (`https://dashboard.stripe.com/settings/branding`)
-2. Faça upload de:
-   - **Logo** (recomendado: PNG quadrado ≥ 128×128, fundo transparente — só o ícone das pessoas)
-   - **Icon** (favicon Stripe — versão pequena do logo)
-3. Defina:
-   - **Brand color**: `#F08A5D` (laranja Helpfy)
-   - **Accent color**: `#0F1E45` (navy Helpfy)
-4. Em **Public business information**, preencha nome "Helpfy Ofertas", site, suporte.
+### 3. Página `/anuncie` (`src/pages/Anuncie.tsx`)
+Verificar e ajustar o CTA principal: deve direcionar para `/auth` (aba criar conta) com mensagem clara de "Crie sua conta de lojista". Sem necessidade de checkbox.
 
-**Customer Portal:**
-- Dashboard → **Settings** → **Billing** → **Customer portal** → habilite branding e confirme cores/logo herdadas.
+### 4. Header (`src/components/site/Header.tsx`)
+- Botão "Entrar" continua (lojista/admin acessam por aqui).
+- Botão "Anuncie Conosco" continua como CTA principal de cadastro.
+- Sem mudança no menu do consumidor (ele não precisa logar).
 
-**Email de recibos:**
-- Dashboard → **Settings** → **Emails** → ative "Successful payments" e "Refunds" com o branding configurado.
+### 5. Observação sobre dados existentes
+Usuários que já existem com role `consumer` permanecem com essa role (sem efeito prático, já que consumidor não acessa nada protegido). Não vamos migrar/limpar esses registros — opcional no futuro.
 
-> Faça isso tanto no modo **Test** quanto **Live** (configurações são separadas).
+### 6. Como criar o primeiro admin
+Como admin não pode mais ser criado pelo formulário, ele é promovido manualmente:
+- Via painel `/admin` (se já existir um admin), ou
+- Inserindo direto em `user_roles` (`role = 'admin'`) para um user já cadastrado.
 
-## 3. Resultado
+## Resultado
 
-- Site exibe o novo logo HelpfyOfertas no header, footer e como favicon.
-- Quando o usuário for redirecionado ao Stripe Checkout/Portal, verá o logo + cores Helpfy aplicados (após você completar o passo 2 no Dashboard).
-
----
-
-**Observação:** Se você quiser que eu também gere uma versão **quadrada** do ícone (apenas as 2 pessoas no círculo, sem o texto) para usar como favicon e logo do Stripe, me envie ou peça que eu gere via IA.
+- Aba "Criar conta" = só lojista, sem checkbox confuso.
+- Trigger garante role `lojista` automaticamente em todo signup.
+- Consumidores continuam navegando livremente, sem login.
+- Admins seguem sendo gerenciados manualmente.

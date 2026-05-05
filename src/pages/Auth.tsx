@@ -26,7 +26,6 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [becomeMerchant, setBecomeMerchant] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,13 +71,9 @@ export default function Auth() {
       toast.error(error.message);
       return;
     }
-    // optionally promote to lojista (simple flow: insert role)
-    if (becomeMerchant && data.user) {
-      await supabase.from("user_roles").insert({ user_id: data.user.id, role: "lojista" });
-    }
     setLoading(false);
-    toast.success("Conta criada!");
-    navigate(becomeMerchant ? "/painel-lojista" : redirect, { replace: true });
+    toast.success("Conta de lojista criada!");
+    navigate("/painel-lojista", { replace: true });
   };
 
   const handleGoogle = async () => {
@@ -101,7 +96,8 @@ export default function Auth() {
       <main className="flex flex-1 items-center justify-center px-4 py-10">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-2xl">Acesse o Helpfy</CardTitle>
+            <CardTitle className="text-2xl">Acesse o HelpfyOfertas</CardTitle>
+            <p className="text-sm text-muted-foreground">Área para lojistas e administradores.</p>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login">
@@ -126,6 +122,9 @@ export default function Auth() {
               </TabsContent>
               <TabsContent value="signup">
                 <form onSubmit={handleSignup} className="space-y-4 pt-4">
+                  <p className="text-sm text-muted-foreground">
+                    Cadastre-se para anunciar suas ofertas no HelpfyOfertas.
+                  </p>
                   <div className="space-y-2">
                     <Label htmlFor="su-name">Nome completo</Label>
                     <Input id="su-name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
@@ -139,10 +138,6 @@ export default function Auth() {
                     <Input id="su-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
                     <p className="text-xs text-muted-foreground">Mínimo 8 caracteres</p>
                   </div>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" checked={becomeMerchant} onChange={(e) => setBecomeMerchant(e.target.checked)} />
-                    Sou lojista e quero anunciar ofertas
-                  </label>
                   <Button type="submit" className="w-full" variant="accent" disabled={loading}>
                     Criar conta
                   </Button>
