@@ -18,7 +18,7 @@ const nameSchema = z.string().trim().min(2, "Informe seu nome").max(100);
 
 export default function Auth() {
   const [params] = useSearchParams();
-  const redirect = params.get("redirect") || "/painel";
+  const redirect = params.get("redirect") || "/painel-lojista";
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
