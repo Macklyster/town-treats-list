@@ -1,37 +1,47 @@
-## Plano: Completar fluxo de assinatura
+# Atualizar Logo do Site + Branding Stripe
 
-### 1. Hook `useSubscription(storeId)` — `src/hooks/useSubscription.tsx`
-Retorna `{ subscription, plan, isActive, offerCount, canCreateOffer, canFeature, loading, refresh }`. Busca a sub mais recente da loja com join em `plans` e conta ofertas existentes. Inscreve em realtime na tabela `subscriptions` filtrando por `store_id` para refletir webhook automaticamente.
+## 1. Substituir logo nos arquivos do site
 
-### 2. Gating no Painel/Formulários
-- **`OfertaForm.tsx`**: ao montar, valida via `useSubscription`:
-  - Sem sub ativa → bloqueia criação, mostra alerta com CTA "Assinar plano".
-  - `offerCount >= plan.max_offers` (em criação, não edição) → bloqueia com mensagem de limite.
-  - Toggle "Destaque" desabilitado se `plan.featured_slots === 0` ou já atingiu o limite de destaques ativos.
-- **`PainelLojista.tsx`**: novo banner no topo quando sem sub ativa ("Assine para publicar suas ofertas") + badges mostrando `X / max_offers ofertas` e `Y / featured_slots destaques`.
+**Ação:** Copiar a nova imagem enviada para `src/assets/helpfy-logo.png` (sobrescrevendo a referência atual `helpfy-logo.jpeg`).
 
-### 3. `Assinatura.tsx` — UX
-- Mostrar `current_period_end` formatada em pt-BR ("Renova em 04/06/2026").
-- Após retornar com `?success=1`: polling a cada 2s por até 20s aguardando webhook atualizar a sub (substitui o `setTimeout` único).
-- Inscrever realtime na sub para atualização imediata.
-- Mostrar limites do plano atual (max_offers, featured_slots).
+**Arquivos que serão atualizados para apontar ao novo logo:**
+- `src/components/site/Header.tsx` — logo do cabeçalho
+- `src/components/site/Footer.tsx` — logo do rodapé
+- `index.html` — adicionar `<link rel="icon">` apontando para uma versão do logo como favicon (`public/favicon.png`)
+- Atualizar meta `og:image` se desejado (mantém atual por enquanto)
 
-### 4. `create-checkout` edge function
-- Antes de criar sessão, verificar se já existe `subscription` com `status in ('active','trialing')` para a `store_id` → retornar erro 400 "Loja já possui assinatura ativa, use o portal para alterar plano".
-- Se `customer_id` existir em sub anterior dessa loja, reusar.
+**Detalhes técnicos:**
+- A imagem enviada é horizontal (logo + wordmark). Mantém boa apresentação no Header (h-9/h-10) e Footer (h-10).
+- Para o favicon, gerar/copiar uma versão quadrada (apenas o ícone das duas pessoas) — alternativa: usar a mesma imagem horizontal (funciona, mas fica menor). Vou usar a imagem completa por simplicidade; se o usuário quiser ícone quadrado, pode enviar separado.
+- Remover/sobrescrever `public/favicon.ico` antigo.
 
-### 5. Webhook — robustez
-- Tratar `invoice.payment_failed` marcando sub como `past_due`.
-- Log estruturado para facilitar debug.
+## 2. Personalizar Branding no Stripe (instruções — não é código)
 
-### 6. Documentação inline (README ou comentário em `Assinatura.tsx`)
-Instruções para o lojista (admin do projeto) cadastrar o webhook no Stripe Dashboard caso ainda não esteja: endpoint `https://ougpesguavrqbeethbjl.supabase.co/functions/v1/stripe-webhook`, eventos `checkout.session.completed`, `customer.subscription.*`, `invoice.payment_failed`.
+A personalização visual do Stripe Checkout e do Customer Portal é feita **diretamente no Dashboard do Stripe**, não via código. Vou te entregar o passo a passo:
 
-### Arquivos
-**Criar:** `src/hooks/useSubscription.tsx`
-**Editar:** `src/pages/OfertaForm.tsx`, `src/pages/PainelLojista.tsx`, `src/pages/Assinatura.tsx`, `supabase/functions/create-checkout/index.ts`, `supabase/functions/stripe-webhook/index.ts`
+**Checkout / Portal Branding:**
+1. Acesse o Stripe Dashboard → **Settings** → **Branding** (`https://dashboard.stripe.com/settings/branding`)
+2. Faça upload de:
+   - **Logo** (recomendado: PNG quadrado ≥ 128×128, fundo transparente — só o ícone das pessoas)
+   - **Icon** (favicon Stripe — versão pequena do logo)
+3. Defina:
+   - **Brand color**: `#F08A5D` (laranja Helpfy)
+   - **Accent color**: `#0F1E45` (navy Helpfy)
+4. Em **Public business information**, preencha nome "Helpfy Ofertas", site, suporte.
 
-### Fora do escopo (ações manuais do usuário)
-- Cadastrar webhook no Stripe Dashboard e confirmar `STRIPE_WEBHOOK_SECRET` (já está nos secrets ✅, mas precisa bater com o do endpoint).
-- Criar Products/Prices no Stripe e popular `plans.stripe_price_id` (opcional — já funciona com `price_data` inline).
-- Testar com cartão `4242 4242 4242 4242`.
+**Customer Portal:**
+- Dashboard → **Settings** → **Billing** → **Customer portal** → habilite branding e confirme cores/logo herdadas.
+
+**Email de recibos:**
+- Dashboard → **Settings** → **Emails** → ative "Successful payments" e "Refunds" com o branding configurado.
+
+> Faça isso tanto no modo **Test** quanto **Live** (configurações são separadas).
+
+## 3. Resultado
+
+- Site exibe o novo logo HelpfyOfertas no header, footer e como favicon.
+- Quando o usuário for redirecionado ao Stripe Checkout/Portal, verá o logo + cores Helpfy aplicados (após você completar o passo 2 no Dashboard).
+
+---
+
+**Observação:** Se você quiser que eu também gere uma versão **quadrada** do ícone (apenas as 2 pessoas no círculo, sem o texto) para usar como favicon e logo do Stripe, me envie ou peça que eu gere via IA.
