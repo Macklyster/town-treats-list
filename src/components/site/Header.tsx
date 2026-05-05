@@ -128,7 +128,7 @@ export const Header = () => {
               <Link
                 key={item.to}
                 to={item.to}
-                onClick={() => setOpen(false)}
+                onClick={(e) => handleNavClick(e, item.to)}
                 className="py-1 text-sm font-medium text-primary"
               >
                 {item.label}
