@@ -27,6 +27,22 @@ export const Header = () => {
   const { user, isAdmin, isLojista, signOut } = useAuth();
   const navigate = useNavigate();
 
+  const handleNavClick = (e: React.MouseEvent, to: string) => {
+    setOpen(false);
+    const hashIdx = to.indexOf("#");
+    if (hashIdx === -1) return;
+    const targetPath = to.slice(0, hashIdx) || "/";
+    const id = to.slice(hashIdx + 1);
+    if (pathname === targetPath) {
+      e.preventDefault();
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        history.replaceState(null, "", `${targetPath}#${id}`);
+      }
+    }
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/85 backdrop-blur">
       <CityBar />
@@ -40,6 +56,7 @@ export const Header = () => {
             <NavLink
               key={item.to}
               to={item.to}
+              onClick={(e) => handleNavClick(e, item.to)}
               className={({ isActive }) =>
                 `text-sm font-medium transition-colors hover:text-accent-strong ${
                   isActive && item.to === pathname ? "text-accent-strong" : "text-primary"
