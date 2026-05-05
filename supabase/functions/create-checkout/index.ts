@@ -46,7 +46,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, { apiVersion: "2024-06-20" });
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
+      apiVersion: "2024-06-20",
+      httpClient: Stripe.createFetchHttpClient(),
+    });
 
     // reuse customer if known, otherwise look up by email
     let customerId: string | undefined = current?.stripe_customer_id ?? undefined;
