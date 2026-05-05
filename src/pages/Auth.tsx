@@ -96,7 +96,8 @@ export default function Auth() {
       <main className="flex flex-1 items-center justify-center px-4 py-10">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-2xl">Acesse o Helpfy</CardTitle>
+            <CardTitle className="text-2xl">Acesse o HelpfyOfertas</CardTitle>
+            <p className="text-sm text-muted-foreground">Área para lojistas e administradores.</p>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login">
