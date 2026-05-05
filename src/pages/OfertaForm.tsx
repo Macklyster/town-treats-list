@@ -43,6 +43,7 @@ export default function OfertaForm() {
   const [categories, setCategories] = useState<{ slug: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const sub = useSubscription(storeId);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethodId[]>([]);
   const [form, setForm] = useState({
     title: "",
     category_slug: "",
@@ -55,6 +56,11 @@ export default function OfertaForm() {
     valid_until: "",
     featured: false,
   });
+
+  const togglePayment = (id: PaymentMethodId) =>
+    setPaymentMethods((prev) =>
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+    );
 
   useEffect(() => {
     (async () => {
