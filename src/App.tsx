@@ -18,6 +18,7 @@ import OfertaForm from "./pages/OfertaForm.tsx";
 import LojaForm from "./pages/LojaForm.tsx";
 import Admin from "./pages/Admin.tsx";
 import Assinatura from "./pages/Assinatura.tsx";
+import { ScrollToHash } from "./components/ScrollToHash";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
         <AuthProvider>
           <CityProvider>
             <CitySelector />
+            <ScrollToHash />
             <Routes>
               <Route path="/" element={<Index />} />
             <Route path="/ofertas" element={<Ofertas />} />
