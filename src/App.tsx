@@ -31,6 +31,7 @@ const App = () => (
         <AuthProvider>
           <CityProvider>
             <CitySelector />
+            <ScrollToHash />
             <Routes>
               <Route path="/" element={<Index />} />
             <Route path="/ofertas" element={<Ofertas />} />
