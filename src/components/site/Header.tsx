@@ -32,7 +32,7 @@ export const Header = () => {
       <CityBar />
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2" aria-label="Helpfy — página inicial">
-          <img src={logo} alt="Helpfy" className="h-9 w-auto rounded-md" />
+          <img src={logo} alt="Helpfy" className="h-14 w-auto rounded-md md:h-16" />
         </Link>
 
         <nav className="hidden items-center gap-7 md:flex">
