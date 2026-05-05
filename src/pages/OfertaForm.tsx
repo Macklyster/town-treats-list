@@ -121,6 +121,7 @@ export default function OfertaForm() {
     setLoading(true);
     const payload = {
       ...form,
+      conditions: buildConditions(paymentMethods, form.conditions),
       store_id: storeId,
       valid_until: form.valid_until || null,
       status: "pending" as const,
