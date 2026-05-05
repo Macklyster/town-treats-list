@@ -18,6 +18,8 @@ import { Switch } from "@/components/ui/switch";
 import { Link } from "react-router-dom";
 import { AlertCircle } from "lucide-react";
 import { ImageUploader } from "@/components/site/ImageUploader";
+import { Checkbox } from "@/components/ui/checkbox";
+import { PAYMENT_METHODS, type PaymentMethodId, parseConditions, buildConditions } from "@/lib/payment-methods";
 
 const schema = z.object({
   title: z.string().trim().min(3).max(140),
@@ -41,6 +43,7 @@ export default function OfertaForm() {
   const [categories, setCategories] = useState<{ slug: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const sub = useSubscription(storeId);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethodId[]>([]);
   const [form, setForm] = useState({
     title: "",
     category_slug: "",
@@ -53,6 +56,11 @@ export default function OfertaForm() {
     valid_until: "",
     featured: false,
   });
+
+  const togglePayment = (id: PaymentMethodId) =>
+    setPaymentMethods((prev) =>
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+    );
 
   useEffect(() => {
     (async () => {
@@ -71,6 +79,8 @@ export default function OfertaForm() {
       if (isEdit) {
         const { data } = await supabase.from("offers").select("*").eq("id", id).maybeSingle();
         if (data) {
+          const parsedCond = parseConditions(data.conditions ?? "");
+          setPaymentMethods(parsedCond.methods);
           setForm({
             title: data.title,
             category_slug: data.category_slug,
@@ -79,7 +89,7 @@ export default function OfertaForm() {
             original_price: Number(data.original_price),
             promo_price: Number(data.promo_price),
             description: data.description ?? "",
-            conditions: data.conditions ?? "",
+            conditions: parsedCond.text,
             valid_until: data.valid_until ?? "",
             featured: !!data.featured,
           });
@@ -111,6 +121,7 @@ export default function OfertaForm() {
     setLoading(true);
     const payload = {
       ...form,
+      conditions: buildConditions(paymentMethods, form.conditions),
       store_id: storeId,
       valid_until: form.valid_until || null,
       status: "pending" as const,
@@ -210,9 +221,38 @@ export default function OfertaForm() {
                 <Label>Descrição</Label>
                 <Textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
               </div>
+              <div className="space-y-2">
+                <Label>Formas de pagamento aceitas</Label>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {PAYMENT_METHODS.map((m) => {
+                    const checked = paymentMethods.includes(m.id);
+                    const Icon = m.icon;
+                    return (
+                      <label
+                        key={m.id}
+                        className={`flex cursor-pointer items-center gap-2 rounded-md border p-2 text-sm transition-colors ${
+                          checked ? "border-primary bg-primary/5" : "hover:border-primary/40"
+                        }`}
+                      >
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={() => togglePayment(m.id)}
+                        />
+                        <Icon className="h-4 w-4 text-primary" />
+                        <span>{m.label}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
               <div>
-                <Label>Condições</Label>
-                <Textarea rows={2} value={form.conditions} onChange={(e) => setForm({ ...form, conditions: e.target.value })} />
+                <Label>Outras condições (opcional)</Label>
+                <Textarea
+                  rows={2}
+                  placeholder="Ex.: válido apenas na loja física, mediante agendamento..."
+                  value={form.conditions}
+                  onChange={(e) => setForm({ ...form, conditions: e.target.value })}
+                />
               </div>
               <div>
                 <Label>Validade</Label>

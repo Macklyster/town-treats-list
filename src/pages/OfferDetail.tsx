@@ -13,6 +13,7 @@ import {
 } from "@/lib/offers-api";
 import { Button } from "@/components/ui/button";
 import { Clock, MapPin, Phone, Instagram, MessageCircle, ArrowLeft } from "lucide-react";
+import { parseConditions, getMethod } from "@/lib/payment-methods";
 import NotFound from "./NotFound";
 
 const OfferDetail = () => {
@@ -89,12 +90,40 @@ const OfferDetail = () => {
                   <p className="mt-3 text-muted-foreground">{offer.description}</p>
                 </div>
               )}
-              {offer.conditions && (
-                <div>
-                  <h2 className="text-xl font-semibold text-primary">Condições</h2>
-                  <p className="mt-3 text-muted-foreground">{offer.conditions}</p>
-                </div>
-              )}
+              {(() => {
+                const { methods, text } = parseConditions(offer.conditions);
+                return (
+                  <>
+                    {methods.length > 0 && (
+                      <div>
+                        <h2 className="text-xl font-semibold text-primary">Formas de pagamento</h2>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {methods.map((id) => {
+                            const m = getMethod(id);
+                            if (!m) return null;
+                            const Icon = m.icon;
+                            return (
+                              <span
+                                key={id}
+                                className="inline-flex items-center gap-1.5 rounded-full border bg-secondary px-3 py-1 text-sm text-primary"
+                              >
+                                <Icon className="h-4 w-4" />
+                                {m.label}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    {text && (
+                      <div>
+                        <h2 className="text-xl font-semibold text-primary">Condições</h2>
+                        <p className="mt-3 whitespace-pre-line text-muted-foreground">{text}</p>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
               {offer.validUntil && (
                 <div className="rounded-xl bg-secondary p-4 text-sm text-primary">
                   <strong>Validade:</strong> {offer.validUntil}
