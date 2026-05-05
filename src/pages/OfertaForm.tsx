@@ -79,6 +79,8 @@ export default function OfertaForm() {
       if (isEdit) {
         const { data } = await supabase.from("offers").select("*").eq("id", id).maybeSingle();
         if (data) {
+          const parsedCond = parseConditions(data.conditions ?? "");
+          setPaymentMethods(parsedCond.methods);
           setForm({
             title: data.title,
             category_slug: data.category_slug,
@@ -87,7 +89,7 @@ export default function OfertaForm() {
             original_price: Number(data.original_price),
             promo_price: Number(data.promo_price),
             description: data.description ?? "",
-            conditions: data.conditions ?? "",
+            conditions: parsedCond.text,
             valid_until: data.valid_until ?? "",
             featured: !!data.featured,
           });
