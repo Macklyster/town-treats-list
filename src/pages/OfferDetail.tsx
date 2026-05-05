@@ -99,7 +99,7 @@ const OfferDetail = () => {
                         <h2 className="text-xl font-semibold text-primary">Formas de pagamento</h2>
                         <div className="mt-3 flex flex-wrap gap-2">
                           {methods.map((id) => {
-                            const m = require("@/lib/payment-methods").getMethod(id);
+                            const m = getMethod(id);
                             if (!m) return null;
                             const Icon = m.icon;
                             return (
