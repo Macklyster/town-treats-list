@@ -26,7 +26,6 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [becomeMerchant, setBecomeMerchant] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
