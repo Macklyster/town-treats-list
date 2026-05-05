@@ -30,7 +30,7 @@ export const Header = () => {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/85 backdrop-blur">
       <CityBar />
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container flex h-20 items-center justify-between md:h-24">
         <Link to="/" className="flex items-center gap-2" aria-label="Helpfy — página inicial">
           <img src={logo} alt="Helpfy" className="h-14 w-auto rounded-md md:h-16" />
         </Link>
