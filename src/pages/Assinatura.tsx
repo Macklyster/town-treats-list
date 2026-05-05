@@ -32,6 +32,22 @@ export default function Assinatura() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
 
+  const openExternalUrl = (url: string) => {
+    const isEmbedded = window.self !== window.top;
+
+    if (isEmbedded) {
+      const popup = window.open(url, "_blank", "noopener,noreferrer");
+
+      if (!popup) {
+        toast.error("Não foi possível abrir a página de pagamento. Libere pop-ups e tente novamente.");
+      }
+
+      return;
+    }
+
+    window.location.href = url;
+  };
+
   const load = async () => {
     if (!user) return;
     setLoading(true);
@@ -99,7 +115,7 @@ export default function Assinatura() {
       toast.error("Não foi possível iniciar o checkout.");
       return;
     }
-    window.location.href = data.url;
+    openExternalUrl(data.url);
   };
 
   const manage = async () => {
@@ -110,7 +126,7 @@ export default function Assinatura() {
       toast.error("Não foi possível abrir o portal.");
       return;
     }
-    window.location.href = data.url;
+    openExternalUrl(data.url);
   };
 
   return (
