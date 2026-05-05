@@ -18,6 +18,8 @@ import OfertaForm from "./pages/OfertaForm.tsx";
 import LojaForm from "./pages/LojaForm.tsx";
 import Admin from "./pages/Admin.tsx";
 import Assinatura from "./pages/Assinatura.tsx";
+import TermosDeUso from "./pages/TermosDeUso.tsx";
+import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade.tsx";
 import { ScrollToHash } from "./components/ScrollToHash";
 
 const queryClient = new QueryClient();
@@ -35,6 +37,8 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
             <Route path="/ofertas" element={<Ofertas />} />
+            <Route path="/termos-de-uso" element={<TermosDeUso />} />
+            <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
             <Route path="/oferta/:id" element={<OfferDetail />} />
             <Route path="/anuncie" element={<Anuncie />} />
             <Route path="/auth" element={<Auth />} />
