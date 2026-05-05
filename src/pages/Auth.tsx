@@ -122,6 +122,9 @@ export default function Auth() {
               </TabsContent>
               <TabsContent value="signup">
                 <form onSubmit={handleSignup} className="space-y-4 pt-4">
+                  <p className="text-sm text-muted-foreground">
+                    Cadastre-se para anunciar suas ofertas no HelpfyOfertas.
+                  </p>
                   <div className="space-y-2">
                     <Label htmlFor="su-name">Nome completo</Label>
                     <Input id="su-name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
@@ -135,10 +138,6 @@ export default function Auth() {
                     <Input id="su-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
                     <p className="text-xs text-muted-foreground">Mínimo 8 caracteres</p>
                   </div>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" checked={becomeMerchant} onChange={(e) => setBecomeMerchant(e.target.checked)} />
-                    Sou lojista e quero anunciar ofertas
-                  </label>
                   <Button type="submit" className="w-full" variant="accent" disabled={loading}>
                     Criar conta
                   </Button>
