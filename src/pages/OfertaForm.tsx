@@ -186,10 +186,12 @@ export default function OfertaForm() {
                 </div>
               </div>
 
-              <div>
-                <Label>URL da imagem</Label>
-                <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="https://..." />
-              </div>
+              <ImageUploader
+                value={form.image_url}
+                onChange={(url) => setForm({ ...form, image_url: url })}
+                storeId={storeId}
+                label="Imagem da oferta"
+              />
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
