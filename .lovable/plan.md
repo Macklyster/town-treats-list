@@ -1,41 +1,44 @@
-## Problemas identificados
+# Melhorias no fluxo de cancelamento de assinatura
 
-**1) Redirect 404 após login com Google**
+## O que será feito
 
-Em `src/pages/Auth.tsx` (linha 21), o redirect padrão é:
+### 1. Banco de dados (migração)
+- Adicionar colunas em `subscriptions`:
+  - `cancel_at_period_end boolean default false`
+  - `canceled_at timestamptz`
+- Criar tabela `cancellation_reasons`:
+  - `id`, `store_id`, `subscription_id`, `reason text`, `details text`, `created_at`
+  - RLS: dono da loja pode inserir/ler; admin gerencia tudo
 
-```ts
-const redirect = params.get("redirect") || "/painel";
-```
+### 2. Webhook do Stripe (`stripe-webhook`)
+- Persistir `cancel_at_period_end` e `canceled_at` no upsert da subscription.
 
-A rota `/painel` não existe em `src/App.tsx` — a rota correta do lojista é `/painel-lojista`. Por isso, ao entrar com Google (sem `?redirect=` na URL), o usuário cai no catch-all `*` que renderiza `NotFound` (404).
+### 3. Nova edge function `reactivate-subscription`
+- Recebe JWT do usuário, valida dono da loja, chama `stripe.subscriptions.update(id, { cancel_at_period_end: false })`.
 
-**2) Tela de consentimento Google mostra "Lovable" em vez de "HelpfyOfertas"**
+### 4. Página `/assinatura` (`src/pages/Assinatura.tsx`)
+- Renomear botão "Gerenciar pagamento" → **"Gerenciar ou cancelar assinatura"**.
+- Adicionar botão dedicado **"Cancelar plano"** abrindo `AlertDialog`:
+  - Campo opcional de motivo (Select com razões pré-definidas + textarea).
+  - Ao confirmar: salva motivo em `cancellation_reasons` e abre Stripe Billing Portal com `flow_data: { type: 'subscription_cancel', subscription_cancel: { subscription: <id> } }`.
+- Atualizar `customer-portal` para aceitar parâmetro opcional `flow` e `subscription_id`.
+- Banner amarelo quando `cancel_at_period_end = true`:
+  > "Sua assinatura será cancelada em DD/MM/AAAA. [Reativar assinatura]"
+- Botão **"Reativar assinatura"** chama `reactivate-subscription`.
 
-A aplicação usa o OAuth gerenciado pela Lovable Cloud (`lovable.auth.signInWithOAuth("google", ...)`). Nesse modo, as credenciais OAuth pertencem à Lovable, então o Google exibe "Lovable" como nome do app na janela de seleção de conta. Isso **não é um bug de código** — é o comportamento esperado do OAuth gerenciado.
+### 5. Painel do lojista (`src/pages/PainelLojista.tsx`)
+- Mesmo banner amarelo quando assinatura está marcada para cancelar.
 
-Para que a tela de consentimento exiba "HelpfyOfertas" (com seu logo e domínio), é necessário criar credenciais OAuth próprias no Google Cloud Console e cadastrá-las nas Configurações de Autenticação do Lovable Cloud.
+### 6. Stripe Billing Portal
+- Documentar que usuário deve configurar locale `pt-BR` no dashboard Stripe (não há API para forçar).
 
-## Mudanças no código
+## Detalhes técnicos
+- `useSubscription` já recarrega via realtime — apenas expor `cancel_at_period_end` no tipo.
+- `customer-portal`: adicionar suporte a `flow_data` quando `flow === 'cancel'`.
+- Razões pré-definidas: "Muito caro", "Não usei o suficiente", "Faltam recursos", "Mudando para outra solução", "Outro".
+- E-mails transacionais: NÃO incluídos nesta etapa (requer setup de domínio de e-mail). Posso adicionar depois.
 
-**`src/pages/Auth.tsx`** — corrigir o destino padrão:
-
-- Trocar `"/painel"` por `"/painel-lojista"` na linha 21.
-
-Isso resolve o 404 tanto para login com e-mail/senha quanto para login com Google quando não há `?redirect=` na URL.
-
-## Ação manual do usuário (para personalizar a tela do Google)
-
-Para a janela de consentimento exibir "HelpfyOfertas":
-
-1. Acesse o Google Cloud Console e crie um projeto (ou use um existente).
-2. Em **OAuth consent screen**: defina nome do app = "HelpfyOfertas", logo, e-mail de suporte e adicione o domínio autorizado `helpfyofertas.com.br` (e `lovable.app`).
-3. Configure os escopos: `userinfo.email`, `userinfo.profile`, `openid`.
-4. Em **Credentials → Create credentials → OAuth Client ID** (tipo Web application):
-   - Em **Authorized redirect URIs**, cole a URL de callback que aparece em **Backend → Autenticação → Provedores → Google** do Lovable Cloud.
-5. Copie o **Client ID** e **Client Secret** gerados.
-6. No Lovable Cloud, abra **Backend → Users → Authentication Settings → Sign In Methods → Google** e cole o Client ID e Secret. Salve.
-
-A partir daí, a janela do Google passará a exibir "HelpfyOfertas" e o domínio do site no lugar de "Lovable".
-
-Após aprovar este plano, eu aplico a correção do redirect e disponibilizo o botão para abrir o painel do Backend onde você cola as credenciais.
+## Fora do escopo (sugerido para depois)
+- E-mails de confirmação de cancelamento/reativação
+- Opção de pausar plano
+- Downgrade direto pelo app

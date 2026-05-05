@@ -41,6 +41,8 @@ Deno.serve(async (req) => {
         stripe_subscription_id: sub.id,
         status: sub.status as any,
         current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
+        cancel_at_period_end: !!sub.cancel_at_period_end,
+        canceled_at: sub.canceled_at ? new Date(sub.canceled_at * 1000).toISOString() : null,
       },
       { onConflict: "stripe_subscription_id" }
     );

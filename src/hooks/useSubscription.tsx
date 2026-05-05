@@ -18,6 +18,8 @@ export type SubscriptionRow = {
   current_period_end: string | null;
   stripe_subscription_id: string | null;
   stripe_customer_id: string | null;
+  cancel_at_period_end: boolean;
+  canceled_at: string | null;
   plan: PlanRow | null;
 };
 
@@ -39,7 +41,7 @@ export function useSubscription(storeId: string | null | undefined) {
     const [{ data: subs }, { count: oc }, { count: fc }] = await Promise.all([
       supabase
         .from("subscriptions")
-        .select("id,status,plan_id,current_period_end,stripe_subscription_id,stripe_customer_id, plan:plans(id,slug,name,price_cents,max_offers,featured_slots,features)")
+        .select("id,status,plan_id,current_period_end,stripe_subscription_id,stripe_customer_id,cancel_at_period_end,canceled_at, plan:plans(id,slug,name,price_cents,max_offers,featured_slots,features)")
         .eq("store_id", storeId)
         .order("created_at", { ascending: false })
         .limit(1),

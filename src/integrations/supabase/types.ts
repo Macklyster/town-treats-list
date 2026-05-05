@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      cancellation_reasons: {
+        Row: {
+          created_at: string
+          details: string | null
+          id: string
+          reason: string
+          store_id: string
+          subscription_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason: string
+          store_id: string
+          subscription_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason?: string
+          store_id?: string
+          subscription_id?: string | null
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -238,6 +265,8 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          cancel_at_period_end: boolean
+          canceled_at: string | null
           created_at: string
           current_period_end: string | null
           id: string
@@ -249,6 +278,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
           created_at?: string
           current_period_end?: string | null
           id?: string
@@ -260,6 +291,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
           created_at?: string
           current_period_end?: string | null
           id?: string

@@ -29,10 +29,24 @@ Deno.serve(async (req) => {
     if (!customers.data[0]) return new Response(JSON.stringify({ error: "no customer" }), { status: 404, headers: corsHeaders });
 
     const origin = req.headers.get("origin") ?? "http://localhost:5173";
-    const portal = await stripe.billingPortal.sessions.create({
+    let body: any = {};
+    try { body = await req.json(); } catch { /* no body */ }
+    const flow = body?.flow as string | undefined;
+    const subscriptionId = body?.subscription_id as string | undefined;
+
+    const params: Stripe.BillingPortal.SessionCreateParams = {
       customer: customers.data[0].id,
-      return_url: `${origin}/assinatura`,
-    });
+      return_url: `${origin}/painel-lojista/assinatura`,
+      locale: "pt-BR" as any,
+    };
+    if (flow === "cancel" && subscriptionId) {
+      params.flow_data = {
+        type: "subscription_cancel",
+        subscription_cancel: { subscription: subscriptionId },
+        after_completion: { type: "redirect", redirect: { return_url: `${origin}/painel-lojista/assinatura?canceled=1` } },
+      } as any;
+    }
+    const portal = await stripe.billingPortal.sessions.create(params);
     return new Response(JSON.stringify({ url: portal.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
