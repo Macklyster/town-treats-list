@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Mail, MapPin } from "lucide-react";
-import logo from "@/assets/helpfy-logo.jpeg";
+import logo from "@/assets/helpfy-logo.png";
 
 export const Footer = () => {
   return (
