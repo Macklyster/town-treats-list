@@ -221,9 +221,38 @@ export default function OfertaForm() {
                 <Label>Descrição</Label>
                 <Textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
               </div>
+              <div className="space-y-2">
+                <Label>Formas de pagamento aceitas</Label>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {PAYMENT_METHODS.map((m) => {
+                    const checked = paymentMethods.includes(m.id);
+                    const Icon = m.icon;
+                    return (
+                      <label
+                        key={m.id}
+                        className={`flex cursor-pointer items-center gap-2 rounded-md border p-2 text-sm transition-colors ${
+                          checked ? "border-primary bg-primary/5" : "hover:border-primary/40"
+                        }`}
+                      >
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={() => togglePayment(m.id)}
+                        />
+                        <Icon className="h-4 w-4 text-primary" />
+                        <span>{m.label}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
               <div>
-                <Label>Condições</Label>
-                <Textarea rows={2} value={form.conditions} onChange={(e) => setForm({ ...form, conditions: e.target.value })} />
+                <Label>Outras condições (opcional)</Label>
+                <Textarea
+                  rows={2}
+                  placeholder="Ex.: válido apenas na loja física, mediante agendamento..."
+                  value={form.conditions}
+                  onChange={(e) => setForm({ ...form, conditions: e.target.value })}
+                />
               </div>
               <div>
                 <Label>Validade</Label>
