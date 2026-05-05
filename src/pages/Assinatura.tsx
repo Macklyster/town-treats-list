@@ -1,11 +1,31 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, AlertTriangle } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatBRL } from "@/lib/format";
@@ -20,7 +40,24 @@ type Plan = {
   max_offers: number;
   featured_slots: number;
 };
-type Sub = { id: string; status: string; plan_id: string; current_period_end: string | null };
+type Sub = {
+  id: string;
+  status: string;
+  plan_id: string;
+  current_period_end: string | null;
+  stripe_subscription_id: string | null;
+  cancel_at_period_end: boolean;
+  canceled_at: string | null;
+};
+
+const CANCEL_REASONS = [
+  "Muito caro",
+  "Não usei o suficiente",
+  "Faltam recursos que preciso",
+  "Mudando para outra solução",
+  "Problemas técnicos",
+  "Outro",
+];
 
 export default function Assinatura() {
   const { user } = useAuth();
@@ -31,6 +68,9 @@ export default function Assinatura() {
   const [storeId, setStoreId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState<string>("");
+  const [cancelDetails, setCancelDetails] = useState("");
 
   const openExternalUrl = (url: string) => {
     const isEmbedded = window.self !== window.top;
@@ -61,7 +101,7 @@ export default function Assinatura() {
     if (sId) {
       const { data: subs } = await supabase
         .from("subscriptions")
-        .select("id,status,plan_id,current_period_end")
+        .select("id,status,plan_id,current_period_end,stripe_subscription_id,cancel_at_period_end,canceled_at")
         .eq("store_id", sId)
         .order("created_at", { ascending: false })
         .limit(1);
@@ -73,9 +113,8 @@ export default function Assinatura() {
   useEffect(() => {
     load();
     if (params.get("success")) toast.success("Pagamento concluído! Aguardando confirmação...");
-    if (params.get("canceled")) toast.info("Pagamento cancelado.");
-    if (params.get("success")) {
-      // poll a few times for webhook to update sub
+    if (params.get("canceled")) toast.info("Solicitação de cancelamento processada.");
+    if (params.get("success") || params.get("canceled")) {
       let tries = 0;
       const iv = setInterval(() => {
         tries++;
@@ -86,7 +125,6 @@ export default function Assinatura() {
     }
   }, [user?.id]);
 
-  // realtime updates from webhook
   useEffect(() => {
     if (!storeId) return;
     const ch = supabase
@@ -129,6 +167,49 @@ export default function Assinatura() {
     openExternalUrl(data.url);
   };
 
+  const confirmCancel = async () => {
+    if (!sub?.stripe_subscription_id || !storeId) return;
+    setBusy("cancel");
+
+    if (cancelReason) {
+      await supabase.from("cancellation_reasons").insert({
+        store_id: storeId,
+        subscription_id: sub.id,
+        reason: cancelReason,
+        details: cancelDetails || null,
+      });
+    }
+
+    const { data, error } = await supabase.functions.invoke("customer-portal", {
+      body: { flow: "cancel", subscription_id: sub.stripe_subscription_id },
+    });
+    setBusy(null);
+    setCancelOpen(false);
+    if (error || !data?.url) {
+      toast.error("Não foi possível abrir o cancelamento.");
+      return;
+    }
+    openExternalUrl(data.url);
+  };
+
+  const reactivate = async () => {
+    if (!storeId) return;
+    setBusy("reactivate");
+    const { error } = await supabase.functions.invoke("reactivate-subscription", {
+      body: { store_id: storeId },
+    });
+    setBusy(null);
+    if (error) {
+      toast.error("Não foi possível reativar a assinatura.");
+      return;
+    }
+    toast.success("Assinatura reativada com sucesso!");
+    load();
+  };
+
+  const isActive = sub && ["active", "trialing"].includes(sub.status);
+  const willCancel = sub?.cancel_at_period_end && isActive;
+
   return (
     <div className="flex min-h-screen flex-col bg-muted/20">
       <Header />
@@ -139,12 +220,41 @@ export default function Assinatura() {
             <p className="text-muted-foreground">Escolha o plano ideal para sua loja.</p>
           </div>
           {sub && (
-            <Button variant="outline" onClick={manage} disabled={busy === "portal"}>
-              {busy === "portal" && <Loader2 className="h-4 w-4 animate-spin" />}
-              Gerenciar pagamento
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" onClick={manage} disabled={busy === "portal"}>
+                {busy === "portal" && <Loader2 className="h-4 w-4 animate-spin" />}
+                Gerenciar ou cancelar assinatura
+              </Button>
+              {isActive && !willCancel && (
+                <Button variant="destructive" onClick={() => setCancelOpen(true)}>
+                  Cancelar plano
+                </Button>
+              )}
+            </div>
           )}
         </div>
+
+        {willCancel && (
+          <Alert className="mb-6 border-yellow-500/50 bg-yellow-50 text-yellow-900 dark:bg-yellow-950/30 dark:text-yellow-200">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Assinatura programada para cancelamento</AlertTitle>
+            <AlertDescription className="flex flex-wrap items-center justify-between gap-3">
+              <span>
+                Sua assinatura permanece ativa até{" "}
+                <strong>
+                  {sub?.current_period_end
+                    ? new Date(sub.current_period_end).toLocaleDateString("pt-BR")
+                    : "—"}
+                </strong>
+                . Após essa data, você perderá acesso aos benefícios do plano.
+              </span>
+              <Button size="sm" variant="accent" onClick={reactivate} disabled={busy === "reactivate"}>
+                {busy === "reactivate" && <Loader2 className="h-4 w-4 animate-spin" />}
+                Reativar assinatura
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
 
         {loading ? <p>Carregando…</p> : (
           <div className="grid gap-6 md:grid-cols-3">
@@ -162,7 +272,8 @@ export default function Assinatura() {
                     </div>
                     {isCurrent && sub?.current_period_end && (
                       <p className="mt-1 text-xs text-muted-foreground">
-                        Renova em {new Date(sub.current_period_end).toLocaleDateString("pt-BR")}
+                        {willCancel ? "Termina em " : "Renova em "}
+                        {new Date(sub.current_period_end).toLocaleDateString("pt-BR")}
                       </p>
                     )}
                   </CardHeader>
@@ -190,6 +301,53 @@ export default function Assinatura() {
           </div>
         )}
       </main>
+
+      <AlertDialog open={cancelOpen} onOpenChange={setCancelOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancelar sua assinatura?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Você continuará com acesso aos benefícios até o final do período já pago
+              {sub?.current_period_end ? ` (${new Date(sub.current_period_end).toLocaleDateString("pt-BR")})` : ""}.
+              Depois disso, suas ofertas deixarão de ser exibidas.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-3 py-2">
+            <div className="space-y-1.5">
+              <Label>Por que está cancelando? (opcional)</Label>
+              <Select value={cancelReason} onValueChange={setCancelReason}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um motivo" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CANCEL_REASONS.map((r) => (
+                    <SelectItem key={r} value={r}>{r}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Conte mais (opcional)</Label>
+              <Textarea
+                value={cancelDetails}
+                onChange={(e) => setCancelDetails(e.target.value)}
+                placeholder="Seu feedback nos ajuda a melhorar."
+                rows={3}
+              />
+            </div>
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={busy === "cancel"}>Voltar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmCancel} disabled={busy === "cancel"}>
+              {busy === "cancel" && <Loader2 className="h-4 w-4 animate-spin" />}
+              Continuar cancelamento
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Footer />
     </div>
   );

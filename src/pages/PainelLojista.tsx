@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Store, Tag, Settings, CreditCard, Pencil } from "lucide-react";
+import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
@@ -125,6 +125,26 @@ export default function PainelLojista() {
                   <span>Sem plano ativo, suas ofertas não ficam visíveis aos clientes.</span>
                   <Button asChild size="sm" variant="accent">
                     <Link to="/painel-lojista/assinatura">Ver planos</Link>
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            )}
+            {subInfo.subscription?.cancel_at_period_end && subInfo.isActive && (
+              <Alert className="mb-6 border-yellow-500/50 bg-yellow-50 text-yellow-900 dark:bg-yellow-950/30 dark:text-yellow-200">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>Assinatura programada para cancelamento</AlertTitle>
+                <AlertDescription className="flex flex-wrap items-center justify-between gap-3">
+                  <span>
+                    Ativa até{" "}
+                    <strong>
+                      {subInfo.subscription.current_period_end
+                        ? new Date(subInfo.subscription.current_period_end).toLocaleDateString("pt-BR")
+                        : "—"}
+                    </strong>
+                    .
+                  </span>
+                  <Button asChild size="sm" variant="accent">
+                    <Link to="/painel-lojista/assinatura">Reativar assinatura</Link>
                   </Button>
                 </AlertDescription>
               </Alert>
