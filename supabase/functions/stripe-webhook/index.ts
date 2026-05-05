@@ -6,7 +6,10 @@ const corsHeaders = { "Access-Control-Allow-Origin": "*" };
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, { apiVersion: "2024-06-20" });
+  const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
+    apiVersion: "2024-06-20",
+    httpClient: Stripe.createFetchHttpClient(),
+  });
   const sig = req.headers.get("stripe-signature");
   const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
   const body = await req.text();

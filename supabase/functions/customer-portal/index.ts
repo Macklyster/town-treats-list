@@ -21,7 +21,10 @@ Deno.serve(async (req) => {
     const { data: userData, error: uErr } = await supabase.auth.getUser(authHeader.replace("Bearer ", ""));
     if (uErr || !userData.user?.email) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, { apiVersion: "2024-06-20" });
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
+      apiVersion: "2024-06-20",
+      httpClient: Stripe.createFetchHttpClient(),
+    });
     const customers = await stripe.customers.list({ email: userData.user.email, limit: 1 });
     if (!customers.data[0]) return new Response(JSON.stringify({ error: "no customer" }), { status: 404, headers: corsHeaders });
 
