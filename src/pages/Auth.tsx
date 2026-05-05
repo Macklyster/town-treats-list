@@ -71,13 +71,9 @@ export default function Auth() {
       toast.error(error.message);
       return;
     }
-    // optionally promote to lojista (simple flow: insert role)
-    if (becomeMerchant && data.user) {
-      await supabase.from("user_roles").insert({ user_id: data.user.id, role: "lojista" });
-    }
     setLoading(false);
-    toast.success("Conta criada!");
-    navigate(becomeMerchant ? "/painel-lojista" : redirect, { replace: true });
+    toast.success("Conta de lojista criada!");
+    navigate("/painel-lojista", { replace: true });
   };
 
   const handleGoogle = async () => {
