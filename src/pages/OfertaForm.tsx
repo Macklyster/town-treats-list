@@ -18,6 +18,8 @@ import { Switch } from "@/components/ui/switch";
 import { Link } from "react-router-dom";
 import { AlertCircle } from "lucide-react";
 import { ImageUploader } from "@/components/site/ImageUploader";
+import { Checkbox } from "@/components/ui/checkbox";
+import { PAYMENT_METHODS, type PaymentMethodId, parseConditions, buildConditions } from "@/lib/payment-methods";
 
 const schema = z.object({
   title: z.string().trim().min(3).max(140),
