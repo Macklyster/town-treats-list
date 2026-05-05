@@ -7,7 +7,7 @@ export const Footer = () => {
     <footer className="mt-24 bg-primary text-primary-foreground">
       <div className="container grid gap-10 py-14 md:grid-cols-4">
         <div className="space-y-4">
-          <img src={logo} alt="Helpfy" className="h-10 w-auto rounded-md" />
+          <img src={logo} alt="Helpfy" className="h-10 w-auto" />
           <p className="text-sm opacity-80">
             O hub de ofertas locais que conecta consumidores e lojistas da sua cidade.
           </p>
