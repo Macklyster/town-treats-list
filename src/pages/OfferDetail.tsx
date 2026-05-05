@@ -13,7 +13,7 @@ import {
 } from "@/lib/offers-api";
 import { Button } from "@/components/ui/button";
 import { Clock, MapPin, Phone, Instagram, MessageCircle, ArrowLeft } from "lucide-react";
-import { parseConditions } from "@/lib/payment-methods";
+import { parseConditions, getMethod } from "@/lib/payment-methods";
 import NotFound from "./NotFound";
 
 const OfferDetail = () => {
