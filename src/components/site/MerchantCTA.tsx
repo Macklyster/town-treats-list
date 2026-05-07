@@ -38,7 +38,7 @@ export const MerchantCTA = () => {
               const Icon = b.icon;
               return (
                 <li key={b.t} className="flex items-start gap-4 rounded-xl bg-primary-foreground/5 p-4 backdrop-blur">
-                  <div className="rounded-lg bg-accent/20 p-2 text-accent">
+                  <div className="rounded-lg bg-accent/20 p-2 text-accent text-[#10100f]">
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>

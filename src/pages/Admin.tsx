@@ -89,7 +89,7 @@ export default function Admin() {
                             <td className="py-3 font-medium text-foreground">{o.title}</td>
                             <td>{o.store?.name ?? "—"}</td>
                             <td><Badge variant={o.status === "approved" ? "default" : "secondary"}>{o.status}</Badge></td>
-                            <td>{o.featured ? <Star className="h-4 w-4 fill-accent text-accent" /> : "—"}</td>
+                            <td>{o.featured ? <Star className="h-4 w-4 fill-accent text-accent text-[#10100f]" /> : "—"}</td>
                             <td className="text-right">
                               <div className="inline-flex gap-2">
                                 {o.status !== "approved" && (
