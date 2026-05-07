@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import logo from "@/assets/helpfy-logo.png";
+import logo from "@/assets/ofertasfly-logo.svg";
 import { CityBar } from "@/components/site/CityBar";
 
 const navItems = [
