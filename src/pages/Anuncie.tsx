@@ -51,7 +51,7 @@ const plans = [
     features: [
       "Ofertas ilimitadas",
       "Banner rotativo na home",
-      "Posts nas redes da Helpfy",
+      "Posts nas redes da OfertasFly",
       "Relatórios mensais de desempenho",
       "Consultor dedicado",
     ],
@@ -91,7 +91,7 @@ const Anuncie = () => {
       setSubmitting(false);
       (e.target as HTMLFormElement).reset();
       toast.success("Recebemos seu contato!", {
-        description: "Em breve um consultor da Helpfy vai falar com você.",
+        description: "Em breve um consultor da OfertasFly vai falar com você.",
       });
     }, 700);
   };

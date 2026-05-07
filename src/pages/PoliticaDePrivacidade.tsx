@@ -9,7 +9,7 @@ const PoliticaDePrivacidade = () => {
         <h1 className="mb-6 text-4xl font-bold">Política de Privacidade</h1>
         <div className="prose prose-neutral max-w-none space-y-4 text-foreground">
           <p>
-            A sua privacidade é importante para o HelpfyOfertas. Esta política descreve como
+            A sua privacidade é importante para o OfertasFly. Esta política descreve como
             coletamos, utilizamos e protegemos seus dados pessoais.
           </p>
 
@@ -58,8 +58,8 @@ const PoliticaDePrivacidade = () => {
           <h2 className="mt-8 text-2xl font-semibold">7. Contato</h2>
           <p>
             Para exercer seus direitos ou tirar dúvidas, escreva para{" "}
-            <a href="mailto:contato@helpfyofertas.com.br" className="text-accent-strong underline text-[#10100f]">
-              contato@helpfyofertas.com.br
+            <a href="mailto:contato@ofertasfly.com.br" className="text-accent-strong underline text-[#10100f]">
+              contato@ofertasfly.com.br
             </a>
             .
           </p>

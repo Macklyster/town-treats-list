@@ -14,7 +14,7 @@ type CityContextValue = {
   loadingCities: boolean;
 };
 
-const STORAGE_KEY = "helpfy:city";
+const STORAGE_KEY = "ofertasfly:city";
 const CityContext = createContext<CityContextValue | undefined>(undefined);
 
 const readStored = (): City | null => {
