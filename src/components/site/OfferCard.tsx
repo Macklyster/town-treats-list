@@ -17,7 +17,7 @@ export const OfferCard = ({ offer }: { offer: UIOffer }) => {
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         {pct > 0 && (
-          <span className="absolute left-3 top-3 rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground shadow-soft">
+          <span className="absolute left-3 top-3 rounded-full bg-discount px-3 py-1 text-xs font-bold text-discount-foreground shadow-soft">
             -{pct}%
           </span>
         )}

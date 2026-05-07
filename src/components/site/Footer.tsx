@@ -4,7 +4,7 @@ import logo from "@/assets/helpfy-logo-footer.png";
 
 export const Footer = () => {
   return (
-    <footer className="mt-24 bg-primary text-primary-foreground">
+    <footer className="mt-24 bg-charcoal text-charcoal-foreground">
       <div className="container grid gap-10 py-14 md:grid-cols-4">
         <div className="space-y-4">
           <img src={logo} alt="HelpfyOfertas" className="h-10 w-auto" />
@@ -35,16 +35,16 @@ export const Footer = () => {
             <li className="flex items-center gap-2"><MapPin className="h-4 w-4" /> Douradina — Paraná — Brasil</li>
           </ul>
           <div className="mt-4 flex gap-3">
-            <a href="#" aria-label="Instagram" className="rounded-full bg-primary-foreground/10 p-2 hover:bg-accent hover:text-accent-foreground">
+            <a href="#" aria-label="Instagram" className="rounded-full bg-charcoal-foreground/10 p-2 hover:bg-accent hover:text-accent-foreground">
               <Instagram className="h-4 w-4" />
             </a>
-            <a href="#" aria-label="Facebook" className="rounded-full bg-primary-foreground/10 p-2 hover:bg-accent hover:text-accent-foreground">
+            <a href="#" aria-label="Facebook" className="rounded-full bg-charcoal-foreground/10 p-2 hover:bg-accent hover:text-accent-foreground">
               <Facebook className="h-4 w-4" />
             </a>
           </div>
         </div>
       </div>
-      <div className="border-t border-primary-foreground/10">
+      <div className="border-t border-charcoal-foreground/10">
         <div className="container py-5 text-center text-xs opacity-70">
           © {new Date().getFullYear()} HelpfyOfertas — Ofertas Locais. Todos os direitos reservados.
         </div>
