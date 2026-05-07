@@ -32,7 +32,7 @@ export const HeroSearch = () => {
           <span className="inline-block rounded-full bg-primary-foreground/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider">
             Ofertas locais, escolhidas a dedo
           </span>
-          <h1 className="mt-6 text-4xl font-bold leading-tight md:text-6xl">
+          <h1 className="mt-6 text-hero font-medium leading-[1.05] md:text-[56px]">
             As melhores ofertas da{" "}
             <span className="text-accent">sua cidade</span>{" "}
             num só lugar

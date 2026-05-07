@@ -107,7 +107,7 @@ const Anuncie = () => {
               <span className="inline-block rounded-full bg-primary-foreground/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider">
                 Para Lojistas
               </span>
-              <h1 className="mt-6 text-4xl font-bold leading-tight md:text-5xl">
+              <h1 className="mt-6 text-hero font-medium leading-[1.05] md:text-[48px]">
                 Anuncie sua empresa e <span className="text-accent">aumente suas vendas</span>
               </h1>
               <p className="mt-5 text-lg opacity-85">
