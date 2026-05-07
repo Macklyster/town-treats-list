@@ -86,7 +86,7 @@ const OfferDetail = () => {
             <div className="mt-10 space-y-6">
               {offer.description && (
                 <div>
-                  <h2 className="text-xl font-semibold text-primary">Sobre a oferta</h2>
+                  <h2 className="text-xl font-medium text-foreground">Sobre a oferta</h2>
                   <p className="mt-3 text-muted-foreground">{offer.description}</p>
                 </div>
               )}
@@ -96,7 +96,7 @@ const OfferDetail = () => {
                   <>
                     {methods.length > 0 && (
                       <div>
-                        <h2 className="text-xl font-semibold text-primary">Formas de pagamento</h2>
+                        <h2 className="text-xl font-medium text-foreground">Formas de pagamento</h2>
                         <div className="mt-3 flex flex-wrap gap-2">
                           {methods.map((id) => {
                             const m = getMethod(id);
@@ -105,7 +105,7 @@ const OfferDetail = () => {
                             return (
                               <span
                                 key={id}
-                                className="inline-flex items-center gap-1.5 rounded-full border bg-secondary px-3 py-1 text-sm text-primary"
+                                className="inline-flex items-center gap-1.5 rounded-full border bg-secondary px-3 py-1 text-sm text-foreground"
                               >
                                 <Icon className="h-4 w-4" />
                                 {m.label}
@@ -117,7 +117,7 @@ const OfferDetail = () => {
                     )}
                     {text && (
                       <div>
-                        <h2 className="text-xl font-semibold text-primary">Condições</h2>
+                        <h2 className="text-xl font-medium text-foreground">Condições</h2>
                         <p className="mt-3 whitespace-pre-line text-muted-foreground">{text}</p>
                       </div>
                     )}
@@ -125,7 +125,7 @@ const OfferDetail = () => {
                 );
               })()}
               {offer.validUntil && (
-                <div className="rounded-xl bg-secondary p-4 text-sm text-primary">
+                <div className="rounded-xl bg-secondary p-4 text-sm text-foreground">
                   <strong>Validade:</strong> {offer.validUntil}
                 </div>
               )}
@@ -137,7 +137,7 @@ const OfferDetail = () => {
               <span className="text-xs font-semibold uppercase tracking-wider text-accent-strong">
                 {offer.storeName}
               </span>
-              <h1 className="mt-2 text-2xl font-bold leading-tight text-primary md:text-3xl">
+              <h1 className="mt-2 text-2xl font-semibold leading-tight text-foreground md:text-[28px]">
                 {offer.title}
               </h1>
               <div className="mt-5 flex items-baseline gap-3">
@@ -171,7 +171,7 @@ const OfferDetail = () => {
 
             {store && (
               <div className="rounded-2xl bg-card p-6 shadow-card">
-                <h3 className="text-lg font-semibold text-primary">Sobre a loja</h3>
+                <h3 className="text-lg font-medium text-foreground">Sobre a loja</h3>
                 <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
                   {store.address && (
                     <li className="flex items-start gap-3">
@@ -209,7 +209,7 @@ const OfferDetail = () => {
 
         {related.length > 0 && (
           <section className="mt-20">
-            <h2 className="text-2xl font-bold text-primary md:text-3xl">Você também pode gostar</h2>
+            <h2 className="text-2xl font-semibold text-foreground md:text-[28px]">Você também pode gostar</h2>
             <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {related.map((o) => (
                 <OfferCard key={o.id} offer={o} />

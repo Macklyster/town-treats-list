@@ -64,7 +64,7 @@ export default function Admin() {
     <div className="flex min-h-screen flex-col bg-muted/20">
       <Header />
       <main className="container flex-1 py-10">
-        <h1 className="mb-2 text-3xl font-bold text-primary">Painel Admin</h1>
+        <h1 className="mb-2 text-display text-foreground">Painel Admin</h1>
         <p className="mb-6 text-muted-foreground">Aprove ofertas, gerencie lojistas e destaques.</p>
 
         <Tabs defaultValue="offers">
@@ -86,7 +86,7 @@ export default function Admin() {
                       <tbody className="divide-y">
                         {offers.map((o) => (
                           <tr key={o.id}>
-                            <td className="py-3 font-medium text-primary">{o.title}</td>
+                            <td className="py-3 font-medium text-foreground">{o.title}</td>
                             <td>{o.store?.name ?? "—"}</td>
                             <td><Badge variant={o.status === "approved" ? "default" : "secondary"}>{o.status}</Badge></td>
                             <td>{o.featured ? <Star className="h-4 w-4 fill-accent text-accent" /> : "—"}</td>
@@ -129,7 +129,7 @@ export default function Admin() {
                     <tbody className="divide-y">
                       {stores.map((s) => (
                         <tr key={s.id}>
-                          <td className="py-3 font-medium text-primary">{s.name}</td>
+                          <td className="py-3 font-medium text-foreground">{s.name}</td>
                           <td><Badge variant={s.approved ? "default" : "secondary"}>{s.approved ? "Aprovada" : "Pendente"}</Badge></td>
                           <td className="text-right">
                             <Button size="sm" variant={s.approved ? "outline" : "accent"} onClick={() => updateStore(s.id, { approved: !s.approved })}>

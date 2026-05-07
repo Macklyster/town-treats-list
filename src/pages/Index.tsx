@@ -42,7 +42,7 @@ const Index = () => {
         <section className="container py-20">
           <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 className="text-3xl font-bold text-primary md:text-4xl">Ofertas em destaque</h2>
+              <h2 className="text-display text-foreground md:text-[40px]">Ofertas em destaque</h2>
               <p className="mt-2 text-muted-foreground">Selecionadas pela nossa equipe.</p>
             </div>
             <Link to="/ofertas" className="text-sm font-semibold text-accent-strong hover:underline">
@@ -51,7 +51,7 @@ const Index = () => {
           </div>
           {!city ? (
             <div className="rounded-2xl border border-dashed border-border p-16 text-center">
-              <p className="text-lg font-semibold text-primary">Selecione uma cidade primeiro</p>
+              <p className="text-lg font-medium text-foreground">Selecione uma cidade primeiro</p>
               <p className="mt-2 text-sm text-muted-foreground">
                 Para mostrarmos ofertas próximas a você, escolha onde quer pesquisar.
               </p>
@@ -67,7 +67,7 @@ const Index = () => {
             <p className="text-muted-foreground">Carregando ofertas…</p>
           ) : grid.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border p-16 text-center">
-              <p className="text-lg font-semibold text-primary">Nenhuma oferta em {city.city} ainda</p>
+              <p className="text-lg font-medium text-foreground">Nenhuma oferta em {city.city} ainda</p>
               <p className="mt-2 text-sm text-muted-foreground">
                 Volte em breve — novas promoções estão a caminho.
               </p>

@@ -58,7 +58,7 @@ const PoliticaDePrivacidade = () => {
           <h2 className="mt-8 text-2xl font-semibold">7. Contato</h2>
           <p>
             Para exercer seus direitos ou tirar dúvidas, escreva para{" "}
-            <a href="mailto:contato@helpfyofertas.com.br" className="text-primary underline">
+            <a href="mailto:contato@helpfyofertas.com.br" className="text-accent-strong underline">
               contato@helpfyofertas.com.br
             </a>
             .

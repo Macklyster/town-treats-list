@@ -59,7 +59,7 @@ export const Header = () => {
               onClick={(e) => handleNavClick(e, item.to)}
               className={({ isActive }) =>
                 `text-sm font-medium transition-colors hover:text-accent-strong ${
-                  isActive && item.to === pathname ? "text-accent-strong" : "text-primary"
+                  isActive && item.to === pathname ? "text-accent-strong" : "text-foreground"
                 }`
               }
             >
@@ -129,7 +129,7 @@ export const Header = () => {
                 key={item.to}
                 to={item.to}
                 onClick={(e) => handleNavClick(e, item.to)}
-                className="py-1 text-sm font-medium text-primary"
+                className="py-1 text-sm font-medium text-foreground"
               >
                 {item.label}
               </Link>

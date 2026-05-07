@@ -118,7 +118,7 @@ export const CitySelector = () => {
                       onClick={() => handleSelect(c)}
                       className="flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors hover:bg-muted"
                     >
-                      <span className="font-medium text-primary">{c.city}</span>
+                      <span className="font-medium text-foreground">{c.city}</span>
                       {c.state && (
                         <span className="text-xs font-semibold uppercase text-muted-foreground">
                           {c.state}
