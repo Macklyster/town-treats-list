@@ -23,7 +23,7 @@ export const FeaturedCarousel = ({ offers }: { offers: UIOffer[] }) => {
                   <div className="relative aspect-[16/10] md:aspect-auto">
                     <img src={o.image} alt={o.title} className="h-full w-full object-cover" />
                     {pct > 0 && (
-                      <span className="absolute left-4 top-4 rounded-full bg-accent px-3 py-1 text-sm font-bold text-accent-foreground">
+                      <span className="absolute left-4 top-4 rounded-full bg-discount px-3 py-1 text-sm font-bold text-discount-foreground">
                         -{pct}% OFF
                       </span>
                     )}

@@ -43,6 +43,34 @@
     --discount-foreground: 0 0% 100%;
     --discount-light: 144 51% 93%;
 
+    /* Charcoal — footer & dark surfaces */
+    --charcoal: 60 4% 6%;
+    --charcoal-foreground: 0 0% 100%;
+
+    /* Hot — "Em alta" badge */
+    --hot: 0 100% 62%;
+    --hot-foreground: 0 0% 100%;
+
+    /* Category palettes (bg / badge bg / badge text) */
+    --cat-food-bg: 220 100% 97%;
+    --cat-food-badge: 214 95% 93%;
+    --cat-food-text: 224 64% 33%;
+    --cat-beauty-bg: 270 100% 98%;
+    --cat-beauty-badge: 252 100% 95%;
+    --cat-beauty-text: 263 69% 35%;
+    --cat-health-bg: 138 76% 97%;
+    --cat-health-badge: 141 84% 93%;
+    --cat-health-text: 142 71% 25%;
+    --cat-fashion-bg: 295 100% 98%;
+    --cat-fashion-badge: 291 100% 95%;
+    --cat-fashion-text: 301 64% 27%;
+    --cat-pet-bg: 355 100% 97%;
+    --cat-pet-badge: 351 100% 94%;
+    --cat-pet-text: 348 83% 35%;
+    --cat-service-bg: 204 100% 97%;
+    --cat-service-badge: 204 100% 94%;
+    --cat-service-text: 199 84% 27%;
+
     --destructive: 0 100% 62%;
     --destructive-foreground: 0 0% 100%;
 
