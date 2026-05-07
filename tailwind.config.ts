@@ -40,6 +40,11 @@ export default {
           foreground: "hsl(var(--accent-foreground))",
           strong: "hsl(var(--accent-strong))",
         },
+        discount: {
+          DEFAULT: "hsl(var(--discount))",
+          foreground: "hsl(var(--discount-foreground))",
+          light: "hsl(var(--discount-light))",
+        },
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
@@ -63,6 +68,10 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      fontFamily: {
+        display: ["Syne", "sans-serif"],
+        sans: ["DM Sans", "system-ui", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {
