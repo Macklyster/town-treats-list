@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { MapPin, Search } from "lucide-react";
+import { MapPin, Search, Plane } from "lucide-react";
 import { useState } from "react";
 import { categories } from "@/data/categories";
 import { Button } from "@/components/ui/button";
@@ -29,8 +29,9 @@ export const HeroSearch = () => {
       </div>
       <div className="container relative py-20 md:py-28">
         <div className="mx-auto max-w-3xl text-center">
-          <span className="inline-block rounded-full bg-primary-foreground/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider">
-            Ofertas locais, escolhidas a dedo
+          <span className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider">
+            <Plane className="h-3.5 w-3.5" />
+            Ofertas locais, que voam
           </span>
           <h1 className="mt-6 text-hero font-medium leading-[1.05] md:text-[56px]">
             As melhores ofertas da{" "}
