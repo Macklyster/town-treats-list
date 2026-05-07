@@ -148,6 +148,13 @@
     font-weight: 500;
     letter-spacing: -0.015em;
   }
+  .text-display {
+    font-family: 'Syne', sans-serif;
+    font-weight: 500;
+    font-size: 32px;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+  }
   .text-hero {
     font-family: 'Syne', sans-serif;
     font-weight: 500;
