@@ -15,7 +15,7 @@ export const CityBar = () => {
           <button
             type="button"
             onClick={openSelector}
-            className="rounded-full bg-accent-foreground px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-accent transition-opacity hover:opacity-90"
+            className="rounded-full bg-accent-foreground px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-accent text-[#10100f] transition-opacity hover:opacity-90"
           >
             Escolher cidade
           </button>
