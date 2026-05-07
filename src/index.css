@@ -74,6 +74,12 @@
     --destructive: 0 100% 62%;
     --destructive-foreground: 0 0% 100%;
 
+    /* Warning — alerts (cancel-at-period-end, expiring) */
+    --warning: 38 92% 50%;
+    --warning-foreground: 38 92% 15%;
+    --warning-bg: 48 96% 95%;
+    --warning-border: 38 92% 50%;
+
     --border: 43 14% 81%;
     --input: 43 14% 81%;
     --ring: 244 58% 51%;

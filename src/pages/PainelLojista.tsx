@@ -130,7 +130,7 @@ export default function PainelLojista() {
               </Alert>
             )}
             {subInfo.subscription?.cancel_at_period_end && subInfo.isActive && (
-              <Alert className="mb-6 border-yellow-500/50 bg-yellow-50 text-yellow-900 dark:bg-yellow-950/30 dark:text-yellow-200">
+              <Alert className="mb-6 border-warning-border/50 bg-warning-bg text-warning-foreground">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertTitle>Assinatura programada para cancelamento</AlertTitle>
                 <AlertDescription className="flex flex-wrap items-center justify-between gap-3">
