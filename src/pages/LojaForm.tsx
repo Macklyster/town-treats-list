@@ -35,6 +35,7 @@ export default function LojaForm() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [storeId, setStoreId] = useState<string | null>(null);
+  const [approved, setApproved] = useState<boolean>(false);
   const [form, setForm] = useState({
     name: "",
     description: "",
