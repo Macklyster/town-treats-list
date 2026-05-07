@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Mail, MapPin } from "lucide-react";
-import logo from "@/assets/ofertasfly-logo-dark.svg";
+import logo from "@/assets/ofertasfly-logo-escura.svg";
 
 export const Footer = () => {
   return (
