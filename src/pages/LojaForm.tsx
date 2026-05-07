@@ -150,16 +150,41 @@ export default function LojaForm() {
                   <Input value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} placeholder="5511999999999" />
                 </div>
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <Label>Instagram</Label>
-                  <Input value={form.instagram} onChange={(e) => setForm({ ...form, instagram: e.target.value })} placeholder="@minhaloja" />
-                </div>
-                <div>
-                  <Label>URL do logo</Label>
-                  <Input value={form.logo_url} onChange={(e) => setForm({ ...form, logo_url: e.target.value })} placeholder="https://..." />
-                </div>
+              <div>
+                <Label>Instagram</Label>
+                <Input value={form.instagram} onChange={(e) => setForm({ ...form, instagram: e.target.value })} placeholder="@minhaloja" />
               </div>
+
+              <ImageUploader
+                value={form.logo_url}
+                onChange={(url) => setForm({ ...form, logo_url: url })}
+                storeId={storeId}
+                bucket="store-logos"
+                label="Logo da loja"
+                helperText="Envie um arquivo SVG ou PNG (até 2 MB). Recomendado: 512×512."
+                aspect="square"
+                maxWidth={512}
+                accept={["image/svg+xml", "image/png"]}
+                maxBytes={2 * 1024 * 1024}
+                disabled={!storeId}
+              />
+
+              {!storeId && (
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    Salve os dados da loja primeiro para liberar o envio do logo.
+                  </AlertDescription>
+                </Alert>
+              )}
+              {storeId && !approved && (
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    Sua loja está em análise — o logo aparecerá publicamente após a aprovação.
+                  </AlertDescription>
+                </Alert>
+              )}
               <div className="flex gap-3 pt-2">
                 <Button type="submit" variant="accent" disabled={loading}>{storeId ? "Salvar" : "Criar loja"}</Button>
                 <Button type="button" variant="ghost" onClick={() => navigate("/painel-lojista")}>Cancelar</Button>
