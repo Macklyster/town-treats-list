@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import logo from "@/assets/helpfy-logo.png";
+import logo from "@/assets/ofertasfly-logo.svg";
 import { CityBar } from "@/components/site/CityBar";
 
 const navItems = [
@@ -47,8 +47,8 @@ export const Header = () => {
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/85 backdrop-blur">
       <CityBar />
       <div className="container flex h-20 items-center justify-between md:h-24">
-        <Link to="/" className="flex items-center gap-2" aria-label="HelpfyOfertas — página inicial">
-          <img src={logo} alt="HelpfyOfertas" className="h-14 w-auto md:h-16" />
+        <Link to="/" className="flex items-center gap-2" aria-label="OfertasFly — página inicial">
+          <img src={logo} alt="OfertasFly" className="h-14 w-auto md:h-16" />
         </Link>
 
         <nav className="hidden items-center gap-7 md:flex">
