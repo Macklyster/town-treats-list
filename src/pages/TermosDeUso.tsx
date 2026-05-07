@@ -54,7 +54,7 @@ const TermosDeUso = () => {
           <h2 className="mt-8 text-2xl font-semibold">7. Contato</h2>
           <p>
             Em caso de dúvidas, entre em contato pelo e-mail{" "}
-            <a href="mailto:contato@ofertasfly.com.br" className="text-accent-strong underline text-[#10100f]">
+            <a href="mailto:contato@ofertasfly.com.br" className="text-accent-strong underline">
               contato@ofertasfly.com.br
             </a>
             .
