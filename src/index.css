@@ -36,7 +36,7 @@
     /* Accent = brand indigo (CTAs share primary) */
     --accent: 244 58% 51%;
     --accent-foreground: 0 0% 100%;
-    --accent-strong: 244 49% 42%;
+    --accent-strong: 60 4% 6%;
 
     /* Discount green — use ONLY for % off badges */
     --discount: 150 68% 33%;
