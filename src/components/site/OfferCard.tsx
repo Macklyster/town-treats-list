@@ -22,7 +22,7 @@ export const OfferCard = ({ offer }: { offer: UIOffer }) => {
           </span>
         )}
         {offer.type !== "desconto" && (
-          <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-primary/90 px-2.5 py-1 text-xs font-medium text-primary-foreground">
+          <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-primary/90 px-2.5 py-1 text-xs font-medium text-foreground-foreground">
             <Tag className="h-3 w-3" />
             {offer.type === "cupom" ? "Cupom" : "Brinde"}
           </span>
@@ -32,7 +32,7 @@ export const OfferCard = ({ offer }: { offer: UIOffer }) => {
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           {offer.storeName}
         </p>
-        <h3 className="line-clamp-2 text-base font-semibold text-primary">{offer.title}</h3>
+        <h3 className="line-clamp-2 text-base font-medium text-foreground">{offer.title}</h3>
         <div className="mt-auto flex items-end justify-between pt-2">
           <div>
             {pct > 0 && (
@@ -42,7 +42,7 @@ export const OfferCard = ({ offer }: { offer: UIOffer }) => {
             )}
             <div className="text-xl font-bold text-accent-strong">{formatBRL(offer.promoPrice)}</div>
           </div>
-          <span className="text-sm font-semibold text-primary group-hover:text-accent-strong">
+          <span className="text-sm font-medium text-foreground group-hover:text-accent-strong">
             Ver oferta →
           </span>
         </div>

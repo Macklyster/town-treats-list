@@ -13,7 +13,7 @@ export const CategoryGrid = () => {
     <section id="categorias" className="container py-20">
       <div className="mb-10 flex items-end justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-primary md:text-4xl">Categorias populares</h2>
+          <h2 className="text-display text-foreground md:text-[40px]">Categorias populares</h2>
           <p className="mt-2 text-muted-foreground">Explore as ofertas por tema.</p>
         </div>
         <Link to="/ofertas" className="hidden text-sm font-semibold text-accent-strong hover:underline md:inline">
@@ -32,7 +32,7 @@ export const CategoryGrid = () => {
               <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-accent/15 text-accent-strong transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
                 <Icon className="h-7 w-7" />
               </div>
-              <h3 className="text-xl font-semibold text-primary">{c.name}</h3>
+              <h3 className="text-xl font-medium text-foreground">{c.name}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{c.description}</p>
               <span className="mt-6 inline-block text-sm font-semibold text-accent-strong">
                 Explorar ofertas →

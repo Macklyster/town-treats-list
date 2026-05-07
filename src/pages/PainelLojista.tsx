@@ -88,7 +88,7 @@ export default function PainelLojista() {
       <main className="container flex-1 py-10">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-primary">Painel do Lojista</h1>
+            <h1 className="text-display text-foreground">Painel do Lojista</h1>
             <p className="text-muted-foreground">Gerencie sua loja, ofertas e plano.</p>
           </div>
           {store && (
@@ -156,7 +156,7 @@ export default function PainelLojista() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <div className="font-semibold text-primary">{store.name}</div>
+                  <div className="font-medium text-foreground">{store.name}</div>
                   <Badge variant={store.approved ? "default" : "secondary"}>
                     {store.approved ? "Aprovada" : "Aguardando aprovação"}
                   </Badge>
@@ -174,7 +174,7 @@ export default function PainelLojista() {
               <CardContent className="space-y-3">
                 {sub ? (
                   <>
-                    <div className="font-semibold text-primary">{sub.plan?.name ?? "—"}</div>
+                    <div className="font-medium text-foreground">{sub.plan?.name ?? "—"}</div>
                     <Badge>{sub.status}</Badge>
                   </>
                 ) : (
@@ -221,7 +221,7 @@ export default function PainelLojista() {
                       <tbody className="divide-y">
                         {offers.map((o) => (
                           <tr key={o.id}>
-                            <td className="py-3 font-medium text-primary">{o.title}</td>
+                            <td className="py-3 font-medium text-foreground">{o.title}</td>
                             <td>{o.category_slug}</td>
                             <td>{formatBRLNumber(Number(o.promo_price))}</td>
                             <td>{o.valid_until ?? "—"}</td>

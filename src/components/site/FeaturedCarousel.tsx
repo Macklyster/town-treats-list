@@ -32,7 +32,7 @@ export const FeaturedCarousel = ({ offers }: { offers: UIOffer[] }) => {
                     <span className="text-xs font-semibold uppercase tracking-wider text-accent-strong">
                       Oferta da semana · {o.storeName}
                     </span>
-                    <h3 className="text-2xl font-bold text-primary md:text-3xl">{o.title}</h3>
+                    <h3 className="text-2xl font-semibold text-foreground md:text-[28px]">{o.title}</h3>
                     <p className="text-muted-foreground">{o.description}</p>
                     <div className="flex items-baseline gap-3">
                       {pct > 0 && (

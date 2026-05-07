@@ -216,7 +216,7 @@ export default function Assinatura() {
       <main className="container flex-1 py-10">
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold text-primary">Assinatura</h1>
+            <h1 className="text-display text-foreground">Assinatura</h1>
             <p className="text-muted-foreground">Escolha o plano ideal para sua loja.</p>
           </div>
           {sub && (
@@ -267,7 +267,7 @@ export default function Assinatura() {
                       <CardTitle>{p.name}</CardTitle>
                       {isCurrent && <Badge>Plano atual</Badge>}
                     </div>
-                    <div className="mt-2 text-3xl font-bold text-primary">
+                    <div className="mt-2 text-display text-foreground">
                       {formatBRL(p.price_cents)}<span className="text-sm font-normal text-muted-foreground">/mês</span>
                     </div>
                     {isCurrent && sub?.current_period_end && (

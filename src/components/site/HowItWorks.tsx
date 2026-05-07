@@ -23,7 +23,7 @@ export const HowItWorks = () => {
     <section id="como-funciona" className="bg-secondary">
       <div className="container py-20">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold text-primary md:text-4xl">Como funciona</h2>
+          <h2 className="text-display text-foreground md:text-[40px]">Como funciona</h2>
           <p className="mt-3 text-muted-foreground">
             Em três passos simples você economiza e descobre o melhor da sua cidade.
           </p>
@@ -36,7 +36,7 @@ export const HowItWorks = () => {
                 <div className="mx-auto mb-5 inline-flex h-14 w-14 items-center justify-center rounded-full gradient-accent text-primary-foreground">
                   <Icon className="h-6 w-6" />
                 </div>
-                <h3 className="text-xl font-semibold text-primary">{s.title}</h3>
+                <h3 className="text-xl font-medium text-foreground">{s.title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{s.text}</p>
               </div>
             );

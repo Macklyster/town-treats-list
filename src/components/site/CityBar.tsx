@@ -26,7 +26,7 @@ export const CityBar = () => {
 
   return (
     <div className="border-b border-border bg-secondary/60">
-      <div className="container flex items-center justify-center gap-3 py-2 text-center text-xs text-primary md:text-sm">
+      <div className="container flex items-center justify-center gap-3 py-2 text-center text-xs text-foreground md:text-sm">
         <MapPin className="h-4 w-4 text-accent-strong" />
         <span>
           Mostrando ofertas em{" "}

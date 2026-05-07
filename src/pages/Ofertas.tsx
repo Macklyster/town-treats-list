@@ -81,7 +81,7 @@ const Ofertas = () => {
       <Header />
       <main className="container py-12">
         <header className="mb-10">
-          <h1 className="text-3xl font-bold text-primary md:text-4xl">Ofertas</h1>
+          <h1 className="text-display text-foreground md:text-[40px]">Ofertas</h1>
           <p className="mt-2 text-muted-foreground">
             {!city
               ? "Selecione uma cidade para ver ofertas."
@@ -157,7 +157,7 @@ const Ofertas = () => {
 
             {!loading && list.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-border p-16 text-center">
-                <p className="text-lg font-semibold text-primary">Nenhuma oferta encontrada</p>
+                <p className="text-lg font-medium text-foreground">Nenhuma oferta encontrada</p>
                 <p className="mt-2 text-sm text-muted-foreground">
                   Tente ajustar os filtros ou limpar a busca.
                 </p>

@@ -129,7 +129,7 @@ const Anuncie = () => {
         {/* Como funciona */}
         <section className="container py-20">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold text-primary md:text-4xl">Como funciona</h2>
+            <h2 className="text-display text-foreground md:text-[40px]">Como funciona</h2>
             <p className="mt-3 text-muted-foreground">
               Em poucos passos sua oferta já está atraindo clientes.
             </p>
@@ -145,7 +145,7 @@ const Anuncie = () => {
                 <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full gradient-accent text-primary-foreground">
                   <Sparkles className="h-5 w-5" />
                 </div>
-                <h3 className="font-semibold text-primary">{s.t}</h3>
+                <h3 className="font-medium text-foreground">{s.t}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{s.d}</p>
               </div>
             ))}
@@ -156,7 +156,7 @@ const Anuncie = () => {
         <section id="planos" className="bg-secondary">
           <div className="container py-20">
             <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-bold text-primary md:text-4xl">Planos para todo tipo de negócio</h2>
+              <h2 className="text-display text-foreground md:text-[40px]">Planos para todo tipo de negócio</h2>
               <p className="mt-3 text-muted-foreground">Escolha o plano ideal e ajuste quando quiser.</p>
             </div>
             <div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -177,9 +177,9 @@ const Anuncie = () => {
                     <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-accent/15 text-accent-strong">
                       <Icon className="h-6 w-6" />
                     </div>
-                    <h3 className="text-xl font-bold text-primary">{p.name}</h3>
+                    <h3 className="text-xl font-medium text-foreground">{p.name}</h3>
                     <div className="mt-3">
-                      <span className="text-4xl font-bold text-primary">{p.price}</span>
+                      <span className="text-4xl font-bold text-foreground">{p.price}</span>
                       <span className="text-muted-foreground">{p.period}</span>
                     </div>
                     <ul className="mt-6 space-y-3 text-sm">
@@ -208,11 +208,11 @@ const Anuncie = () => {
         <section id="contato" className="container py-20">
           <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
             <div>
-              <h2 className="text-3xl font-bold text-primary md:text-4xl">Fale com um consultor</h2>
+              <h2 className="text-display text-foreground md:text-[40px]">Fale com um consultor</h2>
               <p className="mt-3 text-muted-foreground">
                 Preencha o formulário e nossa equipe entra em contato em até 1 dia útil com a melhor proposta para o seu negócio.
               </p>
-              <ul className="mt-8 space-y-3 text-sm text-primary">
+              <ul className="mt-8 space-y-3 text-sm text-foreground">
                 {[
                   "Sem fidelidade — cancele quando quiser",
                   "Consultoria gratuita de divulgação",
@@ -265,13 +265,13 @@ const Anuncie = () => {
         <section className="bg-secondary">
           <div className="container py-20">
             <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-bold text-primary md:text-4xl">Perguntas frequentes</h2>
+              <h2 className="text-display text-foreground md:text-[40px]">Perguntas frequentes</h2>
               <p className="mt-3 text-muted-foreground">Dúvidas comuns dos lojistas.</p>
             </div>
             <Accordion type="single" collapsible className="mx-auto mt-10 max-w-3xl">
               {faq.map((f, i) => (
                 <AccordionItem key={i} value={`item-${i}`} className="rounded-xl border border-border bg-card px-5 mb-3">
-                  <AccordionTrigger className="text-left text-primary">{f.q}</AccordionTrigger>
+                  <AccordionTrigger className="text-left text-foreground">{f.q}</AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
                 </AccordionItem>
               ))}
