@@ -13,7 +13,7 @@ export const Footer = () => {
           </p>
         </div>
         <div>
-          <h4 className="mb-4 text-sm font-semibold uppercase tracking-wide opacity-80">HelpfyOfertas</h4>
+          <h4 className="mb-4 text-sm font-semibold uppercase tracking-wide opacity-80">OfertasFly</h4>
           <ul className="space-y-2 text-sm">
             <li><Link to="/" className="hover:text-accent">Sobre Nós</Link></li>
             <li><Link to="/anuncie" className="hover:text-accent">Anuncie Conosco</Link></li>
@@ -25,13 +25,13 @@ export const Footer = () => {
           <ul className="space-y-2 text-sm">
             <li><Link to="/termos-de-uso" className="hover:text-accent">Termos de Uso</Link></li>
             <li><Link to="/politica-de-privacidade" className="hover:text-accent">Política de Privacidade</Link></li>
-            <li><a href="mailto:contato@helpfyofertas.com.br" className="hover:text-accent">Contato</a></li>
+            <li><a href="mailto:contato@ofertasfly.com.br" className="hover:text-accent">Contato</a></li>
           </ul>
         </div>
         <div>
           <h4 className="mb-4 text-sm font-semibold uppercase tracking-wide opacity-80">Fale com a gente</h4>
           <ul className="space-y-3 text-sm">
-            <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> contato@helpfyofertas.com.br</li>
+            <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> contato@ofertasfly.com.br</li>
             <li className="flex items-center gap-2"><MapPin className="h-4 w-4" /> Douradina — Paraná — Brasil</li>
           </ul>
           <div className="mt-4 flex gap-3">
@@ -46,7 +46,7 @@ export const Footer = () => {
       </div>
       <div className="border-t border-charcoal-foreground/10">
         <div className="container py-5 text-center text-xs opacity-70">
-          © {new Date().getFullYear()} HelpfyOfertas — Ofertas Locais. Todos os direitos reservados.
+          © {new Date().getFullYear()} OfertasFly — Ofertas Locais. Todos os direitos reservados.
         </div>
       </div>
     </footer>

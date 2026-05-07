@@ -58,7 +58,7 @@ const OfferDetail = () => {
 
   const pct = discountPct(offer);
   const waLink = `https://wa.me/${store?.whatsapp ?? ""}?text=${encodeURIComponent(
-    `Olá! Vi a oferta "${offer.title}" no HelpfyOfertas e quero garantir.`
+    `Olá! Vi a oferta "${offer.title}" no OfertasFly e quero garantir.`
   )}`;
 
   return (

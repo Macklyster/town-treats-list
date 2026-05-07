@@ -96,7 +96,7 @@ export default function Auth() {
       <main className="flex flex-1 items-center justify-center px-4 py-10">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-2xl">Acesse o HelpfyOfertas</CardTitle>
+            <CardTitle className="text-2xl">Acesse o OfertasFly</CardTitle>
             <p className="text-sm text-muted-foreground">Área para lojistas e administradores.</p>
           </CardHeader>
           <CardContent>
@@ -123,7 +123,7 @@ export default function Auth() {
               <TabsContent value="signup">
                 <form onSubmit={handleSignup} className="space-y-4 pt-4">
                   <p className="text-sm text-muted-foreground">
-                    Cadastre-se para anunciar suas ofertas no HelpfyOfertas.
+                    Cadastre-se para anunciar suas ofertas no OfertasFly.
                   </p>
                   <div className="space-y-2">
                     <Label htmlFor="su-name">Nome completo</Label>

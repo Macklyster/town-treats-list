@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
           : {
               price_data: {
                 currency: "brl",
-                product_data: { name: `Helpfy Ofertas - Plano ${plan.name}` },
+                product_data: { name: `OfertasFly - Plano ${plan.name}` },
                 unit_amount: plan.price_cents,
                 recurring: { interval: "month" },
               },

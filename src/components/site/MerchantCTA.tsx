@@ -17,7 +17,7 @@ export const MerchantCTA = () => {
               Cansado de ver seus concorrentes vendendo mais?
             </h2>
             <p className="mt-4 text-lg opacity-85">
-              Anuncie na Helpfy Ofertas e leve sua empresa para milhares de clientes na cidade,
+              Anuncie na OfertasFly e leve sua empresa para milhares de clientes na cidade,
               com marketing simples e alto retorno.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">

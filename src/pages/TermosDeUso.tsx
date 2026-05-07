@@ -9,13 +9,13 @@ const TermosDeUso = () => {
         <h1 className="mb-6 text-4xl font-bold">Termos de Uso</h1>
         <div className="prose prose-neutral max-w-none space-y-4 text-foreground">
           <p>
-            Bem-vindo ao HelpfyOfertas. Ao acessar e utilizar nossa plataforma, você concorda com os
+            Bem-vindo ao OfertasFly. Ao acessar e utilizar nossa plataforma, você concorda com os
             termos e condições descritos abaixo. Leia com atenção antes de continuar.
           </p>
 
           <h2 className="mt-8 text-2xl font-semibold">1. Aceitação dos Termos</h2>
           <p>
-            O uso do site HelpfyOfertas implica na aceitação integral destes Termos de Uso. Caso não
+            O uso do site OfertasFly implica na aceitação integral destes Termos de Uso. Caso não
             concorde com alguma das condições, recomendamos que não utilize a plataforma.
           </p>
 
@@ -28,7 +28,7 @@ const TermosDeUso = () => {
 
           <h2 className="mt-8 text-2xl font-semibold">3. Ofertas e Lojistas</h2>
           <p>
-            O HelpfyOfertas atua como hub de divulgação de ofertas locais. As condições, valores e
+            O OfertasFly atua como hub de divulgação de ofertas locais. As condições, valores e
             disponibilidade dos produtos/serviços são de responsabilidade exclusiva do lojista
             anunciante.
           </p>
@@ -41,7 +41,7 @@ const TermosDeUso = () => {
 
           <h2 className="mt-8 text-2xl font-semibold">5. Limitação de Responsabilidade</h2>
           <p>
-            O HelpfyOfertas não se responsabiliza por danos decorrentes de transações realizadas
+            O OfertasFly não se responsabiliza por danos decorrentes de transações realizadas
             entre consumidores e lojistas, devendo as partes resolverem eventuais conflitos entre si.
           </p>
 
@@ -54,8 +54,8 @@ const TermosDeUso = () => {
           <h2 className="mt-8 text-2xl font-semibold">7. Contato</h2>
           <p>
             Em caso de dúvidas, entre em contato pelo e-mail{" "}
-            <a href="mailto:contato@helpfyofertas.com.br" className="text-accent-strong underline">
-              contato@helpfyofertas.com.br
+            <a href="mailto:contato@ofertasfly.com.br" className="text-accent-strong underline text-[#10100f]">
+              contato@ofertasfly.com.br
             </a>
             .
           </p>

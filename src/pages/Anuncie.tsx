@@ -51,7 +51,7 @@ const plans = [
     features: [
       "Ofertas ilimitadas",
       "Banner rotativo na home",
-      "Posts nas redes da Helpfy",
+      "Posts nas redes da OfertasFly",
       "Relatórios mensais de desempenho",
       "Consultor dedicado",
     ],
@@ -91,7 +91,7 @@ const Anuncie = () => {
       setSubmitting(false);
       (e.target as HTMLFormElement).reset();
       toast.success("Recebemos seu contato!", {
-        description: "Em breve um consultor da Helpfy vai falar com você.",
+        description: "Em breve um consultor da OfertasFly vai falar com você.",
       });
     }, 700);
   };
@@ -108,7 +108,7 @@ const Anuncie = () => {
                 Para Lojistas
               </span>
               <h1 className="mt-6 text-hero font-medium leading-[1.05] md:text-[48px]">
-                Anuncie sua empresa e <span className="text-accent">aumente suas vendas</span>
+                Anuncie sua empresa e <span className="text-accent text-[#10100f]">aumente suas vendas</span>
               </h1>
               <p className="mt-5 text-lg opacity-85">
                 Coloque sua marca diante de milhares de consumidores locais buscando exatamente o que você oferece.
