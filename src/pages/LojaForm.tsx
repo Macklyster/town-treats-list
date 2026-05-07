@@ -58,6 +58,7 @@ export default function LojaForm() {
         .maybeSingle();
       if (data) {
         setStoreId(data.id);
+        setApproved(!!data.approved);
         setForm({
           name: data.name ?? "",
           description: data.description ?? "",
