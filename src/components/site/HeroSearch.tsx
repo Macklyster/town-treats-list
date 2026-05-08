@@ -35,7 +35,9 @@ export const HeroSearch = () => {
           </span>
           <h1 className="mt-6 text-hero font-medium leading-[1.05] md:text-[56px]">
             As melhores ofertas da{" "}
-            <span className="text-[#0F0F0E]">sua cidade</span>{" "}
+            <span className="inline-block rounded-xl bg-background px-3 py-0.5 text-[#0F0F0E] shadow-soft">
+              sua cidade
+            </span>{" "}
             num só lugar
           </h1>
           <p className="mt-5 text-lg opacity-85 md:text-xl">
