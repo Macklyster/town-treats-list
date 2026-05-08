@@ -108,7 +108,7 @@ const Anuncie = () => {
                 Para Lojistas
               </span>
               <h1 className="mt-6 text-hero font-medium leading-[1.05] md:text-[48px]">
-                Anuncie sua empresa e <span className="text-[#0F0F0E]">aumente suas vendas</span>
+                Anuncie sua empresa e <span className="inline-block rounded-xl bg-background px-3 py-0.5 text-[#0F0F0E] shadow-soft">aumente suas vendas</span>
               </h1>
               <p className="mt-5 text-lg opacity-85">
                 Coloque sua marca diante de milhares de consumidores locais buscando exatamente o que você oferece.
