@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root { --header-h: 140px; }
+html { scroll-padding-top: calc(var(--header-h) + 12px); }
+[data-scroll-anchor] { scroll-margin-top: calc(var(--header-h) + 12px); }
+
 /* Ofertafly Design System
    Brand: Indigo #4338CA, Charcoal #0F0F0E, Cream #F7F5F0
    All colors MUST be HSL.
