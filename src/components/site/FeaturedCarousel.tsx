@@ -20,16 +20,16 @@ export const FeaturedCarousel = ({ offers }: { offers: UIOffer[] }) => {
             const pct = discountPct(o);
             return (
               <CarouselItem key={o.id}>
-                <div className="grid h-[280px] overflow-hidden rounded-3xl bg-card shadow-pop sm:h-[320px] md:h-[360px] md:grid-cols-2">
-                  <div className="relative h-full">
-                    <img src={o.image} alt={o.title} className="h-full w-full object-cover" />
+                <div className="grid overflow-hidden rounded-3xl bg-card shadow-pop md:h-[340px] md:grid-cols-2">
+                  <div className="relative aspect-[16/10] w-full md:aspect-auto md:h-full">
+                    <img src={o.image} alt={o.title} className="absolute inset-0 h-full w-full object-cover" />
                     {pct > 0 && (
                       <span className="absolute left-4 top-4 rounded-full bg-discount px-3 py-1 text-sm font-bold text-discount-foreground">
                         -{pct}% OFF
                       </span>
                     )}
                   </div>
-                  <div className="flex min-w-0 flex-col justify-center gap-3 p-6 md:p-8">
+                  <div className="flex min-w-0 flex-col justify-center gap-3 p-5 sm:p-6 md:p-8">
                     <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-accent-strong">
                       <StoreAvatar name={o.storeName} logoUrl={o.storeLogo} size={28} />
                       <span className="line-clamp-1">Oferta da semana · {o.storeName}</span>

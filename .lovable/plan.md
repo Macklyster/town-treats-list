@@ -1,31 +1,35 @@
-## Problema
-O banner rotativo (`FeaturedCarousel`) está ocupando altura excessiva no desktop, empurrando o conteúdo abaixo da dobra e prejudicando a UX. Causas:
+## Objetivo
+Corrigir o banner rotativo para que a imagem não seja cortada em excesso e o conteúdo textual volte a aparecer de forma consistente, principalmente no mobile.
 
-- A imagem usa `aspect-[16/10]` no mobile e `md:aspect-auto` no desktop, fazendo o lado da imagem se esticar para acompanhar a coluna de texto (que tem padding `md:p-12` + 5 blocos verticais).
-- Sem altura máxima, o card cresce conforme o conteúdo (descrição longa, botão, preço), ficando "comprido" demais.
+## O que vou alterar
+1. Reestruturar o layout responsivo do `FeaturedCarousel`
+   - No mobile, o banner deixa de usar altura fixa única para o card inteiro.
+   - O slide passa a ter altura natural em 1 coluna, com imagem em proporção controlada e bloco de texto abaixo.
+   - No desktop, mantenho o layout em 2 colunas com altura previsível para preservar a boa UX já ajustada.
 
-## Mudanças em `src/components/site/FeaturedCarousel.tsx`
+2. Ajustar comportamento da imagem
+   - Remover o corte agressivo causado por `object-cover` no cenário empilhado.
+   - Aplicar proporção/altura específica para a mídia no mobile e comportamento mais equilibrado no desktop.
+   - Garantir que a imagem continue preenchendo bem o espaço sem esconder partes importantes da oferta.
 
-### 1. Definir altura controlada do banner
-- Trocar layout para altura fixa responsiva: `h-[280px] sm:h-[320px] md:h-[360px]` no card (`<div className="grid ...">`).
-- Imagem: `h-full w-full object-cover` em ambos os lados (remover `aspect-[16/10]` e `md:aspect-auto`).
+3. Garantir visibilidade do texto
+   - Remover o conflito entre `overflow-hidden` + altura fixa no modo de 1 coluna.
+   - Preservar títulos, descrição, preço e CTA dentro da área visível do slide.
+   - Manter truncamento apenas onde fizer sentido, sem esconder o bloco inteiro.
 
-### 2. Reduzir padding e tamanhos do bloco de texto
-- Padding: `p-6 md:p-8` (em vez de `p-8 md:p-12`).
-- Gap: `gap-3` (em vez de `gap-4`).
-- Título: `text-xl md:text-2xl` (em vez de `text-2xl md:text-[28px]`).
-- Descrição: adicionar `line-clamp-2` para evitar que descrições longas estiquem o card.
-- Preço: `text-2xl md:text-3xl`.
-- Botão: `size="default"` em vez de `size="lg"`.
-
-### 3. Garantir overflow controlado
-- Adicionar `overflow-hidden` já existe. Conteúdo de texto recebe `min-w-0` para `line-clamp` funcionar corretamente dentro do grid.
+4. Validar no preview
+   - Conferir desktop e mobile para confirmar:
+     - imagem visível sem corte excessivo
+     - texto renderizado
+     - altura mais equilibrada
+     - navegação do carrossel intacta
 
 ## Resultado esperado
-- Banner com altura previsível (~360px no desktop, ~280–320px em telas menores), independente do tamanho da descrição.
-- Hero + banner cabem melhor na primeira dobra.
-- Sem mudanças funcionais (mesmas ofertas, mesma navegação).
+- Mobile: banner mais compacto, com imagem visível e texto completo.
+- Desktop: continua com altura controlada, sem ficar “comprido”.
+- Sem mudanças de regra de negócio ou tracking.
 
-## Fora do escopo
-- Mudar quantidade de slides ou autoplay.
-- Alterar o card de oferta padrão (`OfferCard`).
+## Detalhes técnicos
+- Arquivo principal: `src/components/site/FeaturedCarousel.tsx`
+- Estratégia: separar o comportamento de layout entre mobile (stack com altura automática) e desktop (2 colunas com altura fixa moderada).
+- Escopo: somente apresentação do banner rotativo.
