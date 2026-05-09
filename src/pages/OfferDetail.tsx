@@ -135,10 +135,13 @@ const OfferDetail = () => {
 
           <aside className="space-y-6">
             <div className="rounded-2xl bg-card p-6 shadow-card">
-              <span className="text-xs font-semibold uppercase tracking-wider text-accent-strong">
-                {offer.storeName}
-              </span>
-              <h1 className="mt-2 text-2xl font-semibold leading-tight text-foreground md:text-[28px]">
+              <div className="flex items-center gap-3">
+                <StoreAvatar name={offer.storeName} logoUrl={offer.storeLogo} size={40} />
+                <span className="text-xs font-semibold uppercase tracking-wider text-accent-strong">
+                  {offer.storeName}
+                </span>
+              </div>
+              <h1 className="mt-3 text-2xl font-semibold leading-tight text-foreground md:text-[28px]">
                 {offer.title}
               </h1>
               <div className="mt-5 flex items-baseline gap-3">
