@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/carousel";
 import { UIOffer, discountPct, formatBRL } from "@/lib/offers-api";
 import { Button } from "@/components/ui/button";
+import { StoreAvatar } from "@/components/site/StoreAvatar";
 
 export const FeaturedCarousel = ({ offers }: { offers: UIOffer[] }) => {
   if (!offers.length) return null;
