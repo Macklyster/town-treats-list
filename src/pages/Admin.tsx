@@ -68,25 +68,82 @@ type AdminStore = {
 export default function Admin() {
   const [offers, setOffers] = useState<AdminOffer[]>([]);
   const [stores, setStores] = useState<AdminStore[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [catDialogOpen, setCatDialogOpen] = useState(false);
+  const [editingCat, setEditingCat] = useState<Category | null>(null);
+  const [catForm, setCatForm] = useState<Category>({ slug: "", name: "", icon: "", sort_order: 0 });
+  const [slugTouched, setSlugTouched] = useState(false);
 
   const load = async () => {
     setLoading(true);
-    const [{ data: offs }, { data: sts }] = await Promise.all([
+    const [{ data: offs }, { data: sts }, { data: cats }] = await Promise.all([
       supabase
         .from("offers")
         .select("id,title,status,featured, store:stores(name)")
         .order("created_at", { ascending: false }),
       supabase.from("stores").select("id,name,approved,owner_id").order("created_at", { ascending: false }),
+      supabase.from("categories").select("slug,name,icon,sort_order").order("sort_order", { ascending: true }),
     ]);
     setOffers((offs ?? []) as any);
     setStores((sts ?? []) as any);
+    setCategories((cats ?? []) as any);
     setLoading(false);
   };
 
   useEffect(() => {
     load();
   }, []);
+
+  const openNewCategory = () => {
+    setEditingCat(null);
+    setSlugTouched(false);
+    setCatForm({ slug: "", name: "", icon: "", sort_order: (categories.at(-1)?.sort_order ?? 0) + 1 });
+    setCatDialogOpen(true);
+  };
+
+  const openEditCategory = (c: Category) => {
+    setEditingCat(c);
+    setSlugTouched(true);
+    setCatForm({ ...c, icon: c.icon ?? "" });
+    setCatDialogOpen(true);
+  };
+
+  const saveCategory = async () => {
+    const name = catForm.name.trim();
+    const slug = slugify(catForm.slug || name);
+    if (!name || !slug) return toast.error("Nome e slug são obrigatórios");
+    const payload = { name, slug, icon: catForm.icon?.trim() || null, sort_order: catForm.sort_order };
+    const { error } = editingCat
+      ? await supabase.from("categories").update(payload).eq("slug", editingCat.slug)
+      : await supabase.from("categories").insert(payload);
+    if (error) return toast.error(error.message);
+    toast.success(editingCat ? "Categoria atualizada" : "Categoria criada");
+    setCatDialogOpen(false);
+    load();
+  };
+
+  const deleteCategory = async (slug: string) => {
+    const { error } = await supabase.from("categories").delete().eq("slug", slug);
+    if (error) return toast.error(error.message);
+    toast.success("Categoria excluída");
+    load();
+  };
+
+  const moveCategory = async (index: number, dir: -1 | 1) => {
+    const a = categories[index];
+    const b = categories[index + dir];
+    if (!a || !b) return;
+    const { error } = await supabase
+      .from("categories")
+      .upsert([
+        { slug: a.slug, name: a.name, icon: a.icon, sort_order: b.sort_order },
+        { slug: b.slug, name: b.name, icon: b.icon, sort_order: a.sort_order },
+      ], { onConflict: "slug" });
+    if (error) return toast.error(error.message);
+    load();
+  };
 
   const updateOffer = async (id: string, patch: { status?: "pending" | "approved" | "rejected" | "paused"; featured?: boolean }) => {
     const { error } = await supabase.from("offers").update(patch).eq("id", id);
