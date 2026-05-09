@@ -1,35 +1,43 @@
 ## Objetivo
-Corrigir o banner rotativo para que a imagem não seja cortada em excesso e o conteúdo textual volte a aparecer de forma consistente, principalmente no mobile.
+Reduzir o espaço vertical entre o menu principal e o primeiro conteúdo da home, e reorganizar o hero em duas colunas no desktop (mantendo lista única empilhada no mobile).
 
 ## O que vou alterar
-1. Reestruturar o layout responsivo do `FeaturedCarousel`
-   - No mobile, o banner deixa de usar altura fixa única para o card inteiro.
-   - O slide passa a ter altura natural em 1 coluna, com imagem em proporção controlada e bloco de texto abaixo.
-   - No desktop, mantenho o layout em 2 colunas com altura previsível para preservar a boa UX já ajustada.
+Arquivo único: `src/components/site/HeroSearch.tsx`.
 
-2. Ajustar comportamento da imagem
-   - Remover o corte agressivo causado por `object-cover` no cenário empilhado.
-   - Aplicar proporção/altura específica para a mídia no mobile e comportamento mais equilibrado no desktop.
-   - Garantir que a imagem continue preenchendo bem o espaço sem esconder partes importantes da oferta.
+### 1. Reduzir o padding vertical
+- Hoje o hero usa `py-20 md:py-28` (gera muito espaço logo abaixo do header).
+- Passa para algo como `py-10 md:py-14`, mantendo respiro mas removendo o "buraco" no topo.
 
-3. Garantir visibilidade do texto
-   - Remover o conflito entre `overflow-hidden` + altura fixa no modo de 1 coluna.
-   - Preservar títulos, descrição, preço e CTA dentro da área visível do slide.
-   - Manter truncamento apenas onde fizer sentido, sem esconder o bloco inteiro.
+### 2. Layout em duas colunas (desktop) / lista (mobile)
 
-4. Validar no preview
-   - Conferir desktop e mobile para confirmar:
-     - imagem visível sem corte excessivo
-     - texto renderizado
-     - altura mais equilibrada
-     - navegação do carrossel intacta
+```text
+Mobile (atual, empilhado)        Desktop (md+)
+┌─────────────────────┐          ┌──────────────┬──────────────┐
+│  Badge              │          │ Badge        │ Form busca   │
+│  Título             │          │ Título       │ Tags         │
+│  Descrição          │          │ Descrição    │ populares    │
+│  Botão cidade       │          │ Botão cidade │              │
+│  Form busca         │          │              │              │
+│  Tags populares     │          │              │              │
+└─────────────────────┘          └──────────────┴──────────────┘
+```
+
+- Container interno deixa de usar `max-w-3xl text-center` e passa para um `grid md:grid-cols-2 gap-10 items-center`, com largura maior (ex.: `max-w-6xl`).
+- **Coluna esquerda (texto):** badge, título, descrição e botão de cidade. Alinhamento à esquerda no desktop, centralizado no mobile.
+- **Coluna direita (ações):** formulário de busca + bloco de tags populares ("Populares: Alimentação, Beleza & Saúde, Lojas & Moda").
+- No mobile (abaixo de `md`), tudo volta a empilhar em coluna única na ordem natural: badge → título → descrição → cidade → busca → tags. Padrão de lista mantido.
+
+### 3. Ajustes visuais para o novo layout
+- Título: continua grande, mas com alinhamento responsivo (`text-center md:text-left`).
+- Botão de cidade e tags populares: mesmo tratamento (centralizados no mobile, alinhados à esquerda no desktop).
+- Form de busca passa a ocupar largura total da coluna direita, sem o `max-w-2xl mx-auto` antigo.
+- Espaçamentos internos (`mt-6`, `mt-10` etc.) reduzidos para combinar com o novo padding.
+
+## Fora do escopo
+- Não mexer no `Header`, `CityBar`, banner rotativo (`FeaturedCarousel`) ou demais seções.
+- Sem mudanças de regra de negócio, busca ou tracking.
 
 ## Resultado esperado
-- Mobile: banner mais compacto, com imagem visível e texto completo.
-- Desktop: continua com altura controlada, sem ficar “comprido”.
-- Sem mudanças de regra de negócio ou tracking.
-
-## Detalhes técnicos
-- Arquivo principal: `src/components/site/FeaturedCarousel.tsx`
-- Estratégia: separar o comportamento de layout entre mobile (stack com altura automática) e desktop (2 colunas com altura fixa moderada).
-- Escopo: somente apresentação do banner rotativo.
+- Menos espaço vazio entre o menu e o conteúdo do hero.
+- Desktop com hero mais "horizontal" e dinâmico em duas colunas.
+- Mobile mantém o padrão de lista única, sem regressões.
