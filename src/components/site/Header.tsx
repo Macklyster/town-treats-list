@@ -1,6 +1,6 @@
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { LogOut, Menu, User as UserIcon, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -26,18 +26,50 @@ export const Header = () => {
   const { pathname } = useLocation();
   const { user, isAdmin, isLojista, signOut } = useAuth();
   const navigate = useNavigate();
+  const headerRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const update = () => {
+      const h = el.getBoundingClientRect().height;
+      document.documentElement.style.setProperty("--header-h", `${Math.round(h)}px`);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    window.addEventListener("resize", update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
+  const getOffset = () => {
+    const v = getComputedStyle(document.documentElement).getPropertyValue("--header-h").trim();
+    const n = parseInt(v, 10);
+    return (Number.isFinite(n) ? n : 140) + 12;
+  };
 
   const handleNavClick = (e: React.MouseEvent, to: string) => {
     setOpen(false);
     const hashIdx = to.indexOf("#");
-    if (hashIdx === -1) return;
+    if (hashIdx === -1) {
+      // Plain route like "/" — if already there, scroll to top
+      if (to === pathname) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      return;
+    }
     const targetPath = to.slice(0, hashIdx) || "/";
     const id = to.slice(hashIdx + 1);
     if (pathname === targetPath) {
       e.preventDefault();
       const el = document.getElementById(id);
       if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        const y = el.getBoundingClientRect().top + window.scrollY - getOffset();
+        window.scrollTo({ top: y, behavior: "smooth" });
         history.replaceState(null, "", `${targetPath}#${id}`);
       }
     }
