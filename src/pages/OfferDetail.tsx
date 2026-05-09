@@ -175,7 +175,10 @@ const OfferDetail = () => {
 
             {store && (
               <div className="rounded-2xl bg-card p-6 shadow-card">
-                <h3 className="text-lg font-medium text-foreground">Sobre a loja</h3>
+                <div className="flex items-center gap-3">
+                  <StoreAvatar name={store.name ?? offer.storeName} logoUrl={store.logo_url} size={56} />
+                  <h3 className="text-lg font-medium text-foreground">{store.name ?? "Sobre a loja"}</h3>
+                </div>
                 <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
                   {store.address && (
                     <li className="flex items-start gap-3">
