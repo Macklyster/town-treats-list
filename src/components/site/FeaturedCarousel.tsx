@@ -20,8 +20,8 @@ export const FeaturedCarousel = ({ offers }: { offers: UIOffer[] }) => {
             const pct = discountPct(o);
             return (
               <CarouselItem key={o.id}>
-                <div className="grid overflow-hidden rounded-3xl bg-card shadow-pop md:grid-cols-2">
-                  <div className="relative aspect-[16/10] md:aspect-auto">
+                <div className="grid h-[280px] overflow-hidden rounded-3xl bg-card shadow-pop sm:h-[320px] md:h-[360px] md:grid-cols-2">
+                  <div className="relative h-full">
                     <img src={o.image} alt={o.title} className="h-full w-full object-cover" />
                     {pct > 0 && (
                       <span className="absolute left-4 top-4 rounded-full bg-discount px-3 py-1 text-sm font-bold text-discount-foreground">
@@ -29,25 +29,25 @@ export const FeaturedCarousel = ({ offers }: { offers: UIOffer[] }) => {
                       </span>
                     )}
                   </div>
-                  <div className="flex flex-col justify-center gap-4 p-8 md:p-12">
+                  <div className="flex min-w-0 flex-col justify-center gap-3 p-6 md:p-8">
                     <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-accent-strong">
                       <StoreAvatar name={o.storeName} logoUrl={o.storeLogo} size={28} />
-                      Oferta da semana · {o.storeName}
+                      <span className="line-clamp-1">Oferta da semana · {o.storeName}</span>
                     </span>
-                    <h3 className="text-2xl font-semibold text-foreground md:text-[28px]">{o.title}</h3>
-                    <p className="text-muted-foreground">{o.description}</p>
+                    <h3 className="line-clamp-2 text-xl font-semibold text-foreground md:text-2xl">{o.title}</h3>
+                    <p className="line-clamp-2 text-muted-foreground">{o.description}</p>
                     <div className="flex items-baseline gap-3">
                       {pct > 0 && (
                         <span className="text-base text-muted-foreground line-through">
                           {formatBRL(o.originalPrice)}
                         </span>
                       )}
-                      <span className="text-3xl font-bold text-accent-strong">
+                      <span className="text-2xl font-bold text-accent-strong md:text-3xl">
                         {formatBRL(o.promoPrice)}
                       </span>
                     </div>
                     <div>
-                      <Button asChild variant="accent" size="lg">
+                      <Button asChild variant="accent">
                         <Link to={`/oferta/${o.id}`}>Ver oferta</Link>
                       </Button>
                     </div>
