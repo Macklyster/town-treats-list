@@ -209,6 +209,7 @@ export default function PainelLojista() {
                 <div>Aprovadas: <strong>{offers.filter((o) => o.status === "approved").length}</strong></div>
                 <div>Pendentes: <strong>{offers.filter((o) => o.status === "pending").length}</strong></div>
                 <div>Em destaque: <strong>{offers.filter((o) => o.featured).length}{subInfo.featuredSlots ? ` / ${subInfo.featuredSlots}` : ""}</strong></div>
+                <div>Cliques no WhatsApp: <strong>{totalClicks}</strong></div>
               </CardContent>
             </Card>
 
@@ -229,6 +230,7 @@ export default function PainelLojista() {
                           <th>Preço</th>
                           <th>Validade</th>
                           <th>Status</th>
+                          <th className="text-center">Cliques WA</th>
                           <th className="text-right">Ações</th>
                         </tr>
                       </thead>
@@ -240,6 +242,7 @@ export default function PainelLojista() {
                             <td>{formatBRLNumber(Number(o.promo_price))}</td>
                             <td>{o.valid_until ?? "—"}</td>
                             <td><Badge variant={o.status === "approved" ? "default" : "secondary"}>{o.status}</Badge></td>
+                            <td className="text-center font-medium">{clicks[o.id] ?? 0}</td>
                             <td className="text-right">
                               <div className="inline-flex gap-2">
                                 <Button size="sm" variant="ghost" onClick={() => navigate(`/painel-lojista/oferta/${o.id}`)}>
