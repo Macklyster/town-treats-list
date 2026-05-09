@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Clock, MapPin, Phone, Instagram, MessageCircle, ArrowLeft } from "lucide-react";
 import { parseConditions, getMethod } from "@/lib/payment-methods";
+import { StoreAvatar } from "@/components/site/StoreAvatar";
 import NotFound from "./NotFound";
 
 const OfferDetail = () => {
