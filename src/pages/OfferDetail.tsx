@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Clock, MapPin, Phone, Instagram, MessageCircle, ArrowLeft } from "lucide-react";
 import { parseConditions, getMethod } from "@/lib/payment-methods";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
+import { trackOfferEvent } from "@/lib/offer-events";
 import NotFound from "./NotFound";
 
 const OfferDetail = () => {
@@ -158,14 +159,22 @@ const OfferDetail = () => {
               <div className="mt-6 space-y-3">
                 {store?.whatsapp && (
                   <Button asChild variant="accent" size="lg" className="w-full">
-                    <a href={waLink} target="_blank" rel="noreferrer">
+                    <a
+                      href={waLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={() => trackOfferEvent(offer.id, "whatsapp_click")}
+                    >
                       <MessageCircle className="h-5 w-5" /> Pegar Oferta no WhatsApp
                     </a>
                   </Button>
                 )}
                 {store?.phone && (
                   <Button asChild variant="outline" size="lg" className="w-full">
-                    <a href={`tel:${store.phone}`}>
+                    <a
+                      href={`tel:${store.phone}`}
+                      onClick={() => trackOfferEvent(offer.id, "phone_click")}
+                    >
                       <Phone className="h-5 w-5" /> Ligar para a Loja
                     </a>
                   </Button>
