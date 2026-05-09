@@ -13,7 +13,7 @@ import { StoreAvatar } from "@/components/site/StoreAvatar";
 export const FeaturedCarousel = ({ offers }: { offers: UIOffer[] }) => {
   if (!offers.length) return null;
   return (
-    <section className="container -mt-12 relative z-10">
+    <section className="container -mt-4 relative z-10 md:-mt-6">
       <Carousel opts={{ loop: true }} className="w-full">
         <CarouselContent>
           {offers.map((o) => {
