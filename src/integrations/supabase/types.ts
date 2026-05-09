@@ -65,6 +65,39 @@ export type Database = {
         }
         Relationships: []
       }
+      offer_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          offer_id: string
+          referrer: string | null
+          session_id: string | null
+          store_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          offer_id: string
+          referrer?: string | null
+          session_id?: string | null
+          store_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          offer_id?: string
+          referrer?: string | null
+          session_id?: string | null
+          store_id?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       offers: {
         Row: {
           category_slug: string
@@ -352,6 +385,16 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      track_offer_event: {
+        Args: {
+          p_event_type: string
+          p_offer_id: string
+          p_referrer?: string
+          p_session_id?: string
+          p_user_agent?: string
+        }
+        Returns: undefined
       }
     }
     Enums: {

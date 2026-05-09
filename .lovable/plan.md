@@ -1,27 +1,64 @@
 ## Objetivo
-Exibir o **logo da loja** (campo já cadastrado em `stores.logo_url` via formulário do lojista) tanto no **card da oferta** (listagem `/ofertas` e demais grids) quanto na **página de detalhe da oferta** (`/oferta/:id`). Cada anúncio mostra o logo da loja vinculada a ele — sem nova seleção, é puxado automaticamente da loja dona da oferta.
+Contabilizar cada clique no botão **"Pegar Oferta no WhatsApp"** da página de detalhe da oferta (`/oferta/:id`), para gerar métricas por oferta e por loja (visíveis no Painel do Lojista e no Admin).
 
 ## Mudanças
 
-### 1. `src/lib/offers-api.ts`
-- Incluir `logo_url` no `select` das duas queries (`fetchOffers` e `fetchOfferById`):
-  `store:stores!inner(name,slug,city,state,logo_url)`.
-- Adicionar campo `storeLogo?: string` em `UIOffer` e mapear em `mapRow` (`row.store?.logo_url ?? undefined`).
+### 1. Banco de dados (migração)
+Criar tabela `offer_events` para registrar cada interação:
 
-### 2. `src/components/site/OfferCard.tsx`
-- No bloco do nome da loja (linha do `storeName`), renderizar um pequeno avatar circular (24–28 px) com o `storeLogo` à esquerda do texto.
-- Fallback quando não houver logo: círculo neutro com a inicial do nome (`bg-muted text-muted-foreground`), evitando quebra visual.
+- `id` uuid PK
+- `offer_id` uuid (referência lógica a `offers.id`)
+- `store_id` uuid (denormalizado p/ filtros rápidos)
+- `event_type` text (ex.: `whatsapp_click`, `phone_click` — começamos só com whatsapp)
+- `session_id` text (gerado no client, guardado em `localStorage`, para deduplicar)
+- `user_agent` text (opcional)
+- `referrer` text (opcional)
+- `created_at` timestamptz default now()
 
-### 3. `src/pages/OfferDetail.tsx`
-- No card lateral (aside, onde aparece `offer.storeName` em uppercase) trocar a linha por um header com **logo (40 px) + nome da loja** lado a lado.
-- No card "Sobre a loja", adicionar o logo (56 px) acima do nome/endereço, dando identidade visual ao bloco.
-- Mesmo fallback de inicial quando `logo_url` for vazio.
+Índices: `(offer_id, created_at)`, `(store_id, created_at)`, `(event_type)`.
 
-### 4. (Opcional, mesmo padrão) `FeaturedCarousel`
-- Se o carrossel de destaques usar OfferCard, herda automaticamente. Verificar e, se renderizar markup próprio, replicar o mini-avatar.
+**RLS:**
+- `INSERT` público (anon + authenticated) com `WITH CHECK (true)` — qualquer visitante pode registrar evento.
+- `SELECT` apenas para dono da loja (`stores.owner_id = auth.uid()`) ou admin (`has_role`).
+- Sem `UPDATE`/`DELETE` (exceto admin).
+
+Função RPC `increment_offer_event(p_offer_id uuid, p_event_type text, p_session_id text)` (SECURITY DEFINER) que:
+- Resolve `store_id` a partir de `offers`.
+- Insere uma linha em `offer_events`.
+- Opcional: deduplica clique se já existir o mesmo `(offer_id, session_id, event_type)` nos últimos 30 min.
+
+### 2. Frontend — registrar clique
+
+**`src/lib/offer-events.ts`** (novo)
+- `trackOfferEvent(offerId, eventType)` que chama `supabase.rpc('increment_offer_event', …)` com `session_id` persistido em `localStorage` (`of_sid`).
+- Falha silenciosa (não bloqueia navegação para o WhatsApp).
+
+**`src/pages/OfferDetail.tsx`**
+- Adicionar `onClick` no botão do WhatsApp chamando `trackOfferEvent(offer.id, 'whatsapp_click')` antes do `window.open` natural do `<a target="_blank">`.
+- (Opcional) também trackear `phone_click` no botão "Ligar para a Loja".
+
+### 3. Métricas para o lojista
+
+**`src/pages/PainelLojista.tsx`**
+- Adicionar coluna/badge "Cliques no WhatsApp" em cada card de oferta, lendo `count` de `offer_events` agregado por `offer_id` (consulta única na carga do painel: `select offer_id, count(*) … group by offer_id where store_id = …`).
+- Card de resumo no topo: total de cliques nos últimos 7 / 30 dias.
+
+### 4. Métricas para o admin
+
+**`src/pages/Admin.tsx`**
+- Nova aba/seção "Engajamento" com:
+  - Total de cliques (geral, 7d, 30d).
+  - Top 10 ofertas por cliques.
+  - Top 10 lojas por cliques.
 
 ## Pontos técnicos
-- Sem migração: `stores.logo_url` já existe e é público por RLS.
-- Componente reutilizável sugerido: `StoreAvatar` simples em `src/components/site/StoreAvatar.tsx` recebendo `name`, `logoUrl`, `size` — evita duplicar markup do fallback nos 3 lugares.
-- `loading="lazy"` nos `<img>` do logo.
-- Sem mudanças na tela de criação de oferta — o vínculo já é feito por `store_id`.
+- Sem dependências novas. Tudo via Supabase client + RPC.
+- `session_id` no `localStorage` evita inflar contagem com refresh, sem precisar de auth.
+- A RPC `SECURITY DEFINER` permite manter `INSERT` controlado e popular `store_id` de forma confiável.
+- Eventos genéricos (`event_type`) permitem reaproveitar a mesma tabela depois para `view`, `phone_click`, `share`, etc., sem nova migração.
+- Consultas agregadas usam índices em `(store_id, created_at)` / `(offer_id, created_at)` para performance.
+
+## Fora do escopo (sugestões futuras)
+- Gráfico temporal (linha) por oferta.
+- Exportação CSV das métricas.
+- Tracking de visualizações da página da oferta.
