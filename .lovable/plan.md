@@ -1,16 +1,28 @@
-## Objetivo
-Aumentar levemente o respiro vertical (~5% da altura visível) entre o final do texto do hero e o banner rotativo de ofertas, deixando o ritmo visual mais harmônico.
+## Problema
 
-## Diagnóstico
-- O hero (`HeroSearch`) usa padding inferior `py-10 md:py-14`.
-- O banner (`FeaturedCarousel`) usa `-mt-12 relative z-10`, ou seja, é puxado ~48px para cima, sobrepondo o final do hero. É isso que está deixando o espaço muito apertado.
+Ao clicar em **Categorias** ou **Como Funciona** no menu, o scroll para na seção anterior (Ofertas em destaque) e só na segunda tentativa ele “centraliza” a seção certa.
 
-## O que vou alterar
-Arquivo único: `src/components/site/FeaturedCarousel.tsx`.
+### Causa
 
-- Reduzir a sobreposição do banner sobre o hero, trocando `-mt-12` por algo próximo de `-mt-4 md:-mt-6`.
-- Resultado: ganho de ~40–50px de respiro entre a descrição do hero e o topo do banner (≈ 5% da viewport atual de ~954px), sem mexer no padding interno do hero nem em outras seções.
+O `Header` é `sticky top-0` e ainda tem a `CityBar` acima do nav, somando ~96–112px de altura. O `scrollIntoView({ block: "start" })` posiciona o **topo da section exatamente no topo da viewport**, mas o header fixo cobre essa faixa — então a seção alvo fica escondida atrás do header e o usuário enxerga a seção anterior. No segundo clique o navegador já está com layout estabilizado e a percepção muda, mas o bug é o mesmo: falta compensar a altura do header.
 
-## Fora do escopo
-- Não mudar layout do hero, header, banner em si ou demais seções.
-- Sem mudanças funcionais.
+Isso acontece tanto no handler do `Header.tsx` (`handleNavClick`) quanto no `ScrollToHash.tsx` (navegação vinda de outra rota).
+
+## Plano
+
+### 1. Adicionar `scroll-margin-top` nas seções ancoradas
+Arquivos:
+- `src/components/site/CategoryGrid.tsx` (section `#categorias`)
+- `src/components/site/HowItWorks.tsx` (section `#como-funciona`)
+
+Adicionar classe Tailwind `scroll-mt-28 md:scroll-mt-32` na `<section>`. Isso cria um offset nativo do CSS que o `scrollIntoView` e o scroll por hash respeitam, posicionando o topo da seção logo abaixo do header sticky.
+
+Valor escolhido: header (~80–96px) + CityBar (~32px) ≈ 112–128px → `scroll-mt-28` (112px) no mobile e `scroll-mt-32` (128px) no desktop.
+
+### 2. Sem mudanças nos handlers
+Não é preciso mexer em `Header.tsx` nem em `ScrollToHash.tsx` — o `scroll-margin-top` resolve para os dois caminhos (clique na mesma rota e navegação inicial com hash).
+
+### Fora do escopo
+- Não alterar layout do hero, banner ou outras seções.
+- Não mexer em comportamento do menu mobile.
+- Sem mudanças funcionais ou de design visual — apenas o ponto de parada do scroll.

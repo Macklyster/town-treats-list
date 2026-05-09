@@ -20,7 +20,7 @@ const steps = [
 
 export const HowItWorks = () => {
   return (
-    <section id="como-funciona" className="bg-secondary">
+    <section id="como-funciona" className="scroll-mt-28 bg-secondary md:scroll-mt-32">
       <div className="container py-20">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-display text-foreground md:text-[40px]">Como funciona</h2>
