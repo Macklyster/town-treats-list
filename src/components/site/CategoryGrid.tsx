@@ -10,7 +10,7 @@ const iconMap: Record<string, LucideIcon> = {
 
 export const CategoryGrid = () => {
   return (
-    <section id="categorias" className="container py-20">
+    <section id="categorias" className="container scroll-mt-28 py-20 md:scroll-mt-32">
       <div className="mb-10 flex items-end justify-between">
         <div>
           <h2 className="text-display text-foreground md:text-[40px]">Categorias populares</h2>
