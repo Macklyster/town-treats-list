@@ -1,37 +1,26 @@
-# Problema
+## Objetivo
+Adicionar uma nova aba **Categorias** no painel admin (`/admin`) para criar, editar, reordenar e excluir categorias do banco.
 
-No hero da página inicial, o trecho "sua cidade" está em preto carvão (#0F0F0E) sobre o fundo azul indigo do gradiente. No mobile, o contraste fica ruim — o texto escuro "some" no fundo escuro azul, prejudicando a leitura.
+## Mudanças
 
-# Opções de solução
+### 1. `src/pages/Admin.tsx`
+- Adicionar nova aba `Categorias` ao lado de `Ofertas` e `Lojas`.
+- Listar categorias da tabela `categories` (nome, slug, ícone Lucide, ordem).
+- Botão **Nova categoria** abrindo um `Dialog` com formulário (nome, slug, ícone, ordem).
+  - Auto-gerar slug a partir do nome (pode ser editado).
+- Cada linha terá ações: **Editar** (mesmo Dialog preenchido), **Excluir** (com `AlertDialog` de confirmação) e botões **↑ / ↓** para reordenar (atualiza `sort_order`).
+- Renderizar prévia do ícone Lucide ao lado do nome (lookup dinâmico em `lucide-react`, igual ao padrão usado no site).
 
-Sugiro 3 caminhos. Posso aplicar o que você preferir:
+### 2. RLS / Banco
+- Já existe policy `admins manage categories` (ALL) → não precisa de migração.
+- Operações via `supabase.from("categories").insert/update/delete()` direto do client.
 
-### Opção A — Destaque com "pílula" amarela/creme (recomendado)
-Envolver "sua cidade" em um fundo creme claro com cantos arredondados, mantendo o texto preto carvão. Cria contraste forte e vira um elemento visual de destaque.
+### 3. Validações
+- Nome obrigatório, slug obrigatório e único (lowercase, sem espaço/acento — usar helper de slugify).
+- Toast de sucesso/erro com `sonner` (mesmo padrão do resto da página).
+- Recarregar lista após cada operação (reuso da função `load`).
 
-```
-As melhores ofertas da [ sua cidade ] num só lugar
-                       ↑ fundo creme, texto carvão
-```
-
-- Funciona perfeitamente em mobile e desktop
-- Reforça a marca (creme + indigo + carvão)
-- Mantém a cor carvão que você pediu
-
-### Opção B — Sublinhado decorativo amarelo/accent
-Manter o texto branco (legível no azul) e colocar um traço/marcador colorido por baixo de "sua cidade".
-
-- Boa legibilidade
-- Mas perde a cor carvão
-
-### Opção C — Trocar a cor por branco no mobile, carvão no desktop
-Usar classes responsivas: `text-primary-foreground md:text-[#0F0F0E]`.
-
-- Solução mais simples
-- Mas inconsistência visual entre breakpoints
-
-# Recomendação
-
-**Opção A** — é a que melhor preserva sua decisão de cor (carvão), resolve o contraste em qualquer tela e adiciona personalidade ao hero.
-
-Me diga qual prefere e eu implemento.
+## Pontos técnicos
+- Sem mudanças no backend nem em `src/data/categories.ts` (esse arquivo é fallback estático e não interfere).
+- Componentes shadcn já disponíveis: `Dialog`, `AlertDialog`, `Input`, `Label`, `Button`, `Tabs`.
+- Ícone preview: `const Icon = (LucideIcons as any)[name] ?? LucideIcons.Tag`.
