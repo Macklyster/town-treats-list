@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Tag } from "lucide-react";
 import { UIOffer, discountPct, formatBRL } from "@/lib/offers-api";
+import { StoreAvatar } from "@/components/site/StoreAvatar";
 
 export const OfferCard = ({ offer }: { offer: UIOffer }) => {
   const pct = discountPct(offer);
@@ -29,9 +30,12 @@ export const OfferCard = ({ offer }: { offer: UIOffer }) => {
         )}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          {offer.storeName}
-        </p>
+        <div className="flex items-center gap-2">
+          <StoreAvatar name={offer.storeName} logoUrl={offer.storeLogo} size={24} />
+          <p className="line-clamp-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            {offer.storeName}
+          </p>
+        </div>
         <h3 className="line-clamp-2 text-base font-medium text-foreground">{offer.title}</h3>
         <div className="mt-auto flex items-end justify-between pt-2">
           <div>

@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/carousel";
 import { UIOffer, discountPct, formatBRL } from "@/lib/offers-api";
 import { Button } from "@/components/ui/button";
+import { StoreAvatar } from "@/components/site/StoreAvatar";
 
 export const FeaturedCarousel = ({ offers }: { offers: UIOffer[] }) => {
   if (!offers.length) return null;
@@ -29,7 +30,8 @@ export const FeaturedCarousel = ({ offers }: { offers: UIOffer[] }) => {
                     )}
                   </div>
                   <div className="flex flex-col justify-center gap-4 p-8 md:p-12">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-accent-strong">
+                    <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-accent-strong">
+                      <StoreAvatar name={o.storeName} logoUrl={o.storeLogo} size={28} />
                       Oferta da semana · {o.storeName}
                     </span>
                     <h3 className="text-2xl font-semibold text-foreground md:text-[28px]">{o.title}</h3>
