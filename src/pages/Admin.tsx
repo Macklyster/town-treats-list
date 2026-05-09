@@ -244,7 +244,169 @@ export default function Admin() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="categories" className="mt-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                <CardTitle>Categorias</CardTitle>
+                <Button size="sm" variant="accent" onClick={openNewCategory}>
+                  <Plus className="h-4 w-4" /> Nova categoria
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="text-left text-muted-foreground">
+                      <tr>
+                        <th className="py-2 w-16">Ordem</th>
+                        <th>Nome</th>
+                        <th>Slug</th>
+                        <th>Ícone</th>
+                        <th className="text-right">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {categories.map((c, i) => (
+                        <tr key={c.slug}>
+                          <td className="py-3">
+                            <div className="inline-flex items-center gap-1">
+                              <span className="w-6 text-muted-foreground">{c.sort_order}</span>
+                              <Button size="icon" variant="ghost" className="h-7 w-7" disabled={i === 0} onClick={() => moveCategory(i, -1)}>
+                                <ArrowUp className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button size="icon" variant="ghost" className="h-7 w-7" disabled={i === categories.length - 1} onClick={() => moveCategory(i, 1)}>
+                                <ArrowDown className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </td>
+                          <td className="font-medium text-foreground">
+                            <div className="inline-flex items-center gap-2">
+                              <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-accent/15 text-accent-strong">
+                                <CategoryIcon name={c.icon} className="h-4 w-4" />
+                              </span>
+                              {c.name}
+                            </div>
+                          </td>
+                          <td className="text-muted-foreground">{c.slug}</td>
+                          <td className="text-muted-foreground">{c.icon ?? "—"}</td>
+                          <td className="text-right">
+                            <div className="inline-flex gap-2">
+                              <Button size="sm" variant="outline" onClick={() => openEditCategory(c)}>
+                                <Pencil className="h-3.5 w-3.5" /> Editar
+                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button size="sm" variant="ghost">
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Excluir categoria?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Esta ação não pode ser desfeita. Ofertas vinculadas a "{c.name}" podem ficar sem categoria.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => deleteCategory(c.slug)}>Excluir</AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                      {categories.length === 0 && !loading && (
+                        <tr><td colSpan={5} className="py-6 text-center text-muted-foreground">Nenhuma categoria cadastrada.</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
+
+        <Dialog open={catDialogOpen} onOpenChange={setCatDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{editingCat ? "Editar categoria" : "Nova categoria"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="cat-name">Nome</Label>
+                <Input
+                  id="cat-name"
+                  value={catForm.name}
+                  onChange={(e) => {
+                    const name = e.target.value;
+                    setCatForm((f) => ({
+                      ...f,
+                      name,
+                      slug: slugTouched ? f.slug : slugify(name),
+                    }));
+                  }}
+                  maxLength={60}
+                  placeholder="Ex: Alimentação"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cat-slug">Slug</Label>
+                <Input
+                  id="cat-slug"
+                  value={catForm.slug}
+                  onChange={(e) => {
+                    setSlugTouched(true);
+                    setCatForm((f) => ({ ...f, slug: e.target.value }));
+                  }}
+                  onBlur={(e) => setCatForm((f) => ({ ...f, slug: slugify(e.target.value) }))}
+                  maxLength={60}
+                  placeholder="alimentacao"
+                  disabled={!!editingCat}
+                />
+                {editingCat && (
+                  <p className="text-xs text-muted-foreground">O slug não pode ser alterado após a criação.</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cat-icon">Ícone (Lucide)</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="cat-icon"
+                    value={catForm.icon ?? ""}
+                    onChange={(e) => setCatForm((f) => ({ ...f, icon: e.target.value }))}
+                    maxLength={40}
+                    placeholder="Ex: UtensilsCrossed, Sparkles, ShoppingBag"
+                  />
+                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-accent/15 text-accent-strong">
+                    <CategoryIcon name={catForm.icon} className="h-5 w-5" />
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Use o nome PascalCase de um ícone do{" "}
+                  <a href="https://lucide.dev/icons" target="_blank" rel="noreferrer" className="underline">
+                    lucide.dev
+                  </a>
+                  .
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cat-order">Ordem</Label>
+                <Input
+                  id="cat-order"
+                  type="number"
+                  value={catForm.sort_order}
+                  onChange={(e) => setCatForm((f) => ({ ...f, sort_order: Number(e.target.value) || 0 }))}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setCatDialogOpen(false)}>Cancelar</Button>
+              <Button variant="accent" onClick={saveCategory}>Salvar</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </main>
       <Footer />
     </div>
