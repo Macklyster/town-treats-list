@@ -1,55 +1,78 @@
-## Problemas identificados
+# Transformar /ofertas em seção #ofertas na Home
 
-1. **Altura do header sticky maior que o `scroll-mt` aplicado.**
-   - `Header` tem `h-20 md:h-24` (80/96px) + `CityBar` que varia: ~36px quando há cidade selecionada e ~48–56px quando não há (botão maior). Total real no desktop: **~132–150px**.
-   - As seções têm `scroll-mt-28 md:scroll-mt-32` (112/128px), insuficiente — a seção alvo fica parcialmente coberta, dando sensação de "parou na seção anterior".
-   - Como a `CityBar` muda de altura conforme o estado (cidade selecionada ou não), um valor fixo nunca vai bater 100%.
+## Objetivo
+Eliminar a página separada `/ofertas` e transformá-la numa seção (`#ofertas`) dentro da Home, mantendo todos os filtros (busca, categoria, tipo, ordenação) e o comportamento atual. O menu "Ofertas" passa a rolar suavemente até essa seção em vez de trocar de rota.
 
-2. **"Início" não funciona quando já está em `/`.**
-   - `handleNavClick` só trata links com `#`. Para `to="/"` no mesmo path, o `NavLink` não dispara navegação nem scroll, então nada acontece. Só funciona vindo de `/ofertas` porque aí ocorre troca de rota real.
+## O que muda para o usuário
+- Clicar em **Ofertas** no menu rola até a seção, sem recarregar a página.
+- Links antigos `/ofertas?categoria=...` continuam funcionando (redirecionados para `/?categoria=...#ofertas`).
+- A URL passa a refletir a seção e os filtros (`/?categoria=salao&tipo=cupom#ofertas`), permitindo compartilhar links.
+- Botão "voltar" na página de detalhe da oferta volta para a Home na seção de ofertas.
 
-3. **"Funciona no segundo clique"** é consequência direta de (1): no primeiro clique o scroll para num offset errado; no segundo, o layout já está estabilizado e o cálculo bate por acaso (ou o usuário interpreta a posição como correta).
+## Estrutura da nova seção na Home
+Mesmo layout atual de `/ofertas`:
+- Cabeçalho "Ofertas" com contagem e cidade.
+- Sidebar de filtros (busca, categoria, tipo, limpar).
+- Grid de cards com seletor de ordenação.
 
-## Plano
+A seção entra na Home **substituindo** o bloco atual "Ofertas em destaque" (que mostra apenas 8 cards e um link "Ver todas →"), já que esse bloco se torna redundante. O carrossel de destaques (`FeaturedCarousel`) é mantido acima.
 
-### 1. Altura do header como CSS variable dinâmica
-Criar um pequeno hook/efeito no `Header.tsx` que mede a altura real do `<header>` (incluindo `CityBar`) com `ResizeObserver` e grava em `document.documentElement.style.setProperty('--header-h', '${h}px')`.
-
-Isso cobre:
-- Variação da `CityBar` (com/sem cidade)
-- Diferenças mobile/desktop (h-20 vs h-24)
-- Qualquer mudança futura de altura
-
-### 2. Aplicar offset via CSS global
-Em `src/index.css`, adicionar:
-
-```css
-:root { --header-h: 140px; } /* fallback */
-[data-scroll-anchor] { scroll-margin-top: calc(var(--header-h) + 12px); }
-html { scroll-padding-top: calc(var(--header-h) + 12px); }
-```
-
-Substituir as classes `scroll-mt-28 md:scroll-mt-32` em `CategoryGrid.tsx` e `HowItWorks.tsx` por `data-scroll-anchor`. O `scroll-padding-top` no `html` cuida também da navegação por hash do navegador (ScrollToHash + back/forward).
-
-### 3. Handler de "Início" e correção do scroll suave
-No `Header.tsx`:
-- Estender `handleNavClick` para que, quando `to === "/"` e `pathname === "/"`, faça `e.preventDefault()` e `window.scrollTo({ top: 0, behavior: "smooth" })`.
-- Para links com hash no mesmo path, em vez de `scrollIntoView({ block: "start" })`, calcular `const y = el.getBoundingClientRect().top + window.scrollY - headerH - 12` e usar `window.scrollTo({ top: y, behavior: "smooth" })`. Isso garante posicionamento correto mesmo se o navegador ignorar `scroll-margin-top` durante scroll programático em alguns casos.
-
-### 4. ScrollToHash usa o mesmo cálculo
-Atualizar `src/components/ScrollToHash.tsx` para ler `--header-h` e calcular o `top` manualmente em vez de `scrollIntoView`, mantendo consistência entre navegação por clique e por URL com hash.
-
-### Fora do escopo
-- Sem mudanças visuais no header, hero, banner ou seções.
-- Sem alterações em rotas, autenticação ou comportamento do menu mobile (apenas o handler do "Início" passa a rolar pro topo).
+Ordem final da Home:
+1. HeroSearch
+2. FeaturedCarousel
+3. **Seção #ofertas** (com filtros + lista completa)
+4. CategoryGrid
+5. HowItWorks
+6. MerchantCTA
 
 ## Detalhes técnicos
 
-Arquivos modificados:
-- `src/components/site/Header.tsx` — medir altura via ref+ResizeObserver, expor `--header-h`, ampliar `handleNavClick` (Início + cálculo de offset).
-- `src/components/ScrollToHash.tsx` — usar `--header-h` para `window.scrollTo` em vez de `scrollIntoView`.
-- `src/index.css` — declarar `--header-h`, regra global de `scroll-margin-top` em `[data-scroll-anchor]` e `scroll-padding-top` no `html`.
-- `src/components/site/CategoryGrid.tsx` — trocar classes `scroll-mt-*` por atributo `data-scroll-anchor`.
-- `src/components/site/HowItWorks.tsx` — idem.
+### Arquivos a alterar
 
-Resultado esperado: qualquer item do menu (Início, Categorias, Como Funciona) posiciona corretamente no primeiro clique, em qualquer rota, com header de qualquer altura.
+**Novo componente:** `src/components/site/OffersSection.tsx`
+- Move toda a lógica de `pages/Ofertas.tsx` (filtros, ordenação, fetch) para um componente reutilizável.
+- Usa `useSearchParams` para ler/gravar `q`, `categoria`, `tipo`, `ordem` na URL atual (funciona em qualquer rota).
+- Recebe `id="ofertas"` e atributo `data-scroll-anchor` (compatível com sistema de offset do header já implementado).
+- Recebe props opcionais `offers` e `loading` para reaproveitar o fetch já feito no `Index` (evita refetch duplicado e mantém performance).
+
+**`src/pages/Index.tsx`**
+- Remove o bloco "Ofertas em destaque" (cards + link "Ver todas").
+- Insere `<OffersSection offers={offers} loading={loading} />` no lugar.
+- Mantém o fetch já existente (uma única chamada `fetchOffers`).
+
+**`src/pages/Ofertas.tsx`**
+- Excluído (ou convertido em redirect — ver App.tsx).
+
+**`src/App.tsx`**
+- Substitui `<Route path="/ofertas" element={<Ofertas />} />` por um redirect que preserva query string e adiciona o hash:
+  - Componente leve `OfertasRedirect` que usa `Navigate` para `/?<query>#ofertas`.
+- Mantém compatibilidade com links antigos, indexação SEO e bookmarks.
+
+**`src/components/site/Header.tsx`**
+- Em `navItems`, troca `{ to: "/ofertas", label: "Ofertas" }` por `{ to: "/#ofertas", label: "Ofertas" }`.
+- `handleNavClick` já trata hash links com offset dinâmico — funciona automaticamente.
+
+**`src/components/site/HeroSearch.tsx`**
+- Trocar `navigate('/ofertas?...')` por `navigate('/?...#ofertas')`.
+- Aplicar nas duas ocorrências (submit do form e clique em categoria).
+
+**`src/components/site/CategoryGrid.tsx`**
+- Trocar `to="/ofertas"` e ``to={`/ofertas?categoria=${c.slug}`}`` por `to="/#ofertas"` e ``to={`/?categoria=${c.slug}#ofertas`}``.
+
+**`src/components/site/Footer.tsx`**
+- Trocar `<Link to="/ofertas">` por `<Link to="/#ofertas">`.
+
+**`src/pages/OfferDetail.tsx`**
+- Trocar `to="/ofertas"` (botão voltar) por `to="/#ofertas"`.
+
+### Performance
+A Home já chama `fetchOffers` uma vez. A nova seção reutiliza esse mesmo array via props — **nenhuma chamada de rede extra**. O custo adicional é apenas renderizar mais cards e os controles de filtro (componentes leves de UI). Sem impacto perceptível em LCP/TTI.
+
+### SEO e links externos
+- Rota `/ofertas` continua respondendo via `Navigate` (301-like client-side).
+- Filtros permanecem em query string, indexáveis e compartilháveis.
+
+## Fora do escopo
+- Não altera design dos cards, do header, do hero ou de outras seções.
+- Não altera autenticação, painel do lojista, formulários ou edge functions.
+- Não altera o componente de altura dinâmica do header (já implementado em iteração anterior).
