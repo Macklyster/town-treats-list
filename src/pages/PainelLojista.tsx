@@ -36,6 +36,8 @@ export default function PainelLojista() {
   const navigate = useNavigate();
   const [store, setStore] = useState<StoreRow | null>(null);
   const [offers, setOffers] = useState<OfferRow[]>([]);
+  const [clicks, setClicks] = useState<Record<string, number>>({});
+  const [totalClicks, setTotalClicks] = useState(0);
   const [sub, setSub] = useState<Sub | null>(null);
   const [loading, setLoading] = useState(true);
   const subInfo = useSubscription(store?.id ?? null);
@@ -66,6 +68,18 @@ export default function PainelLojista() {
         .order("created_at", { ascending: false })
         .limit(1);
       setSub((subs?.[0] as any) ?? null);
+
+      const { data: events } = await supabase
+        .from("offer_events")
+        .select("offer_id")
+        .eq("store_id", s.id)
+        .eq("event_type", "whatsapp_click");
+      const counts: Record<string, number> = {};
+      (events ?? []).forEach((e: any) => {
+        counts[e.offer_id] = (counts[e.offer_id] ?? 0) + 1;
+      });
+      setClicks(counts);
+      setTotalClicks(events?.length ?? 0);
     }
     setLoading(false);
   };
@@ -195,6 +209,7 @@ export default function PainelLojista() {
                 <div>Aprovadas: <strong>{offers.filter((o) => o.status === "approved").length}</strong></div>
                 <div>Pendentes: <strong>{offers.filter((o) => o.status === "pending").length}</strong></div>
                 <div>Em destaque: <strong>{offers.filter((o) => o.featured).length}{subInfo.featuredSlots ? ` / ${subInfo.featuredSlots}` : ""}</strong></div>
+                <div>Cliques no WhatsApp: <strong>{totalClicks}</strong></div>
               </CardContent>
             </Card>
 
@@ -215,6 +230,7 @@ export default function PainelLojista() {
                           <th>Preço</th>
                           <th>Validade</th>
                           <th>Status</th>
+                          <th className="text-center">Cliques WA</th>
                           <th className="text-right">Ações</th>
                         </tr>
                       </thead>
@@ -226,6 +242,7 @@ export default function PainelLojista() {
                             <td>{formatBRLNumber(Number(o.promo_price))}</td>
                             <td>{o.valid_until ?? "—"}</td>
                             <td><Badge variant={o.status === "approved" ? "default" : "secondary"}>{o.status}</Badge></td>
+                            <td className="text-center font-medium">{clicks[o.id] ?? 0}</td>
                             <td className="text-right">
                               <div className="inline-flex gap-2">
                                 <Button size="sm" variant="ghost" onClick={() => navigate(`/painel-lojista/oferta/${o.id}`)}>
