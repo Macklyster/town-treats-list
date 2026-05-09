@@ -170,6 +170,7 @@ export default function Admin() {
           <TabsList>
             <TabsTrigger value="offers">Ofertas ({offers.length})</TabsTrigger>
             <TabsTrigger value="stores">Lojas ({stores.length})</TabsTrigger>
+            <TabsTrigger value="categories">Categorias ({categories.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="offers" className="mt-6">
