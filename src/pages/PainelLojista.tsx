@@ -36,6 +36,8 @@ export default function PainelLojista() {
   const navigate = useNavigate();
   const [store, setStore] = useState<StoreRow | null>(null);
   const [offers, setOffers] = useState<OfferRow[]>([]);
+  const [clicks, setClicks] = useState<Record<string, number>>({});
+  const [totalClicks, setTotalClicks] = useState(0);
   const [sub, setSub] = useState<Sub | null>(null);
   const [loading, setLoading] = useState(true);
   const subInfo = useSubscription(store?.id ?? null);
@@ -66,6 +68,18 @@ export default function PainelLojista() {
         .order("created_at", { ascending: false })
         .limit(1);
       setSub((subs?.[0] as any) ?? null);
+
+      const { data: events } = await supabase
+        .from("offer_events")
+        .select("offer_id")
+        .eq("store_id", s.id)
+        .eq("event_type", "whatsapp_click");
+      const counts: Record<string, number> = {};
+      (events ?? []).forEach((e: any) => {
+        counts[e.offer_id] = (counts[e.offer_id] ?? 0) + 1;
+      });
+      setClicks(counts);
+      setTotalClicks(events?.length ?? 0);
     }
     setLoading(false);
   };
