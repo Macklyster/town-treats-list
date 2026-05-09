@@ -45,20 +45,22 @@ export const HeroSearch = () => {
               Descubra descontos, cupons e brindes em restaurantes, salões, lojas e muito mais.
               Economize apoiando o comércio do seu bairro.
             </p>
-
-            <button
-              type="button"
-              onClick={openSelector}
-              className="mt-5 inline-flex items-center gap-2 rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground hover:border-accent"
-            >
-              <MapPin className="h-4 w-4" />
-              {city
-                ? <>Buscando em <strong>{city.city}{city.state ? ` · ${city.state}` : ""}</strong> · trocar</>
-                : "Selecionar cidade"}
-            </button>
           </div>
 
           <div className="flex flex-col gap-5">
+            <div className="flex justify-center md:justify-end">
+              <button
+                type="button"
+                onClick={openSelector}
+                className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground hover:border-accent"
+              >
+                <MapPin className="h-4 w-4" />
+                {city
+                  ? <>Buscando em <strong>{city.city}{city.state ? ` · ${city.state}` : ""}</strong> · trocar</>
+                  : "Selecionar cidade"}
+              </button>
+            </div>
+
             <form onSubmit={submit} className="flex items-center gap-2 rounded-2xl bg-card p-2 shadow-pop">
               <div className="flex flex-1 items-center gap-2 px-3">
                 <Search className="h-5 w-5 text-muted-foreground" />
