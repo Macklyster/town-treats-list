@@ -6,6 +6,7 @@ export type UIOffer = {
   storeId: string;
   storeName: string;
   storeSlug?: string;
+  storeLogo?: string;
   category: string;
   type: "desconto" | "cupom" | "brinde";
   image: string;
