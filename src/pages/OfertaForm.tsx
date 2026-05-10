@@ -16,7 +16,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
 import { Link } from "react-router-dom";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Bell } from "lucide-react";
 import { ImageUploader } from "@/components/site/ImageUploader";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PAYMENT_METHODS, type PaymentMethodId, parseConditions, buildConditions } from "@/lib/payment-methods";
@@ -40,6 +40,8 @@ export default function OfertaForm() {
   const isEdit = !!id;
 
   const [storeId, setStoreId] = useState<string | null>(null);
+  const [offerStatus, setOfferStatus] = useState<string | null>(null);
+  const [notifyLoading, setNotifyLoading] = useState(false);
   const [categories, setCategories] = useState<{ slug: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const sub = useSubscription(storeId);
@@ -81,6 +83,7 @@ export default function OfertaForm() {
         if (data) {
           const parsedCond = parseConditions(data.conditions ?? "");
           setPaymentMethods(parsedCond.methods);
+          setOfferStatus(data.status);
           setForm({
             title: data.title,
             category_slug: data.category_slug,
@@ -280,6 +283,48 @@ export default function OfertaForm() {
                 <Button type="button" variant="ghost" onClick={() => navigate("/painel-lojista")}>Cancelar</Button>
               </div>
             </form>
+
+            {isEdit && offerStatus === "approved" && id && storeId && (
+              <div className="mt-6 rounded-lg border bg-secondary/40 p-4">
+                <div className="flex items-start gap-3">
+                  <Bell className="mt-0.5 h-5 w-5 text-accent-strong" />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-foreground">Avisar seguidores da loja</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Envia uma notificação push para quem segue sua loja. Pode ser feito uma vez por oferta.
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  variant="accent"
+                  className="mt-3"
+                  disabled={notifyLoading}
+                  onClick={async () => {
+                    setNotifyLoading(true);
+                    const { data, error } = await supabase.functions.invoke("notify-store-followers", {
+                      body: {
+                        store_id: storeId,
+                        offer_id: id,
+                        title: `Nova oferta: ${form.title}`,
+                        body: form.description?.slice(0, 120) || "Confira agora no OfertasFly!",
+                        url: `/oferta/${id}`,
+                      },
+                    });
+                    setNotifyLoading(false);
+                    if (error) {
+                      const msg = (error as any).message || "";
+                      if (msg.includes("already")) toast.error("Você já notificou seus seguidores sobre esta oferta.");
+                      else toast.error(msg || "Falha ao enviar");
+                      return;
+                    }
+                    toast.success(`Notificação enviada para ${data?.success ?? 0} seguidor(es).`);
+                  }}
+                >
+                  <Bell className="h-4 w-4" /> Notificar seguidores agora
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </main>
