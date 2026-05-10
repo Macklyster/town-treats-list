@@ -36,9 +36,10 @@ const plans = [
     highlight: true,
     features: [
       "Até 10 ofertas ativas",
-      "Selo de loja destaque",
+      "Selo de Loja Destaque",
       "Prioridade nas buscas",
       "Inclusão no carrossel da home (1x/mês)",
+      "Dashboard de Inteligência (KPIs, heatmap e top ofertas)",
       "Suporte por WhatsApp",
     ],
   },
@@ -50,8 +51,11 @@ const plans = [
     highlight: false,
     features: [
       "Ofertas ilimitadas",
+      "Selo de Loja Destaque",
       "Banner rotativo na home",
       "Posts nas redes da OfertasFly",
+      "Dashboard de Inteligência (KPIs, heatmap e top ofertas)",
+      "Comparativo com concorrentes da categoria e cidade",
       "Relatórios mensais de desempenho",
       "Consultor dedicado",
     ],
