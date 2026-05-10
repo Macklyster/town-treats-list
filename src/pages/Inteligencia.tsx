@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Lock, TrendingUp, Eye, MessageCircle, Target, Sparkles } from "lucide-react";
+import { Lock, TrendingUp, Eye, MessageCircle, Target, Sparkles, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -194,6 +194,14 @@ export default function Inteligencia() {
     <div className="flex min-h-screen flex-col bg-muted/20">
       <Header />
       <main className="container flex-1 py-10">
+        <div className="mb-4">
+          <Button asChild variant="ghost" size="sm" className="-ml-2">
+            <Link to="/painel-lojista">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Voltar ao Painel
+            </Link>
+          </Button>
+        </div>
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="text-display text-foreground">Inteligência da Loja</h1>
