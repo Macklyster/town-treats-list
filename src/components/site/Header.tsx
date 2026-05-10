@@ -1,5 +1,5 @@
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import { LogOut, Menu, User as UserIcon, X } from "lucide-react";
+import { Bell, LogOut, Menu, User as UserIcon, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -146,6 +146,9 @@ export const Header = () => {
                     Tornar-se lojista
                   </DropdownMenuItem>
                 )}
+                <DropdownMenuItem onClick={() => navigate("/perfil/notificacoes")}>
+                  <Bell className="mr-2 h-4 w-4" /> Notificações
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={async () => { await signOut(); navigate("/"); }}>
                   <LogOut className="mr-2 h-4 w-4" /> Sair
