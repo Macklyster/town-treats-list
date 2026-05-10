@@ -20,6 +20,7 @@ import Assinatura from "./pages/Assinatura.tsx";
 import TermosDeUso from "./pages/TermosDeUso.tsx";
 import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade.tsx";
 import Notificacoes from "./pages/Notificacoes.tsx";
+import Inteligencia from "./pages/Inteligencia.tsx";
 import { ScrollToHash } from "./components/ScrollToHash";
 import { BackToTopButton } from "./components/site/BackToTopButton";
 
@@ -85,6 +86,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireRole="lojista">
                   <Assinatura />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/painel-lojista/inteligencia"
+              element={
+                <ProtectedRoute requireRole="lojista">
+                  <Inteligencia />
                 </ProtectedRoute>
               }
             />
