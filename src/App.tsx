@@ -19,6 +19,7 @@ import Admin from "./pages/Admin.tsx";
 import Assinatura from "./pages/Assinatura.tsx";
 import TermosDeUso from "./pages/TermosDeUso.tsx";
 import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade.tsx";
+import Notificacoes from "./pages/Notificacoes.tsx";
 import { ScrollToHash } from "./components/ScrollToHash";
 import { BackToTopButton } from "./components/site/BackToTopButton";
 
@@ -47,6 +48,14 @@ const App = () => (
             <Route path="/oferta/:id" element={<OfferDetail />} />
             <Route path="/anuncie" element={<Anuncie />} />
             <Route path="/auth" element={<Auth />} />
+            <Route
+              path="/perfil/notificacoes"
+              element={
+                <ProtectedRoute>
+                  <Notificacoes />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/painel-lojista"
               element={
