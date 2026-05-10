@@ -31,6 +31,8 @@ import { toast } from "sonner";
 import * as LucideIcons from "lucide-react";
 import { Check, X, Star, Pencil, Trash2, ArrowUp, ArrowDown, Plus, Tag } from "lucide-react";
 import { AdminBroadcast } from "@/components/admin/AdminBroadcast";
+import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type Category = {
   slug: string;
@@ -64,7 +66,14 @@ type AdminStore = {
   name: string;
   approved: boolean;
   owner_id: string;
+  featured_badge: boolean;
+  plan_slug?: string | null;
+  plan_name?: string | null;
+  subscription_status?: string | null;
 };
+
+const ELIGIBLE_PLANS = new Set(["destaque", "plus"]);
+const ACTIVE_SUB_STATUSES = new Set(["active", "trialing", "past_due"]);
 
 export default function Admin() {
   const [offers, setOffers] = useState<AdminOffer[]>([]);
