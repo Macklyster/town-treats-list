@@ -17,7 +17,7 @@ export const Footer = () => {
           <ul className="space-y-2 text-sm">
             <li><Link to="/" className="hover:text-accent">Sobre Nós</Link></li>
             <li><Link to="/anuncie" className="hover:text-accent">Anuncie Conosco</Link></li>
-            <li><Link to="/ofertas" className="hover:text-accent">Ver Ofertas</Link></li>
+            <li><Link to="/#ofertas" className="hover:text-accent">Ver Ofertas</Link></li>
           </ul>
         </div>
         <div>

@@ -16,7 +16,7 @@ export const CategoryGrid = () => {
           <h2 className="text-display text-foreground md:text-[40px]">Categorias populares</h2>
           <p className="mt-2 text-muted-foreground">Explore as ofertas por tema.</p>
         </div>
-        <Link to="/ofertas" className="hidden text-sm font-semibold text-accent-strong hover:underline md:inline">
+        <Link to="/#ofertas" className="hidden text-sm font-semibold text-accent-strong hover:underline md:inline">
           Ver todas as ofertas →
         </Link>
       </div>
@@ -26,7 +26,7 @@ export const CategoryGrid = () => {
           return (
             <Link
               key={c.id}
-              to={`/ofertas?categoria=${c.slug}`}
+              to={`/?categoria=${c.slug}#ofertas`}
               className="group relative overflow-hidden rounded-2xl border border-border bg-card p-8 shadow-card transition-all hover:-translate-y-1 hover:border-accent hover:shadow-pop"
             >
               <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-accent/15 text-accent-strong transition-colors group-hover:bg-accent group-hover:text-accent-foreground">

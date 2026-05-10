@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,7 +9,6 @@ import { CitySelector } from "@/components/site/CitySelector";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import Ofertas from "./pages/Ofertas.tsx";
 import OfferDetail from "./pages/OfferDetail.tsx";
 import Anuncie from "./pages/Anuncie.tsx";
 import Auth from "./pages/Auth.tsx";
@@ -21,6 +20,11 @@ import Assinatura from "./pages/Assinatura.tsx";
 import TermosDeUso from "./pages/TermosDeUso.tsx";
 import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade.tsx";
 import { ScrollToHash } from "./components/ScrollToHash";
+
+const OfertasRedirect = () => {
+  const { search } = useLocation();
+  return <Navigate to={`/${search}#ofertas`} replace />;
+};
 
 const queryClient = new QueryClient();
 
@@ -36,7 +40,7 @@ const App = () => (
             <ScrollToHash />
             <Routes>
               <Route path="/" element={<Index />} />
-            <Route path="/ofertas" element={<Ofertas />} />
+            <Route path="/ofertas" element={<OfertasRedirect />} />
             <Route path="/termos-de-uso" element={<TermosDeUso />} />
             <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
             <Route path="/oferta/:id" element={<OfferDetail />} />
