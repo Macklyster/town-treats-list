@@ -138,11 +138,12 @@ const OfferDetail = () => {
 
           <aside className="space-y-6">
             <div className="rounded-2xl bg-card p-6 shadow-card">
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <StoreAvatar name={offer.storeName} logoUrl={offer.storeLogo} size={40} />
                 <span className="text-xs font-semibold uppercase tracking-wider text-accent-strong">
                   {offer.storeName}
                 </span>
+                {offer.storeFeaturedBadge && <StoreFeaturedBadge />}
               </div>
               <h1 className="mt-3 text-2xl font-semibold leading-tight text-foreground md:text-[28px]">
                 {offer.title}
