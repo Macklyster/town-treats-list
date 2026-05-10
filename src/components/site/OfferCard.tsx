@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Tag } from "lucide-react";
 import { UIOffer, discountPct, formatBRL } from "@/lib/offers-api";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
+import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 
 export const OfferCard = ({ offer }: { offer: UIOffer }) => {
   const pct = discountPct(offer);
@@ -35,6 +36,7 @@ export const OfferCard = ({ offer }: { offer: UIOffer }) => {
           <p className="line-clamp-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             {offer.storeName}
           </p>
+          {offer.storeFeaturedBadge && <StoreFeaturedBadge showLabel={false} />}
         </div>
         <h3 className="line-clamp-2 text-base font-medium text-foreground">{offer.title}</h3>
         <div className="mt-auto flex items-end justify-between pt-2">

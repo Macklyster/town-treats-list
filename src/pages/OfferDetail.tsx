@@ -17,6 +17,7 @@ import { parseConditions, getMethod } from "@/lib/payment-methods";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { trackOfferEvent } from "@/lib/offer-events";
 import { FollowStoreButton } from "@/components/site/FollowStoreButton";
+import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import NotFound from "./NotFound";
 
 const OfferDetail = () => {
@@ -187,7 +188,10 @@ const OfferDetail = () => {
               <div className="rounded-2xl bg-card p-6 shadow-card">
                 <div className="flex items-center gap-3">
                   <StoreAvatar name={store.name ?? offer.storeName} logoUrl={store.logo_url} size={56} />
-                  <h3 className="text-lg font-medium text-foreground">{store.name ?? "Sobre a loja"}</h3>
+                  <div className="flex flex-col gap-1">
+                    <h3 className="text-lg font-medium text-foreground">{store.name ?? "Sobre a loja"}</h3>
+                    {store.featured_badge && <StoreFeaturedBadge />}
+                  </div>
                 </div>
                 <div className="mt-4">
                   <FollowStoreButton storeId={offer.storeId} className="w-full" size="default" />
