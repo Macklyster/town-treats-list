@@ -7,6 +7,7 @@ export type UIOffer = {
   storeName: string;
   storeSlug?: string;
   storeLogo?: string;
+  storeFeaturedBadge?: boolean;
   category: string;
   type: "desconto" | "cupom" | "brinde";
   image: string;
@@ -30,6 +31,7 @@ const mapRow = (row: any): UIOffer => ({
   storeName: row.store?.name ?? "Loja",
   storeSlug: row.store?.slug,
   storeLogo: row.store?.logo_url ?? undefined,
+  storeFeaturedBadge: !!row.store?.featured_badge,
   category: row.category_slug,
   type: row.type,
   image: row.image_url || FALLBACK_IMG,
@@ -50,7 +52,7 @@ export type CityFilter = { city: string; state: string } | null;
 export const fetchOffers = async (filter?: CityFilter): Promise<UIOffer[]> => {
   let query = supabase
     .from("offers")
-    .select("*, store:stores!inner(name,slug,city,state,logo_url)")
+    .select("*, store:stores!inner(name,slug,city,state,logo_url,featured_badge)")
     .eq("status", "approved")
     .order("created_at", { ascending: false });
   if (filter?.city) {
@@ -68,7 +70,7 @@ export const fetchOffers = async (filter?: CityFilter): Promise<UIOffer[]> => {
 export const fetchOfferById = async (id: string): Promise<UIOffer | null> => {
   const { data } = await supabase
     .from("offers")
-    .select("*, store:stores(name,slug,city,state,logo_url)")
+    .select("*, store:stores(name,slug,city,state,logo_url,featured_badge)")
     .eq("id", id)
     .eq("status", "approved")
     .maybeSingle();
