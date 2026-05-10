@@ -18,7 +18,7 @@ export const HeroSearch = () => {
     }
     const params = new URLSearchParams();
     if (q.trim()) params.set("q", q.trim());
-    navigate(`/ofertas${params.toString() ? `?${params.toString()}` : ""}`);
+    navigate(`/${params.toString() ? `?${params.toString()}` : ""}#ofertas`);
   };
 
   return (
@@ -81,7 +81,7 @@ export const HeroSearch = () => {
                 <button
                   key={c.id}
                   type="button"
-                  onClick={() => navigate(`/ofertas?categoria=${c.slug}`)}
+                  onClick={() => navigate(`/?categoria=${c.slug}#ofertas`)}
                   className="rounded-full border border-primary-foreground/20 bg-primary-foreground/5 px-3 py-1 text-sm transition-colors hover:bg-accent hover:text-accent-foreground hover:border-accent"
                 >
                   {c.name}

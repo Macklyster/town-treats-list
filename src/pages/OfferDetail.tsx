@@ -68,7 +68,7 @@ const OfferDetail = () => {
       <Header />
       <main className="container py-10">
         <Link
-          to="/ofertas"
+          to="/#ofertas"
           className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-accent-strong"
         >
           <ArrowLeft className="h-4 w-4" /> Voltar para ofertas

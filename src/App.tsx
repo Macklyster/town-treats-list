@@ -21,6 +21,11 @@ import TermosDeUso from "./pages/TermosDeUso.tsx";
 import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade.tsx";
 import { ScrollToHash } from "./components/ScrollToHash";
 
+const OfertasRedirect = () => {
+  const { search } = useLocation();
+  return <Navigate to={`/${search}#ofertas`} replace />;
+};
+
 const queryClient = new QueryClient();
 
 const App = () => (

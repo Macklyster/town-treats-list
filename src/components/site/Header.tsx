@@ -16,7 +16,7 @@ import { CityBar } from "@/components/site/CityBar";
 
 const navItems = [
   { to: "/", label: "Início" },
-  { to: "/ofertas", label: "Ofertas" },
+  { to: "/#ofertas", label: "Ofertas" },
   { to: "/#categorias", label: "Categorias" },
   { to: "/#como-funciona", label: "Como Funciona" },
 ];
