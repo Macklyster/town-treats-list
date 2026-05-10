@@ -164,20 +164,17 @@ export default function Inteligencia() {
     }
     setLoading(true);
     (async () => {
-      const tasks: Promise<any>[] = [
-        supabase.rpc("store_intelligence", { p_store_id: storeId, p_days: days }),
-      ];
+      const intelRes = await supabase.rpc("store_intelligence", {
+        p_store_id: storeId,
+        p_days: days,
+      });
+      if (!intelRes.error) setIntel(intelRes.data as unknown as Intel);
       if (isPlus) {
-        tasks.push(
-          supabase.rpc("category_benchmark", { p_store_id: storeId, p_days: days }),
-        );
-      }
-      const results = await Promise.all(tasks);
-      const intelRes = results[0];
-      if (!intelRes.error) setIntel(intelRes.data as Intel);
-      if (isPlus) {
-        const benchRes = results[1];
-        if (!benchRes.error) setBenchmark(benchRes.data as Benchmark);
+        const benchRes = await supabase.rpc("category_benchmark", {
+          p_store_id: storeId,
+          p_days: days,
+        });
+        if (!benchRes.error) setBenchmark(benchRes.data as unknown as Benchmark);
       }
       setLoading(false);
     })();
