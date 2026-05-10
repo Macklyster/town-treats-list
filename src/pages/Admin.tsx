@@ -30,6 +30,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import * as LucideIcons from "lucide-react";
 import { Check, X, Star, Pencil, Trash2, ArrowUp, ArrowDown, Plus, Tag } from "lucide-react";
+import { AdminBroadcast } from "@/components/admin/AdminBroadcast";
 
 type Category = {
   slug: string;
@@ -171,6 +172,7 @@ export default function Admin() {
             <TabsTrigger value="offers">Ofertas ({offers.length})</TabsTrigger>
             <TabsTrigger value="stores">Lojas ({stores.length})</TabsTrigger>
             <TabsTrigger value="categories">Categorias ({categories.length})</TabsTrigger>
+            <TabsTrigger value="notifications">Notificações</TabsTrigger>
           </TabsList>
 
           <TabsContent value="offers" className="mt-6">
@@ -325,6 +327,10 @@ export default function Admin() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="notifications" className="mt-6">
+            <AdminBroadcast />
           </TabsContent>
         </Tabs>
 

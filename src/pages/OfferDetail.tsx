@@ -16,6 +16,7 @@ import { Clock, MapPin, Phone, Instagram, MessageCircle, ArrowLeft } from "lucid
 import { parseConditions, getMethod } from "@/lib/payment-methods";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { trackOfferEvent } from "@/lib/offer-events";
+import { FollowStoreButton } from "@/components/site/FollowStoreButton";
 import NotFound from "./NotFound";
 
 const OfferDetail = () => {
@@ -187,6 +188,9 @@ const OfferDetail = () => {
                 <div className="flex items-center gap-3">
                   <StoreAvatar name={store.name ?? offer.storeName} logoUrl={store.logo_url} size={56} />
                   <h3 className="text-lg font-medium text-foreground">{store.name ?? "Sobre a loja"}</h3>
+                </div>
+                <div className="mt-4">
+                  <FollowStoreButton storeId={offer.storeId} className="w-full" size="default" />
                 </div>
                 <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
                   {store.address && (
