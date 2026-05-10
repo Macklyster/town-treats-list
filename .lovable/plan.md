@@ -1,78 +1,17 @@
-# Transformar /ofertas em seção #ofertas na Home
+## Mudanças
 
-## Objetivo
-Eliminar a página separada `/ofertas` e transformá-la numa seção (`#ofertas`) dentro da Home, mantendo todos os filtros (busca, categoria, tipo, ordenação) e o comportamento atual. O menu "Ofertas" passa a rolar suavemente até essa seção em vez de trocar de rota.
+### 1. Logo do Header volta ao topo
+- `src/components/site/Header.tsx`: adicionar `onClick` no `<Link to="/">` do logo. Se já estiver em `/`, prevenir default e fazer `window.scrollTo({ top: 0, behavior: "smooth" })`. Se estiver em outra rota, navegação normal para `/` (já leva ao topo).
 
-## O que muda para o usuário
-- Clicar em **Ofertas** no menu rola até a seção, sem recarregar a página.
-- Links antigos `/ofertas?categoria=...` continuam funcionando (redirecionados para `/?categoria=...#ofertas`).
-- A URL passa a refletir a seção e os filtros (`/?categoria=salao&tipo=cupom#ofertas`), permitindo compartilhar links.
-- Botão "voltar" na página de detalhe da oferta volta para a Home na seção de ofertas.
-
-## Estrutura da nova seção na Home
-Mesmo layout atual de `/ofertas`:
-- Cabeçalho "Ofertas" com contagem e cidade.
-- Sidebar de filtros (busca, categoria, tipo, limpar).
-- Grid de cards com seletor de ordenação.
-
-A seção entra na Home **substituindo** o bloco atual "Ofertas em destaque" (que mostra apenas 8 cards e um link "Ver todas →"), já que esse bloco se torna redundante. O carrossel de destaques (`FeaturedCarousel`) é mantido acima.
-
-Ordem final da Home:
-1. HeroSearch
-2. FeaturedCarousel
-3. **Seção #ofertas** (com filtros + lista completa)
-4. CategoryGrid
-5. HowItWorks
-6. MerchantCTA
-
-## Detalhes técnicos
-
-### Arquivos a alterar
-
-**Novo componente:** `src/components/site/OffersSection.tsx`
-- Move toda a lógica de `pages/Ofertas.tsx` (filtros, ordenação, fetch) para um componente reutilizável.
-- Usa `useSearchParams` para ler/gravar `q`, `categoria`, `tipo`, `ordem` na URL atual (funciona em qualquer rota).
-- Recebe `id="ofertas"` e atributo `data-scroll-anchor` (compatível com sistema de offset do header já implementado).
-- Recebe props opcionais `offers` e `loading` para reaproveitar o fetch já feito no `Index` (evita refetch duplicado e mantém performance).
-
-**`src/pages/Index.tsx`**
-- Remove o bloco "Ofertas em destaque" (cards + link "Ver todas").
-- Insere `<OffersSection offers={offers} loading={loading} />` no lugar.
-- Mantém o fetch já existente (uma única chamada `fetchOffers`).
-
-**`src/pages/Ofertas.tsx`**
-- Excluído (ou convertido em redirect — ver App.tsx).
-
-**`src/App.tsx`**
-- Substitui `<Route path="/ofertas" element={<Ofertas />} />` por um redirect que preserva query string e adiciona o hash:
-  - Componente leve `OfertasRedirect` que usa `Navigate` para `/?<query>#ofertas`.
-- Mantém compatibilidade com links antigos, indexação SEO e bookmarks.
-
-**`src/components/site/Header.tsx`**
-- Em `navItems`, troca `{ to: "/ofertas", label: "Ofertas" }` por `{ to: "/#ofertas", label: "Ofertas" }`.
-- `handleNavClick` já trata hash links com offset dinâmico — funciona automaticamente.
-
-**`src/components/site/HeroSearch.tsx`**
-- Trocar `navigate('/ofertas?...')` por `navigate('/?...#ofertas')`.
-- Aplicar nas duas ocorrências (submit do form e clique em categoria).
-
-**`src/components/site/CategoryGrid.tsx`**
-- Trocar `to="/ofertas"` e ``to={`/ofertas?categoria=${c.slug}`}`` por `to="/#ofertas"` e ``to={`/?categoria=${c.slug}#ofertas`}``.
-
-**`src/components/site/Footer.tsx`**
-- Trocar `<Link to="/ofertas">` por `<Link to="/#ofertas">`.
-
-**`src/pages/OfferDetail.tsx`**
-- Trocar `to="/ofertas"` (botão voltar) por `to="/#ofertas"`.
-
-### Performance
-A Home já chama `fetchOffers` uma vez. A nova seção reutiliza esse mesmo array via props — **nenhuma chamada de rede extra**. O custo adicional é apenas renderizar mais cards e os controles de filtro (componentes leves de UI). Sem impacto perceptível em LCP/TTI.
-
-### SEO e links externos
-- Rota `/ofertas` continua respondendo via `Navigate` (301-like client-side).
-- Filtros permanecem em query string, indexáveis e compartilháveis.
+### 2. Botão flutuante "Voltar ao topo"
+- Novo componente `src/components/site/BackToTopButton.tsx`:
+  - `useState` para visibilidade + listener de `scroll` em `window`.
+  - Mostra quando `window.scrollY > document.documentElement.scrollHeight * 0.6 - window.innerHeight` (ou seja, depois que o usuário passou 60% da página).
+  - Posição `fixed bottom-6 right-6 z-50`, botão circular com ícone `ArrowUp` do lucide.
+  - Estilo usando tokens: `bg-primary text-primary-foreground shadow-pop hover:bg-primary-deep`, transição de opacidade/translate suave.
+  - `aria-label="Voltar ao topo"`.
+  - Ao clicar: `window.scrollTo({ top: 0, behavior: "smooth" })`.
+- Montar uma vez em `src/App.tsx` (dentro do `BrowserRouter`, fora das `Routes`) para aparecer em todas as páginas.
 
 ## Fora do escopo
-- Não altera design dos cards, do header, do hero ou de outras seções.
-- Não altera autenticação, painel do lojista, formulários ou edge functions.
-- Não altera o componente de altura dinâmica do header (já implementado em iteração anterior).
+Sem alterações em rotas, fetch, design system geral, ou outras seções.

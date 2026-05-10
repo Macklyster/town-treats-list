@@ -20,6 +20,7 @@ import Assinatura from "./pages/Assinatura.tsx";
 import TermosDeUso from "./pages/TermosDeUso.tsx";
 import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade.tsx";
 import { ScrollToHash } from "./components/ScrollToHash";
+import { BackToTopButton } from "./components/site/BackToTopButton";
 
 const OfertasRedirect = () => {
   const { search } = useLocation();
@@ -89,6 +90,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
             </Routes>
+            <BackToTopButton />
           </CityProvider>
         </AuthProvider>
       </BrowserRouter>
