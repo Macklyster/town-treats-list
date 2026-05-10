@@ -1,0 +1,1 @@
+ALTER TABLE public.stores ADD COLUMN IF NOT EXISTS featured_badge boolean NOT NULL DEFAULT false;

@@ -388,6 +388,7 @@ export type Database = {
           cover_url: string | null
           created_at: string
           description: string | null
+          featured_badge: boolean
           id: string
           instagram: string | null
           logo_url: string | null
@@ -406,6 +407,7 @@ export type Database = {
           cover_url?: string | null
           created_at?: string
           description?: string | null
+          featured_badge?: boolean
           id?: string
           instagram?: string | null
           logo_url?: string | null
@@ -424,6 +426,7 @@ export type Database = {
           cover_url?: string | null
           created_at?: string
           description?: string | null
+          featured_badge?: boolean
           id?: string
           instagram?: string | null
           logo_url?: string | null

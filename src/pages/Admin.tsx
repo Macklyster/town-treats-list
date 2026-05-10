@@ -31,6 +31,8 @@ import { toast } from "sonner";
 import * as LucideIcons from "lucide-react";
 import { Check, X, Star, Pencil, Trash2, ArrowUp, ArrowDown, Plus, Tag } from "lucide-react";
 import { AdminBroadcast } from "@/components/admin/AdminBroadcast";
+import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type Category = {
   slug: string;
@@ -64,7 +66,14 @@ type AdminStore = {
   name: string;
   approved: boolean;
   owner_id: string;
+  featured_badge: boolean;
+  plan_slug?: string | null;
+  plan_name?: string | null;
+  subscription_status?: string | null;
 };
+
+const ELIGIBLE_PLANS = new Set(["destaque", "plus"]);
+const ACTIVE_SUB_STATUSES = new Set(["active", "trialing", "past_due"]);
 
 export default function Admin() {
   const [offers, setOffers] = useState<AdminOffer[]>([]);
@@ -79,16 +88,47 @@ export default function Admin() {
 
   const load = async () => {
     setLoading(true);
-    const [{ data: offs }, { data: sts }, { data: cats }] = await Promise.all([
+    const [{ data: offs }, { data: sts }, { data: cats }, { data: subs }] = await Promise.all([
       supabase
         .from("offers")
         .select("id,title,status,featured, store:stores(name)")
         .order("created_at", { ascending: false }),
-      supabase.from("stores").select("id,name,approved,owner_id").order("created_at", { ascending: false }),
+      supabase
+        .from("stores")
+        .select("id,name,approved,owner_id,featured_badge")
+        .order("created_at", { ascending: false }),
       supabase.from("categories").select("slug,name,icon,sort_order").order("sort_order", { ascending: true }),
+      supabase
+        .from("subscriptions")
+        .select("store_id,status,plan:plans(slug,name,sort_order)")
+        .order("created_at", { ascending: false }),
     ]);
+    const subsByStore = new Map<string, { plan_slug: string | null; plan_name: string | null; status: string }>();
+    (subs ?? []).forEach((row: any) => {
+      if (!row.store_id) return;
+      const existing = subsByStore.get(row.store_id);
+      const isActive = ACTIVE_SUB_STATUSES.has(row.status);
+      // prefer most recent active sub (subs are ordered by created_at desc)
+      if (!existing && isActive) {
+        subsByStore.set(row.store_id, {
+          plan_slug: row.plan?.slug ?? null,
+          plan_name: row.plan?.name ?? null,
+          status: row.status,
+        });
+      }
+    });
     setOffers((offs ?? []) as any);
-    setStores((sts ?? []) as any);
+    setStores(
+      ((sts ?? []) as any[]).map((s) => {
+        const sub = subsByStore.get(s.id);
+        return {
+          ...s,
+          plan_slug: sub?.plan_slug ?? null,
+          plan_name: sub?.plan_name ?? null,
+          subscription_status: sub?.status ?? null,
+        } as AdminStore;
+      }),
+    );
     setCategories((cats ?? []) as any);
     setLoading(false);
   };
@@ -153,7 +193,10 @@ export default function Admin() {
     load();
   };
 
-  const updateStore = async (id: string, patch: Partial<AdminStore>) => {
+  const updateStore = async (
+    id: string,
+    patch: { approved?: boolean; featured_badge?: boolean },
+  ) => {
     const { error } = await supabase.from("stores").update(patch).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Atualizado");
@@ -223,26 +266,78 @@ export default function Admin() {
             <Card>
               <CardHeader><CardTitle>Lojas</CardTitle></CardHeader>
               <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead className="text-left text-muted-foreground">
-                      <tr><th className="py-2">Nome</th><th>Status</th><th className="text-right">Ações</th></tr>
-                    </thead>
-                    <tbody className="divide-y">
-                      {stores.map((s) => (
-                        <tr key={s.id}>
-                          <td className="py-3 font-medium text-foreground">{s.name}</td>
-                          <td><Badge variant={s.approved ? "default" : "secondary"}>{s.approved ? "Aprovada" : "Pendente"}</Badge></td>
-                          <td className="text-right">
-                            <Button size="sm" variant={s.approved ? "outline" : "accent"} onClick={() => updateStore(s.id, { approved: !s.approved })}>
-                              {s.approved ? "Suspender" : "Aprovar"}
-                            </Button>
-                          </td>
+                <TooltipProvider>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead className="text-left text-muted-foreground">
+                        <tr>
+                          <th className="py-2">Nome</th>
+                          <th>Status</th>
+                          <th>Plano</th>
+                          <th>Selo Destaque</th>
+                          <th className="text-right">Ações</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody className="divide-y">
+                        {stores.map((s) => {
+                          const eligible =
+                            s.approved && !!s.plan_slug && ELIGIBLE_PLANS.has(s.plan_slug);
+                          const checked = !!s.featured_badge;
+                          const switchEl = (
+                            <Switch
+                              checked={checked}
+                              disabled={!eligible && !checked}
+                              onCheckedChange={(v) => updateStore(s.id, { featured_badge: v })}
+                              aria-label="Selo Loja Destaque"
+                            />
+                          );
+                          return (
+                            <tr key={s.id}>
+                              <td className="py-3 font-medium text-foreground">{s.name}</td>
+                              <td>
+                                <Badge variant={s.approved ? "default" : "secondary"}>
+                                  {s.approved ? "Aprovada" : "Pendente"}
+                                </Badge>
+                              </td>
+                              <td>
+                                {s.plan_name ? (
+                                  <Badge variant={ELIGIBLE_PLANS.has(s.plan_slug ?? "") ? "default" : "secondary"}>
+                                    {s.plan_name}
+                                  </Badge>
+                                ) : (
+                                  <span className="text-muted-foreground">—</span>
+                                )}
+                              </td>
+                              <td>
+                                {eligible || checked ? (
+                                  switchEl
+                                ) : (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <span className="inline-block">{switchEl}</span>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      Disponível apenas para planos Destaque e Plus
+                                    </TooltipContent>
+                                  </Tooltip>
+                                )}
+                              </td>
+                              <td className="text-right">
+                                <Button
+                                  size="sm"
+                                  variant={s.approved ? "outline" : "accent"}
+                                  onClick={() => updateStore(s.id, { approved: !s.approved })}
+                                >
+                                  {s.approved ? "Suspender" : "Aprovar"}
+                                </Button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </TooltipProvider>
               </CardContent>
             </Card>
           </TabsContent>
