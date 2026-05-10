@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle } from "lucide-react";
+import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle, BarChart3 } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
@@ -106,11 +106,18 @@ export default function PainelLojista() {
             <p className="text-muted-foreground">Gerencie sua loja, ofertas e plano.</p>
           </div>
           {store && (
-            <Button asChild variant="accent">
-              <Link to="/painel-lojista/oferta">
-                <Plus className="h-4 w-4" /> Nova oferta
-              </Link>
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button asChild variant="outline">
+                <Link to="/painel-lojista/inteligencia">
+                  <BarChart3 className="h-4 w-4" /> Inteligência
+                </Link>
+              </Button>
+              <Button asChild variant="accent">
+                <Link to="/painel-lojista/oferta">
+                  <Plus className="h-4 w-4" /> Nova oferta
+                </Link>
+              </Button>
+            </div>
           )}
         </div>
 

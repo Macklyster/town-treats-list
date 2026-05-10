@@ -38,6 +38,7 @@ const OfferDetail = () => {
         return;
       }
       setOffer(o);
+      trackOfferEvent(o.id, "view");
       const [s, all] = await Promise.all([fetchStoreById(o.storeId), fetchOffers()]);
       setStore(s);
       setRelated(
