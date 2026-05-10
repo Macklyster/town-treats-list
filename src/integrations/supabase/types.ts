@@ -65,6 +65,96 @@ export type Database = {
         }
         Relationships: []
       }
+      favorites: {
+        Row: {
+          created_at: string
+          id: string
+          offer_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          offer_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          offer_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notification_preferences: {
+        Row: {
+          city_new_offers: boolean
+          expiring_favorites: boolean
+          marketing: boolean
+          new_offers_followed_stores: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          city_new_offers?: boolean
+          expiring_favorites?: boolean
+          marketing?: boolean
+          new_offers_followed_stores?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          city_new_offers?: boolean
+          expiring_favorites?: boolean
+          marketing?: boolean
+          new_offers_followed_stores?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications_log: {
+        Row: {
+          audience: string
+          body: string
+          created_at: string
+          id: string
+          offer_id: string | null
+          recipients_count: number
+          sent_by: string | null
+          store_id: string | null
+          success_count: number
+          title: string
+          url: string | null
+        }
+        Insert: {
+          audience: string
+          body: string
+          created_at?: string
+          id?: string
+          offer_id?: string | null
+          recipients_count?: number
+          sent_by?: string | null
+          store_id?: string | null
+          success_count?: number
+          title: string
+          url?: string | null
+        }
+        Update: {
+          audience?: string
+          body?: string
+          created_at?: string
+          id?: string
+          offer_id?: string | null
+          recipients_count?: number
+          sent_by?: string | null
+          store_id?: string | null
+          success_count?: number
+          title?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
       offer_events: {
         Row: {
           created_at: string
@@ -236,6 +326,57 @@ export type Database = {
           id?: string
           phone?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      store_followers: {
+        Row: {
+          created_at: string
+          id: string
+          store_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          store_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          store_id?: string
+          user_id?: string
         }
         Relationships: []
       }
