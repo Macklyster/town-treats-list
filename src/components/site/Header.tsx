@@ -180,11 +180,41 @@ export const Header = () => {
                 {item.label}
               </Link>
             ))}
-            <Button asChild variant="accent" className="mt-2">
-              <Link to="/anuncie" onClick={() => setOpen(false)}>
-                Anuncie Conosco
-              </Link>
-            </Button>
+            {!user ? (
+              <div className="mt-2 flex flex-col gap-2">
+                <Button asChild variant="outline">
+                  <Link to="/auth" onClick={() => setOpen(false)}>Entrar</Link>
+                </Button>
+                <Button asChild variant="accent">
+                  <Link to="/anuncie" onClick={() => setOpen(false)}>Anuncie Conosco</Link>
+                </Button>
+              </div>
+            ) : (
+              <div className="mt-2 flex flex-col gap-2">
+                <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                {isLojista && (
+                  <Button variant="outline" onClick={() => { setOpen(false); navigate("/painel-lojista"); }}>
+                    Painel do Lojista
+                  </Button>
+                )}
+                {isAdmin && (
+                  <Button variant="outline" onClick={() => { setOpen(false); navigate("/admin"); }}>
+                    Painel Admin
+                  </Button>
+                )}
+                {!isLojista && (
+                  <Button variant="accent" onClick={() => { setOpen(false); navigate("/anuncie"); }}>
+                    Tornar-se lojista
+                  </Button>
+                )}
+                <Button variant="ghost" onClick={() => { setOpen(false); navigate("/perfil/notificacoes"); }}>
+                  <Bell className="mr-2 h-4 w-4" /> Notificações
+                </Button>
+                <Button variant="ghost" onClick={async () => { setOpen(false); await signOut(); navigate("/"); }}>
+                  <LogOut className="mr-2 h-4 w-4" /> Sair
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}
