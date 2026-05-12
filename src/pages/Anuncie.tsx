@@ -39,6 +39,7 @@ const plans = [
       "Selo de Loja Destaque",
       "Prioridade nas buscas",
       "Inclusão no carrossel da home (1x/mês)",
+      "Ofertas relâmpago com contagem regressiva",
       "Dashboard de Inteligência (KPIs, heatmap e top ofertas)",
       "Suporte por WhatsApp",
     ],
