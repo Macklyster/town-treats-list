@@ -19,6 +19,8 @@ import { trackOfferEvent } from "@/lib/offer-events";
 import { FollowStoreButton } from "@/components/site/FollowStoreButton";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import NotFound from "./NotFound";
+import { SEO } from "@/components/seo/SEO";
+import { absoluteUrl, citySlug, cityLabel } from "@/lib/slug";
 
 const OfferDetail = () => {
   const { id } = useParams();
@@ -66,8 +68,50 @@ const OfferDetail = () => {
     `Olá! Vi a oferta "${offer.title}" no OfertasFly e quero garantir.`
   )}`;
 
+  const cityObj = store?.city ? { city: store.city, state: (store.state || "").toUpperCase() } : null;
+  const cSlug = cityObj ? citySlug(cityObj) : "";
+  const cLabel = cityObj ? cityLabel(cityObj) : "";
+  const seoTitle = `${offer.title} — ${offer.storeName}${cLabel ? ` em ${cLabel}` : ""} | OfertasFly`;
+  const seoDesc = (offer.description || `${offer.title} na ${offer.storeName}${cLabel ? ` em ${cLabel}` : ""}. Aproveite a oferta no OfertasFly.`).slice(0, 160);
+  const offerLd = {
+    "@context": "https://schema.org",
+    "@type": "Offer",
+    name: offer.title,
+    description: offer.description || undefined,
+    image: offer.image,
+    url: absoluteUrl(`/oferta/${offer.id}`),
+    price: offer.promoPrice || undefined,
+    priceCurrency: "BRL",
+    availability: "https://schema.org/InStock",
+    validThrough: offer.validUntil || undefined,
+    seller: {
+      "@type": "LocalBusiness",
+      name: offer.storeName,
+      address: store?.address
+        ? { "@type": "PostalAddress", streetAddress: store.address, addressLocality: store?.city, addressRegion: store?.state, addressCountry: "BR" }
+        : undefined,
+      telephone: store?.phone || undefined,
+    },
+  };
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Início", item: absoluteUrl("/") },
+      ...(cSlug ? [{ "@type": "ListItem", position: 2, name: cLabel, item: absoluteUrl(`/ofertas/${cSlug}`) }] : []),
+      { "@type": "ListItem", position: cSlug ? 3 : 2, name: offer.title, item: absoluteUrl(`/oferta/${offer.id}`) },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={seoTitle}
+        description={seoDesc}
+        path={`/oferta/${offer.id}`}
+        image={offer.image}
+        jsonLd={[offerLd, breadcrumbLd]}
+      />
       <Header />
       <main className="container py-10">
         <Link
