@@ -229,15 +229,16 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
         <div>
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             {hasMappable ? (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setShowMap((v) => !v)}
-              >
-                <MapIcon className="mr-2 h-4 w-4" />
-                {showMap ? "Ocultar mapa" : "Ver no mapa"}
-              </Button>
+            <Button
+              type="button"
+              variant="accent"
+              size="sm"
+              className="shadow-pop"
+              onClick={() => setShowMap((v) => !v)}
+            >
+              <MapIcon className="mr-2 h-4 w-4" />
+              {showMap ? "Ocultar mapa" : "Ver no mapa"}
+            </Button>
             ) : <span />}
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Ordenar por</span>
