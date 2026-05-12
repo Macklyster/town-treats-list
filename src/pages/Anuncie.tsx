@@ -143,7 +143,7 @@ const Anuncie = () => {
                       </span>
                     )}
                     {isFree && (
-                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-success px-3 py-1 text-xs font-bold text-success-foreground">
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-strong px-3 py-1 text-xs font-bold text-primary-foreground">
                         Comece sem pagar
                       </span>
                     )}
