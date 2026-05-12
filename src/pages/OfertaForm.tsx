@@ -20,6 +20,8 @@ import { AlertCircle, Bell } from "lucide-react";
 import { ImageUploader } from "@/components/site/ImageUploader";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PAYMENT_METHODS, type PaymentMethodId, parseConditions, buildConditions } from "@/lib/payment-methods";
+import { useFlashSettings } from "@/hooks/useFlashSettings";
+import { Zap } from "lucide-react";
 
 const schema = z.object({
   title: z.string().trim().min(3).max(140),
@@ -31,6 +33,8 @@ const schema = z.object({
   description: z.string().trim().max(1000).optional().or(z.literal("")),
   conditions: z.string().trim().max(500).optional().or(z.literal("")),
   valid_until: z.string().optional().or(z.literal("")),
+  is_flash: z.boolean().optional(),
+  flash_duration_hours: z.number().int().min(1).max(72).optional(),
 });
 
 export default function OfertaForm() {
@@ -45,6 +49,7 @@ export default function OfertaForm() {
   const [categories, setCategories] = useState<{ slug: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const sub = useSubscription(storeId);
+  const { defaultHours: flashDefaultHours } = useFlashSettings();
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodId[]>([]);
   const [form, setForm] = useState({
     title: "",
@@ -57,6 +62,8 @@ export default function OfertaForm() {
     conditions: "",
     valid_until: "",
     featured: false,
+    is_flash: false,
+    flash_duration_hours: 2,
   });
 
   const togglePayment = (id: PaymentMethodId) =>
@@ -95,6 +102,8 @@ export default function OfertaForm() {
             conditions: parsedCond.text,
             valid_until: data.valid_until ?? "",
             featured: !!data.featured,
+            is_flash: !!(data as any).is_flash,
+            flash_duration_hours: (data as any).flash_duration_hours ?? flashDefaultHours,
           });
         }
       }
@@ -276,6 +285,42 @@ export default function OfertaForm() {
                   disabled={featureDisabled}
                   onCheckedChange={(v) => setForm({ ...form, featured: v })}
                 />
+              </div>
+
+              <div className="rounded-md border border-destructive/40 bg-destructive/5 p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-start gap-2">
+                    <Zap className="mt-0.5 h-5 w-5 text-destructive" />
+                    <div>
+                      <Label className="text-sm">Oferta relâmpago</Label>
+                      <p className="text-xs text-muted-foreground">
+                        Mostra contagem regressiva visível e dispara alerta para seguidores ao publicar.
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={form.is_flash}
+                    onCheckedChange={(v) =>
+                      setForm({ ...form, is_flash: v, flash_duration_hours: v ? form.flash_duration_hours || flashDefaultHours : 2 })
+                    }
+                  />
+                </div>
+                {form.is_flash && (
+                  <div className="mt-3 flex items-center gap-3">
+                    <Label className="text-sm">Duração (horas)</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={72}
+                      className="w-24"
+                      value={form.flash_duration_hours}
+                      onChange={(e) =>
+                        setForm({ ...form, flash_duration_hours: Math.max(1, Math.min(72, parseInt(e.target.value || "0") || flashDefaultHours)) })
+                      }
+                    />
+                    <span className="text-xs text-muted-foreground">Padrão: {flashDefaultHours}h</span>
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-3 pt-2">

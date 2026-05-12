@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          flash_default_hours: number
+          id: boolean
+          updated_at: string
+        }
+        Insert: {
+          flash_default_hours?: number
+          id?: boolean
+          updated_at?: string
+        }
+        Update: {
+          flash_default_hours?: number
+          id?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cancellation_reasons: {
         Row: {
           created_at: string
@@ -195,8 +213,12 @@ export type Database = {
           created_at: string
           description: string | null
           featured: boolean
+          flash_duration_hours: number | null
+          flash_ends_at: string | null
+          flash_starts_at: string | null
           id: string
           image_url: string | null
+          is_flash: boolean
           original_price: number
           popularity: number
           promo_price: number
@@ -213,8 +235,12 @@ export type Database = {
           created_at?: string
           description?: string | null
           featured?: boolean
+          flash_duration_hours?: number | null
+          flash_ends_at?: string | null
+          flash_starts_at?: string | null
           id?: string
           image_url?: string | null
+          is_flash?: boolean
           original_price?: number
           popularity?: number
           promo_price?: number
@@ -231,8 +257,12 @@ export type Database = {
           created_at?: string
           description?: string | null
           featured?: boolean
+          flash_duration_hours?: number | null
+          flash_ends_at?: string | null
+          flash_starts_at?: string | null
           id?: string
           image_url?: string | null
+          is_flash?: boolean
           original_price?: number
           popularity?: number
           promo_price?: number

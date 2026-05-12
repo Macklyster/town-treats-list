@@ -18,6 +18,7 @@ import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { trackOfferEvent } from "@/lib/offer-events";
 import { FollowStoreButton } from "@/components/site/FollowStoreButton";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
+import { CountdownBadge } from "@/components/site/CountdownBadge";
 import NotFound from "./NotFound";
 import { SEO } from "@/components/seo/SEO";
 import { absoluteUrl, citySlug, cityLabel } from "@/lib/slug";
@@ -123,12 +124,17 @@ const OfferDetail = () => {
 
         <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr]">
           <div>
-            <div className="relative overflow-hidden rounded-3xl bg-muted shadow-card">
+            <div className={`relative overflow-hidden rounded-3xl bg-muted shadow-card ${offer.isFlash ? "ring-2 ring-destructive/70" : ""}`}>
               <img src={offer.image} alt={offer.title} className="aspect-[4/3] w-full object-cover" />
               {pct > 0 && (
                 <span className="absolute left-5 top-5 rounded-full bg-accent px-4 py-1.5 text-sm font-bold text-accent-foreground shadow-pop">
                   -{pct}% OFF
                 </span>
+              )}
+              {offer.isFlash && offer.flashEndsAt && (
+                <div className="absolute bottom-5 left-5">
+                  <CountdownBadge endsAt={offer.flashEndsAt} variant="detail" />
+                </div>
               )}
             </div>
 

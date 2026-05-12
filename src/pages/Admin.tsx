@@ -59,6 +59,9 @@ type AdminOffer = {
   title: string;
   status: string;
   featured: boolean;
+  is_flash: boolean;
+  flash_ends_at: string | null;
+  flash_duration_hours: number | null;
   store: { name: string } | null;
 };
 type AdminStore = {
@@ -91,7 +94,7 @@ export default function Admin() {
     const [{ data: offs }, { data: sts }, { data: cats }, { data: subs }] = await Promise.all([
       supabase
         .from("offers")
-        .select("id,title,status,featured, store:stores(name)")
+        .select("id,title,status,featured,is_flash,flash_ends_at,flash_duration_hours, store:stores(name)")
         .order("created_at", { ascending: false }),
       supabase
         .from("stores")
@@ -186,11 +189,29 @@ export default function Admin() {
     load();
   };
 
-  const updateOffer = async (id: string, patch: { status?: "pending" | "approved" | "rejected" | "paused"; featured?: boolean }) => {
+  const updateOffer = async (id: string, patch: { status?: "pending" | "approved" | "rejected" | "paused"; featured?: boolean; is_flash?: boolean; flash_duration_hours?: number }) => {
+    const before = offers.find((x) => x.id === id);
     const { error } = await supabase.from("offers").update(patch).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Atualizado");
+    // Auto-notify followers when a flash offer becomes approved
+    if (before?.is_flash && before.status !== "approved" && patch.status === "approved") {
+      supabase.functions.invoke("notify-flash-offer", {
+        body: { offer_id: id, audience: "store_followers" },
+      }).then(({ data, error: e }) => {
+        if (e) toast.error("Falha ao notificar seguidores");
+        else toast.success(`Alerta enviado para ${data?.success ?? 0} seguidor(es)`);
+      });
+    }
     load();
+  };
+
+  const sendFlashBroadcast = async (id: string) => {
+    const { data, error } = await supabase.functions.invoke("notify-flash-offer", {
+      body: { offer_id: id, audience: "broadcast" },
+    });
+    if (error) return toast.error("Falha ao enviar broadcast");
+    toast.success(`Broadcast enviado para ${data?.success ?? 0} usuário(s)`);
   };
 
   const updateStore = async (
@@ -226,7 +247,7 @@ export default function Admin() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead className="text-left text-muted-foreground">
-                        <tr><th className="py-2">Título</th><th>Loja</th><th>Status</th><th>Destaque</th><th className="text-right">Ações</th></tr>
+                        <tr><th className="py-2">Título</th><th>Loja</th><th>Status</th><th>Relâmpago</th><th>Destaque</th><th className="text-right">Ações</th></tr>
                       </thead>
                       <tbody className="divide-y">
                         {offers.map((o) => (
@@ -234,6 +255,28 @@ export default function Admin() {
                             <td className="py-3 font-medium text-foreground">{o.title}</td>
                             <td>{o.store?.name ?? "—"}</td>
                             <td><Badge variant={o.status === "approved" ? "default" : "secondary"}>{o.status}</Badge></td>
+                            <td>
+                              <div className="inline-flex items-center gap-2">
+                                <Switch
+                                  checked={o.is_flash}
+                                  onCheckedChange={(v) => updateOffer(o.id, { is_flash: v })}
+                                  aria-label="Marcar como relâmpago"
+                                />
+                                {o.is_flash && (
+                                  <Input
+                                    type="number"
+                                    min={1}
+                                    max={72}
+                                    defaultValue={o.flash_duration_hours ?? 2}
+                                    className="h-8 w-16"
+                                    onBlur={(e) => {
+                                      const v = Math.max(1, Math.min(72, parseInt(e.target.value || "0") || 2));
+                                      if (v !== o.flash_duration_hours) updateOffer(o.id, { flash_duration_hours: v });
+                                    }}
+                                  />
+                                )}
+                              </div>
+                            </td>
                             <td>{o.featured ? <Star className="h-4 w-4 fill-accent text-accent text-[#10100f]" /> : "—"}</td>
                             <td className="text-right">
                               <div className="inline-flex gap-2">
@@ -250,6 +293,11 @@ export default function Admin() {
                                 <Button size="sm" variant="ghost" onClick={() => updateOffer(o.id, { featured: !o.featured })}>
                                   <Star className="h-3.5 w-3.5" />
                                 </Button>
+                                {o.is_flash && o.status === "approved" && (
+                                  <Button size="sm" variant="outline" onClick={() => sendFlashBroadcast(o.id)}>
+                                    📣 Broadcast
+                                  </Button>
+                                )}
                               </div>
                             </td>
                           </tr>

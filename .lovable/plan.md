@@ -1,86 +1,73 @@
-# SEO local por cidade/categoria
+# Oferta Relâmpago com contagem regressiva e push automático
 
-Objetivo: capturar buscas como "ofertas em Curitiba", "promoções de restaurantes em Florianópolis", "cupons beleza Joinville" criando páginas dedicadas, indexáveis e com sitemap.
+Ofertas marcadas como "relâmpago" exibem cronômetro visível em todo o app, expiram automaticamente após X horas e disparam notificação push para os seguidores ao serem publicadas. O admin pode editar/sobrescrever a duração e tem acesso adicional para notificar todos os usuários do app.
 
-## O que será criado
+## Comportamento
 
-### 1. Rotas novas (React Router)
-- `/ofertas/:cidadeSlug` → ex: `/ofertas/curitiba-pr`
-- `/ofertas/:cidadeSlug/:categoriaSlug` → ex: `/ofertas/curitiba-pr/alimentacao`
-- `/loja/:storeSlug` → página pública da loja (fortalece long-tail e link interno)
+### Duração
+- Configuração global em `app_settings`: `flash_default_hours` (padrão `2`).
+- Editável apenas pelo admin (nova aba "Configurações" em `/admin`).
+- Cada oferta relâmpago armazena `flash_duration_hours` próprio (default = valor global no momento da criação) e `flash_starts_at` (definido quando a oferta é aprovada/publicada).
+- `flash_ends_at = flash_starts_at + flash_duration_hours`. Calculado em trigger no banco para manter consistência.
 
-Cada rota usa o slug `cidade-uf` para URL limpa e única. Mantém-se compatível com `/?categoria=…#ofertas` existente (redirect 301 client-side opcional).
+### Quem cria / edita
+- **Lojista**: no formulário de oferta (`OfertaForm.tsx`) ganha toggle "Oferta relâmpago" + campo "Duração (h)" pré-preenchido com o padrão global. Não escolhe público.
+- **Admin**: no painel `/admin` aba Ofertas, pode marcar/desmarcar relâmpago em qualquer oferta, alterar a duração e escolher o público (seguidores ou todos).
 
-### 2. Componente `<SEO />` (react-helmet-async)
-Centraliza `<title>`, `<meta description>`, canonical, OG/Twitter e JSON-LD por página. Aplicado em:
-- Home (atualizar copy genérica)
-- Página de cidade
-- Página de cidade + categoria
-- Página da oferta (`/oferta/:id`) — já existe, ganhar SEO
-- Página da loja
+### Contagem regressiva visível
+- Componente `<CountdownBadge endsAt={...} />` mostra `acaba em 1h 47m` (ou `2m 14s` quando <10min) em vermelho pulsante.
+- Aparece em: card da oferta (`OfferCard`), página de detalhe (`OfferDetail`), carrossel de destaques, página de cidade.
+- Quando `now >= flash_ends_at`, oferta deixa de ser exibida nas listagens (filtro nas queries) e o card mostra "Encerrada" caso ainda esteja em cache.
 
-Títulos seguem padrão (<60 chars):
-- Cidade: `Ofertas em {Cidade}/{UF} — Cupons e Descontos | OfertasFly`
-- Cidade+Cat: `{Categoria} em {Cidade}/{UF} — Ofertas e Cupons | OfertasFly`
-- Oferta: `{Título} — {Loja} em {Cidade} | OfertasFly`
-- Loja: `{Loja} — Ofertas em {Cidade}/{UF} | OfertasFly`
+### Expiração automática
+- Trigger SQL: ao inserir/atualizar para `is_flash = true` e `status = approved`, define `flash_starts_at` se nulo e calcula `flash_ends_at`.
+- Cron `pg_cron` (a cada 5 min) chama edge function `flash-expire` que marca `status = 'paused'` em ofertas expiradas (`is_flash AND flash_ends_at < now() AND status = 'approved'`).
+- Listagens públicas (`fetchOffers`) já filtram `is_flash = false OR flash_ends_at > now()`.
 
-Descrições <160 chars, dinâmicas com nº de ofertas e categoria.
+### Notificações push
+- **Disparo automático ao publicar**: quando `is_flash = true` E `status` muda para `approved`, trigger SQL chama edge function `notify-flash-offer` via `pg_net`.
+  - Payload inclui `offer_id`, `audience` (default `store_followers`).
+- **Reenvio manual**:
+  - Lojista: botão "Reenviar alerta para seguidores" no painel da loja (limitado a 1 reenvio adicional por oferta para evitar spam).
+  - Admin: dois botões — "Notificar seguidores" e "Notificar todos os usuários do app" (broadcast). Sem limite, mas registrado em `notifications_log`.
+- Mensagem padrão: título `⚡ Oferta relâmpago: {título}` / corpo `{loja} • Acaba em {Xh}. Aproveite!`.
 
-### 3. JSON-LD estruturado
-- Home/Cidade: `WebSite` + `BreadcrumbList`
-- Oferta: `Offer` (price, priceCurrency BRL, availability, validThrough, seller=LocalBusiness)
-- Loja: `LocalBusiness` (name, address, telephone, image, areaServed)
-- Listas: `ItemList` das ofertas
+## Arquivos afetados
 
-### 4. Conteúdo das páginas de cidade/categoria
-- H1 único: "Ofertas em {Cidade}" / "{Categoria} em {Cidade}"
-- Parágrafo introdutório curto e dinâmico (texto SEO leve)
-- Grid de ofertas filtrado por cidade (e categoria)
-- Links internos: chips das demais categorias da cidade, link para outras cidades disponíveis, link para lojas em destaque
-- Breadcrumbs visíveis (Início › Cidade › Categoria)
+**Banco** (`supabase--migration`)
+- `app_settings` (singleton com `flash_default_hours int default 2`, RLS: read público, update admin).
+- `offers`: novas colunas `is_flash boolean default false`, `flash_duration_hours int`, `flash_starts_at timestamptz`, `flash_ends_at timestamptz`, índice em `flash_ends_at`.
+- Trigger `set_flash_window()` antes de insert/update.
+- Trigger `notify_flash_published()` após update — chama edge via `pg_net` quando `is_flash = true` e status muda para `approved`.
+- `notifications_log`: nova coluna `audience` já existe; usar valores `flash_followers`, `flash_broadcast`.
+- Cron `pg_cron`: chamar `flash-expire` a cada 5 min.
 
-### 5. Sitemap dinâmico
-Edge function `sitemap` (resposta `application/xml`) gerando:
-- `/`
-- `/ofertas/{cidadeSlug}` para toda cidade com loja aprovada
-- `/ofertas/{cidadeSlug}/{categoriaSlug}` para combinações com ≥1 oferta aprovada
-- `/oferta/{id}` para todas as ofertas aprovadas e válidas
-- `/loja/{slug}` para todas as lojas aprovadas
-- `/anuncie`, `/termos-de-uso`, `/politica-de-privacidade`
+**Edge Functions**
+- `notify-flash-offer/index.ts` (verify_jwt = false; valida `x-internal-secret` ou usa SERVICE_ROLE call interna): envia push para seguidores; aceita parâmetro `audience` para broadcast (admin).
+- `flash-expire/index.ts` (verify_jwt = false): pausa ofertas expiradas.
 
-Exposto em `https://ofertasfly.com.br/sitemap.xml` via rewrite no `public/_redirects` (ou link direto para a função). `lastmod` baseado em `updated_at`.
+**Frontend**
+- `src/lib/offers-api.ts`: tipos e queries incluem campos flash; filtra expiradas em listagens.
+- `src/components/site/CountdownBadge.tsx` (novo): cronômetro com tick a cada 1s, fallback graceful.
+- `src/components/site/OfferCard.tsx`: badge "⚡ RELÂMPAGO" + countdown sobreposto na imagem.
+- `src/components/site/FeaturedCarousel.tsx`, `src/pages/OfferDetail.tsx`, `src/pages/CityOffers.tsx`: integrar badge.
+- `src/pages/OfertaForm.tsx`: toggle "Oferta relâmpago" + input "Duração (h)" (1–72) com default global; carregar `app_settings` no mount; bloco de reenvio manual (após aprovação).
+- `src/pages/Admin.tsx`:
+  - aba Ofertas: coluna/toggle "Relâmpago" + input duração + botões "Notificar seguidores" e "Notificar todos".
+  - nova aba "Configurações": campo `flash_default_hours`.
+- `src/hooks/useFlashSettings.ts` (novo): lê `app_settings.flash_default_hours`.
+- `index.css`: animação `pulse-flash` para badge.
 
-### 6. robots.txt
-Atualizar para incluir `Sitemap: https://ofertasfly.com.br/sitemap.xml` e manter `Allow: /`.
+## Detalhes técnicos relevantes
 
-### 7. Pré-renderização para indexação
-Como o app é SPA Vite, o Googlebot indexa JS, mas para garantir snippet correto e cobertura ampla:
-- Adicionar `react-helmet-async` (tags injetadas no head client-side — Google renderiza)
-- Canonical absoluto em cada página
-- Imagens com `alt` descritivo (cidade + categoria + título)
-- `loading="lazy"` nos cards (já provável)
+- O trigger `notify_flash_published` usará `pg_net.http_post` com header `x-internal-secret` (novo secret `INTERNAL_PUSH_SECRET`) lido pela função para autenticar a chamada interna sem JWT de usuário.
+- Cron via `pg_cron` requer `pg_cron` + `pg_net` habilitados; SQL de agendamento será executado via tool `supabase--insert` (não migration) por conter URL/anon key.
+- `CountdownBadge` desmonta o timer quando expira para evitar leaks; usa `useState` + `setInterval` 1s.
+- Filtragem de expiradas no client é defensiva — fonte de verdade é o cron que muda status.
+- Limite de 1 reenvio manual por lojista será verificado contando entradas em `notifications_log` com `audience = 'flash_followers'` e mesmo `offer_id`.
 
-Pré-render estático fica fora do escopo desta etapa (Vite não suporta nativo); ganho principal vem de URLs únicas + sitemap + meta dinâmico.
-
-## Arquivos afetados (resumo técnico)
-
-- `package.json`: adiciona `react-helmet-async`
-- `src/main.tsx`: envolve App com `HelmetProvider`
-- `src/components/seo/SEO.tsx` (novo): componente reutilizável
-- `src/lib/slug.ts` (novo): `citySlug({city,state})`, `parseCitySlug(slug)`
-- `src/lib/offers-api.ts`: `fetchOffersByCitySlug`, `fetchCitiesWithOffers`, `fetchStoreBySlug`
-- `src/pages/CityOffers.tsx` (novo): rota `/ofertas/:cidadeSlug` e `/ofertas/:cidadeSlug/:categoriaSlug`
-- `src/pages/StorePage.tsx` (novo): rota `/loja/:storeSlug`
-- `src/pages/Index.tsx`, `OfferDetail.tsx`: integrar `<SEO />` e JSON-LD
-- `src/components/site/Footer.tsx`: adicionar bloco "Ofertas por cidade" com top cidades (links internos)
-- `src/App.tsx`: registrar novas rotas
-- `supabase/functions/sitemap/index.ts` (novo): gera XML, `verify_jwt = false`
-- `supabase/config.toml`: bloco da função sitemap
-- `public/robots.txt`: adicionar linha `Sitemap:`
-
-## Fora do escopo (sugestões futuras)
-- SSR/SSG real (migração para Next/Astro)
-- Páginas de bairro
-- Blog/conteúdo editorial por cidade
-- Schema `Event` para ofertas com data específica
+## Fora do escopo
+- Notificação por email/SMS.
+- Geofencing.
+- Variantes A/B de copy.
+- "Alerta de preço" vinculado a uma watchlist do consumidor (diferente de oferta relâmpago — pode virar feature separada).
