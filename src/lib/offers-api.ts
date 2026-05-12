@@ -112,7 +112,7 @@ export const fetchOffersByStoreId = async (storeId: string): Promise<UIOffer[]> 
     .eq("status", "approved")
     .eq("store_id", storeId)
     .order("created_at", { ascending: false });
-  return (data ?? []).map(mapRow);
+  return filterActiveFlash(data ?? []).map(mapRow);
 };
 
 export const fetchAvailableCities = async (): Promise<{ city: string; state: string }[]> => {
