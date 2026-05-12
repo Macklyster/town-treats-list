@@ -259,17 +259,33 @@ export default function Assinatura() {
 
         {loading ? <p>Carregando…</p> : (
           <div className="grid gap-6 md:grid-cols-3">
-            {plans.map((p) => {
-              const isCurrent = sub?.plan_id === p.id && sub?.status === "active";
+            {PLAN_CATALOG.map((catalog) => {
+              const dbPlan = plans.find((p) => p.slug === catalog.slug);
+              const isCurrent = !!dbPlan && sub?.plan_id === dbPlan.id && sub?.status === "active";
+              const Icon = catalog.icon;
               return (
-                <Card key={p.id} className={isCurrent ? "ring-2 ring-accent" : ""}>
+                <Card
+                  key={catalog.slug}
+                  className={`relative ${isCurrent ? "ring-2 ring-accent" : catalog.highlight ? "ring-2 ring-accent/40" : ""}`}
+                >
+                  {catalog.highlight && !isCurrent && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground">
+                      Mais popular
+                    </span>
+                  )}
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle>{p.name}</CardTitle>
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-accent/15 text-accent-strong">
+                          <Icon className="h-5 w-5" />
+                        </span>
+                        <CardTitle>{catalog.name}</CardTitle>
+                      </div>
                       {isCurrent && <Badge>Plano atual</Badge>}
                     </div>
                     <div className="mt-2 text-display text-foreground">
-                      {formatBRL(p.price_cents)}<span className="text-sm font-normal text-muted-foreground">/mês</span>
+                      {formatBRL(catalog.priceCents)}
+                      <span className="text-sm font-normal text-muted-foreground">{catalog.period}</span>
                     </div>
                     {isCurrent && sub?.current_period_end && (
                       <p className="mt-1 text-xs text-muted-foreground">
@@ -280,7 +296,7 @@ export default function Assinatura() {
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2 text-sm">
-                      {(p.features ?? []).map((f) => (
+                      {catalog.features.map((f) => (
                         <li key={f} className="flex items-start gap-2">
                           <Check className="mt-0.5 h-4 w-4 text-accent-strong" /> {f}
                         </li>
@@ -288,12 +304,12 @@ export default function Assinatura() {
                     </ul>
                     <Button
                       className="mt-6 w-full"
-                      variant={isCurrent ? "outline" : "accent"}
-                      disabled={isCurrent || busy === p.id}
-                      onClick={() => subscribe(p.id)}
+                      variant={isCurrent ? "outline" : catalog.highlight ? "accent" : "default"}
+                      disabled={isCurrent || !dbPlan || busy === dbPlan?.id}
+                      onClick={() => dbPlan && subscribe(dbPlan.id)}
                     >
-                      {busy === p.id && <Loader2 className="h-4 w-4 animate-spin" />}
-                      {isCurrent ? "Plano ativo" : "Assinar"}
+                      {dbPlan && busy === dbPlan.id && <Loader2 className="h-4 w-4 animate-spin" />}
+                      {isCurrent ? "Plano ativo" : !dbPlan ? "Indisponível" : "Assinar"}
                     </Button>
                   </CardContent>
                 </Card>
