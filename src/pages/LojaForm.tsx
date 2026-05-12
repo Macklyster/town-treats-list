@@ -90,12 +90,25 @@ export default function LojaForm() {
       slug: slugify(form.name) + "-" + user.id.slice(0, 6),
     };
 
-    const { error } = storeId
-      ? await supabase.from("stores").update(payload).eq("id", storeId)
-      : await supabase.from("stores").insert(payload);
+    let resultId = storeId;
+    if (storeId) {
+      const { error } = await supabase.from("stores").update(payload).eq("id", storeId);
+      if (error) { setLoading(false); return toast.error(error.message); }
+    } else {
+      const { data, error } = await supabase.from("stores").insert(payload).select("id").single();
+      if (error) { setLoading(false); return toast.error(error.message); }
+      resultId = data?.id ?? null;
+      setStoreId(resultId);
+    }
+
+    // Geocode in background — don't block save
+    if (resultId && form.address && form.city && form.state) {
+      supabase.functions
+        .invoke("geocode-store", { body: { store_id: resultId } })
+        .catch(() => {});
+    }
 
     setLoading(false);
-    if (error) return toast.error(error.message);
     toast.success(storeId ? "Loja atualizada" : "Loja criada — aguardando aprovação");
     navigate("/painel-lojista");
   };

@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { Tag } from "lucide-react";
 import { UIOffer, discountPct, formatBRL } from "@/lib/offers-api";
+import { formatDistance } from "@/lib/geo";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { CountdownBadge } from "@/components/site/CountdownBadge";
+import { MapPin } from "lucide-react";
 
 export const OfferCard = ({ offer }: { offer: UIOffer }) => {
   const pct = discountPct(offer);
@@ -47,6 +49,12 @@ export const OfferCard = ({ offer }: { offer: UIOffer }) => {
           {offer.storeFeaturedBadge && <StoreFeaturedBadge showLabel={false} />}
         </div>
         <h3 className="line-clamp-2 text-base font-medium text-foreground">{offer.title}</h3>
+        {typeof offer.distanceKm === "number" && (
+          <div className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+            <MapPin className="h-3 w-3" />
+            <span>a {formatDistance(offer.distanceKm)} de você</span>
+          </div>
+        )}
         <div className="mt-auto flex items-end justify-between pt-2">
           <div>
             {pct > 0 && (

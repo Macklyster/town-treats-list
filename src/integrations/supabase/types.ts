@@ -433,7 +433,9 @@ export type Database = {
           featured_badge: boolean
           id: string
           instagram: string | null
+          latitude: number | null
           logo_url: string | null
+          longitude: number | null
           name: string
           owner_id: string
           phone: string | null
@@ -452,7 +454,9 @@ export type Database = {
           featured_badge?: boolean
           id?: string
           instagram?: string | null
+          latitude?: number | null
           logo_url?: string | null
+          longitude?: number | null
           name: string
           owner_id: string
           phone?: string | null
@@ -471,7 +475,9 @@ export type Database = {
           featured_badge?: boolean
           id?: string
           instagram?: string | null
+          latitude?: number | null
           logo_url?: string | null
+          longitude?: number | null
           name?: string
           owner_id?: string
           phone?: string | null

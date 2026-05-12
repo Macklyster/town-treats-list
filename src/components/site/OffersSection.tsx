@@ -3,6 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import { OfferCard } from "@/components/site/OfferCard";
 import { fetchOffers, UIOffer, discountPct } from "@/lib/offers-api";
 import { useCity } from "@/hooks/useCity";
+import { useUserLocation } from "@/hooks/useUserLocation";
+import { haversineKm } from "@/lib/geo";
 import { categories } from "@/data/categories";
 import { Label } from "@/components/ui/label";
 import {
@@ -14,6 +16,8 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { OffersMap } from "@/components/site/OffersMap";
+import { MapPin, X, Map as MapIcon } from "lucide-react";
 
 const types = [
   { v: "all", l: "Todos" },
@@ -22,7 +26,7 @@ const types = [
   { v: "brinde", l: "Brinde" },
 ];
 
-const sortOptions = [
+const baseSortOptions = [
   { v: "recent", l: "Mais recentes" },
   { v: "popular", l: "Mais populares" },
   { v: "lowest", l: "Menor preço" },
@@ -42,8 +46,10 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
   const sort = params.get("ordem") ?? "recent";
 
   const { city, openSelector } = useCity();
+  const { loc: userLoc, request: requestLoc, clear: clearLoc, loading: locLoading, error: locError } = useUserLocation();
   const [internalOffers, setInternalOffers] = useState<UIOffer[]>([]);
   const [internalLoading, setInternalLoading] = useState(true);
+  const [showMap, setShowMap] = useState(false);
 
   const useInternal = providedOffers === undefined;
 
@@ -68,23 +74,59 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
     const next = new URLSearchParams(params);
     if (!v || v === "all") next.delete(k);
     else next.set(k, v);
-    // preserve hash so deep links keep working
     setParams(next, { replace: true });
   };
 
+  // attach distance when we have user location
+  const allWithDistance = useMemo(() => {
+    if (!userLoc) return all;
+    return all.map((o) => {
+      if (typeof o.storeLat !== "number" || typeof o.storeLng !== "number") return o;
+      return {
+        ...o,
+        distanceKm: haversineKm(userLoc, { lat: o.storeLat, lng: o.storeLng }),
+      };
+    });
+  }, [all, userLoc?.lat, userLoc?.lng]);
+
+  const sortOptions = useMemo(
+    () => (userLoc ? [{ v: "nearby", l: "Perto de mim" }, ...baseSortOptions] : baseSortOptions),
+    [userLoc],
+  );
+
   const list = useMemo(() => {
-    let l = all.filter((o) => {
+    let l = allWithDistance.filter((o) => {
       if (q && !`${o.title} ${o.description}`.toLowerCase().includes(q.toLowerCase())) return false;
       if (cat !== "all" && o.category !== cat) return false;
       if (type !== "all" && o.type !== type) return false;
       return true;
     });
     if (sort === "popular") l = [...l].sort((a, b) => b.popularity - a.popularity);
-    if (sort === "lowest") l = [...l].sort((a, b) => a.promoPrice - b.promoPrice);
-    if (sort === "discount") l = [...l].sort((a, b) => discountPct(b) - discountPct(a));
-    if (sort === "recent") l = [...l].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    else if (sort === "lowest") l = [...l].sort((a, b) => a.promoPrice - b.promoPrice);
+    else if (sort === "discount") l = [...l].sort((a, b) => discountPct(b) - discountPct(a));
+    else if (sort === "nearby" && userLoc) {
+      l = [...l].sort((a, b) => {
+        const da = a.distanceKm ?? Infinity;
+        const db = b.distanceKm ?? Infinity;
+        return da - db;
+      });
+    } else l = [...l].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     return l;
-  }, [all, q, cat, type, sort]);
+  }, [allWithDistance, q, cat, type, sort, userLoc]);
+
+  const hasMappable = useMemo(
+    () => allWithDistance.some((o) => typeof o.storeLat === "number" && typeof o.storeLng === "number"),
+    [allWithDistance],
+  );
+
+  const handleNearby = () => {
+    if (userLoc) {
+      setParam("ordem", "nearby");
+    } else {
+      requestLoc();
+      setParam("ordem", "nearby");
+    }
+  };
 
   const clearFilters = () => {
     const next = new URLSearchParams(params);
@@ -119,6 +161,33 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
 
       <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
         <aside className="space-y-6 rounded-2xl border border-border bg-card p-5 shadow-soft lg:sticky lg:top-40 lg:self-start">
+          <div className="space-y-2">
+            <Button
+              type="button"
+              variant={userLoc ? "secondary" : "accent"}
+              className="w-full"
+              onClick={handleNearby}
+              disabled={locLoading}
+            >
+              <MapPin className="mr-2 h-4 w-4" />
+              {locLoading ? "Localizando…" : userLoc ? "Localização ativa" : "Perto de mim"}
+            </Button>
+            {userLoc && (
+              <button
+                type="button"
+                onClick={() => {
+                  clearLoc();
+                  if (sort === "nearby") setParam("ordem", "recent");
+                }}
+                className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-3 w-3" /> remover minha localização
+              </button>
+            )}
+            {locError && (
+              <p className="text-xs text-destructive">Não foi possível obter sua localização.</p>
+            )}
+          </div>
           <div>
             <Label htmlFor="q">Buscar</Label>
             <Input
@@ -158,7 +227,18 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
         </aside>
 
         <div>
-          <div className="mb-5 flex items-center justify-end">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            {hasMappable ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowMap((v) => !v)}
+              >
+                <MapIcon className="mr-2 h-4 w-4" />
+                {showMap ? "Ocultar mapa" : "Ver no mapa"}
+              </Button>
+            ) : <span />}
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Ordenar por</span>
               <Select value={sort} onValueChange={(v) => setParam("ordem", v)}>
@@ -171,6 +251,12 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
               </Select>
             </div>
           </div>
+
+          {showMap && hasMappable && (
+            <div className="mb-6">
+              <OffersMap offers={list} userLoc={userLoc} />
+            </div>
+          )}
 
           {!loading && list.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border p-16 text-center">
