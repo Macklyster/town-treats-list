@@ -258,10 +258,14 @@ export default function Assinatura() {
         )}
 
         {loading ? <p>Carregando…</p> : (
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {PLAN_CATALOG.map((catalog) => {
+              const isFreePlan = catalog.slug === "gratis";
               const dbPlan = plans.find((p) => p.slug === catalog.slug);
-              const isCurrent = !!dbPlan && sub?.plan_id === dbPlan.id && sub?.status === "active";
+              const paidActive = sub && ["active", "trialing"].includes(sub.status);
+              const isCurrent = isFreePlan
+                ? !paidActive
+                : !!dbPlan && sub?.plan_id === dbPlan.id && !!paidActive;
               const Icon = catalog.icon;
               return (
                 <Card
@@ -285,9 +289,9 @@ export default function Assinatura() {
                     </div>
                     <div className="mt-2 text-display text-foreground">
                       {formatBRL(catalog.priceCents)}
-                      <span className="text-sm font-normal text-muted-foreground">{catalog.period}</span>
+                      <span className="text-sm font-normal text-muted-foreground"> {catalog.period}</span>
                     </div>
-                    {isCurrent && sub?.current_period_end && (
+                    {!isFreePlan && isCurrent && sub?.current_period_end && (
                       <p className="mt-1 text-xs text-muted-foreground">
                         {willCancel ? "Termina em " : "Renova em "}
                         {new Date(sub.current_period_end).toLocaleDateString("pt-BR")}
@@ -302,15 +306,26 @@ export default function Assinatura() {
                         </li>
                       ))}
                     </ul>
-                    <Button
-                      className="mt-6 w-full"
-                      variant={isCurrent ? "outline" : catalog.highlight ? "accent" : "default"}
-                      disabled={isCurrent || !dbPlan || busy === dbPlan?.id}
-                      onClick={() => dbPlan && subscribe(dbPlan.id)}
-                    >
-                      {dbPlan && busy === dbPlan.id && <Loader2 className="h-4 w-4 animate-spin" />}
-                      {isCurrent ? "Plano ativo" : !dbPlan ? "Indisponível" : "Assinar"}
-                    </Button>
+                    {isFreePlan ? (
+                      <Button
+                        className="mt-6 w-full"
+                        variant="outline"
+                        disabled={isCurrent}
+                        onClick={() => navigate("/painel-lojista")}
+                      >
+                        {isCurrent ? "Plano atual" : "Voltar ao plano grátis"}
+                      </Button>
+                    ) : (
+                      <Button
+                        className="mt-6 w-full"
+                        variant={isCurrent ? "outline" : catalog.highlight ? "accent" : "default"}
+                        disabled={isCurrent || !dbPlan || busy === dbPlan?.id}
+                        onClick={() => dbPlan && subscribe(dbPlan.id)}
+                      >
+                        {dbPlan && busy === dbPlan.id && <Loader2 className="h-4 w-4 animate-spin" />}
+                        {isCurrent ? "Plano ativo" : !dbPlan ? "Indisponível" : "Assinar"}
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               );

@@ -126,9 +126,10 @@ const Anuncie = () => {
               <h2 className="text-display text-foreground md:text-[40px]">Planos para todo tipo de negócio</h2>
               <p className="mt-3 text-muted-foreground">Escolha o plano ideal e ajuste quando quiser.</p>
             </div>
-            <div className="mt-12 grid gap-6 md:grid-cols-3">
+            <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               {plans.map((p) => {
                 const Icon = p.icon;
+                const isFree = p.name === "Grátis";
                 return (
                   <div
                     key={p.name}
@@ -141,13 +142,18 @@ const Anuncie = () => {
                         Mais popular
                       </span>
                     )}
+                    {isFree && (
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-strong px-3 py-1 text-xs font-bold text-primary-foreground">
+                        Comece sem pagar
+                      </span>
+                    )}
                     <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-accent/15 text-accent-strong">
                       <Icon className="h-6 w-6" />
                     </div>
                     <h3 className="text-xl font-medium text-foreground">{p.name}</h3>
                     <div className="mt-3">
                       <span className="text-4xl font-bold text-foreground">{p.price}</span>
-                      <span className="text-muted-foreground">{p.period}</span>
+                      <span className="text-muted-foreground"> {p.period}</span>
                     </div>
                     <ul className="mt-6 space-y-3 text-sm">
                       {p.features.map((f) => (
@@ -159,10 +165,12 @@ const Anuncie = () => {
                     </ul>
                     <Button
                       asChild
-                      variant={p.highlight ? "accent" : "outline"}
+                      variant={isFree ? "accent" : p.highlight ? "accent" : "outline"}
                       className="mt-8 w-full"
                     >
-                      <a href="/painel-lojista/assinatura">Quero esse plano</a>
+                      <a href={isFree ? "/painel-lojista/loja" : "/painel-lojista/assinatura"}>
+                        {isFree ? "Começar grátis" : "Quero esse plano"}
+                      </a>
                     </Button>
                   </div>
                 );
