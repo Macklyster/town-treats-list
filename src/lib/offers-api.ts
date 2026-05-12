@@ -56,6 +56,10 @@ const mapRow = (row: any): UIOffer => ({
   isFlash: !!row.is_flash,
   flashEndsAt: row.flash_ends_at ?? null,
   flashDurationHours: row.flash_duration_hours ?? null,
+  storeLat: row.store?.latitude ?? null,
+  storeLng: row.store?.longitude ?? null,
+  storeCity: row.store?.city ?? "",
+  storeState: row.store?.state ?? "",
 });
 
 const filterActiveFlash = (rows: any[]) => {
