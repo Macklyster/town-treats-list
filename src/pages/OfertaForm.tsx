@@ -102,6 +102,8 @@ export default function OfertaForm() {
             conditions: parsedCond.text,
             valid_until: data.valid_until ?? "",
             featured: !!data.featured,
+            is_flash: !!(data as any).is_flash,
+            flash_duration_hours: (data as any).flash_duration_hours ?? flashDefaultHours,
           });
         }
       }
