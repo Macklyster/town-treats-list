@@ -18,6 +18,7 @@ import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { trackOfferEvent } from "@/lib/offer-events";
 import { FollowStoreButton } from "@/components/site/FollowStoreButton";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
+import { CountdownBadge } from "@/components/site/CountdownBadge";
 import NotFound from "./NotFound";
 import { SEO } from "@/components/seo/SEO";
 import { absoluteUrl, citySlug, cityLabel } from "@/lib/slug";

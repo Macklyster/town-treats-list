@@ -3,13 +3,16 @@ import { Tag } from "lucide-react";
 import { UIOffer, discountPct, formatBRL } from "@/lib/offers-api";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
+import { CountdownBadge } from "@/components/site/CountdownBadge";
 
 export const OfferCard = ({ offer }: { offer: UIOffer }) => {
   const pct = discountPct(offer);
   return (
     <Link
       to={`/oferta/${offer.id}`}
-      className="group flex flex-col overflow-hidden rounded-2xl bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-pop"
+      className={`group flex flex-col overflow-hidden rounded-2xl bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-pop ${
+        offer.isFlash ? "ring-2 ring-destructive/60" : ""
+      }`}
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         <img
@@ -23,11 +26,16 @@ export const OfferCard = ({ offer }: { offer: UIOffer }) => {
             -{pct}%
           </span>
         )}
-        {offer.type !== "desconto" && (
+        {offer.type !== "desconto" && !offer.isFlash && (
           <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-primary/90 px-2.5 py-1 text-xs font-medium text-foreground-foreground">
             <Tag className="h-3 w-3" />
             {offer.type === "cupom" ? "Cupom" : "Brinde"}
           </span>
+        )}
+        {offer.isFlash && offer.flashEndsAt && (
+          <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2">
+            <CountdownBadge endsAt={offer.flashEndsAt} />
+          </div>
         )}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
