@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { Tag } from "lucide-react";
 import { UIOffer, discountPct, formatBRL } from "@/lib/offers-api";
+import { formatDistance } from "@/lib/geo";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { CountdownBadge } from "@/components/site/CountdownBadge";
+import { MapPin } from "lucide-react";
 
 export const OfferCard = ({ offer }: { offer: UIOffer }) => {
   const pct = discountPct(offer);
