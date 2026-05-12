@@ -3,6 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import { OfferCard } from "@/components/site/OfferCard";
 import { fetchOffers, UIOffer, discountPct } from "@/lib/offers-api";
 import { useCity } from "@/hooks/useCity";
+import { useUserLocation } from "@/hooks/useUserLocation";
+import { haversineKm } from "@/lib/geo";
 import { categories } from "@/data/categories";
 import { Label } from "@/components/ui/label";
 import {
@@ -14,6 +16,8 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { OffersMap } from "@/components/site/OffersMap";
+import { MapPin, X, Map as MapIcon } from "lucide-react";
 
 const types = [
   { v: "all", l: "Todos" },
@@ -22,7 +26,7 @@ const types = [
   { v: "brinde", l: "Brinde" },
 ];
 
-const sortOptions = [
+const baseSortOptions = [
   { v: "recent", l: "Mais recentes" },
   { v: "popular", l: "Mais populares" },
   { v: "lowest", l: "Menor preço" },
