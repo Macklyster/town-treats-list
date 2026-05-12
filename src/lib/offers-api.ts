@@ -77,7 +77,7 @@ export const fetchOffers = async (filter?: CityFilter): Promise<UIOffer[]> => {
     console.error(error);
     return [];
   }
-  return (data ?? []).map(mapRow);
+  return filterActiveFlash(data ?? []).map(mapRow);
 };
 
 export const fetchOfferById = async (id: string): Promise<UIOffer | null> => {
