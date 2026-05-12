@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle, BarChart3 } from "lucide-react";
+import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle, BarChart3, QrCode } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { formatBRLNumber } from "@/lib/format";
 import { toast } from "sonner";
+import { OfferQrDialog } from "@/components/site/OfferQrDialog";
 
 type StoreRow = {
   id: string;
@@ -250,6 +251,7 @@ export default function PainelLojista() {
                           <th>Validade</th>
                           <th>Status</th>
                           <th className="text-center">Cliques WA</th>
+                          <th className="text-center">Scans QR</th>
                           <th className="text-right">Ações</th>
                         </tr>
                       </thead>
@@ -271,9 +273,13 @@ export default function PainelLojista() {
                             </td>
                             <td><Badge variant={o.status === "approved" ? "default" : "secondary"}>{o.status}</Badge></td>
                             <td className="text-center font-medium">{clicks[o.id] ?? 0}</td>
+                            <td className="text-center font-medium">{qrScans[o.id] ?? 0}</td>
                             <td className="text-right">
-                              <div className="inline-flex gap-2">
-                                <Button size="sm" variant="ghost" onClick={() => navigate(`/painel-lojista/oferta/${o.id}`)}>
+                              <div className="inline-flex gap-1">
+                                <Button size="sm" variant="ghost" title="QR Code para vitrine" onClick={() => setQrFor(o)}>
+                                  <QrCode className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button size="sm" variant="ghost" title="Editar" onClick={() => navigate(`/painel-lojista/oferta/${o.id}`)}>
                                   <Pencil className="h-3.5 w-3.5" />
                                 </Button>
                                 <Button size="sm" variant="ghost" onClick={() => handleDelete(o.id)}>
