@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { OfferCard } from "@/components/site/OfferCard";
@@ -27,6 +27,7 @@ import { InstallAppInline } from "@/components/site/InstallAppInline";
 
 const OfferDetail = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const [offer, setOffer] = useState<UIOffer | null>(null);
   const [store, setStore] = useState<any>(null);
   const [related, setRelated] = useState<UIOffer[]>([]);
@@ -44,6 +45,9 @@ const OfferDetail = () => {
       }
       setOffer(o);
       trackOfferEvent(o.id, "view");
+      if (searchParams.get("src") === "qr") {
+        trackOfferEvent(o.id, "qr_scan");
+      }
       const [s, all] = await Promise.all([fetchStoreById(o.storeId), fetchOffers()]);
       setStore(s);
       setRelated(
