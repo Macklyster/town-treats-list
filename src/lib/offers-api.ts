@@ -22,6 +22,11 @@ export type UIOffer = {
   isFlash: boolean;
   flashEndsAt?: string | null;
   flashDurationHours?: number | null;
+  storeLat?: number | null;
+  storeLng?: number | null;
+  storeCity?: string;
+  storeState?: string;
+  distanceKm?: number;
 };
 
 const FALLBACK_IMG =
