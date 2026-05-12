@@ -23,6 +23,7 @@ import NotFound from "./NotFound";
 import { SEO } from "@/components/seo/SEO";
 import { absoluteUrl, citySlug, cityLabel } from "@/lib/slug";
 import { ShareOfferButton } from "@/components/site/ShareOfferButton";
+import { InstallAppInline } from "@/components/site/InstallAppInline";
 
 const OfferDetail = () => {
   const { id } = useParams();
