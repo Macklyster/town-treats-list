@@ -115,6 +115,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
             </Routes>
             <BackToTopButton />
+            <InstallAppBanner />
           </CityProvider>
         </AuthProvider>
       </BrowserRouter>
