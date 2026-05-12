@@ -31,6 +31,7 @@ import { toast } from "sonner";
 import * as LucideIcons from "lucide-react";
 import { Check, X, Star, Pencil, Trash2, ArrowUp, ArrowDown, Plus, Tag } from "lucide-react";
 import { AdminBroadcast } from "@/components/admin/AdminBroadcast";
+import { AdminSettings } from "@/components/admin/AdminSettings";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
