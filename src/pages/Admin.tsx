@@ -59,6 +59,9 @@ type AdminOffer = {
   title: string;
   status: string;
   featured: boolean;
+  is_flash: boolean;
+  flash_ends_at: string | null;
+  flash_duration_hours: number | null;
   store: { name: string } | null;
 };
 type AdminStore = {
@@ -91,7 +94,7 @@ export default function Admin() {
     const [{ data: offs }, { data: sts }, { data: cats }, { data: subs }] = await Promise.all([
       supabase
         .from("offers")
-        .select("id,title,status,featured, store:stores(name)")
+        .select("id,title,status,featured,is_flash,flash_ends_at,flash_duration_hours, store:stores(name)")
         .order("created_at", { ascending: false }),
       supabase
         .from("stores")
@@ -186,11 +189,29 @@ export default function Admin() {
     load();
   };
 
-  const updateOffer = async (id: string, patch: { status?: "pending" | "approved" | "rejected" | "paused"; featured?: boolean }) => {
+  const updateOffer = async (id: string, patch: { status?: "pending" | "approved" | "rejected" | "paused"; featured?: boolean; is_flash?: boolean; flash_duration_hours?: number }) => {
+    const before = offers.find((x) => x.id === id);
     const { error } = await supabase.from("offers").update(patch).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Atualizado");
+    // Auto-notify followers when a flash offer becomes approved
+    if (before?.is_flash && before.status !== "approved" && patch.status === "approved") {
+      supabase.functions.invoke("notify-flash-offer", {
+        body: { offer_id: id, audience: "store_followers" },
+      }).then(({ data, error: e }) => {
+        if (e) toast.error("Falha ao notificar seguidores");
+        else toast.success(`Alerta enviado para ${data?.success ?? 0} seguidor(es)`);
+      });
+    }
     load();
+  };
+
+  const sendFlashBroadcast = async (id: string) => {
+    const { data, error } = await supabase.functions.invoke("notify-flash-offer", {
+      body: { offer_id: id, audience: "broadcast" },
+    });
+    if (error) return toast.error("Falha ao enviar broadcast");
+    toast.success(`Broadcast enviado para ${data?.success ?? 0} usuário(s)`);
   };
 
   const updateStore = async (
