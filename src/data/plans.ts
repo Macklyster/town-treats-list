@@ -1,7 +1,7 @@
-import { ClipboardList, Star, Zap, type LucideIcon } from "lucide-react";
+import { ClipboardList, Gift, Star, Zap, type LucideIcon } from "lucide-react";
 
 export type PlanCatalogItem = {
-  slug: "basico" | "destaque" | "plus";
+  slug: "gratis" | "basico" | "destaque" | "plus";
   name: string;
   priceCents: number;
   period: string;
@@ -20,6 +20,20 @@ export type PlanCatalogItem = {
  * lista de benefícios sempre vêm daqui — basta editar este arquivo.
  */
 export const PLAN_CATALOG: PlanCatalogItem[] = [
+  {
+    slug: "gratis",
+    name: "Grátis",
+    priceCents: 0,
+    period: "para sempre",
+    icon: Gift,
+    highlight: false,
+    features: [
+      "1 oferta por mês",
+      "Página da loja personalizada",
+      "Aparece em buscas e categorias",
+      "Sem cartão de crédito",
+    ],
+  },
   {
     slug: "basico",
     name: "Básico",
