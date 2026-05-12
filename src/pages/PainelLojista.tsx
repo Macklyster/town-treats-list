@@ -152,11 +152,13 @@ export default function PainelLojista() {
           </Card>
         ) : (
           <>
-            {!subInfo.loading && !subInfo.isActive && (
-              <Alert variant="destructive" className="mb-6">
-                <AlertTitle>Assine um plano para publicar suas ofertas</AlertTitle>
-                <AlertDescription className="flex items-center justify-between gap-3">
-                  <span>Sem plano ativo, suas ofertas não ficam visíveis aos clientes.</span>
+            {!subInfo.loading && subInfo.isFree && (
+              <Alert className="mb-6">
+                <AlertTitle>Você está no plano Grátis</AlertTitle>
+                <AlertDescription className="flex flex-wrap items-center justify-between gap-3">
+                  <span>
+                    Plano Grátis permite <strong>1 oferta por mês</strong>. Para destaque, ofertas relâmpago e mais publicações, conheça os planos pagos.
+                  </span>
                   <Button asChild size="sm" variant="accent">
                     <Link to="/painel-lojista/assinatura">Ver planos</Link>
                   </Button>
@@ -225,7 +227,7 @@ export default function PainelLojista() {
                 <CardTitle className="flex items-center gap-2"><Tag className="h-5 w-5" /> Resumo</CardTitle>
               </CardHeader>
               <CardContent className="space-y-1 text-sm">
-                <div>Total de ofertas: <strong>{offers.length}{subInfo.maxOffers ? ` / ${subInfo.maxOffers}` : ""}</strong></div>
+                <div>{subInfo.isFree ? "Ofertas este mês" : "Total de ofertas"}: <strong>{subInfo.offerCount}{subInfo.maxOffers ? ` / ${subInfo.maxOffers}` : ""}</strong></div>
                 <div>Aprovadas: <strong>{offers.filter((o) => o.status === "approved").length}</strong></div>
                 <div>Pendentes: <strong>{offers.filter((o) => o.status === "pending").length}</strong></div>
                 <div>Em destaque: <strong>{offers.filter((o) => o.featured).length}{subInfo.featuredSlots ? ` / ${subInfo.featuredSlots}` : ""}</strong></div>
