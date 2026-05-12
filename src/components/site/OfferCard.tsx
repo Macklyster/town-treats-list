@@ -49,6 +49,12 @@ export const OfferCard = ({ offer }: { offer: UIOffer }) => {
           {offer.storeFeaturedBadge && <StoreFeaturedBadge showLabel={false} />}
         </div>
         <h3 className="line-clamp-2 text-base font-medium text-foreground">{offer.title}</h3>
+        {typeof offer.distanceKm === "number" && (
+          <div className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+            <MapPin className="h-3 w-3" />
+            <span>a {formatDistance(offer.distanceKm)} de você</span>
+          </div>
+        )}
         <div className="mt-auto flex items-end justify-between pt-2">
           <div>
             {pct > 0 && (
