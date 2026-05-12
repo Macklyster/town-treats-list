@@ -1,56 +1,42 @@
-# QR Code da oferta para impressão
+## Geolocalização + "Perto de mim" + Mapa com pins
 
-Cada oferta ganha um QR Code imprimível que aponta para uma URL rastreada. Ao escanear na vitrine, o cliente cai na página da oferta e contamos como uma conversão offline→online.
+### O que será entregue
 
-## Fluxo
+1. Cada loja passa a ter coordenadas (latitude/longitude) geocodificadas a partir do endereço.
+2. Cliente pode permitir acesso à localização do navegador → ofertas ordenadas por distância real (km), mostrando "a 1,2 km de você" no card.
+3. Nova opção "Perto de mim" no seletor de ordenação.
+4. Novo mapa interativo (acima da grade de ofertas) com pin por loja; clique no pin abre mini-card com a oferta.
 
-1. Lojista abre a oferta no painel → clica em **"QR Code para vitrine"**
-2. Abre um modal com:
-   - Cartaz pronto para impressão (A6 ou A5) com logo OfertasFly, título da oferta, preço, desconto e o QR
-   - Botões: **Imprimir**, **Baixar PNG**, **Baixar PDF**
-3. O QR aponta para `https://ofertasfly.com.br/oferta/{id}?src=qr&store={slug}`
-4. Na página da oferta, detectamos `?src=qr` e disparamos um evento `qr_scan` em `offer_events`
-5. No painel, mostramos uma métrica nova: **Escaneamentos do QR**
+### Mudanças no banco
 
-## Mudanças
+Tabela `stores`: adicionar `latitude double precision` e `longitude double precision` (nullable). Sem alteração de RLS (já é leitura pública para lojas aprovadas).
+
+### Geocodificação automática
+
+- Nova edge function `geocode-store` (sem JWT) chamada após salvar `LojaForm` quando houver `address/city/state` e ainda não houver coords (ou o endereço mudou). Usa Nominatim (OpenStreetMap, gratuito, sem chave) — `https://nominatim.openstreetmap.org/search` com `User-Agent: OfertasFly`. Atualiza `latitude/longitude` na própria função usando service role.
+- Botão "Atualizar coordenadas" no `LojaForm` para re-geocodificar manualmente.
 
 ### Frontend
-- `src/components/site/OfferQrDialog.tsx` (novo): modal com layout do cartaz, gera QR usando `qrcode` (npm), botão imprimir (`window.print()` com `@media print`), download PNG (canvas → blob), download PDF (`jspdf` ou via canvas + `print-to-pdf`).
-- `src/pages/PainelLojista.tsx`: novo botão "QR Code" em cada linha da tabela de ofertas; nova coluna "Scans QR" no resumo.
-- `src/pages/OfferDetail.tsx`: ao montar, se `searchParams.get("src") === "qr"`, dispara `trackOfferEvent(offer.id, "qr_scan")` (uma vez por sessão).
-- `src/lib/offer-events.ts`: garantir que `qr_scan` é um event_type aceito (a função `track_offer_event` já aceita qualquer string).
 
-### Bibliotecas
-- `qrcode` (gera QR como dataURL/canvas, ~20kb)
-- `jspdf` (opcional, só para botão "Baixar PDF" — pode ficar fora se preferir só PNG + Imprimir)
+- `src/hooks/useUserLocation.ts` (novo): pede `navigator.geolocation`, guarda `{lat,lng}` em `localStorage`, expõe `request()`, `clear()`, `permission`.
+- `src/lib/geo.ts` (novo): `haversineKm(a,b)` e `formatDistance(km)`.
+- `src/lib/offers-api.ts`: tipo `UIOffer` ganha `lat?`, `lng?`, `distanceKm?`. `fetchOffers` traz `stores.latitude, stores.longitude` no select e calcula distância quando o caller passa `userLoc`.
+- `src/components/site/OffersSection.tsx`:
+  - Botão "📍 Perto de mim" no topo da aside; se concedido, adiciona opção `nearby` no seletor de ordenação e seleciona automaticamente.
+  - Quando `userLoc` ativo, recalcula `distanceKm` e ordena ascendente; cards mostram a distância.
+- `src/components/site/OfferCard.tsx`: badge discreta "a X km" quando `distanceKm` definido.
+- `src/components/site/OffersMap.tsx` (novo): mapa com `react-leaflet` + OpenStreetMap (sem API key). Renderizado acima da grade quando há pelo menos uma loja com coords. Pins agrupam ofertas da mesma loja; popup mostra título da oferta com link. Marcador extra do usuário quando `userLoc` ativo. Altura ~360px, bordas arredondadas, herda tokens do design system.
 
-### Sem mudança de schema
-A tabela `offer_events` e a função `track_offer_event` já suportam qualquer event_type. Apenas vamos contar `qr_scan` no painel.
+### Detalhes técnicos
 
-### Cartaz (preview do modal)
-```
-┌────────────────────────────┐
-│  OfertasFly  (logo)        │
-│                            │
-│  [Título da oferta]        │
-│                            │
-│   R$ 59,90                 │
-│   ~~R$ 99~~  -40% OFF      │
-│                            │
-│      ┌─────────┐           │
-│      │  QR     │           │
-│      │  CODE   │           │
-│      └─────────┘           │
-│                            │
-│  Aponte a câmera           │
-│  ofertasfly.com.br         │
-└────────────────────────────┘
-```
+- Dependências novas: `leaflet`, `react-leaflet`, `@types/leaflet`.
+- Importar CSS do leaflet em `src/main.tsx`.
+- Ajuste do ícone padrão do leaflet (workaround dos PNGs) em `OffersMap.tsx`.
+- Cache de geocoding: a função só chama Nominatim se `latitude IS NULL` ou se hash do endereço mudou (guardar em memória; sem coluna nova).
+- Performance: filtragem/ordenação por distância continua client-side (já carregamos as ofertas da cidade).
 
-## Fora do escopo
-- Geração de QR em lote para várias ofertas
-- Templates customizáveis de cartaz (cores/fontes do lojista)
-- Métricas de heatmap por horário do scan (já cabe no dashboard existente depois, sem ação aqui)
+### Fora de escopo
 
-## Sobre a oferta editada que não aparece para clientes (mensagem anterior)
-Suspeita rápida: o `OfertaForm` força `status: "pending"` em **toda** edição, então uma oferta que estava `approved` volta para `pending` ao salvar e some do site até nova aprovação. Quer que eu trate isso junto (ex.: só voltar para pending se mudar título/preço/imagem) ou abrimos em outra task?
+- Buscar ofertas de cidades vizinhas pelo raio (mantém filtro por cidade selecionada).
+- Mapa de calor, clusters avançados, rotas/direções.
+- Geocoding em lote retroativo (lojas existentes serão geocodificadas no próximo save ou via botão manual; opcionalmente posso rodar uma vez via edge function se você pedir).
