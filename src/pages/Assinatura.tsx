@@ -30,6 +30,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
+import { PLAN_CATALOG, getPlanBySlug } from "@/data/plans";
 
 type Plan = {
   id: string;
