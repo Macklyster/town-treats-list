@@ -46,8 +46,10 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
   const sort = params.get("ordem") ?? "recent";
 
   const { city, openSelector } = useCity();
+  const { loc: userLoc, request: requestLoc, clear: clearLoc, loading: locLoading, error: locError } = useUserLocation();
   const [internalOffers, setInternalOffers] = useState<UIOffer[]>([]);
   const [internalLoading, setInternalLoading] = useState(true);
+  const [showMap, setShowMap] = useState(false);
 
   const useInternal = providedOffers === undefined;
 
@@ -72,23 +74,59 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
     const next = new URLSearchParams(params);
     if (!v || v === "all") next.delete(k);
     else next.set(k, v);
-    // preserve hash so deep links keep working
     setParams(next, { replace: true });
   };
 
+  // attach distance when we have user location
+  const allWithDistance = useMemo(() => {
+    if (!userLoc) return all;
+    return all.map((o) => {
+      if (typeof o.storeLat !== "number" || typeof o.storeLng !== "number") return o;
+      return {
+        ...o,
+        distanceKm: haversineKm(userLoc, { lat: o.storeLat, lng: o.storeLng }),
+      };
+    });
+  }, [all, userLoc?.lat, userLoc?.lng]);
+
+  const sortOptions = useMemo(
+    () => (userLoc ? [{ v: "nearby", l: "Perto de mim" }, ...baseSortOptions] : baseSortOptions),
+    [userLoc],
+  );
+
   const list = useMemo(() => {
-    let l = all.filter((o) => {
+    let l = allWithDistance.filter((o) => {
       if (q && !`${o.title} ${o.description}`.toLowerCase().includes(q.toLowerCase())) return false;
       if (cat !== "all" && o.category !== cat) return false;
       if (type !== "all" && o.type !== type) return false;
       return true;
     });
     if (sort === "popular") l = [...l].sort((a, b) => b.popularity - a.popularity);
-    if (sort === "lowest") l = [...l].sort((a, b) => a.promoPrice - b.promoPrice);
-    if (sort === "discount") l = [...l].sort((a, b) => discountPct(b) - discountPct(a));
-    if (sort === "recent") l = [...l].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    else if (sort === "lowest") l = [...l].sort((a, b) => a.promoPrice - b.promoPrice);
+    else if (sort === "discount") l = [...l].sort((a, b) => discountPct(b) - discountPct(a));
+    else if (sort === "nearby" && userLoc) {
+      l = [...l].sort((a, b) => {
+        const da = a.distanceKm ?? Infinity;
+        const db = b.distanceKm ?? Infinity;
+        return da - db;
+      });
+    } else l = [...l].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     return l;
-  }, [all, q, cat, type, sort]);
+  }, [allWithDistance, q, cat, type, sort, userLoc]);
+
+  const hasMappable = useMemo(
+    () => allWithDistance.some((o) => typeof o.storeLat === "number" && typeof o.storeLng === "number"),
+    [allWithDistance],
+  );
+
+  const handleNearby = () => {
+    if (userLoc) {
+      setParam("ordem", "nearby");
+    } else {
+      requestLoc();
+      setParam("ordem", "nearby");
+    }
+  };
 
   const clearFilters = () => {
     const next = new URLSearchParams(params);
