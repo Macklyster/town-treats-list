@@ -477,6 +477,10 @@ export default function Admin() {
           <TabsContent value="notifications" className="mt-6">
             <AdminBroadcast />
           </TabsContent>
+
+          <TabsContent value="settings" className="mt-6">
+            <AdminSettings />
+          </TabsContent>
         </Tabs>
 
         <Dialog open={catDialogOpen} onOpenChange={setCatDialogOpen}>
