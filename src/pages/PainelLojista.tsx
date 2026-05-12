@@ -300,6 +300,13 @@ export default function PainelLojista() {
         )}
       </main>
       <Footer />
+      {qrFor && (
+        <OfferQrDialog
+          open={!!qrFor}
+          onOpenChange={(v) => !v && setQrFor(null)}
+          offer={qrFor as any}
+        />
+      )}
     </div>
   );
 }
