@@ -15,7 +15,7 @@ const getSessionId = (): string => {
   }
 };
 
-export type OfferEventType = "whatsapp_click" | "phone_click" | "view";
+export type OfferEventType = "whatsapp_click" | "phone_click" | "view" | "qr_scan";
 
 export const trackOfferEvent = async (
   offerId: string,

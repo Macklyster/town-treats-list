@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle, BarChart3 } from "lucide-react";
+import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle, BarChart3, QrCode } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { formatBRLNumber } from "@/lib/format";
 import { toast } from "sonner";
+import { OfferQrDialog } from "@/components/site/OfferQrDialog";
 
 type StoreRow = {
   id: string;
@@ -39,7 +40,9 @@ export default function PainelLojista() {
   const [store, setStore] = useState<StoreRow | null>(null);
   const [offers, setOffers] = useState<OfferRow[]>([]);
   const [clicks, setClicks] = useState<Record<string, number>>({});
+  const [qrScans, setQrScans] = useState<Record<string, number>>({});
   const [totalClicks, setTotalClicks] = useState(0);
+  const [qrFor, setQrFor] = useState<OfferRow | null>(null);
   const [sub, setSub] = useState<Sub | null>(null);
   const [loading, setLoading] = useState(true);
   const subInfo = useSubscription(store?.id ?? null);
@@ -73,15 +76,23 @@ export default function PainelLojista() {
 
       const { data: events } = await supabase
         .from("offer_events")
-        .select("offer_id")
+        .select("offer_id, event_type")
         .eq("store_id", s.id)
-        .eq("event_type", "whatsapp_click");
+        .in("event_type", ["whatsapp_click", "qr_scan"]);
       const counts: Record<string, number> = {};
+      const qr: Record<string, number> = {};
+      let totalWa = 0;
       (events ?? []).forEach((e: any) => {
-        counts[e.offer_id] = (counts[e.offer_id] ?? 0) + 1;
+        if (e.event_type === "whatsapp_click") {
+          counts[e.offer_id] = (counts[e.offer_id] ?? 0) + 1;
+          totalWa++;
+        } else if (e.event_type === "qr_scan") {
+          qr[e.offer_id] = (qr[e.offer_id] ?? 0) + 1;
+        }
       });
       setClicks(counts);
-      setTotalClicks(events?.length ?? 0);
+      setQrScans(qr);
+      setTotalClicks(totalWa);
     }
     setLoading(false);
   };
@@ -240,6 +251,7 @@ export default function PainelLojista() {
                           <th>Validade</th>
                           <th>Status</th>
                           <th className="text-center">Cliques WA</th>
+                          <th className="text-center">Scans QR</th>
                           <th className="text-right">Ações</th>
                         </tr>
                       </thead>
@@ -261,9 +273,13 @@ export default function PainelLojista() {
                             </td>
                             <td><Badge variant={o.status === "approved" ? "default" : "secondary"}>{o.status}</Badge></td>
                             <td className="text-center font-medium">{clicks[o.id] ?? 0}</td>
+                            <td className="text-center font-medium">{qrScans[o.id] ?? 0}</td>
                             <td className="text-right">
-                              <div className="inline-flex gap-2">
-                                <Button size="sm" variant="ghost" onClick={() => navigate(`/painel-lojista/oferta/${o.id}`)}>
+                              <div className="inline-flex gap-1">
+                                <Button size="sm" variant="ghost" title="QR Code para vitrine" onClick={() => setQrFor(o)}>
+                                  <QrCode className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button size="sm" variant="ghost" title="Editar" onClick={() => navigate(`/painel-lojista/oferta/${o.id}`)}>
                                   <Pencil className="h-3.5 w-3.5" />
                                 </Button>
                                 <Button size="sm" variant="ghost" onClick={() => handleDelete(o.id)}>
@@ -284,6 +300,13 @@ export default function PainelLojista() {
         )}
       </main>
       <Footer />
+      {qrFor && (
+        <OfferQrDialog
+          open={!!qrFor}
+          onOpenChange={(v) => !v && setQrFor(null)}
+          offer={qrFor as any}
+        />
+      )}
     </div>
   );
 }
