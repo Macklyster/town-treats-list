@@ -74,7 +74,7 @@ export type CityFilter = { city: string; state: string } | null;
 export const fetchOffers = async (filter?: CityFilter): Promise<UIOffer[]> => {
   let query = supabase
     .from("offers")
-    .select("*, store:stores!inner(name,slug,city,state,logo_url,featured_badge)")
+    .select("*, store:stores!inner(name,slug,city,state,logo_url,featured_badge,latitude,longitude)")
     .eq("status", "approved")
     .order("created_at", { ascending: false });
   if (filter?.city) {
@@ -92,7 +92,7 @@ export const fetchOffers = async (filter?: CityFilter): Promise<UIOffer[]> => {
 export const fetchOfferById = async (id: string): Promise<UIOffer | null> => {
   const { data } = await supabase
     .from("offers")
-    .select("*, store:stores(name,slug,city,state,logo_url,featured_badge)")
+    .select("*, store:stores(name,slug,city,state,logo_url,featured_badge,latitude,longitude)")
     .eq("id", id)
     .eq("status", "approved")
     .maybeSingle();
@@ -117,7 +117,7 @@ export const fetchStoreBySlug = async (slug: string) => {
 export const fetchOffersByStoreId = async (storeId: string): Promise<UIOffer[]> => {
   const { data } = await supabase
     .from("offers")
-    .select("*, store:stores!inner(name,slug,city,state,logo_url,featured_badge)")
+    .select("*, store:stores!inner(name,slug,city,state,logo_url,featured_badge,latitude,longitude)")
     .eq("status", "approved")
     .eq("store_id", storeId)
     .order("created_at", { ascending: false });
