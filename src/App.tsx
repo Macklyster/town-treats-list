@@ -23,6 +23,8 @@ import Notificacoes from "./pages/Notificacoes.tsx";
 import Inteligencia from "./pages/Inteligencia.tsx";
 import { ScrollToHash } from "./components/ScrollToHash";
 import { BackToTopButton } from "./components/site/BackToTopButton";
+import CityOffers from "./pages/CityOffers.tsx";
+import StorePage from "./pages/StorePage.tsx";
 
 const OfertasRedirect = () => {
   const { search } = useLocation();
@@ -44,6 +46,9 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
             <Route path="/ofertas" element={<OfertasRedirect />} />
+            <Route path="/ofertas/:cidadeSlug" element={<CityOffers />} />
+            <Route path="/ofertas/:cidadeSlug/:categoriaSlug" element={<CityOffers />} />
+            <Route path="/loja/:storeSlug" element={<StorePage />} />
             <Route path="/termos-de-uso" element={<TermosDeUso />} />
             <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
             <Route path="/oferta/:id" element={<OfferDetail />} />

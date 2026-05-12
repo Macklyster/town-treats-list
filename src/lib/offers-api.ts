@@ -82,6 +82,42 @@ export const fetchStoreById = async (id: string) => {
   return data;
 };
 
+export const fetchStoreBySlug = async (slug: string) => {
+  const { data } = await supabase
+    .from("stores")
+    .select("*")
+    .eq("slug", slug)
+    .eq("approved", true)
+    .maybeSingle();
+  return data;
+};
+
+export const fetchOffersByStoreId = async (storeId: string): Promise<UIOffer[]> => {
+  const { data } = await supabase
+    .from("offers")
+    .select("*, store:stores!inner(name,slug,city,state,logo_url,featured_badge)")
+    .eq("status", "approved")
+    .eq("store_id", storeId)
+    .order("created_at", { ascending: false });
+  return (data ?? []).map(mapRow);
+};
+
+export const fetchAvailableCities = async (): Promise<{ city: string; state: string }[]> => {
+  const { data } = await supabase
+    .from("stores")
+    .select("city,state")
+    .eq("approved", true);
+  const map = new Map<string, { city: string; state: string }>();
+  (data ?? []).forEach((r: any) => {
+    const c = (r.city ?? "").trim();
+    const s = (r.state ?? "").trim().toUpperCase();
+    if (!c || c === "Não informado") return;
+    const key = `${c}|${s}`;
+    if (!map.has(key)) map.set(key, { city: c, state: s });
+  });
+  return Array.from(map.values()).sort((a, b) => a.city.localeCompare(b.city, "pt-BR"));
+};
+
 export const discountPct = (o: { originalPrice: number; promoPrice: number }) =>
   o.originalPrice > 0 && o.promoPrice < o.originalPrice
     ? Math.round((1 - o.promoPrice / o.originalPrice) * 100)
