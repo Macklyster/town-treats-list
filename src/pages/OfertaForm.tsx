@@ -344,6 +344,44 @@ export default function OfertaForm() {
                 )}
               </div>
 
+              <div className="rounded-md border p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-start gap-2">
+                    <RefreshCw className="mt-0.5 h-5 w-5 text-primary" />
+                    <div>
+                      <Label className="text-sm">Renovar automaticamente ao vencer</Label>
+                      <p className="text-xs text-muted-foreground">
+                        Estende a validade automaticamente quando expirar (até 6 ciclos).
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={form.auto_renew}
+                    onCheckedChange={(v) => setForm({ ...form, auto_renew: v })}
+                  />
+                </div>
+                {form.auto_renew && (
+                  <div className="mt-3 flex flex-wrap items-center gap-3">
+                    <Label className="text-sm">Renovar por (dias)</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={30}
+                      className="w-24"
+                      value={form.auto_renew_days}
+                      onChange={(e) =>
+                        setForm({ ...form, auto_renew_days: Math.max(1, Math.min(30, parseInt(e.target.value || "0") || 7)) })
+                      }
+                    />
+                    {form.auto_renew_count > 0 && (
+                      <span className="text-xs text-muted-foreground">
+                        {form.auto_renew_count}/6 renovações usadas
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+
               <div className="flex gap-3 pt-2">
                 <Button type="submit" variant="accent" disabled={loading || blocked}>Salvar</Button>
                 <Button type="button" variant="ghost" onClick={() => navigate("/painel-lojista")}>Cancelar</Button>
