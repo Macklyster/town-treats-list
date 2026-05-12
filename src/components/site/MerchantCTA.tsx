@@ -14,15 +14,15 @@ export const MerchantCTA = () => {
               Para Lojistas
             </span>
             <h2 className="mt-4 text-3xl font-bold leading-tight md:text-4xl">
-              Cansado de ver seus concorrentes vendendo mais?
+              Comece grátis: 1 oferta por mês, sem cartão.
             </h2>
             <p className="mt-4 text-lg opacity-85">
-              Anuncie na OfertasFly e leve sua empresa para milhares de clientes na cidade,
-              com marketing simples e alto retorno.
+              Cadastre sua loja na OfertasFly e publique sua primeira oferta sem pagar nada.
+              Faça upgrade quando quiser para destaque, ofertas ilimitadas e relâmpago.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild variant="accent" size="lg">
-                <Link to="/anuncie">Anuncie Conosco</Link>
+                <Link to="/painel-lojista/loja">Começar grátis</Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-primary">
                 <Link to="/anuncie#planos">Ver planos</Link>
