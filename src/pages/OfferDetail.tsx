@@ -239,6 +239,8 @@ const OfferDetail = () => {
               </div>
             </div>
 
+            <InstallAppInline />
+
             {store && (
               <div className="rounded-2xl bg-card p-6 shadow-card">
                 <div className="flex items-center gap-3">
