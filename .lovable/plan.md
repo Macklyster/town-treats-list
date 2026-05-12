@@ -1,45 +1,74 @@
-## Objetivo
-Mostrar um alerta amigável em dispositivos móveis convidando o usuário a instalar o OfertasFly na tela inicial, sem que precise abrir o menu do navegador.
+# Renovação automática + Sugestões com IA
 
-## Comportamento
+Duas funcionalidades complementares para o lojista publicar mais rápido e manter as ofertas sempre ativas, usando o Lovable AI Gateway (sem custo extra de API para o usuário).
 
-- **Android / Chrome / Edge**: usar o evento nativo `beforeinstallprompt`. Quando disparado, exibir um banner inferior com botão **Instalar app** que chama `prompt()` diretamente.
-- **iOS Safari**: sem API nativa. Detectar iOS + Safari e mostrar banner com botão **Como instalar** que abre um modal com as instruções ilustradas (ícone Compartilhar → "Adicionar à Tela de Início").
-- **Não mostrar quando**:
-  - já instalado (`display-mode: standalone` ou `navigator.standalone === true`);
-  - desktop (largura > 768px);
-  - dentro do iframe do editor / hosts de preview (mesma checagem usada em `src/lib/pwa.ts`);
-  - usuário dispensou recentemente (ver abaixo).
-- **Dispensar**: botão "X" no banner. Ao dispensar, gravar timestamp em `localStorage` (`pwa-install-dismissed-at`) e ocultar por **14 dias**. Se o usuário clicar em **Instalar** e aceitar, ocultar permanentemente.
-- **Aparição**: o banner aparece após **20 s** de navegação na primeira sessão (evita aparecer antes do usuário entender o app). Em sessões futuras, aparece imediatamente se ainda elegível.
+## 1. Renovação automática de ofertas
 
-## Arquivos novos
+Quando uma oferta vence (`valid_until` passou), ela some do site. Hoje o lojista precisa editar manualmente. Vamos adicionar uma opção de "renovar automaticamente" que estende a validade por mais N dias quando expira.
 
-- `src/hooks/useInstallPrompt.ts`
-  - Captura `beforeinstallprompt` (com `e.preventDefault()` e armazenamento do evento em estado).
-  - Expõe `{ canInstall, isIOS, isStandalone, promptInstall, dismissedRecently, dismiss }`.
-  - Detecta iOS via `/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream`.
-  - Detecta standalone via `matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone`.
+### O que muda
+- **Schema**: novas colunas em `offers`:
+  - `auto_renew boolean default false`
+  - `auto_renew_days int default 7` (1-30)
+  - `auto_renew_count int default 0` (limite de segurança, max 6 renovações seguidas)
+  - `last_auto_renewed_at timestamptz`
+- **Formulário de oferta** (`OfertaForm.tsx`): novo bloco com Switch "Renovar automaticamente ao vencer" + Input de dias.
+- **Edge function agendada** `auto-renew-offers`:
+  - Roda 1x por dia (cron pg_cron + pg_net)
+  - Procura ofertas `status=approved`, `auto_renew=true`, `valid_until < hoje`, `auto_renew_count < 6`
+  - Atualiza `valid_until = hoje + auto_renew_days`, incrementa contador, registra log
+  - Quando atinge limite, envia uma notificação push pro dono da loja avisando que precisa revisar
+- **Painel do lojista**: badge "Auto-renova" nas ofertas com a flag ativa, e aviso quando uma oferta atinge o limite.
 
-- `src/components/site/InstallAppBanner.tsx`
-  - Banner fixo no rodapé (mobile only via `md:hidden`) com logo, copy curta ("Instale o OfertasFly e receba ofertas relâmpago em segundos") e dois botões (Instalar / Agora não).
-  - Variante iOS: botão **Como instalar** abre `<Dialog>` com passos ilustrados (ícone share + "Adicionar à Tela de Início").
-  - Animação de entrada suave (slide-up, Tailwind).
+## 2. Sugestões com IA no formulário de oferta
 
-## Arquivos editados
+Botão "Sugerir com IA" no `OfertaForm` que preenche título, descrição e preço promocional baseado em:
+- Categoria escolhida
+- Imagem da oferta (se já enviada)
+- Preço original informado
+- **Ofertas de sucesso** da mesma categoria (top 10 por cliques no WhatsApp + popularidade nos últimos 60 dias)
 
-- `src/App.tsx`: montar `<InstallAppBanner />` uma única vez no shell, fora das rotas, para aparecer em qualquer página pública.
+### O que muda
+- **Edge function** `suggest-offer` (`verify_jwt = true`):
+  - Recebe `{ category_slug, original_price, image_url?, current_title? }`
+  - Busca top ofertas aprovadas da mesma categoria com mais cliques (join `offer_events` + `offers`)
+  - Monta prompt para `google/gemini-3-flash-preview` com tool calling estruturado retornando `{ title, description, suggested_promo_price, discount_pct, reasoning }`
+  - Trata erros 429 e 402 (rate limit / créditos) com mensagens claras
+- **Componente** `AISuggestButton` no `OfertaForm`:
+  - Botão "✨ Sugerir com IA" no topo do formulário (desabilitado até ter categoria + preço original)
+  - Mostra loading, e ao receber resposta abre um pequeno painel com as sugestões e botões "Aplicar título", "Aplicar descrição", "Aplicar preço" (ou "Aplicar tudo")
+  - Não sobrescreve sem confirmação
 
 ## Detalhes técnicos
 
-- Guard inicial idêntico ao de `src/lib/pwa.ts` para nunca aparecer em iframe/preview.
-- O hook não chama `prompt()` automaticamente — apenas após interação do usuário (requisito dos navegadores).
-- Após `userChoice` ser `accepted`, gravar `localStorage.setItem('pwa-installed','1')` para nunca mais mostrar.
-- Telemetria leve (opcional): `console.info` nos eventos `prompt_shown`, `prompt_accepted`, `prompt_dismissed` — sem novas tabelas.
-- Manifest já está configurado (`display: standalone`, ícones 192/512/maskable), então a instalação funciona sem mudanças no `manifest.webmanifest`.
+### Migration
+```sql
+alter table offers
+  add column auto_renew boolean not null default false,
+  add column auto_renew_days int not null default 7,
+  add column auto_renew_count int not null default 0,
+  add column last_auto_renewed_at timestamptz;
+```
 
-## Fora do escopo
+### Cron (via supabase--insert, contém anon key)
+```sql
+select cron.schedule(
+  'auto-renew-offers-daily',
+  '0 3 * * *',
+  $$ select net.http_post(
+       url:='https://ougpesguavrqbeethbjl.supabase.co/functions/v1/auto-renew-offers',
+       headers:='{"Content-Type":"application/json","apikey":"<anon>"}'::jsonb,
+       body:='{}'::jsonb) $$);
+```
 
-- Push notification onboarding (já existe em `usePush`).
-- Tracking server-side de instalações.
-- Variante para desktop / outros navegadores além de Chromium e Safari iOS.
+### Estrutura de arquivos
+- `supabase/functions/auto-renew-offers/index.ts` (cron, sem JWT)
+- `supabase/functions/suggest-offer/index.ts` (com JWT)
+- `src/components/site/AISuggestButton.tsx` (novo)
+- `src/pages/OfertaForm.tsx` (editado: bloco auto-renew + botão IA)
+- `src/pages/PainelLojista.tsx` (editado: badge auto-renew)
+
+### Fora do escopo
+- Renovação ilimitada (limitamos a 6 ciclos para evitar ofertas zumbis)
+- Sugestão de imagem (só texto + preço por enquanto)
+- Geração de variantes A/B

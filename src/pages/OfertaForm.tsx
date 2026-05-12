@@ -16,12 +16,13 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
 import { Link } from "react-router-dom";
-import { AlertCircle, Bell } from "lucide-react";
+import { AlertCircle, Bell, RefreshCw } from "lucide-react";
 import { ImageUploader } from "@/components/site/ImageUploader";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PAYMENT_METHODS, type PaymentMethodId, parseConditions, buildConditions } from "@/lib/payment-methods";
 import { useFlashSettings } from "@/hooks/useFlashSettings";
 import { Zap } from "lucide-react";
+import { AISuggestButton } from "@/components/site/AISuggestButton";
 
 const schema = z.object({
   title: z.string().trim().min(3).max(140),
@@ -64,6 +65,9 @@ export default function OfertaForm() {
     featured: false,
     is_flash: false,
     flash_duration_hours: 2,
+    auto_renew: false,
+    auto_renew_days: 7,
+    auto_renew_count: 0,
   });
 
   const togglePayment = (id: PaymentMethodId) =>
@@ -104,6 +108,9 @@ export default function OfertaForm() {
             featured: !!data.featured,
             is_flash: !!(data as any).is_flash,
             flash_duration_hours: (data as any).flash_duration_hours ?? flashDefaultHours,
+            auto_renew: !!(data as any).auto_renew,
+            auto_renew_days: (data as any).auto_renew_days ?? 7,
+            auto_renew_count: (data as any).auto_renew_count ?? 0,
           });
         }
       }
@@ -181,6 +188,20 @@ export default function OfertaForm() {
               </Alert>
             )}
             <form onSubmit={handleSubmit} className="space-y-4">
+              <AISuggestButton
+                category_slug={form.category_slug}
+                original_price={form.original_price}
+                current_title={form.title}
+                image_url={form.image_url}
+                onApply={(patch) =>
+                  setForm((f) => ({
+                    ...f,
+                    ...(patch.title !== undefined ? { title: patch.title } : {}),
+                    ...(patch.description !== undefined ? { description: patch.description } : {}),
+                    ...(patch.promo_price !== undefined ? { promo_price: patch.promo_price } : {}),
+                  }))
+                }
+              />
               <div>
                 <Label>Título *</Label>
                 <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
@@ -319,6 +340,44 @@ export default function OfertaForm() {
                       }
                     />
                     <span className="text-xs text-muted-foreground">Padrão: {flashDefaultHours}h</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="rounded-md border p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-start gap-2">
+                    <RefreshCw className="mt-0.5 h-5 w-5 text-primary" />
+                    <div>
+                      <Label className="text-sm">Renovar automaticamente ao vencer</Label>
+                      <p className="text-xs text-muted-foreground">
+                        Estende a validade automaticamente quando expirar (até 6 ciclos).
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={form.auto_renew}
+                    onCheckedChange={(v) => setForm({ ...form, auto_renew: v })}
+                  />
+                </div>
+                {form.auto_renew && (
+                  <div className="mt-3 flex flex-wrap items-center gap-3">
+                    <Label className="text-sm">Renovar por (dias)</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={30}
+                      className="w-24"
+                      value={form.auto_renew_days}
+                      onChange={(e) =>
+                        setForm({ ...form, auto_renew_days: Math.max(1, Math.min(30, parseInt(e.target.value || "0") || 7)) })
+                      }
+                    />
+                    {form.auto_renew_count > 0 && (
+                      <span className="text-xs text-muted-foreground">
+                        {form.auto_renew_count}/6 renovações usadas
+                      </span>
+                    )}
                   </div>
                 )}
               </div>

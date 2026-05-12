@@ -208,6 +208,9 @@ export type Database = {
       }
       offers: {
         Row: {
+          auto_renew: boolean
+          auto_renew_count: number
+          auto_renew_days: number
           category_slug: string
           conditions: string | null
           created_at: string
@@ -219,6 +222,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_flash: boolean
+          last_auto_renewed_at: string | null
           original_price: number
           popularity: number
           promo_price: number
@@ -230,6 +234,9 @@ export type Database = {
           valid_until: string | null
         }
         Insert: {
+          auto_renew?: boolean
+          auto_renew_count?: number
+          auto_renew_days?: number
           category_slug: string
           conditions?: string | null
           created_at?: string
@@ -241,6 +248,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_flash?: boolean
+          last_auto_renewed_at?: string | null
           original_price?: number
           popularity?: number
           promo_price?: number
@@ -252,6 +260,9 @@ export type Database = {
           valid_until?: string | null
         }
         Update: {
+          auto_renew?: boolean
+          auto_renew_count?: number
+          auto_renew_days?: number
           category_slug?: string
           conditions?: string | null
           created_at?: string
@@ -263,6 +274,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_flash?: boolean
+          last_auto_renewed_at?: string | null
           original_price?: number
           popularity?: number
           promo_price?: number

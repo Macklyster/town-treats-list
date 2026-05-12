@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.flash-expire]
 verify_jwt = false
+
+[functions.auto-renew-offers]
+verify_jwt = false

@@ -28,6 +28,8 @@ type OfferRow = {
   category_slug: string;
   featured: boolean;
   valid_until: string | null;
+  auto_renew?: boolean;
+  auto_renew_count?: number;
 };
 type Sub = { status: string; plan: { name: string } | null };
 
@@ -56,7 +58,7 @@ export default function PainelLojista() {
     if (s) {
       const { data: offs } = await supabase
         .from("offers")
-        .select("id,title,status,promo_price,original_price,category_slug,featured,valid_until")
+        .select("id,title,status,promo_price,original_price,category_slug,featured,valid_until,auto_renew,auto_renew_count")
         .eq("store_id", s.id)
         .order("created_at", { ascending: false });
       setOffers((offs ?? []) as OfferRow[]);
@@ -247,7 +249,16 @@ export default function PainelLojista() {
                             <td className="py-3 font-medium text-foreground">{o.title}</td>
                             <td>{o.category_slug}</td>
                             <td>{formatBRLNumber(Number(o.promo_price))}</td>
-                            <td>{o.valid_until ?? "—"}</td>
+                            <td>
+                              <div className="flex items-center gap-1">
+                                <span>{o.valid_until ?? "—"}</span>
+                                {o.auto_renew && (
+                                  <Badge variant="outline" className="text-[10px]" title={`${o.auto_renew_count ?? 0}/6 renovações`}>
+                                    🔄 Auto
+                                  </Badge>
+                                )}
+                              </div>
+                            </td>
                             <td><Badge variant={o.status === "approved" ? "default" : "secondary"}>{o.status}</Badge></td>
                             <td className="text-center font-medium">{clicks[o.id] ?? 0}</td>
                             <td className="text-right">
