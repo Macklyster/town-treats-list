@@ -11,58 +11,19 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Check, ClipboardList, Send, Sparkles, Star, Zap } from "lucide-react";
+import { Check, Send, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { PLAN_CATALOG } from "@/data/plans";
+import { formatBRL } from "@/lib/format";
 
-const plans = [
-  {
-    name: "Básico",
-    price: "R$ 79",
-    period: "/mês",
-    icon: ClipboardList,
-    highlight: false,
-    features: [
-      "Até 3 ofertas ativas",
-      "Página da loja personalizada",
-      "Aparece nas buscas e categorias",
-      "Suporte por e-mail",
-    ],
-  },
-  {
-    name: "Destaque",
-    price: "R$ 149",
-    period: "/mês",
-    icon: Star,
-    highlight: true,
-    features: [
-      "Até 10 ofertas ativas",
-      "Selo de Loja Destaque",
-      "Prioridade nas buscas",
-      "Inclusão no carrossel da home (1x/mês)",
-      "Ofertas relâmpago com contagem regressiva",
-      "Dashboard de Inteligência (KPIs, heatmap e top ofertas)",
-      "Suporte por WhatsApp",
-    ],
-  },
-  {
-    name: "Plus",
-    price: "R$ 249",
-    period: "/mês",
-    icon: Zap,
-    highlight: false,
-    features: [
-      "Ofertas ilimitadas",
-      "Selo de Loja Destaque",
-      "Banner rotativo na home",
-      "Ofertas relâmpago com contagem regressiva",
-      "Posts nas redes da OfertasFly",
-      "Dashboard de Inteligência (KPIs, heatmap e top ofertas)",
-      "Comparativo com concorrentes da categoria e cidade",
-      "Relatórios mensais de desempenho",
-      "Consultor dedicado",
-    ],
-  },
-];
+const plans = PLAN_CATALOG.map((p) => ({
+  name: p.name,
+  price: formatBRL(p.priceCents),
+  period: p.period,
+  icon: p.icon,
+  highlight: p.highlight,
+  features: p.features,
+}));
 
 const faq = [
   {
