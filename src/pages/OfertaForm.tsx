@@ -20,6 +20,8 @@ import { AlertCircle, Bell } from "lucide-react";
 import { ImageUploader } from "@/components/site/ImageUploader";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PAYMENT_METHODS, type PaymentMethodId, parseConditions, buildConditions } from "@/lib/payment-methods";
+import { useFlashSettings } from "@/hooks/useFlashSettings";
+import { Zap } from "lucide-react";
 
 const schema = z.object({
   title: z.string().trim().min(3).max(140),
@@ -31,6 +33,8 @@ const schema = z.object({
   description: z.string().trim().max(1000).optional().or(z.literal("")),
   conditions: z.string().trim().max(500).optional().or(z.literal("")),
   valid_until: z.string().optional().or(z.literal("")),
+  is_flash: z.boolean().optional(),
+  flash_duration_hours: z.number().int().min(1).max(72).optional(),
 });
 
 export default function OfertaForm() {
@@ -45,6 +49,7 @@ export default function OfertaForm() {
   const [categories, setCategories] = useState<{ slug: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const sub = useSubscription(storeId);
+  const { defaultHours: flashDefaultHours } = useFlashSettings();
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodId[]>([]);
   const [form, setForm] = useState({
     title: "",
@@ -57,6 +62,8 @@ export default function OfertaForm() {
     conditions: "",
     valid_until: "",
     featured: false,
+    is_flash: false,
+    flash_duration_hours: 2,
   });
 
   const togglePayment = (id: PaymentMethodId) =>
