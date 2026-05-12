@@ -161,6 +161,33 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
 
       <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
         <aside className="space-y-6 rounded-2xl border border-border bg-card p-5 shadow-soft lg:sticky lg:top-40 lg:self-start">
+          <div className="space-y-2">
+            <Button
+              type="button"
+              variant={userLoc ? "secondary" : "accent"}
+              className="w-full"
+              onClick={handleNearby}
+              disabled={locLoading}
+            >
+              <MapPin className="mr-2 h-4 w-4" />
+              {locLoading ? "Localizando…" : userLoc ? "Localização ativa" : "Perto de mim"}
+            </Button>
+            {userLoc && (
+              <button
+                type="button"
+                onClick={() => {
+                  clearLoc();
+                  if (sort === "nearby") setParam("ordem", "recent");
+                }}
+                className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-3 w-3" /> remover minha localização
+              </button>
+            )}
+            {locError && (
+              <p className="text-xs text-destructive">Não foi possível obter sua localização.</p>
+            )}
+          </div>
           <div>
             <Label htmlFor="q">Buscar</Label>
             <Input
@@ -200,7 +227,18 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
         </aside>
 
         <div>
-          <div className="mb-5 flex items-center justify-end">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            {hasMappable ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowMap((v) => !v)}
+              >
+                <MapIcon className="mr-2 h-4 w-4" />
+                {showMap ? "Ocultar mapa" : "Ver no mapa"}
+              </Button>
+            ) : <span />}
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Ordenar por</span>
               <Select value={sort} onValueChange={(v) => setParam("ordem", v)}>
@@ -213,6 +251,12 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
               </Select>
             </div>
           </div>
+
+          {showMap && hasMappable && (
+            <div className="mb-6">
+              <OffersMap offers={list} userLoc={userLoc} />
+            </div>
+          )}
 
           {!loading && list.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border p-16 text-center">
