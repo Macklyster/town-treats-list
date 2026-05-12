@@ -23,6 +23,7 @@ import Notificacoes from "./pages/Notificacoes.tsx";
 import Inteligencia from "./pages/Inteligencia.tsx";
 import { ScrollToHash } from "./components/ScrollToHash";
 import { BackToTopButton } from "./components/site/BackToTopButton";
+import { InstallAppBanner } from "./components/site/InstallAppBanner";
 import CityOffers from "./pages/CityOffers.tsx";
 import StorePage from "./pages/StorePage.tsx";
 
