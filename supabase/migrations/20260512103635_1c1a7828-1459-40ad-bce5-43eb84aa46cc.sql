@@ -1,0 +1,2 @@
+UPDATE public.stores SET latitude = -23.3811497, longitude = -53.2912509 WHERE id = 'f58af064-d435-428c-ada2-50dcb2773578';
+UPDATE public.stores SET latitude = -23.3853427, longitude = -53.2941970 WHERE id = 'f5801af1-4cce-42c5-a399-418853bd91eb';
