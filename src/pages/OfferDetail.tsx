@@ -22,6 +22,7 @@ import { CountdownBadge } from "@/components/site/CountdownBadge";
 import NotFound from "./NotFound";
 import { SEO } from "@/components/seo/SEO";
 import { absoluteUrl, citySlug, cityLabel } from "@/lib/slug";
+import { ShareOfferButton } from "@/components/site/ShareOfferButton";
 
 const OfferDetail = () => {
   const { id } = useParams();
@@ -233,6 +234,7 @@ const OfferDetail = () => {
                     </a>
                   </Button>
                 )}
+                <ShareOfferButton offer={offer} className="w-full" />
               </div>
             </div>
 
