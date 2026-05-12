@@ -1,42 +1,47 @@
-## Geolocalização + "Perto de mim" + Mapa com pins
+## Plano Grátis (Freemium) — 1 oferta/mês
 
-### O que será entregue
+### Objetivo
+Permitir que qualquer lojista cadastre a loja e publique **1 oferta por mês** sem pagar. A cada mês civil o contador zera e ele pode publicar outra. Planos pagos (Básico/Destaque/Plus) continuam para quem quer mais ofertas, destaque, relâmpago etc.
 
-1. Cada loja passa a ter coordenadas (latitude/longitude) geocodificadas a partir do endereço.
-2. Cliente pode permitir acesso à localização do navegador → ofertas ordenadas por distância real (km), mostrando "a 1,2 km de você" no card.
-3. Nova opção "Perto de mim" no seletor de ordenação.
-4. Novo mapa interativo (acima da grade de ofertas) com pin por loja; clique no pin abre mini-card com a oferta.
+### Regras do plano grátis
+- Sem checkout, sem cartão.
+- 1 oferta criada por **mês civil** (ex.: dezembro/2026). Conta a partir do `created_at` da oferta.
+- A oferta criada continua visível normalmente até a data `valid_until` ou até o lojista despublicar (mesmo comportamento atual).
+- Sem destaque (`featured_slots = 0`), sem relâmpago, sem dashboard de Inteligência (mantém regras atuais).
+- Loja precisa estar `approved = true` (igual hoje) para a oferta aparecer no site.
 
 ### Mudanças no banco
+Adicionar plano `gratis` em `plans`:
+- `slug='gratis'`, `name='Grátis'`, `price_cents=0`, `max_offers=1`, `featured_slots=0`, `sort_order=0`, `active=true`, `features=[]`.
+Sem novas colunas, sem novas tabelas.
 
-Tabela `stores`: adicionar `latitude double precision` e `longitude double precision` (nullable). Sem alteração de RLS (já é leitura pública para lojas aprovadas).
+### Mudanças no app
 
-### Geocodificação automática
+**`src/data/plans.ts`**
+- Adicionar item `gratis` no topo do `PLAN_CATALOG`: nome "Grátis", `priceCents: 0`, period vazio, ícone `Gift`, features: "1 oferta por mês", "Página da loja", "Aparece em buscas e categorias", "Sem cartão de crédito".
 
-- Nova edge function `geocode-store` (sem JWT) chamada após salvar `LojaForm` quando houver `address/city/state` e ainda não houver coords (ou o endereço mudou). Usa Nominatim (OpenStreetMap, gratuito, sem chave) — `https://nominatim.openstreetmap.org/search` com `User-Agent: OfertasFly`. Atualiza `latitude/longitude` na própria função usando service role.
-- Botão "Atualizar coordenadas" no `LojaForm` para re-geocodificar manualmente.
+**`src/hooks/useSubscription.tsx`**
+- Carregar também o plano `gratis` (consulta paralela `plans` por slug).
+- Calcular `monthlyOfferCount`: contagem de ofertas da loja com `created_at >= início do mês corrente`.
+- Quando não houver assinatura ativa, expor um "subscription virtual" do plano grátis: `effectivePlan = paidPlan ?? freePlan`, `isActive = true`, `isFree = !paidActive`, `offerCount = isFree ? monthlyOfferCount : totalOfferCount`, `maxOffers = effectivePlan.max_offers`, `canCreateOffer = offerCount < maxOffers`, `canFeature = !isFree && featuredCount < featuredSlots`.
 
-### Frontend
+**`src/pages/OfertaForm.tsx`**
+- Usar `sub.canCreateOffer` para o gating (já existe). Mensagens passam a mostrar "Limite do plano Grátis: 1 oferta por mês. Faça upgrade para publicar mais." quando `isFree` e estourou.
+- Bloqueio "sem plano ativo" desaparece (todo lojista tem o grátis por padrão).
 
-- `src/hooks/useUserLocation.ts` (novo): pede `navigator.geolocation`, guarda `{lat,lng}` em `localStorage`, expõe `request()`, `clear()`, `permission`.
-- `src/lib/geo.ts` (novo): `haversineKm(a,b)` e `formatDistance(km)`.
-- `src/lib/offers-api.ts`: tipo `UIOffer` ganha `lat?`, `lng?`, `distanceKm?`. `fetchOffers` traz `stores.latitude, stores.longitude` no select e calcula distância quando o caller passa `userLoc`.
-- `src/components/site/OffersSection.tsx`:
-  - Botão "📍 Perto de mim" no topo da aside; se concedido, adiciona opção `nearby` no seletor de ordenação e seleciona automaticamente.
-  - Quando `userLoc` ativo, recalcula `distanceKm` e ordena ascendente; cards mostram a distância.
-- `src/components/site/OfferCard.tsx`: badge discreta "a X km" quando `distanceKm` definido.
-- `src/components/site/OffersMap.tsx` (novo): mapa com `react-leaflet` + OpenStreetMap (sem API key). Renderizado acima da grade quando há pelo menos uma loja com coords. Pins agrupam ofertas da mesma loja; popup mostra título da oferta com link. Marcador extra do usuário quando `userLoc` ativo. Altura ~360px, bordas arredondadas, herda tokens do design system.
+**`src/pages/PainelLojista.tsx`**
+- Trocar o alerta "Assine um plano para publicar suas ofertas" por um banner informativo do Grátis: "Você está no plano Grátis — 1 oferta por mês. Veja os planos pagos para destaque e mais ofertas." (botão "Ver planos").
+- "Total de ofertas: X / Y" mostra "X / 1 este mês" quando `isFree`.
 
-### Detalhes técnicos
+**`src/pages/Anuncie.tsx` e `src/pages/Assinatura.tsx`**
+- Mostrar o plano Grátis como primeiro card. CTA do card grátis = "Começar grátis" → leva para `/painel-lojista/loja` (sem checkout).
+- Cards pagos seguem com checkout Stripe.
 
-- Dependências novas: `leaflet`, `react-leaflet`, `@types/leaflet`.
-- Importar CSS do leaflet em `src/main.tsx`.
-- Ajuste do ícone padrão do leaflet (workaround dos PNGs) em `OffersMap.tsx`.
-- Cache de geocoding: a função só chama Nominatim se `latitude IS NULL` ou se hash do endereço mudou (guardar em memória; sem coluna nova).
-- Performance: filtragem/ordenação por distância continua client-side (já carregamos as ofertas da cidade).
+**`src/components/site/MerchantCTA.tsx`**
+- Trocar "Anuncie sua loja" para algo como "Comece grátis — 1 oferta por mês".
 
 ### Fora de escopo
-
-- Buscar ofertas de cidades vizinhas pelo raio (mantém filtro por cidade selecionada).
-- Mapa de calor, clusters avançados, rotas/direções.
-- Geocoding em lote retroativo (lojas existentes serão geocodificadas no próximo save ou via botão manual; opcionalmente posso rodar uma vez via edge function se você pedir).
+- Avisos por e-mail "seu mês reseta amanhã".
+- Upgrade flow com prorrateio.
+- Trocar regra para "1 oferta ativa simultânea" (a regra acordada é por mês civil).
+- Migração de assinaturas existentes (continuam intactas).
