@@ -287,6 +287,42 @@ export default function OfertaForm() {
                 />
               </div>
 
+              <div className="rounded-md border border-destructive/40 bg-destructive/5 p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-start gap-2">
+                    <Zap className="mt-0.5 h-5 w-5 text-destructive" />
+                    <div>
+                      <Label className="text-sm">Oferta relâmpago</Label>
+                      <p className="text-xs text-muted-foreground">
+                        Mostra contagem regressiva visível e dispara alerta para seguidores ao publicar.
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={form.is_flash}
+                    onCheckedChange={(v) =>
+                      setForm({ ...form, is_flash: v, flash_duration_hours: v ? form.flash_duration_hours || flashDefaultHours : 2 })
+                    }
+                  />
+                </div>
+                {form.is_flash && (
+                  <div className="mt-3 flex items-center gap-3">
+                    <Label className="text-sm">Duração (horas)</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={72}
+                      className="w-24"
+                      value={form.flash_duration_hours}
+                      onChange={(e) =>
+                        setForm({ ...form, flash_duration_hours: Math.max(1, Math.min(72, parseInt(e.target.value || "0") || flashDefaultHours)) })
+                      }
+                    />
+                    <span className="text-xs text-muted-foreground">Padrão: {flashDefaultHours}h</span>
+                  </div>
+                )}
+              </div>
+
               <div className="flex gap-3 pt-2">
                 <Button type="submit" variant="accent" disabled={loading || blocked}>Salvar</Button>
                 <Button type="button" variant="ghost" onClick={() => navigate("/painel-lojista")}>Cancelar</Button>
