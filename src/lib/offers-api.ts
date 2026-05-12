@@ -19,6 +19,9 @@ export type UIOffer = {
   featured: boolean;
   popularity: number;
   createdAt: string;
+  isFlash: boolean;
+  flashEndsAt?: string | null;
+  flashDurationHours?: number | null;
 };
 
 const FALLBACK_IMG =
@@ -45,7 +48,17 @@ const mapRow = (row: any): UIOffer => ({
   featured: !!row.featured,
   popularity: row.popularity ?? 0,
   createdAt: row.created_at,
+  isFlash: !!row.is_flash,
+  flashEndsAt: row.flash_ends_at ?? null,
+  flashDurationHours: row.flash_duration_hours ?? null,
 });
+
+const filterActiveFlash = (rows: any[]) => {
+  const now = Date.now();
+  return rows.filter(
+    (r) => !r.is_flash || !r.flash_ends_at || new Date(r.flash_ends_at).getTime() > now,
+  );
+};
 
 export type CityFilter = { city: string; state: string } | null;
 
