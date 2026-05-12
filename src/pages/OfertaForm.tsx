@@ -188,6 +188,20 @@ export default function OfertaForm() {
               </Alert>
             )}
             <form onSubmit={handleSubmit} className="space-y-4">
+              <AISuggestButton
+                category_slug={form.category_slug}
+                original_price={form.original_price}
+                current_title={form.title}
+                image_url={form.image_url}
+                onApply={(patch) =>
+                  setForm((f) => ({
+                    ...f,
+                    ...(patch.title !== undefined ? { title: patch.title } : {}),
+                    ...(patch.description !== undefined ? { description: patch.description } : {}),
+                    ...(patch.promo_price !== undefined ? { promo_price: patch.promo_price } : {}),
+                  }))
+                }
+              />
               <div>
                 <Label>Título *</Label>
                 <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
