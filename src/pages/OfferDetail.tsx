@@ -234,6 +234,7 @@ const OfferDetail = () => {
                     </a>
                   </Button>
                 )}
+                <ShareOfferButton offer={offer} className="w-full" />
               </div>
             </div>
 
