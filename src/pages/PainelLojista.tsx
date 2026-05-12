@@ -39,7 +39,9 @@ export default function PainelLojista() {
   const [store, setStore] = useState<StoreRow | null>(null);
   const [offers, setOffers] = useState<OfferRow[]>([]);
   const [clicks, setClicks] = useState<Record<string, number>>({});
+  const [qrScans, setQrScans] = useState<Record<string, number>>({});
   const [totalClicks, setTotalClicks] = useState(0);
+  const [qrFor, setQrFor] = useState<OfferRow | null>(null);
   const [sub, setSub] = useState<Sub | null>(null);
   const [loading, setLoading] = useState(true);
   const subInfo = useSubscription(store?.id ?? null);
@@ -73,15 +75,23 @@ export default function PainelLojista() {
 
       const { data: events } = await supabase
         .from("offer_events")
-        .select("offer_id")
+        .select("offer_id, event_type")
         .eq("store_id", s.id)
-        .eq("event_type", "whatsapp_click");
+        .in("event_type", ["whatsapp_click", "qr_scan"]);
       const counts: Record<string, number> = {};
+      const qr: Record<string, number> = {};
+      let totalWa = 0;
       (events ?? []).forEach((e: any) => {
-        counts[e.offer_id] = (counts[e.offer_id] ?? 0) + 1;
+        if (e.event_type === "whatsapp_click") {
+          counts[e.offer_id] = (counts[e.offer_id] ?? 0) + 1;
+          totalWa++;
+        } else if (e.event_type === "qr_scan") {
+          qr[e.offer_id] = (qr[e.offer_id] ?? 0) + 1;
+        }
       });
       setClicks(counts);
-      setTotalClicks(events?.length ?? 0);
+      setQrScans(qr);
+      setTotalClicks(totalWa);
     }
     setLoading(false);
   };
