@@ -10,7 +10,7 @@ import { UIOffer, discountPct, formatBRL } from "@/lib/offers-api";
 import { Button } from "@/components/ui/button";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { CountdownBadge } from "@/components/site/CountdownBadge";
-import { Zap } from "lucide-react";
+import { Zap, BadgeCheck } from "lucide-react";
 
 export const FeaturedCarousel = ({ offers }: { offers: UIOffer[] }) => {
   if (!offers.length) return null;
