@@ -14,7 +14,7 @@ export const StoreFeaturedBadge = ({ className, showLabel = true, size = "sm" }:
       title="Loja Destaque"
       aria-label="Loja Destaque"
       className={cn(
-        "inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-accent-strong",
+        "inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-primary",
         className,
       )}
     >

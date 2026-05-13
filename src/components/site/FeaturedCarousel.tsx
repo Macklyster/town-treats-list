@@ -10,7 +10,7 @@ import { UIOffer, discountPct, formatBRL } from "@/lib/offers-api";
 import { Button } from "@/components/ui/button";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { CountdownBadge } from "@/components/site/CountdownBadge";
-import { Zap } from "lucide-react";
+import { Zap, BadgeCheck } from "lucide-react";
 
 export const FeaturedCarousel = ({ offers }: { offers: UIOffer[] }) => {
   if (!offers.length) return null;
@@ -30,6 +30,9 @@ export const FeaturedCarousel = ({ offers }: { offers: UIOffer[] }) => {
                         -{pct}% OFF
                       </span>
                     )}
+                    <span className="absolute left-4 top-[52px] inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-lg">
+                      <BadgeCheck className="h-3.5 w-3.5" /> Destaque
+                    </span>
                     {o.isFlash && o.flashEndsAt && (
                       <div className="absolute right-4 top-4 flex flex-col items-end gap-2">
                         <span className="inline-flex items-center gap-1 rounded-full bg-destructive px-3 py-1 text-xs font-bold uppercase tracking-wider text-destructive-foreground shadow-lg animate-pulse">
