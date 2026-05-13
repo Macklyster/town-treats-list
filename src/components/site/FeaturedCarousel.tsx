@@ -31,7 +31,7 @@ export const FeaturedCarousel = ({ offers }: { offers: UIOffer[] }) => {
                       </span>
                     )}
                     <span className="absolute left-4 top-[52px] inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-lg">
-                      <BadgeCheck className="h-3.5 w-3.5" /> Destaque
+                      <BadgeCheck className="h-3.5 w-3.5" /> LOJA DESTAQUE
                     </span>
                     {o.isFlash && o.flashEndsAt && (
                       <div className="absolute right-4 top-4 flex flex-col items-end gap-2">
