@@ -24,6 +24,7 @@ import Inteligencia from "./pages/Inteligencia.tsx";
 import { ScrollToHash } from "./components/ScrollToHash";
 import { BackToTopButton } from "./components/site/BackToTopButton";
 import { InstallAppBanner } from "./components/site/InstallAppBanner";
+import { ReviewPromptDialog } from "./components/site/ReviewPromptDialog";
 import CityOffers from "./pages/CityOffers.tsx";
 import StorePage from "./pages/StorePage.tsx";
 
@@ -116,6 +117,7 @@ const App = () => (
             </Routes>
             <BackToTopButton />
             <InstallAppBanner />
+            <ReviewPromptDialog />
           </CityProvider>
         </AuthProvider>
       </BrowserRouter>
