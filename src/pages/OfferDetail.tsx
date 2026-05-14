@@ -24,6 +24,8 @@ import { SEO } from "@/components/seo/SEO";
 import { absoluteUrl, citySlug, cityLabel } from "@/lib/slug";
 import { ShareOfferButton } from "@/components/site/ShareOfferButton";
 import { InstallAppInline } from "@/components/site/InstallAppInline";
+import { RatingSummary, fetchOfferRatingSummary, RatingSummaryData } from "@/components/site/RatingSummary";
+import { ReviewList } from "@/components/site/ReviewList";
 
 const OfferDetail = () => {
   const { id } = useParams();
