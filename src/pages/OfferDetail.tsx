@@ -35,6 +35,7 @@ const OfferDetail = () => {
   const [related, setRelated] = useState<UIOffer[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [rating, setRating] = useState<RatingSummaryData | null>(null);
 
   useEffect(() => {
     if (!id) return;
