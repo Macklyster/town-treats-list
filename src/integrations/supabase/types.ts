@@ -18,16 +18,19 @@ export type Database = {
         Row: {
           flash_default_hours: number
           id: boolean
+          review_prompt_hours: number
           updated_at: string
         }
         Insert: {
           flash_default_hours?: number
           id?: boolean
+          review_prompt_hours?: number
           updated_at?: string
         }
         Update: {
           flash_default_hours?: number
           id?: boolean
+          review_prompt_hours?: number
           updated_at?: string
         }
         Relationships: []
@@ -203,6 +206,77 @@ export type Database = {
           session_id?: string | null
           store_id?: string
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      offer_review_photos: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          review_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          review_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          review_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offer_review_photos_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "offer_reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      offer_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          offer_id: string
+          rating: number
+          rejection_reason: string | null
+          status: Database["public"]["Enums"]["review_status"]
+          store_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          offer_id: string
+          rating: number
+          rejection_reason?: string | null
+          status?: Database["public"]["Enums"]["review_status"]
+          store_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          offer_id?: string
+          rating?: number
+          rejection_reason?: string | null
+          status?: Database["public"]["Enums"]["review_status"]
+          store_id?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -401,6 +475,48 @@ export type Database = {
         }
         Relationships: []
       }
+      review_prompts: {
+        Row: {
+          created_at: string
+          dismissed_at: string | null
+          dismissed_permanently: boolean
+          eligible_at: string
+          id: string
+          notified_at: string | null
+          offer_id: string
+          remind_after: string | null
+          store_id: string
+          triggered_event_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dismissed_at?: string | null
+          dismissed_permanently?: boolean
+          eligible_at: string
+          id?: string
+          notified_at?: string | null
+          offer_id: string
+          remind_after?: string | null
+          store_id: string
+          triggered_event_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dismissed_at?: string | null
+          dismissed_permanently?: boolean
+          eligible_at?: string
+          id?: string
+          notified_at?: string | null
+          offer_id?: string
+          remind_after?: string | null
+          store_id?: string
+          triggered_event_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       store_followers: {
         Row: {
           created_at: string
@@ -582,10 +698,25 @@ export type Database = {
         }
         Returns: boolean
       }
+      offer_rating_summary: { Args: { p_offer_id: string }; Returns: Json }
+      pending_reviews_for_user: {
+        Args: never
+        Returns: {
+          eligible_at: string
+          offer_id: string
+          offer_image: string
+          offer_title: string
+          prompt_id: string
+          store_id: string
+          store_logo: string
+          store_name: string
+        }[]
+      }
       store_intelligence: {
         Args: { p_days?: number; p_store_id: string }
         Returns: Json
       }
+      store_rating_summary: { Args: { p_store_id: string }; Returns: Json }
       track_offer_event: {
         Args: {
           p_event_type: string
@@ -601,6 +732,7 @@ export type Database = {
       app_role: "admin" | "lojista" | "consumer"
       offer_status: "pending" | "approved" | "rejected" | "paused"
       offer_type: "desconto" | "cupom" | "brinde"
+      review_status: "pending" | "approved" | "rejected"
       subscription_status:
         | "trialing"
         | "active"
@@ -738,6 +870,7 @@ export const Constants = {
       app_role: ["admin", "lojista", "consumer"],
       offer_status: ["pending", "approved", "rejected", "paused"],
       offer_type: ["desconto", "cupom", "brinde"],
+      review_status: ["pending", "approved", "rejected"],
       subscription_status: [
         "trialing",
         "active",

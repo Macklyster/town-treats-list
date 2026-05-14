@@ -23,3 +23,9 @@ verify_jwt = false
 
 [functions.backfill-geocode-stores]
 verify_jwt = false
+
+[functions.generate-review-prompts]
+verify_jwt = false
+
+[functions.notify-review-request]
+verify_jwt = false

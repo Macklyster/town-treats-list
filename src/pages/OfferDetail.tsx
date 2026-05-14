@@ -24,6 +24,8 @@ import { SEO } from "@/components/seo/SEO";
 import { absoluteUrl, citySlug, cityLabel } from "@/lib/slug";
 import { ShareOfferButton } from "@/components/site/ShareOfferButton";
 import { InstallAppInline } from "@/components/site/InstallAppInline";
+import { RatingSummary, fetchOfferRatingSummary, RatingSummaryData } from "@/components/site/RatingSummary";
+import { ReviewList } from "@/components/site/ReviewList";
 
 const OfferDetail = () => {
   const { id } = useParams();
@@ -33,6 +35,7 @@ const OfferDetail = () => {
   const [related, setRelated] = useState<UIOffer[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [rating, setRating] = useState<RatingSummaryData | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -48,8 +51,13 @@ const OfferDetail = () => {
       if (searchParams.get("src") === "qr") {
         trackOfferEvent(o.id, "qr_scan");
       }
-      const [s, all] = await Promise.all([fetchStoreById(o.storeId), fetchOffers()]);
+      const [s, all, r] = await Promise.all([
+        fetchStoreById(o.storeId),
+        fetchOffers(),
+        fetchOfferRatingSummary(o.id),
+      ]);
       setStore(s);
+      setRating(r);
       setRelated(
         all
           .filter((x) => x.id !== o.id && (x.storeId === o.storeId || x.category === o.category))
@@ -91,6 +99,14 @@ const OfferDetail = () => {
     priceCurrency: "BRL",
     availability: "https://schema.org/InStock",
     validThrough: offer.validUntil || undefined,
+    aggregateRating:
+      rating && rating.count > 0
+        ? {
+            "@type": "AggregateRating",
+            ratingValue: rating.avg,
+            reviewCount: rating.count,
+          }
+        : undefined,
     seller: {
       "@type": "LocalBusiness",
       name: offer.storeName,
@@ -291,6 +307,26 @@ const OfferDetail = () => {
             )}
           </aside>
         </div>
+
+        <section className="mt-16">
+          <h2 className="text-2xl font-semibold text-foreground md:text-[28px]">
+            Avaliações de clientes
+          </h2>
+          <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_1.5fr]">
+            <div>
+              {rating && rating.count > 0 ? (
+                <RatingSummary offerId={offer.id} />
+              ) : (
+                <div className="rounded-2xl bg-card p-5 shadow-card text-sm text-muted-foreground">
+                  Ainda sem avaliações para esta oferta.
+                </div>
+              )}
+            </div>
+            <div>
+              <ReviewList offerId={offer.id} />
+            </div>
+          </div>
+        </section>
 
         {related.length > 0 && (
           <section className="mt-20">
