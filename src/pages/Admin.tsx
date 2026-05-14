@@ -32,6 +32,7 @@ import * as LucideIcons from "lucide-react";
 import { Check, X, Star, Pencil, Trash2, ArrowUp, ArrowDown, Plus, Tag } from "lucide-react";
 import { AdminBroadcast } from "@/components/admin/AdminBroadcast";
 import { AdminSettings } from "@/components/admin/AdminSettings";
+import { AdminReviews } from "@/components/admin/AdminReviews";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -238,6 +239,7 @@ export default function Admin() {
             <TabsTrigger value="stores">Lojas ({stores.length})</TabsTrigger>
             <TabsTrigger value="categories">Categorias ({categories.length})</TabsTrigger>
             <TabsTrigger value="notifications">Notificações</TabsTrigger>
+            <TabsTrigger value="reviews">Avaliações</TabsTrigger>
             <TabsTrigger value="settings">Configurações</TabsTrigger>
           </TabsList>
 
