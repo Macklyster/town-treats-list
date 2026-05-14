@@ -480,6 +480,10 @@ export default function Admin() {
             <AdminBroadcast />
           </TabsContent>
 
+          <TabsContent value="reviews" className="mt-6">
+            <AdminReviews />
+          </TabsContent>
+
           <TabsContent value="settings" className="mt-6">
             <AdminSettings />
           </TabsContent>
