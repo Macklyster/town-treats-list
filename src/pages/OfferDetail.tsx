@@ -308,6 +308,26 @@ const OfferDetail = () => {
           </aside>
         </div>
 
+        <section className="mt-16">
+          <h2 className="text-2xl font-semibold text-foreground md:text-[28px]">
+            Avaliações de clientes
+          </h2>
+          <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_1.5fr]">
+            <div>
+              {rating && rating.count > 0 ? (
+                <RatingSummary offerId={offer.id} />
+              ) : (
+                <div className="rounded-2xl bg-card p-5 shadow-card text-sm text-muted-foreground">
+                  Ainda sem avaliações para esta oferta.
+                </div>
+              )}
+            </div>
+            <div>
+              <ReviewList offerId={offer.id} />
+            </div>
+          </div>
+        </section>
+
         {related.length > 0 && (
           <section className="mt-20">
             <h2 className="text-2xl font-semibold text-foreground md:text-[28px]">Você também pode gostar</h2>
