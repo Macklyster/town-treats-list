@@ -51,8 +51,13 @@ const OfferDetail = () => {
       if (searchParams.get("src") === "qr") {
         trackOfferEvent(o.id, "qr_scan");
       }
-      const [s, all] = await Promise.all([fetchStoreById(o.storeId), fetchOffers()]);
+      const [s, all, r] = await Promise.all([
+        fetchStoreById(o.storeId),
+        fetchOffers(),
+        fetchOfferRatingSummary(o.id),
+      ]);
       setStore(s);
+      setRating(r);
       setRelated(
         all
           .filter((x) => x.id !== o.id && (x.storeId === o.storeId || x.category === o.category))
@@ -94,6 +99,14 @@ const OfferDetail = () => {
     priceCurrency: "BRL",
     availability: "https://schema.org/InStock",
     validThrough: offer.validUntil || undefined,
+    aggregateRating:
+      rating && rating.count > 0
+        ? {
+            "@type": "AggregateRating",
+            ratingValue: rating.avg,
+            reviewCount: rating.count,
+          }
+        : undefined,
     seller: {
       "@type": "LocalBusiness",
       name: offer.storeName,
