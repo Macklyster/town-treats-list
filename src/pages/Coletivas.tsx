@@ -16,7 +16,7 @@ import { formatBRLNumber } from "@/lib/format";
 import type { Tier, GroupOffer } from "@/lib/group-offers-api";
 
 type Row = GroupOffer & {
-  store: { id: string; name: string; slug: string; logo_url: string | null } | null;
+  store: { id: string; name: string; slug: string; logo_url: string | null; featured_badge: boolean } | null;
   participants_count: number;
 };
 
