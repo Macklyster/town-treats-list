@@ -40,14 +40,26 @@ export default function LeilaoPublic() {
   const [state, setState] = useState<AuctionState | null>(null);
   const [tick, setTick] = useState(0);
   const [reserving, setReserving] = useState(false);
+  const [proof, setProof] = useState<AuctionSocialProof | null>(null);
 
   const load = async () => {
     if (!token) return;
     const s = await fetchAuctionStateByToken(token);
     setState(s);
+    if (s.offer?.id) {
+      const p = await fetchAuctionSocialProof(s.offer.id);
+      setProof(p);
+    }
   };
 
   useEffect(() => { load(); }, [token, user?.id]);
+
+  // Track view once per auction load
+  useEffect(() => {
+    if (state?.offer?.id) {
+      trackAuctionEvent(state.offer.id, "view", getSessionId());
+    }
+  }, [state?.offer?.id]);
 
   // local 1s tick
   useEffect(() => {
