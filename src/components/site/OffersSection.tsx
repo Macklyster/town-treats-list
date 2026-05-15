@@ -275,3 +275,36 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
     </section>
   );
 };
+
+const OffersGrid = ({ offers }: { offers: UIOffer[] }) => {
+  const [sp, setSp] = useState<Map<string, SocialProof>>(new Map());
+  const ids = useMemo(() => offers.map((o) => o.id), [offers]);
+  const idsKey = ids.join(",");
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = () => {
+      if (!ids.length) {
+        setSp(new Map());
+        return;
+      }
+      fetchOfferSocialProof(ids.slice(0, 60)).then((m) => {
+        if (!cancelled) setSp(m);
+      });
+    };
+    load();
+    const t = setInterval(load, 60000);
+    return () => {
+      cancelled = true;
+      clearInterval(t);
+    };
+  }, [idsKey]);
+
+  return (
+    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      {offers.map((o) => (
+        <OfferCard key={o.id} offer={o} socialProof={sp.get(o.id)} />
+      ))}
+    </div>
+  );
+};
