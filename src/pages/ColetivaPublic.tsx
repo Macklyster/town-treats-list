@@ -15,6 +15,8 @@ import {
   formatBRL,
 } from "@/lib/group-offers-api";
 import { MessageCircle, Copy, Check } from "lucide-react";
+import { StoreAvatar } from "@/components/site/StoreAvatar";
+import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { toast } from "sonner";
 
 export default function ColetivaPublic() {
