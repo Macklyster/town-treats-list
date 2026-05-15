@@ -10,12 +10,14 @@ import { toast } from "sonner";
 const schema = z.object({
   flash_default_hours: z.number().int().min(1).max(72),
   review_prompt_hours: z.number().int().min(1).max(168),
+  group_offer_max_active_per_store: z.number().int().min(1).max(20),
 });
 
 export const AdminSettings = () => {
   const [flashHours, setFlashHours] = useState<string>("2");
   const [reviewHours, setReviewHours] = useState<string>("3");
-  const [initial, setInitial] = useState<{ flash: number; review: number }>({ flash: 2, review: 3 });
+  const [groupMax, setGroupMax] = useState<string>("1");
+  const [initial, setInitial] = useState<{ flash: number; review: number; groupMax: number }>({ flash: 2, review: 3, groupMax: 1 });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,27 +25,33 @@ export const AdminSettings = () => {
   useEffect(() => {
     supabase
       .from("app_settings")
-      .select("flash_default_hours, review_prompt_hours")
+      .select("flash_default_hours, review_prompt_hours, group_offer_max_active_per_store")
       .eq("id", true)
       .maybeSingle()
       .then(({ data, error }) => {
         if (error) toast.error("Erro ao carregar configurações");
         const f = data?.flash_default_hours ?? 2;
         const r = (data as any)?.review_prompt_hours ?? 3;
+        const g = (data as any)?.group_offer_max_active_per_store ?? 1;
         setFlashHours(String(f));
         setReviewHours(String(r));
-        setInitial({ flash: f, review: r });
+        setGroupMax(String(g));
+        setInitial({ flash: f, review: r, groupMax: g });
         setLoading(false);
       });
   }, []);
 
-  const dirty = Number(flashHours) !== initial.flash || Number(reviewHours) !== initial.review;
+  const dirty =
+    Number(flashHours) !== initial.flash ||
+    Number(reviewHours) !== initial.review ||
+    Number(groupMax) !== initial.groupMax;
 
   const handleSave = async () => {
     setError(null);
     const parsed = schema.safeParse({
       flash_default_hours: Number(flashHours),
       review_prompt_hours: Number(reviewHours),
+      group_offer_max_active_per_store: Number(groupMax),
     });
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Valor inválido");
@@ -55,15 +63,20 @@ export const AdminSettings = () => {
       .update({
         flash_default_hours: parsed.data.flash_default_hours,
         review_prompt_hours: parsed.data.review_prompt_hours,
+        group_offer_max_active_per_store: parsed.data.group_offer_max_active_per_store,
         updated_at: new Date().toISOString(),
-      })
+      } as any)
       .eq("id", true);
     setSaving(false);
     if (error) {
       toast.error("Não foi possível salvar: " + error.message);
       return;
     }
-    setInitial({ flash: parsed.data.flash_default_hours, review: parsed.data.review_prompt_hours });
+    setInitial({
+      flash: parsed.data.flash_default_hours,
+      review: parsed.data.review_prompt_hours,
+      groupMax: parsed.data.group_offer_max_active_per_store,
+    });
     toast.success("Configurações salvas");
   };
 
