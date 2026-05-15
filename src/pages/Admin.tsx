@@ -498,6 +498,10 @@ export default function Admin() {
             <AdminLeiloes />
           </TabsContent>
 
+          <TabsContent value="invisiveis" className="mt-6">
+            <AdminOfertasInvisiveis />
+          </TabsContent>
+
           <TabsContent value="settings" className="mt-6">
             <AdminSettings />
           </TabsContent>
