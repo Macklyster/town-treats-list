@@ -6,8 +6,10 @@ import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { CountdownBadge } from "@/components/site/CountdownBadge";
 import { MapPin } from "lucide-react";
+import { SocialProofBadge } from "@/components/site/SocialProofBadge";
+import type { SocialProof } from "@/lib/social-proof";
 
-export const OfferCard = ({ offer }: { offer: UIOffer }) => {
+export const OfferCard = ({ offer, socialProof }: { offer: UIOffer; socialProof?: SocialProof }) => {
   const pct = discountPct(offer);
   return (
     <Link
@@ -49,6 +51,7 @@ export const OfferCard = ({ offer }: { offer: UIOffer }) => {
           {offer.storeFeaturedBadge && <StoreFeaturedBadge showLabel={false} />}
         </div>
         <h3 className="line-clamp-2 text-base font-medium text-foreground">{offer.title}</h3>
+        <SocialProofBadge sp={socialProof} variant="compact" />
         {typeof offer.distanceKm === "number" && (
           <div className="inline-flex items-center gap-1 text-xs text-muted-foreground">
             <MapPin className="h-3 w-3" />
