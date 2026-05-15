@@ -26,6 +26,8 @@ import { ShareOfferButton } from "@/components/site/ShareOfferButton";
 import { InstallAppInline } from "@/components/site/InstallAppInline";
 import { RatingSummary, fetchOfferRatingSummary, RatingSummaryData } from "@/components/site/RatingSummary";
 import { ReviewList } from "@/components/site/ReviewList";
+import { SocialProofBadge } from "@/components/site/SocialProofBadge";
+import { fetchOfferSocialProof, subscribeOfferEvents, SocialProof } from "@/lib/social-proof";
 
 const OfferDetail = () => {
   const { id } = useParams();
@@ -36,6 +38,25 @@ const OfferDetail = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [rating, setRating] = useState<RatingSummaryData | null>(null);
+  const [sp, setSp] = useState<SocialProof | undefined>(undefined);
+
+  useEffect(() => {
+    if (!offer?.id) return;
+    let cancelled = false;
+    const refresh = () => {
+      fetchOfferSocialProof([offer.id]).then((m) => {
+        if (!cancelled) setSp(m.get(offer.id));
+      });
+    };
+    refresh();
+    const unsub = subscribeOfferEvents(offer.id, refresh);
+    const t = setInterval(refresh, 30000);
+    return () => {
+      cancelled = true;
+      clearInterval(t);
+      unsub();
+    };
+  }, [offer?.id]);
 
   useEffect(() => {
     if (!id) return;
