@@ -922,6 +922,7 @@ export type Database = {
         Args: { p_offer: Database["public"]["Tables"]["auction_offers"]["Row"] }
         Returns: number
       }
+      auction_social_proof: { Args: { p_auction_id: string }; Returns: Json }
       auction_state: { Args: { p_token: string }; Returns: Json }
       category_benchmark: {
         Args: { p_days?: number; p_store_id: string }
@@ -956,6 +957,16 @@ export type Database = {
         Returns: Json
       }
       store_rating_summary: { Args: { p_store_id: string }; Returns: Json }
+      track_auction_event: {
+        Args: {
+          p_auction_id: string
+          p_event_type: string
+          p_referrer?: string
+          p_session_id?: string
+          p_user_agent?: string
+        }
+        Returns: undefined
+      }
       track_offer_event: {
         Args: {
           p_event_type: string

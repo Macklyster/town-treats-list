@@ -94,5 +94,24 @@ export const computeSecondsToNext = (a: {
   return Math.max(0, intervalSec - (elapsedSec % intervalSec));
 };
 
+export const trackAuctionEvent = async (auctionId: string, eventType: "view" | "whatsapp_click", sessionId?: string) => {
+  try {
+    await supabase.rpc("track_auction_event" as any, {
+      p_auction_id: auctionId,
+      p_event_type: eventType,
+      p_session_id: sessionId ?? null,
+      p_user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+      p_referrer: typeof document !== "undefined" ? document.referrer : null,
+    });
+  } catch (e) { console.error(e); }
+};
+
+export type AuctionSocialProof = { views_today: number; viewers_now: number; reserved: number; total: number };
+
+export const fetchAuctionSocialProof = async (auctionId: string): Promise<AuctionSocialProof> => {
+  const { data } = await supabase.rpc("auction_social_proof" as any, { p_auction_id: auctionId });
+  return (data as any) ?? { views_today: 0, viewers_now: 0, reserved: 0, total: 0 };
+};
+
 export const formatBRL = (v: number) =>
   Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });

@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const SID_KEY = "of_sid";
 
-const getSessionId = (): string => {
+export const getSessionId = (): string => {
   try {
     let sid = localStorage.getItem(SID_KEY);
     if (!sid) {

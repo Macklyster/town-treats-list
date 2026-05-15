@@ -14,9 +14,13 @@ import {
   computeCurrentPrice,
   computeSecondsToNext,
   formatBRL,
+  trackAuctionEvent,
+  fetchAuctionSocialProof,
   type AuctionState,
+  type AuctionSocialProof,
 } from "@/lib/auction-api";
-import { MessageCircle, Gavel, Clock, Package, TrendingDown } from "lucide-react";
+import { getSessionId } from "@/lib/offer-events";
+import { MessageCircle, Gavel, Clock, Package, TrendingDown, Eye, Users, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 
 const fmtTime = (s: number) => {
@@ -36,14 +40,26 @@ export default function LeilaoPublic() {
   const [state, setState] = useState<AuctionState | null>(null);
   const [tick, setTick] = useState(0);
   const [reserving, setReserving] = useState(false);
+  const [proof, setProof] = useState<AuctionSocialProof | null>(null);
 
   const load = async () => {
     if (!token) return;
     const s = await fetchAuctionStateByToken(token);
     setState(s);
+    if (s.offer?.id) {
+      const p = await fetchAuctionSocialProof(s.offer.id);
+      setProof(p);
+    }
   };
 
   useEffect(() => { load(); }, [token, user?.id]);
+
+  // Track view once per auction load
+  useEffect(() => {
+    if (state?.offer?.id) {
+      trackAuctionEvent(state.offer.id, "view", getSessionId());
+    }
+  }, [state?.offer?.id]);
 
   // local 1s tick
   useEffect(() => {
@@ -142,6 +158,25 @@ export default function LeilaoPublic() {
               </div>
               <h1 className="text-2xl font-bold text-foreground">{offer.title}</h1>
               {offer.description && <p className="text-sm text-muted-foreground">{offer.description}</p>}
+              {proof && (proof.views_today > 0 || proof.viewers_now > 0 || proof.reserved > 0) && (
+                <div className="flex flex-wrap gap-2 pt-2 text-xs">
+                  {proof.viewers_now > 1 && (
+                    <Badge variant="outline" className="gap-1 border-accent/40 text-accent-strong">
+                      <Users className="h-3 w-3" /> {proof.viewers_now} pessoas vendo agora
+                    </Badge>
+                  )}
+                  {proof.views_today > 0 && (
+                    <Badge variant="outline" className="gap-1">
+                      <Eye className="h-3 w-3" /> {proof.views_today} {proof.views_today === 1 ? "pessoa viu" : "pessoas viram"} hoje
+                    </Badge>
+                  )}
+                  {proof.reserved > 0 && (
+                    <Badge variant="outline" className="gap-1 border-success/40 text-success-foreground">
+                      <ShoppingBag className="h-3 w-3" /> {proof.reserved} {proof.reserved === 1 ? "unidade vendida" : "unidades vendidas"}
+                    </Badge>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
 
