@@ -16,7 +16,8 @@ import { OfferQrDialog } from "@/components/site/OfferQrDialog";
 import { NewOfferDropdown } from "@/components/site/NewOfferDropdown";
 import { fetchActiveGroupOfferForStore, type GroupOffer } from "@/lib/group-offers-api";
 import { fetchActiveAuctionForStore, type AuctionOffer, formatBRL as formatBRLAuc } from "@/lib/auction-api";
-import { Gavel, Package } from "lucide-react";
+import { fetchActiveGeoOfferForStore, formatTime as formatGeoTime, type GeoOffer } from "@/lib/geo-offer-api";
+import { Gavel, Package, EyeOff, MapPin, Clock } from "lucide-react";
 
 type StoreRow = {
   id: string;
