@@ -35,6 +35,7 @@ import { AdminSettings } from "@/components/admin/AdminSettings";
 import { AdminReviews } from "@/components/admin/AdminReviews";
 import { AdminColetivas } from "@/components/admin/AdminColetivas";
 import { AdminLeiloes } from "@/components/admin/AdminLeiloes";
+import { AdminOfertasInvisiveis } from "@/components/admin/AdminOfertasInvisiveis";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
