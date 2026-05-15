@@ -136,6 +136,33 @@ export const AdminSettings = () => {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle>OfertasFly Coletiva</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 max-w-md">
+          <div className="space-y-2">
+            <Label htmlFor="group_offer_max_active_per_store">Máximo de coletivas ativas por loja</Label>
+            <Input
+              id="group_offer_max_active_per_store"
+              type="number"
+              min={1}
+              max={20}
+              step={1}
+              value={groupMax}
+              disabled={loading || saving}
+              onChange={(e) => {
+                setGroupMax(e.target.value);
+                setError(null);
+              }}
+            />
+            <p className="text-sm text-muted-foreground">
+              Quantas coletivas (pendentes ou aprovadas) cada loja pode ter ao mesmo tempo. Padrão: 1.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
       {error && <p className="text-sm font-medium text-destructive">{error}</p>}
 
       <div className="flex gap-2">
@@ -148,6 +175,7 @@ export const AdminSettings = () => {
             onClick={() => {
               setFlashHours(String(initial.flash));
               setReviewHours(String(initial.review));
+              setGroupMax(String(initial.groupMax));
               setError(null);
             }}
             disabled={saving}
