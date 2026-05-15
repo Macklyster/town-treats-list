@@ -241,6 +241,7 @@ export default function Admin() {
             <TabsTrigger value="categories">Categorias ({categories.length})</TabsTrigger>
             <TabsTrigger value="notifications">Notificações</TabsTrigger>
             <TabsTrigger value="reviews">Avaliações</TabsTrigger>
+            <TabsTrigger value="coletivas">Coletivas</TabsTrigger>
             <TabsTrigger value="settings">Configurações</TabsTrigger>
           </TabsList>
 
