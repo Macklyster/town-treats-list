@@ -253,6 +253,8 @@ const OfferDetail = () => {
                 </span>
               </div>
 
+              <SocialProofBadge sp={sp} variant="detailed" className="mt-4" />
+
               <div className="mt-6 space-y-3">
                 {store?.whatsapp && (
                   <Button asChild variant="accent" size="lg" className="w-full">
