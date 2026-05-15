@@ -19,6 +19,7 @@ const navItems = [
   { to: "/#ofertas", label: "Ofertas" },
   { to: "/coletivas", label: "Coletivas" },
   { to: "/leiloes", label: "Leilões" },
+  { to: "/ofertas-invisiveis", label: "Invisíveis" },
   { to: "/#categorias", label: "Categorias" },
   { to: "/#como-funciona", label: "Como Funciona" },
 ];
