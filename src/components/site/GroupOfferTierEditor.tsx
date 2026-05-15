@@ -1,16 +1,20 @@
+import { useMemo, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { formatBRLNumber } from "@/lib/format";
 import type { Tier } from "@/lib/group-offers-api";
 
 type Props = {
   value: Tier[];
   onChange: (tiers: Tier[]) => void;
+  originalPrice?: number;
 };
 
-export const GroupOfferTierEditor = ({ value, onChange }: Props) => {
+export const GroupOfferTierEditor = ({ value, onChange, originalPrice = 0 }: Props) => {
   const tiers = value.length > 0 ? value : [{ min_people: 1, price: 0 }];
+  const [normalDiscountPct, setNormalDiscountPct] = useState<number>(15);
 
   const update = (i: number, patch: Partial<Tier>) => {
     const next = tiers.map((t, idx) => (idx === i ? { ...t, ...patch } : t));
@@ -44,6 +48,43 @@ export const GroupOfferTierEditor = ({ value, onChange }: Props) => {
     if (t.price <= 0) return "Preço deve ser maior que zero";
     return null;
   });
+
+  const hasBase = originalPrice > 0;
+  const normalPrice = useMemo(
+    () => (hasBase ? originalPrice * (1 - Math.min(Math.max(normalDiscountPct, 0), 90) / 100) : 0),
+    [originalPrice, normalDiscountPct, hasBase],
+  );
+
+  const rows = useMemo(() => {
+    return tiers.map((t, i) => {
+      const minPeople = t.min_people;
+      const nextTier = tiers[i + 1];
+      const maxPeople = nextTier ? nextTier.min_people - 1 : null;
+      const peopleLabel =
+        maxPeople === null
+          ? `${minPeople} ou mais`
+          : maxPeople === minPeople
+            ? `${minPeople}`
+            : `${minPeople} a ${maxPeople}`;
+      const pctVsOriginal = hasBase ? (1 - t.price / originalPrice) * 100 : 0;
+      const pctVsNormal = hasBase && normalPrice > 0 ? (1 - t.price / normalPrice) * 100 : 0;
+      return {
+        i,
+        label: minPeople === 1 ? "Sozinho" : `${minPeople}+ pessoas`,
+        peopleLabel,
+        price: t.price,
+        pctVsOriginal,
+        pctVsNormal,
+        minPeople,
+        maxPeople,
+      };
+    });
+  }, [tiers, originalPrice, normalPrice, hasBase]);
+
+  const last = rows[rows.length - 1];
+  const lastRevenueMin = last ? last.price * last.minPeople : 0;
+  const lastNormalRevenueMin = last ? normalPrice * last.minPeople : 0;
+  const lastGainMin = lastNormalRevenueMin - lastRevenueMin; // ganho de desconto p/ cliente
 
   return (
     <div className="space-y-3">
@@ -98,21 +139,137 @@ export const GroupOfferTierEditor = ({ value, onChange }: Props) => {
       </Button>
 
       {/* Preview */}
-      <div className="rounded-md bg-muted/40 p-3 text-sm">
-        <p className="mb-2 font-medium">Pré-visualização da escada</p>
-        <ul className="space-y-1">
-          {tiers.map((t, i) => (
-            <li key={i} className="flex items-center justify-between">
-              <span>
-                {t.min_people === 1 ? "Sozinho" : `${t.min_people}+ pessoas`}
-              </span>
-              <strong>
-                R$ {Number(t.price).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}{" "}
-                <span className="text-xs font-normal text-muted-foreground">cada</span>
-              </strong>
-            </li>
+      <div className="space-y-3 rounded-md bg-muted/40 p-3 text-sm">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="font-medium">Pré-visualização da escada</p>
+            <p className="text-xs text-muted-foreground">
+              Compare o desconto da coletiva com uma oferta normal hipotética.
+            </p>
+          </div>
+          <div className="grid gap-1 sm:max-w-[220px]">
+            <Label htmlFor="normal_pct" className="text-xs text-muted-foreground">
+              Desconto típico de uma oferta normal (%)
+            </Label>
+            <Input
+              id="normal_pct"
+              type="number"
+              min={0}
+              max={90}
+              step={1}
+              value={normalDiscountPct}
+              onChange={(e) =>
+                setNormalDiscountPct(Math.min(90, Math.max(0, Number(e.target.value) || 0)))
+              }
+            />
+            <p className="text-[11px] text-muted-foreground">Usado só para comparação, não é salvo.</p>
+          </div>
+        </div>
+
+        {!hasBase && (
+          <p className="text-xs text-muted-foreground">
+            Informe o preço de tabela acima para ver o comparativo.
+          </p>
+        )}
+
+        {/* Desktop table */}
+        <div className="hidden overflow-x-auto sm:block">
+          <table className="w-full text-sm">
+            <thead className="text-left text-xs text-muted-foreground">
+              <tr>
+                <th className="py-2 pr-2">Faixa</th>
+                <th className="py-2 pr-2">Pessoas</th>
+                <th className="py-2 pr-2">Preço/pessoa</th>
+                {hasBase && <th className="py-2 pr-2">vs tabela</th>}
+                {hasBase && <th className="py-2">vs normal</th>}
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {rows.map((r) => (
+                <tr key={r.i}>
+                  <td className="py-2 pr-2">{r.label}</td>
+                  <td className="py-2 pr-2 text-muted-foreground">{r.peopleLabel}</td>
+                  <td className="py-2 pr-2 font-medium">{formatBRLNumber(r.price)}</td>
+                  {hasBase && (
+                    <td className="py-2 pr-2 text-muted-foreground">
+                      {r.pctVsOriginal > 0 ? `-${r.pctVsOriginal.toFixed(0)}%` : "—"}
+                    </td>
+                  )}
+                  {hasBase && (
+                    <td
+                      className={`py-2 ${
+                        r.pctVsNormal < 0 ? "text-destructive" : r.pctVsNormal > 0 ? "text-primary" : "text-muted-foreground"
+                      }`}
+                    >
+                      {r.pctVsNormal > 0
+                        ? `-${r.pctVsNormal.toFixed(0)}%`
+                        : r.pctVsNormal < 0
+                          ? `+${Math.abs(r.pctVsNormal).toFixed(0)}% mais caro`
+                          : "—"}
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile stacked */}
+        <div className="space-y-2 sm:hidden">
+          {rows.map((r) => (
+            <div key={r.i} className="rounded-md border bg-background p-2">
+              <div className="flex items-center justify-between">
+                <span className="font-medium">{r.label}</span>
+                <span className="font-medium">{formatBRLNumber(r.price)}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-x-2 gap-y-1 pt-1 text-xs text-muted-foreground">
+                <span>Pessoas</span>
+                <span className="text-right text-foreground">{r.peopleLabel}</span>
+                {hasBase && (
+                  <>
+                    <span>vs tabela</span>
+                    <span className="text-right text-foreground">
+                      {r.pctVsOriginal > 0 ? `-${r.pctVsOriginal.toFixed(0)}%` : "—"}
+                    </span>
+                    <span>vs normal</span>
+                    <span
+                      className={`text-right ${
+                        r.pctVsNormal < 0 ? "text-destructive" : r.pctVsNormal > 0 ? "text-primary" : "text-foreground"
+                      }`}
+                    >
+                      {r.pctVsNormal > 0
+                        ? `-${r.pctVsNormal.toFixed(0)}%`
+                        : r.pctVsNormal < 0
+                          ? `+${Math.abs(r.pctVsNormal).toFixed(0)}% mais caro`
+                          : "—"}
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
+
+        {/* Footer summary */}
+        {hasBase && last && (
+          last.pctVsNormal < 0 ? (
+            <div className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-xs text-destructive">
+              Sua oferta normal ({normalDiscountPct}% off) seria mais barata que esta coletiva na última faixa.
+              Revise as faixas de preço ou o % de comparação.
+            </div>
+          ) : (
+            <div className="rounded-md border bg-background p-3 text-xs text-muted-foreground">
+              Se atingir a última faixa ({last.label}, {last.peopleLabel}): faturamento estimado a partir de{" "}
+              <strong className="text-foreground">{formatBRLNumber(lastRevenueMin)}</strong>
+              {" "}({last.minPeople} {last.minPeople === 1 ? "pessoa" : "pessoas"}).
+              Numa oferta normal (-{normalDiscountPct}%), seriam{" "}
+              <strong className="text-foreground">{formatBRLNumber(lastNormalRevenueMin)}</strong>.
+              Ganho do cliente:{" "}
+              <strong className="text-primary">{formatBRLNumber(Math.max(0, lastGainMin))}</strong>{" "}
+              a mais de desconto coletivo.
+            </div>
+          )
+        )}
       </div>
     </div>
   );

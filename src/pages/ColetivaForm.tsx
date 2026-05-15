@@ -390,6 +390,7 @@ export default function ColetivaForm() {
               <GroupOfferTierEditor
                 value={form.tiers}
                 onChange={(tiers) => setForm((f) => ({ ...f, tiers }))}
+                originalPrice={form.original_price}
               />
             </CardContent>
           </Card>
