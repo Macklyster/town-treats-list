@@ -45,6 +45,7 @@ export default function LeilaoPublic() {
   const [proof, setProof] = useState<AuctionSocialProof | null>(null);
   const [storeLogo, setStoreLogo] = useState<string | null>(null);
   const [storeFeatured, setStoreFeatured] = useState<boolean>(false);
+  const [myReservedPrice, setMyReservedPrice] = useState<number | null>(null);
 
   const load = async () => {
     if (!token) return;
