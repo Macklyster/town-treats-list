@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle, BarChart3, QrCode } from "lucide-react";
+import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle, BarChart3, QrCode, Users, Share2, Copy, MessageCircle, Sparkles, Trash2 } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
