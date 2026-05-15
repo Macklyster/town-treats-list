@@ -27,6 +27,8 @@ export default function ColetivaPublic() {
   const { user, loading: authLoading } = useAuth();
   const [state, setState] = useState<GroupOfferState | null>(null);
   const [storeName, setStoreName] = useState<string>("");
+  const [storeLogo, setStoreLogo] = useState<string | null>(null);
+  const [storeFeatured, setStoreFeatured] = useState<boolean>(false);
   const [storeWhatsapp, setStoreWhatsapp] = useState<string | null>(null);
   const [joining, setJoining] = useState(false);
 
@@ -37,10 +39,12 @@ export default function ColetivaPublic() {
     if (s.found && s.offer) {
       const { data: st } = await supabase
         .from("stores")
-        .select("name, whatsapp")
+        .select("name, whatsapp, logo_url, featured_badge")
         .eq("id", s.offer.store_id)
         .maybeSingle();
       setStoreName(st?.name ?? "");
+      setStoreLogo(st?.logo_url ?? null);
+      setStoreFeatured(!!st?.featured_badge);
       setStoreWhatsapp(st?.whatsapp ?? null);
     }
   };
