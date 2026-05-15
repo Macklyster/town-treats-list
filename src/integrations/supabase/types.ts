@@ -17,18 +17,21 @@ export type Database = {
       app_settings: {
         Row: {
           flash_default_hours: number
+          group_offer_max_active_per_store: number
           id: boolean
           review_prompt_hours: number
           updated_at: string
         }
         Insert: {
           flash_default_hours?: number
+          group_offer_max_active_per_store?: number
           id?: boolean
           review_prompt_hours?: number
           updated_at?: string
         }
         Update: {
           flash_default_hours?: number
+          group_offer_max_active_per_store?: number
           id?: boolean
           review_prompt_hours?: number
           updated_at?: string
@@ -104,6 +107,98 @@ export type Database = {
           id?: string
           offer_id?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      group_offer_participants: {
+        Row: {
+          created_at: string
+          group_offer_id: string
+          id: string
+          referrer_user_id: string | null
+          user_id: string
+          whatsapp_clicked_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          group_offer_id: string
+          id?: string
+          referrer_user_id?: string | null
+          user_id: string
+          whatsapp_clicked_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          group_offer_id?: string
+          id?: string
+          referrer_user_id?: string | null
+          user_id?: string
+          whatsapp_clicked_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_offer_participants_group_offer_id_fkey"
+            columns: ["group_offer_id"]
+            isOneToOne: false
+            referencedRelation: "group_offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_offers: {
+        Row: {
+          category_slug: string
+          conditions: string | null
+          created_at: string
+          description: string | null
+          duration_hours: number
+          ends_at: string | null
+          id: string
+          image_url: string | null
+          original_price: number
+          share_token: string
+          starts_at: string | null
+          status: Database["public"]["Enums"]["group_offer_status"]
+          store_id: string
+          tiers: Json
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category_slug: string
+          conditions?: string | null
+          created_at?: string
+          description?: string | null
+          duration_hours?: number
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          original_price?: number
+          share_token?: string
+          starts_at?: string | null
+          status?: Database["public"]["Enums"]["group_offer_status"]
+          store_id: string
+          tiers?: Json
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category_slug?: string
+          conditions?: string | null
+          created_at?: string
+          description?: string | null
+          duration_hours?: number
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          original_price?: number
+          share_token?: string
+          starts_at?: string | null
+          status?: Database["public"]["Enums"]["group_offer_status"]
+          store_id?: string
+          tiers?: Json
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -691,6 +786,7 @@ export type Database = {
         Args: { p_days?: number; p_store_id: string }
         Returns: Json
       }
+      group_offer_state: { Args: { p_token: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -730,6 +826,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "lojista" | "consumer"
+      group_offer_status: "pending" | "approved" | "rejected" | "expired"
       offer_status: "pending" | "approved" | "rejected" | "paused"
       offer_type: "desconto" | "cupom" | "brinde"
       review_status: "pending" | "approved" | "rejected"
@@ -868,6 +965,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "lojista", "consumer"],
+      group_offer_status: ["pending", "approved", "rejected", "expired"],
       offer_status: ["pending", "approved", "rejected", "paused"],
       offer_type: ["desconto", "cupom", "brinde"],
       review_status: ["pending", "approved", "rejected"],
