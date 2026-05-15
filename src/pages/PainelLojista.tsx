@@ -51,6 +51,7 @@ export default function PainelLojista() {
   const [sub, setSub] = useState<Sub | null>(null);
   const [activeColetiva, setActiveColetiva] = useState<GroupOffer | null>(null);
   const [activeLeilao, setActiveLeilao] = useState<AuctionOffer | null>(null);
+  const [activeInvisivel, setActiveInvisivel] = useState<GeoOffer | null>(null);
   const [loading, setLoading] = useState(true);
   const subInfo = useSubscription(store?.id ?? null);
   const isPlus = !!subInfo.subscription && subInfo.subscription.status === "active" && subInfo.plan?.slug === "plus";
