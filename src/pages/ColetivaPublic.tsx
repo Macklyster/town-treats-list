@@ -150,7 +150,11 @@ export default function ColetivaPublic() {
               </div>
             )}
             <CardContent className="space-y-2 p-6">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">{storeName}</p>
+              <div className="flex items-center gap-2">
+                <StoreAvatar name={storeName || "Loja"} logoUrl={storeLogo} size={28} />
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">{storeName}</p>
+                {storeFeatured && <StoreFeaturedBadge showLabel={false} />}
+              </div>
               <h1 className="text-2xl font-bold text-foreground">{offer.title}</h1>
               {offer.description && (
                 <p className="text-sm text-muted-foreground">{offer.description}</p>
