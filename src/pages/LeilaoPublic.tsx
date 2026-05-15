@@ -264,13 +264,25 @@ export default function LeilaoPublic() {
                 {state.already_reserved && state.store_whatsapp && (
                   <Card>
                     <CardContent className="space-y-2 p-4 text-sm">
-                      <p>✅ Você já reservou! Combine a retirada com a loja.</p>
+                      <p>
+                        ✅ Você reservou
+                        {myReservedPrice != null && (
+                          <> por <strong>{formatBRL(myReservedPrice)}</strong></>
+                        )}
+                        ! Combine a retirada com a loja.
+                      </p>
                       <Button
                         variant="accent"
-                        onClick={() => window.open(
-                          `https://wa.me/${(state.store_whatsapp || "").replace(/\D/g, "")}?text=${encodeURIComponent(`Olá! Reservei o leilão "${offer.title}".`)}`,
-                          "_blank",
-                        )}
+                        onClick={() => {
+                          const priceLine = myReservedPrice != null
+                            ? ` no valor de ${formatBRL(myReservedPrice)}`
+                            : "";
+                          const msg = `Olá! Reservei o leilão "${offer.title}"${priceLine}. Como combinamos a retirada/pagamento?`;
+                          window.open(
+                            `https://wa.me/${(state.store_whatsapp || "").replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`,
+                            "_blank",
+                          );
+                        }}
                       >
                         <MessageCircle className="h-4 w-4" /> Falar com a loja
                       </Button>
