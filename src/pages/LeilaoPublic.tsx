@@ -43,6 +43,8 @@ export default function LeilaoPublic() {
   const [tick, setTick] = useState(0);
   const [reserving, setReserving] = useState(false);
   const [proof, setProof] = useState<AuctionSocialProof | null>(null);
+  const [storeLogo, setStoreLogo] = useState<string | null>(null);
+  const [storeFeatured, setStoreFeatured] = useState<boolean>(false);
 
   const load = async () => {
     if (!token) return;
@@ -51,6 +53,13 @@ export default function LeilaoPublic() {
     if (s.offer?.id) {
       const p = await fetchAuctionSocialProof(s.offer.id);
       setProof(p);
+      const { data: st } = await supabase
+        .from("stores")
+        .select("logo_url, featured_badge")
+        .eq("id", s.offer.store_id)
+        .maybeSingle();
+      setStoreLogo(st?.logo_url ?? null);
+      setStoreFeatured(!!st?.featured_badge);
     }
   };
 
