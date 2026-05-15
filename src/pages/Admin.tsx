@@ -492,6 +492,10 @@ export default function Admin() {
             <AdminColetivas />
           </TabsContent>
 
+          <TabsContent value="leiloes" className="mt-6">
+            <AdminLeiloes />
+          </TabsContent>
+
           <TabsContent value="settings" className="mt-6">
             <AdminSettings />
           </TabsContent>
