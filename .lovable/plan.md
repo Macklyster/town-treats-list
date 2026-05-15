@@ -1,98 +1,78 @@
-## Leilão de Oferta — Leilão Reverso (preço cai com o tempo)
+## Oferta Invisível — desconto que aparece quando o cliente chega perto
 
-Novo tipo de oferta exclusivo do plano **Plus**: o preço inicial cai automaticamente em intervalos definidos até atingir um mínimo. O lojista informa a **quantidade de itens disponíveis**; cada cliente "reserva" uma unidade ao preço corrente, e o leilão encerra quando todas as unidades forem reservadas (ou quando o tempo expirar).
-
----
+Nova modalidade de oferta exclusiva do plano **Plus**, espelhando a estrutura já usada nas Coletivas e Leilões. O lojista define um ponto, raio (m), janela horária (início/fim) e oferta. Quando o cliente está dentro do raio durante a janela ativa, vê o conteúdo e recebe push; fora do raio, vê apenas uma mensagem informativa.
 
 ### 1. Banco de dados (migração)
 
-**Nova tabela `auction_offers`**:
-
+Nova tabela **`geo_offers`**:
 - `store_id`, `title`, `description`, `image_url`, `category_slug`, `conditions`
-- `starting_price`, `min_price`, `decrement_amount`, `decrement_interval_minutes`
-- **`total_quantity` (int, >= 1)** — quantidade total de itens ofertados
-- **`reserved_quantity` (int, default 0)** — contador de unidades já reservadas
-- `starts_at`, `ends_at`
-- `status`: enum `auction_status` = `pending | approved | sold_out | expired | rejected`
-- `share_token`, timestamps
+- `original_price`, `promo_price`
+- `center_lat`, `center_lng`, `radius_meters` (default 300)
+- `time_start`, `time_end` (janela diária)
+- `valid_from`, `valid_until` (datas)
+- `status` (`pending | approved | expired | rejected`), `share_token`
 
-**Nova tabela `auction_reservations`** (uma linha por unidade reservada):
-- `auction_id`, `user_id`, `reserved_price`, `reserved_at`, `whatsapp_clicked_at`
-- Único por `(auction_id, user_id)` — cada usuário só reserva 1 unidade
+Nova tabela **`geo_offer_visits`** (1 por usuário+oferta+dia, para anti-spam de push e prova social):
+- `geo_offer_id`, `user_id` (nullable), `session_id`, `entered_at`, `notified_at`
 
-**Trigger `validate_auction_offer`**: `min_price < starting_price`, `decrement_amount > 0`, `decrement_interval_minutes >= 5`, `total_quantity >= 1`, exige plano Plus ativo.
+Triggers/funções:
+- `validate_geo_offer`: exige plano Plus (igual coletivas/leilões), `radius_meters` entre 50 e 5000, `time_end > time_start`, `promo_price < original_price`, limite de 1 ativa por loja (config em `app_settings.geo_offer_max_active_per_store`).
+- RPC `geo_offer_state(p_token, p_lat, p_lng)` — pública. Retorna `{ found, offer (sem center_lat/lng/radius para não vazar), in_radius, distance_meters, in_window, store_name, store_whatsapp }`. Se `in_radius=false` ou fora da janela, não retorna preço/descrição completos — só título genérico, raio e instruções.
+- RPC `geo_offer_register_visit(p_token, p_lat, p_lng, p_session_id)` — registra entrada se dentro do raio (1×/dia/usuário).
 
-**Trigger `set_auction_window`**: ao virar `approved`, calcula `starts_at = now()` e `ends_at = starts_at + ceil((starting - min) / decrement) * interval`.
+RLS: SELECT público apenas para `status in (approved)` mas via RPC (a leitura direta da tabela pelo public retorna apenas campos não-sensíveis ou só para o dono/admin); INSERT/UPDATE/DELETE para dono e admin.
 
-**RPC `auction_state(p_token text)`**: retorna oferta + preço corrente + segundos para próximo decremento + `reserved_quantity` + `total_quantity` + se o usuário atual já reservou.
+Campo novo em `app_settings`: `geo_offer_max_active_per_store int default 1`.
 
-**RPC `reserve_auction(p_token text)`** (SECURITY DEFINER):
-- Exige login; `SELECT ... FOR UPDATE` na linha do leilão
-- Bloqueia se `status != 'approved'`, se usuário já reservou, ou se `reserved_quantity >= total_quantity`
-- Calcula preço corrente, insere em `auction_reservations`, incrementa `reserved_quantity`
-- Se atingir `total_quantity`, marca `status = 'sold_out'`
-- Retorna preço travado + whatsapp da loja
+### 2. Edge function `geo-offer-notify`
 
-**RLS**: public read em `approved`/`sold_out`; owner/admin gerenciam; reservations visíveis ao próprio usuário, dono da loja e admin.
+Cron a cada 5 min. Para cada `geo_offer` aprovada, dentro da janela horária e da validade, busca `push_subscriptions` de usuários que aceitaram notificações e envia push **apenas** quando uma posição recente do cliente (registrada via `geo_offer_register_visit`) coincide com o raio e ainda não foi notificada hoje. Marca `notified_at` em `geo_offer_visits`.
 
-**Realtime**: adicionar `auction_offers` e `auction_reservations` à publicação.
+### 3. Frontend — Painel do lojista
 
-**Edge function `auction-expire`** (cron 5 min): marca `expired` quando `now() > ends_at` e ainda restam unidades.
+- **`NewOfferDropdown.tsx`**: nova opção "Oferta Invisível" com badge **Plus** (disabled redirecionando a `/painel-lojista/assinatura`).
+- Nova rota `/painel-lojista/oferta-invisivel/:id?` → **`OfertaInvisivelForm.tsx`**: campos básicos + mapa simples (Leaflet) para escolher centro e raio (slider 50–5000 m), pré-visualização do círculo, janela horária e validade. Botão "Usar endereço da loja" preenche `center_lat/lng` a partir de `stores`.
+- **`PainelLojista.tsx`**: card "Sua oferta invisível ativa" análogo ao card de coletiva/leilão (editar, copiar link, WhatsApp, encerrar, excluir).
 
-**`app_settings`**: `auction_max_active_per_store` (default 1).
+### 4. Frontend — Cliente
 
----
+- Nova página pública **`/oferta-invisivel/:token`** → `OfertaInvisivelPublic.tsx`:
+  - Pede `navigator.geolocation.getCurrentPosition` (com fallback de erro/permissão negada).
+  - Chama `geo_offer_state(token, lat, lng)`.
+  - Se `in_radius && in_window`: mostra a oferta completa + botão WhatsApp + registra visita.
+  - Caso contrário: card informativo com mensagem clara ("Esta oferta só aparece quando você está a até X m da loja, entre HH:MM e HH:MM. Aproxime-se para liberar.") e mini mapa indicando direção.
+- Nova página **`/ofertas-invisiveis`** (`OfertasInvisiveis.tsx`): exige login, lista ofertas invisíveis ativas das lojas seguidas + cidade. Cada card mostra apenas título, badge "Invisível", raio e janela horária — preço só dentro do raio.
+- **`Header.tsx`**: novo item "Invisíveis" ao lado de Coletivas/Leilões.
+- Toggle no perfil do cliente (em `notification_preferences`) para aceitar push de proximidade (campo novo `proximity_alerts boolean default true`).
 
-### 2. Frontend — Painel do Lojista
+### 5. Admin
 
-- **`NewOfferDropdown.tsx`**: opção "Leilão de Oferta" com badge **Plus**.
-- **Nova rota** `/painel-lojista/leilao/:id?` → **`LeilaoForm.tsx`**:
-  - Campos básicos (título, descrição, imagem, categoria, condições)
-  - **Quantidade de itens disponíveis** (input numérico, mín. 1)
-  - Preço inicial, preço mínimo, decremento (R$), intervalo (min)
-  - Pré-visualização: escada de preços hora a hora até o mínimo + tempo total estimado + linha "Quantidade ofertada: N unidades"
-- **`PainelLojista.tsx`**: card "Seu leilão ativo" com preço atual, **"X de N reservados"**, ações Editar / Copiar link / WhatsApp / Encerrar / Excluir.
+- **`AdminGeoOffers.tsx`** análogo a `AdminLeiloes.tsx` (aprovar/rejeitar/excluir, ver mapa do raio).
+- Nova aba em `Admin.tsx`.
 
-### 3. Frontend — Cliente
+### 6. Catálogo de planos
 
-- **`/leilao/:token`** → **`LeilaoPublic.tsx`**:
-  - Preço grande animado, contagem regressiva até o próximo decremento
-  - **Indicador de estoque**: "X de N unidades disponíveis" + barra de progresso
-  - Botão "Reservar 1 unidade por R$ X" (exige login)
-  - Estado pós-reserva: preço travado + botão WhatsApp; botão desabilitado com "Você já reservou"
-  - Estado `sold_out`: badge "Esgotado"
-  - Realtime: assina `auction_offers` e `auction_reservations` para atualizar preço, contador e status ao vivo
-- **`/leiloes`** → **`Leiloes.tsx`**: login obrigatório; landing explicativa para deslogado; logado vê leilões ativos das lojas seguidas + da cidade. Card mostra preço corrente, próximo decremento e **"X de N restantes"**.
-- **`Header.tsx`**: novo item "Leilões".
-- **`App.tsx`**: rotas `/leilao/:token`, `/leiloes`, `/painel-lojista/leilao/:id?`.
+- `src/data/plans.ts`: adicionar feature "Oferta Invisível (geofencing)" no plano **Plus**.
 
-### 4. Catálogo de planos e Admin
+### 7. Helpers
 
-- **`src/data/plans.ts`**: feature "Leilão de Oferta — preço cai com o tempo" no plano **Plus**.
-- **`AdminLeiloes.tsx`** (nova aba em `Admin.tsx`): moderação aprovar/rejeitar/encerrar/excluir, com colunas de quantidade e reservas.
-
-### 5. Helpers
-
-- **`src/lib/auction-api.ts`**: `fetchAuctionByToken`, `fetchAuctionsForUser`, `reserveAuction`, `subscribeAuction`, `computeCurrentPrice(...)` puro para tick local.
-
----
+- `src/lib/geo-offer-api.ts`: `fetchGeoOfferState`, `registerVisit`, `fetchActiveGeoOfferForStore`, `fetchGeoOffersForUser`, helper `haversineMeters`.
 
 ### Regras de negócio
-
-| Item | Valor |
-|---|---|
-| Plano exigido | Plus |
-| Limite ativo por loja | 1 (configurável) |
-| Quantidade mínima | 1 unidade |
-| Decremento mínimo | R$ 1, intervalo mínimo 5 min |
-| Reserva por usuário | 1 unidade por leilão |
-| Encerramento | `sold_out` quando todas reservadas, ou `expired` no tempo limite |
-| Login para reservar | Sim |
+- Plano exigido: **Plus**.
+- Limite ativo por loja: 1 (configurável).
+- Raio: 50–5000 m (default 300).
+- Visita só conta dentro do raio + janela.
+- Push: 1 notificação por usuário/oferta/dia.
+- Usuário sem login pode ver a página (com geolocation), mas só recebe push se logado e com `proximity_alerts=true`.
 
 ### Fora do escopo
+- Geofencing nativo em background (depende de app nativo). Push só dispara quando o cliente abre alguma página do app/PWA — a coleta de localização é via PWA/browser ativo. Documentar isso na UI.
+- Tracking contínuo da posição em background.
+- Segmentação por categoria/perfil de cliente.
 
-- Pagamento online (combinação via WhatsApp)
-- Reserva de múltiplas unidades por usuário
-- Fila de espera / notificações de "preço caiu"
-
-Confirma para eu implementar?
+### Detalhes técnicos
+- Mapa do lojista e do cliente: `leaflet` + `react-leaflet` (já leve, sem chave de API).
+- Distância: Haversine no servidor (RPC) e no cliente (helper).
+- Edge function reutiliza `_shared/web-push.ts` e padrão de `notify-store-followers`.
+- Cron via `pg_cron`/`pg_net` para `geo-offer-notify` a cada 5 min.
