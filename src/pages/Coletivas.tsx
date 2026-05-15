@@ -178,10 +178,9 @@ export default function Coletivas() {
                     )}
                     <div className="space-y-2 p-4">
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        {r.store?.logo_url && (
-                          <img src={r.store.logo_url} alt="" className="h-5 w-5 rounded-full object-cover" />
-                        )}
+                        <StoreAvatar name={r.store?.name ?? "Loja"} logoUrl={r.store?.logo_url ?? null} size={20} />
                         <span className="truncate">{r.store?.name ?? "Loja"}</span>
+                        {r.store?.featured_badge && <StoreFeaturedBadge showLabel={false} />}
                       </div>
                       <h2 className="line-clamp-2 font-semibold text-foreground group-hover:text-primary">
                         {r.title}
