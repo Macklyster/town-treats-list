@@ -120,6 +120,14 @@ const App = () => (
               }
             />
             <Route
+              path="/painel-lojista/oferta-invisivel/:id?"
+              element={
+                <ProtectedRoute requireRole="lojista">
+                  <OfertaInvisivelForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/painel-lojista/assinatura"
               element={
                 <ProtectedRoute requireRole="lojista">
