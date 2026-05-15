@@ -47,7 +47,7 @@ export const subscribeOfferEvents = (
 };
 
 export const shouldShowViewsToday = (sp: SocialProof | undefined) =>
-  !!sp && sp.eligible && sp.views_today >= MIN_VIEWS_TODAY;
+  !!sp && sp.views_today >= MIN_VIEWS_TODAY;
 
 export const shouldShowViewersNow = (sp: SocialProof | undefined) =>
-  !!sp && sp.eligible && sp.viewers_now >= MIN_VIEWERS_NOW;
+  !!sp && sp.viewers_now >= MIN_VIEWERS_NOW;
