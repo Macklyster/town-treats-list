@@ -78,7 +78,7 @@ export default function Coletivas() {
       const { data } = await supabase
         .from("group_offers" as any)
         .select(
-          "id,title,description,image_url,category_slug,original_price,tiers,duration_hours,ends_at,status,share_token,store_id, store:stores(id,name,slug,logo_url), participants:group_offer_participants(count)",
+          "id,title,description,image_url,category_slug,original_price,tiers,duration_hours,ends_at,status,share_token,store_id, store:stores(id,name,slug,logo_url,featured_badge), participants:group_offer_participants(count)",
         )
         .eq("status", "approved")
         .in("store_id", storeIds)
