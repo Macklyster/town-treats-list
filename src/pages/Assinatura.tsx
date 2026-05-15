@@ -432,6 +432,35 @@ export default function Assinatura() {
         </AlertDialogContent>
       </AlertDialog>
 
+      <AlertDialog open={!!changePlanId} onOpenChange={(o) => !o && setChangePlanId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Alterar plano da assinatura?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {(() => {
+                const target = plans.find((p) => p.id === changePlanId);
+                const currentPlan = plans.find((p) => p.id === sub?.plan_id);
+                return (
+                  <>
+                    Você está mudando de <strong>{currentPlan?.name ?? "plano atual"}</strong> para{" "}
+                    <strong>{target?.name ?? "novo plano"}</strong>. A cobrança será ajustada
+                    proporcionalmente pelo Stripe (crédito ou cobrança da diferença) e o novo plano
+                    passa a valer imediatamente.
+                  </>
+                );
+              })()}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={!!busy}>Voltar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmChangePlan} disabled={!!busy}>
+              {busy === changePlanId && <Loader2 className="h-4 w-4 animate-spin" />}
+              Confirmar mudança
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Footer />
     </div>
   );
