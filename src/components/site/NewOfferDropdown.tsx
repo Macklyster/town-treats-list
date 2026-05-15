@@ -106,6 +106,28 @@ export const NewOfferDropdown = ({ isPlus, hasActiveColetiva, hasActiveLeilao, h
             </span>
           </div>
         </DropdownMenuItem>
+        <DropdownMenuItem
+          disabled={hasActiveInvisivel}
+          onClick={() => {
+            if (hasActiveInvisivel) return;
+            if (!isPlus) { navigate("/painel-lojista/assinatura"); return; }
+            navigate("/painel-lojista/oferta-invisivel");
+          }}
+          title={hasActiveInvisivel ? "Você já tem uma oferta invisível ativa" : !isPlus ? "Disponível no plano Plus" : undefined}
+        >
+          <EyeOff className="mr-2 h-4 w-4 text-primary" />
+          <div className="flex flex-1 flex-col">
+            <span className="font-medium flex items-center gap-2">
+              Oferta Invisível
+              {!isPlus && (
+                <Badge variant="secondary" className="text-[10px]"><Lock className="mr-1 h-2.5 w-2.5" />Plus</Badge>
+              )}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {hasActiveInvisivel ? "Você já tem uma ativa" : "Só aparece quando o cliente está perto"}
+            </span>
+          </div>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
