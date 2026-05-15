@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.notify-review-request]
 verify_jwt = false
+
+[functions.group-offer-expire]
+verify_jwt = false
