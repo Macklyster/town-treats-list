@@ -91,7 +91,7 @@ export default function Leiloes() {
       if (storeIds.length === 0) { setRows([]); setLoading(false); return; }
       const { data } = await supabase
         .from("auction_offers" as any)
-        .select("*, store:stores(id,name,slug,logo_url)")
+        .select("*, store:stores(id,name,slug,logo_url,featured_badge)")
         .eq("status", "approved")
         .in("store_id", storeIds)
         .order("created_at", { ascending: false });
