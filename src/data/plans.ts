@@ -81,6 +81,7 @@ export const PLAN_CATALOG: PlanCatalogItem[] = [
       "Prova social em tempo real nos seus anúncios",
       "OfertasFly Coletiva — compra coletiva viral no WhatsApp",
       "Leilão de Oferta — preço cai com o tempo (leilão reverso)",
+      "Oferta Invisível — geofencing que aparece só quando o cliente chega perto",
       "Posts nas redes da OfertasFly",
       "Dashboard de Inteligência (KPIs, heatmap e top ofertas)",
       "Comparativo com concorrentes da categoria e cidade",
