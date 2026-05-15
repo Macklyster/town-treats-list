@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { OffersMap } from "@/components/site/OffersMap";
 import { MapPin, X, Map as MapIcon } from "lucide-react";
+import { fetchOfferSocialProof, SocialProof } from "@/lib/social-proof";
 
 const types = [
   { v: "all", l: "Todos" },
