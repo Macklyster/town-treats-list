@@ -245,6 +245,7 @@ export default function Admin() {
             <TabsTrigger value="reviews">Avaliações</TabsTrigger>
             <TabsTrigger value="coletivas">Coletivas</TabsTrigger>
             <TabsTrigger value="leiloes">Leilões</TabsTrigger>
+            <TabsTrigger value="invisiveis">Invisíveis</TabsTrigger>
             <TabsTrigger value="settings">Configurações</TabsTrigger>
           </TabsList>
 
