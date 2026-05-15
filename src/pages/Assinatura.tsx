@@ -139,10 +139,18 @@ export default function Assinatura() {
     return () => { supabase.removeChannel(ch); };
   }, [storeId]);
 
+  const [changePlanId, setChangePlanId] = useState<string | null>(null);
+
   const subscribe = async (planId: string) => {
     if (!storeId) {
       toast.error("Cadastre sua loja antes de assinar.");
       navigate("/painel-lojista/loja");
+      return;
+    }
+    // If user already has an active sub, switch plan via change-subscription-plan
+    const hasActive = sub && ["active", "trialing"].includes(sub.status);
+    if (hasActive && sub?.plan_id !== planId) {
+      setChangePlanId(planId);
       return;
     }
     setBusy(planId);
@@ -151,7 +159,6 @@ export default function Assinatura() {
     });
     setBusy(null);
     if (error || !data?.url) {
-      // Try to extract a friendly message from the function response
       let message = "Não foi possível iniciar o checkout.";
       try {
         const ctx = (error as any)?.context;
@@ -164,15 +171,36 @@ export default function Assinatura() {
       } catch {
         /* ignore */
       }
-      if (/assinatura ativa/i.test(message)) {
-        toast.info(message);
-        manage();
-      } else {
-        toast.error(message);
-      }
+      toast.error(message);
       return;
     }
     openExternalUrl(data.url);
+  };
+
+  const confirmChangePlan = async () => {
+    if (!changePlanId || !storeId) return;
+    setBusy(changePlanId);
+    const { data, error } = await supabase.functions.invoke("change-subscription-plan", {
+      body: { plan_id: changePlanId, store_id: storeId },
+    });
+    setBusy(null);
+    setChangePlanId(null);
+    if (error || !data?.ok) {
+      let message = "Não foi possível alterar o plano.";
+      try {
+        const ctx = (error as any)?.context;
+        if (ctx && typeof ctx.json === "function") {
+          const body = await ctx.json();
+          if (body?.error) message = body.error;
+        }
+      } catch {
+        /* ignore */
+      }
+      toast.error(message);
+      return;
+    }
+    toast.success("Plano alterado com sucesso! Cobrança ajustada proporcionalmente.");
+    load();
   };
 
   const manage = async () => {
@@ -341,7 +369,13 @@ export default function Assinatura() {
                         onClick={() => dbPlan && subscribe(dbPlan.id)}
                       >
                         {dbPlan && busy === dbPlan.id && <Loader2 className="h-4 w-4 animate-spin" />}
-                        {isCurrent ? "Plano ativo" : !dbPlan ? "Indisponível" : "Assinar"}
+                        {isCurrent
+                          ? "Plano ativo"
+                          : !dbPlan
+                          ? "Indisponível"
+                          : paidActive
+                          ? "Mudar para este plano"
+                          : "Assinar"}
                       </Button>
                     )}
                   </CardContent>
@@ -393,6 +427,35 @@ export default function Assinatura() {
             <AlertDialogAction onClick={confirmCancel} disabled={busy === "cancel"}>
               {busy === "cancel" && <Loader2 className="h-4 w-4 animate-spin" />}
               Continuar cancelamento
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!changePlanId} onOpenChange={(o) => !o && setChangePlanId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Alterar plano da assinatura?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {(() => {
+                const target = plans.find((p) => p.id === changePlanId);
+                const currentPlan = plans.find((p) => p.id === sub?.plan_id);
+                return (
+                  <>
+                    Você está mudando de <strong>{currentPlan?.name ?? "plano atual"}</strong> para{" "}
+                    <strong>{target?.name ?? "novo plano"}</strong>. A cobrança será ajustada
+                    proporcionalmente pelo Stripe (crédito ou cobrança da diferença) e o novo plano
+                    passa a valer imediatamente.
+                  </>
+                );
+              })()}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={!!busy}>Voltar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmChangePlan} disabled={!!busy}>
+              {busy === changePlanId && <Loader2 className="h-4 w-4 animate-spin" />}
+              Confirmar mudança
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -1,133 +1,46 @@
-# Plano: OfertasFly Coletiva (compra coletiva com preço em escada)
+## Problema
 
-Novo tipo de oferta onde o preço cai conforme mais pessoas entram, com timer configurável e link único compartilhável via WhatsApp. Sem pagamento na plataforma — o lojista mantém o controle total dos descontos. Recurso **exclusivo do plano Plus**, com **1 coletiva ativa por loja** (limite parametrizável no Admin). Inclui transformação do botão "Nova oferta" em dropdown.
+Hoje, quando o lojista já tem assinatura ativa e clica em "Assinar" outro plano, o `create-checkout` bloqueia (HTTP 400: "Loja já possui assinatura ativa") e o frontend redireciona para o portal Stripe — onde só aparece a opção de cancelar, não de trocar de plano.
 
-## Decisões confirmadas
+## Objetivo
 
-- **Timer:** padrão 12h, lojista define livremente (1–168h).
-- **Participação:** somente clientes cadastrados/logados (gera métrica para o lojista).
-- **Tier mínimo:** todos pagam o último tier alcançado (sem "falha" estilo Groupon).
-- **Limite:** 1 coletiva ativa por loja, parametrizável em Admin → Configurações.
-- **Plano:** disponível somente no **Plus**.
+Permitir trocar de plano (upgrade/downgrade) com 1 clique no card do novo plano, sem passar pelo cancelamento.
 
-## 1. Botão "Nova oferta" → Dropdown
+## Mudanças
 
-No painel do lojista (`PainelLojista.tsx`, linha ~128), trocar o botão único por `DropdownMenu` com:
+### 1. Backend — nova edge function `change-subscription-plan`
+Recebe `{ store_id, plan_id }`, valida ownership, busca a assinatura ativa atual e o `stripe_subscription_id`. Usa a Stripe API:
 
-- **Desconto / Cupom / Brinde** → `/painel-lojista/oferta`
-- **Oferta Relâmpago** → `/painel-lojista/oferta?flash=1`
-- **OfertasFly Coletiva** ✨ (somente Plus) → `/painel-lojista/coletiva`
+```
+stripe.subscriptions.update(subId, {
+  items: [{ id: <current_item_id>, price: <new_price_id> }],
+  proration_behavior: "create_prorations",
+  cancel_at_period_end: false,
+  metadata: { store_id, plan_id }
+})
+```
 
-Se a loja não está no Plus, o item aparece com badge "Plus" e leva a `/painel-lojista/assinatura`. Se já existe coletiva ativa, item desabilitado com tooltip "Você já tem uma coletiva ativa".
+- Se o plano novo não tiver `stripe_price_id` cadastrado, cria um price on-the-fly (igual `create-checkout` faz para `price_data`) ou retorna erro pedindo para o admin configurar.
+- Retorna `{ ok: true }`. O `stripe-webhook` (já existente) atualiza a tabela `subscriptions` quando recebe `customer.subscription.updated`.
+- Se a assinatura estava com `cancel_at_period_end=true`, limpa a flag (reativa).
 
-## 2. Plano Plus — novo benefício
+Registrar em `supabase/config.toml` com `verify_jwt = false` (validação JWT feita em código, padrão do projeto).
 
-Em `src/data/plans.ts`, adicionar à lista `features` do plano `plus`:
+### 2. Frontend — `src/pages/Assinatura.tsx`
+- Remover o tratamento "se erro contém 'assinatura ativa', abrir portal".
+- Em `subscribe(planId)`: se já existe `sub` ativa **e o plano é diferente do atual**, chamar `change-subscription-plan` em vez de `create-checkout`. Mostrar `AlertDialog` de confirmação ("Alterar do plano X para Y. A cobrança será ajustada proporcionalmente."). Em sucesso, toast e `load()`.
+- Se não há assinatura ativa, manter fluxo `create-checkout` atual.
+- Texto do botão muda conforme contexto: "Assinar" | "Mudar para este plano" | "Plano atual".
 
-> "OfertasFly Coletiva — compra coletiva viral no WhatsApp"
+### 3. `create-checkout` — manter o bloqueio (continua correto para evitar duplicar assinatura via checkout), apenas o frontend deixa de chamá-lo nesse caso.
 
-Em `/anuncie` ganha automaticamente. Adicionar uma menção curta na seção de comparação se houver.
+## Arquivos
 
-## 3. Modelo de dados
+- **Criar**: `supabase/functions/change-subscription-plan/index.ts`
+- **Editar**: `supabase/config.toml` (registro da function), `src/pages/Assinatura.tsx` (nova lógica subscribe + dialog de confirmação)
 
-**Tabela `group_offers`:**
-- `store_id`, `title`, `description`, `image_url`, `category_slug`, `conditions`
-- `tiers` JSONB: `[{min_people: 1, price: 120}, {min_people: 3, price: 99}, {min_people: 5, price: 79}]`
-- `original_price` (riscado)
-- `duration_hours` (default 12, min 1, max 168)
-- `starts_at`, `ends_at`
-- `status` (pending/approved/rejected/expired)
-- `share_token` (slug curto único)
-- timestamps
+## Pontos de atenção / decisões
 
-**Tabela `group_offer_participants`:**
-- `group_offer_id`, `user_id` (NOT NULL — exige login)
-- `referrer_user_id` (nullable — quem convidou)
-- `whatsapp_clicked_at`
-- UNIQUE (group_offer_id, user_id) — uma vaga por pessoa
-
-**Em `app_settings`:** novo campo `group_offer_max_active_per_store INT NOT NULL DEFAULT 1`.
-
-**RLS:**
-- `group_offers`: leitura pública das aprovadas + ativas; lojista CRUD nas suas; admin total.
-- `group_offer_participants`: insert exige `auth.uid() = user_id`; leitura pelo dono da loja, pelo próprio participante e admin.
-- Trigger `validate_group_offer`: tiers em ordem crescente de pessoas + preço estritamente decrescente; primeira faixa obrigatoriamente `min_people = 1`; respeita limite ativo do `app_settings` por loja; valida que loja é Plus (consultando `subscriptions`/`plans`).
-- Trigger `set_group_offer_window`: ao aprovar, define `starts_at = now()` e `ends_at = starts_at + duration_hours`.
-
-**RPC `group_offer_state(p_token text)`** → JSONB com: tier atual, próximo tier, faltam X pessoas, total de participantes, segundos restantes, lista de avatares (até 12).
-
-## 4. Página pública — `/coletiva/:token`
-
-Exige login; se anônimo, redireciona para `/auth?redirect=/coletiva/:token`. Captura `?ref=:user_id` da URL para `referrer_user_id`.
-
-Layout:
-- Hero: imagem, nome da loja, título
-- **Card de preço dinâmico:**
-  - Preço atual em destaque (ex: "R$ 99 cada")
-  - Barra de progresso até o próximo tier ("Mais 2 e cai pra R$ 79!")
-  - Contador "🔥 12 pessoas já entraram"
-  - Timer regressivo grande
-- Tabela de faixas com a ativa destacada
-- Botão primário: **"Entrar e chamar amigos no WhatsApp"** — registra participação + abre `wa.me` com link `?ref={userId}` e mensagem do tier atual
-- Botão secundário: "Copiar link"
-- Avatares dos participantes (de `profiles`)
-
-Realtime via `supabase.channel` em `group_offer_participants` filtrado por `group_offer_id`.
-
-Após `ends_at`: card mostra "Encerrada — preço final: R$ X" com instrução de procurar a loja no WhatsApp.
-
-## 5. Formulário do lojista — `/painel-lojista/coletiva/:id?`
-
-Bloqueado se plano não é Plus → exibe paywall com link para upgrade.
-Bloqueado se já existe coletiva ativa (e está criando) → mostra a existente.
-
-Campos:
-- Comuns (título, descrição, imagem, categoria, condições)
-- **Editor de faixas** (`GroupOfferTierEditor`):
-  - Linha 1 fixa: "1 pessoa = R$ ___"
-  - "+ Adicionar faixa" para 3+, 5+, 10+...
-  - Validação live: pessoas crescente, preço decrescente
-  - Preview da escada
-- **Duração** (input numérico, default 12h, hint "1–168h")
-- Após salvar: link compartilhável + QR + botão "Compartilhar no WhatsApp"
-
-## 6. Integração com o resto do site
-
-- `OfferCard` ganha variante visual `kind="coletiva"` (badge "COLETIVA" + ícone pessoas + tier atual)
-- Listagem em `/` e `StorePage` mistura coletivas ativas via `offers-api.ts` (consulta unificada)
-- Painel do lojista: nova aba/seção "Coletiva" com participantes, tier alcançado, cliques WhatsApp, top referenciadores
-
-## 7. Painel admin
-
-- Nova aba **"Coletivas"** em `Admin.tsx` para moderar (aprovar/rejeitar) — mesmo fluxo das ofertas
-- Em **Configurações**: campo "Máximo de coletivas ativas por loja" (default 1)
-
-## 8. Edge function de expiração
-
-`group-offer-expire` (cron a cada 15 min) marca `expired` ofertas com `ends_at < now()` e envia push ao lojista: "Sua coletiva fechou com X participantes no tier de R$ Y". Push aos participantes: "A coletiva da {Loja} fechou! Procure a loja no WhatsApp para garantir seu R$ X."
-
-## Detalhes técnicos
-
-**Arquivos novos:**
-- `src/pages/ColetivaForm.tsx`
-- `src/pages/ColetivaPublic.tsx`
-- `src/components/site/NewOfferDropdown.tsx`
-- `src/components/site/GroupOfferTierEditor.tsx`
-- `src/components/site/GroupOfferProgress.tsx`
-- `src/components/site/GroupOfferCard.tsx` (ou variante em `OfferCard`)
-- `src/components/admin/AdminColetivas.tsx`
-- `src/lib/group-offers-api.ts`
-- `supabase/functions/group-offer-expire/index.ts`
-- migration SQL
-
-**Arquivos editados:**
-- `src/data/plans.ts` — benefício no Plus
-- `src/pages/PainelLojista.tsx` — substituir botão por dropdown + seção coletiva
-- `src/App.tsx` — rotas `/coletiva/:token` e `/painel-lojista/coletiva/:id?`
-- `src/pages/Admin.tsx` — aba Coletivas
-- `src/components/admin/AdminSettings.tsx` — campo `group_offer_max_active_per_store`
-- `src/components/site/OfferCard.tsx` — variante coletiva
-- `src/lib/offers-api.ts` — incluir coletivas ativas nas listagens
-- `supabase/config.toml` — registrar nova função
-
-**Sem alteração de pagamento** — confirmação via WhatsApp do lojista, igual aos cupons atuais.
+1. **Proration**: vou usar `create_prorations` (padrão Stripe) — cobra/credita a diferença proporcional. Confirma?
+2. **Downgrade** (Plus → Pro, por exemplo): aplica imediatamente com proration. Alternativa seria agendar para fim do ciclo (`proration_behavior: "none"` + `billing_cycle_anchor: "unchanged"`). Vou com **imediato** salvo se preferir agendado.
+3. Plano grátis no card já chama `navigate("/painel-lojista")` — não muda. Para "fazer downgrade ao grátis" o caminho continua sendo cancelar pelo portal.
