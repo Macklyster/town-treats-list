@@ -107,6 +107,8 @@ export default function PainelLojista() {
       setActiveColetiva(ac);
       const al = await fetchActiveAuctionForStore(s.id);
       setActiveLeilao(al);
+      const ai = await fetchActiveGeoOfferForStore(s.id);
+      setActiveInvisivel(ai);
     }
     setLoading(false);
   };
