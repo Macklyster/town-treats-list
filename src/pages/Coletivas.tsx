@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Users, Clock, Sparkles, TrendingDown, Share2, Heart } from "lucide-react";
+import { StoreAvatar } from "@/components/site/StoreAvatar";
+import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { formatBRLNumber } from "@/lib/format";
