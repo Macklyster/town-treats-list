@@ -14,6 +14,8 @@ import Anuncie from "./pages/Anuncie.tsx";
 import Auth from "./pages/Auth.tsx";
 import PainelLojista from "./pages/PainelLojista.tsx";
 import OfertaForm from "./pages/OfertaForm.tsx";
+import ColetivaForm from "./pages/ColetivaForm.tsx";
+import ColetivaPublic from "./pages/ColetivaPublic.tsx";
 import LojaForm from "./pages/LojaForm.tsx";
 import Admin from "./pages/Admin.tsx";
 import Assinatura from "./pages/Assinatura.tsx";
@@ -54,6 +56,7 @@ const App = () => (
             <Route path="/termos-de-uso" element={<TermosDeUso />} />
             <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
             <Route path="/oferta/:id" element={<OfferDetail />} />
+            <Route path="/coletiva/:token" element={<ColetivaPublic />} />
             <Route path="/anuncie" element={<Anuncie />} />
             <Route path="/auth" element={<Auth />} />
             <Route
@@ -85,6 +88,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireRole="lojista">
                   <OfertaForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/painel-lojista/coletiva/:id?"
+              element={
+                <ProtectedRoute requireRole="lojista">
+                  <ColetivaForm />
                 </ProtectedRoute>
               }
             />
