@@ -1,0 +1,98 @@
+import { supabase } from "@/integrations/supabase/client";
+
+export type AuctionStatus = "pending" | "approved" | "sold_out" | "expired" | "rejected";
+
+export type AuctionOffer = {
+  id: string;
+  store_id: string;
+  title: string;
+  description: string | null;
+  image_url: string | null;
+  category_slug: string;
+  conditions: string | null;
+  starting_price: number;
+  min_price: number;
+  decrement_amount: number;
+  decrement_interval_minutes: number;
+  total_quantity: number;
+  reserved_quantity: number;
+  starts_at: string | null;
+  ends_at: string | null;
+  status: AuctionStatus;
+  share_token: string;
+};
+
+export type AuctionState = {
+  found: boolean;
+  offer?: AuctionOffer;
+  current_price?: number;
+  seconds_to_next_decrement?: number;
+  seconds_remaining?: number;
+  already_reserved?: boolean;
+  store_name?: string;
+  store_whatsapp?: string | null;
+};
+
+export const fetchAuctionStateByToken = async (token: string): Promise<AuctionState> => {
+  const { data, error } = await supabase.rpc("auction_state" as any, { p_token: token });
+  if (error) {
+    console.error(error);
+    return { found: false };
+  }
+  return (data as any) ?? { found: false };
+};
+
+export const reserveAuction = async (token: string) => {
+  const { data, error } = await supabase.rpc("reserve_auction" as any, { p_token: token });
+  if (error) throw error;
+  return data as { ok: boolean; reserved_price: number; auction_id: string };
+};
+
+export const fetchActiveAuctionForStore = async (storeId: string) => {
+  const { data } = await supabase
+    .from("auction_offers" as any)
+    .select("*")
+    .eq("store_id", storeId)
+    .in("status", ["pending", "approved"])
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return (data as unknown as AuctionOffer) ?? null;
+};
+
+export const fetchAuctionById = async (id: string) => {
+  const { data } = await supabase
+    .from("auction_offers" as any)
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  return (data as unknown as AuctionOffer) ?? null;
+};
+
+/** Pure helper — replicates SQL auction_current_price for client tick. */
+export const computeCurrentPrice = (a: {
+  starting_price: number;
+  min_price: number;
+  decrement_amount: number;
+  decrement_interval_minutes: number;
+  starts_at: string | null;
+}): number => {
+  if (!a.starts_at) return Number(a.starting_price);
+  const elapsedSec = (Date.now() - new Date(a.starts_at).getTime()) / 1000;
+  const steps = Math.floor(elapsedSec / (a.decrement_interval_minutes * 60));
+  const price = Number(a.starting_price) - steps * Number(a.decrement_amount);
+  return Math.max(Number(a.min_price), price);
+};
+
+export const computeSecondsToNext = (a: {
+  decrement_interval_minutes: number;
+  starts_at: string | null;
+}): number => {
+  if (!a.starts_at) return a.decrement_interval_minutes * 60;
+  const intervalSec = a.decrement_interval_minutes * 60;
+  const elapsedSec = Math.floor((Date.now() - new Date(a.starts_at).getTime()) / 1000);
+  return Math.max(0, intervalSec - (elapsedSec % intervalSec));
+};
+
+export const formatBRL = (v: number) =>
+  Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
