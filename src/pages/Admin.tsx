@@ -33,6 +33,7 @@ import { Check, X, Star, Pencil, Trash2, ArrowUp, ArrowDown, Plus, Tag } from "l
 import { AdminBroadcast } from "@/components/admin/AdminBroadcast";
 import { AdminSettings } from "@/components/admin/AdminSettings";
 import { AdminReviews } from "@/components/admin/AdminReviews";
+import { AdminColetivas } from "@/components/admin/AdminColetivas";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -240,6 +241,7 @@ export default function Admin() {
             <TabsTrigger value="categories">Categorias ({categories.length})</TabsTrigger>
             <TabsTrigger value="notifications">Notificações</TabsTrigger>
             <TabsTrigger value="reviews">Avaliações</TabsTrigger>
+            <TabsTrigger value="coletivas">Coletivas</TabsTrigger>
             <TabsTrigger value="settings">Configurações</TabsTrigger>
           </TabsList>
 
@@ -482,6 +484,10 @@ export default function Admin() {
 
           <TabsContent value="reviews" className="mt-6">
             <AdminReviews />
+          </TabsContent>
+
+          <TabsContent value="coletivas" className="mt-6">
+            <AdminColetivas />
           </TabsContent>
 
           <TabsContent value="settings" className="mt-6">
