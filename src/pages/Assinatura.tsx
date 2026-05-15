@@ -151,7 +151,25 @@ export default function Assinatura() {
     });
     setBusy(null);
     if (error || !data?.url) {
-      toast.error("Não foi possível iniciar o checkout.");
+      // Try to extract a friendly message from the function response
+      let message = "Não foi possível iniciar o checkout.";
+      try {
+        const ctx = (error as any)?.context;
+        if (ctx && typeof ctx.json === "function") {
+          const body = await ctx.json();
+          if (body?.error) message = body.error;
+        } else if (data?.error) {
+          message = data.error;
+        }
+      } catch {
+        /* ignore */
+      }
+      if (/assinatura ativa/i.test(message)) {
+        toast.info(message);
+        manage();
+      } else {
+        toast.error(message);
+      }
       return;
     }
     openExternalUrl(data.url);
