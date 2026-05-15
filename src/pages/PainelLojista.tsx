@@ -16,7 +16,8 @@ import { OfferQrDialog } from "@/components/site/OfferQrDialog";
 import { NewOfferDropdown } from "@/components/site/NewOfferDropdown";
 import { fetchActiveGroupOfferForStore, type GroupOffer } from "@/lib/group-offers-api";
 import { fetchActiveAuctionForStore, type AuctionOffer, formatBRL as formatBRLAuc } from "@/lib/auction-api";
-import { Gavel, Package } from "lucide-react";
+import { fetchActiveGeoOfferForStore, formatTime as formatGeoTime, type GeoOffer } from "@/lib/geo-offer-api";
+import { Gavel, Package, EyeOff, MapPin, Clock } from "lucide-react";
 
 type StoreRow = {
   id: string;
@@ -50,6 +51,7 @@ export default function PainelLojista() {
   const [sub, setSub] = useState<Sub | null>(null);
   const [activeColetiva, setActiveColetiva] = useState<GroupOffer | null>(null);
   const [activeLeilao, setActiveLeilao] = useState<AuctionOffer | null>(null);
+  const [activeInvisivel, setActiveInvisivel] = useState<GeoOffer | null>(null);
   const [loading, setLoading] = useState(true);
   const subInfo = useSubscription(store?.id ?? null);
   const isPlus = !!subInfo.subscription && subInfo.subscription.status === "active" && subInfo.plan?.slug === "plus";
@@ -105,6 +107,8 @@ export default function PainelLojista() {
       setActiveColetiva(ac);
       const al = await fetchActiveAuctionForStore(s.id);
       setActiveLeilao(al);
+      const ai = await fetchActiveGeoOfferForStore(s.id);
+      setActiveInvisivel(ai);
     }
     setLoading(false);
   };
@@ -137,7 +141,7 @@ export default function PainelLojista() {
                   <BarChart3 className="h-4 w-4" /> Inteligência
                 </Link>
               </Button>
-              <NewOfferDropdown isPlus={isPlus} hasActiveColetiva={!!activeColetiva} hasActiveLeilao={!!activeLeilao} />
+              <NewOfferDropdown isPlus={isPlus} hasActiveColetiva={!!activeColetiva} hasActiveLeilao={!!activeLeilao} hasActiveInvisivel={!!activeInvisivel} />
             </div>
           )}
         </div>
@@ -454,6 +458,60 @@ export default function PainelLojista() {
                     >
                       <Trash2 className="h-4 w-4" /> Excluir
                     </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {activeInvisivel && (
+              <Card className="md:col-span-3">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <EyeOff className="h-5 w-5 text-primary" /> Sua oferta invisível ativa
+                    <Badge variant={activeInvisivel.status === "approved" ? "default" : "secondary"}>
+                      {activeInvisivel.status === "approved" ? "Ativa" : "Aguardando aprovação"}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex flex-col gap-4 sm:flex-row">
+                    {activeInvisivel.image_url && (
+                      <img src={activeInvisivel.image_url} alt={activeInvisivel.title} className="h-28 w-full rounded-md object-cover sm:w-44" />
+                    )}
+                    <div className="flex-1 space-y-2">
+                      <h3 className="font-semibold text-foreground">{activeInvisivel.title}</h3>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                        <span><span className="line-through">R$ {Number(activeInvisivel.original_price).toFixed(2)}</span> → <strong>R$ {Number(activeInvisivel.promo_price).toFixed(2)}</strong></span>
+                        <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> Raio {activeInvisivel.radius_meters} m</span>
+                        <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" /> {formatGeoTime(activeInvisivel.time_start)}–{formatGeoTime(activeInvisivel.time_end)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="accent" size="sm" onClick={() => navigate(`/painel-lojista/oferta-invisivel/${activeInvisivel.id}`)}>
+                      <Pencil className="h-4 w-4" /> Editar
+                    </Button>
+                    {activeInvisivel.status === "approved" && (
+                      <>
+                        <Button variant="outline" size="sm" onClick={() => {
+                          const url = `${window.location.origin}/oferta-invisivel/${activeInvisivel.share_token}`;
+                          navigator.clipboard.writeText(url); toast.success("Link copiado!");
+                        }}><Copy className="h-4 w-4" /> Copiar link</Button>
+                        <Button variant="outline" size="sm" onClick={() => {
+                          const url = `${window.location.origin}/oferta-invisivel/${activeInvisivel.share_token}`;
+                          window.open(`https://wa.me/?text=${encodeURIComponent(`Tem uma oferta secreta perto de você: ${url}`)}`, "_blank");
+                        }}><MessageCircle className="h-4 w-4" /> WhatsApp</Button>
+                        <Button asChild variant="ghost" size="sm">
+                          <Link to={`/oferta-invisivel/${activeInvisivel.share_token}`} target="_blank"><Share2 className="h-4 w-4" /> Ver pública</Link>
+                        </Button>
+                      </>
+                    )}
+                    <Button variant="ghost" size="sm" onClick={async () => {
+                      if (!confirm("Excluir esta oferta invisível?")) return;
+                      const { error } = await supabase.from("geo_offers" as any).delete().eq("id", activeInvisivel.id);
+                      if (error) return toast.error(error.message);
+                      toast.success("Oferta excluída"); load();
+                    }}><Trash2 className="h-4 w-4" /> Excluir</Button>
                   </div>
                 </CardContent>
               </Card>

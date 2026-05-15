@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Tag, Zap, Users, ChevronDown, Lock, Gavel } from "lucide-react";
+import { Plus, Tag, Zap, Users, ChevronDown, Lock, Gavel, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,9 +15,10 @@ type Props = {
   isPlus: boolean;
   hasActiveColetiva: boolean;
   hasActiveLeilao?: boolean;
+  hasActiveInvisivel?: boolean;
 };
 
-export const NewOfferDropdown = ({ isPlus, hasActiveColetiva, hasActiveLeilao }: Props) => {
+export const NewOfferDropdown = ({ isPlus, hasActiveColetiva, hasActiveLeilao, hasActiveInvisivel }: Props) => {
   const navigate = useNavigate();
   return (
     <DropdownMenu>
@@ -102,6 +103,28 @@ export const NewOfferDropdown = ({ isPlus, hasActiveColetiva, hasActiveLeilao }:
             </span>
             <span className="text-xs text-muted-foreground">
               {hasActiveLeilao ? "Você já tem um leilão ativo" : "Preço cai com o tempo (leilão reverso)"}
+            </span>
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          disabled={hasActiveInvisivel}
+          onClick={() => {
+            if (hasActiveInvisivel) return;
+            if (!isPlus) { navigate("/painel-lojista/assinatura"); return; }
+            navigate("/painel-lojista/oferta-invisivel");
+          }}
+          title={hasActiveInvisivel ? "Você já tem uma oferta invisível ativa" : !isPlus ? "Disponível no plano Plus" : undefined}
+        >
+          <EyeOff className="mr-2 h-4 w-4 text-primary" />
+          <div className="flex flex-1 flex-col">
+            <span className="font-medium flex items-center gap-2">
+              Oferta Invisível
+              {!isPlus && (
+                <Badge variant="secondary" className="text-[10px]"><Lock className="mr-1 h-2.5 w-2.5" />Plus</Badge>
+              )}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {hasActiveInvisivel ? "Você já tem uma ativa" : "Só aparece quando o cliente está perto"}
             </span>
           </div>
         </DropdownMenuItem>

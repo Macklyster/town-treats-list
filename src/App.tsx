@@ -20,6 +20,9 @@ import Coletivas from "./pages/Coletivas.tsx";
 import Leiloes from "./pages/Leiloes.tsx";
 import LeilaoForm from "./pages/LeilaoForm.tsx";
 import LeilaoPublic from "./pages/LeilaoPublic.tsx";
+import OfertaInvisivelForm from "./pages/OfertaInvisivelForm.tsx";
+import OfertaInvisivelPublic from "./pages/OfertaInvisivelPublic.tsx";
+import OfertasInvisiveis from "./pages/OfertasInvisiveis.tsx";
 import LojaForm from "./pages/LojaForm.tsx";
 import Admin from "./pages/Admin.tsx";
 import Assinatura from "./pages/Assinatura.tsx";
@@ -64,6 +67,8 @@ const App = () => (
             <Route path="/coletivas" element={<Coletivas />} />
             <Route path="/leilao/:token" element={<LeilaoPublic />} />
             <Route path="/leiloes" element={<Leiloes />} />
+            <Route path="/oferta-invisivel/:token" element={<OfertaInvisivelPublic />} />
+            <Route path="/ofertas-invisiveis" element={<OfertasInvisiveis />} />
             <Route path="/anuncie" element={<Anuncie />} />
             <Route path="/auth" element={<Auth />} />
             <Route
@@ -111,6 +116,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireRole="lojista">
                   <LeilaoForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/painel-lojista/oferta-invisivel/:id?"
+              element={
+                <ProtectedRoute requireRole="lojista">
+                  <OfertaInvisivelForm />
                 </ProtectedRoute>
               }
             />

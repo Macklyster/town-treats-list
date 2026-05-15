@@ -35,6 +35,7 @@ import { AdminSettings } from "@/components/admin/AdminSettings";
 import { AdminReviews } from "@/components/admin/AdminReviews";
 import { AdminColetivas } from "@/components/admin/AdminColetivas";
 import { AdminLeiloes } from "@/components/admin/AdminLeiloes";
+import { AdminOfertasInvisiveis } from "@/components/admin/AdminOfertasInvisiveis";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -244,6 +245,7 @@ export default function Admin() {
             <TabsTrigger value="reviews">Avaliações</TabsTrigger>
             <TabsTrigger value="coletivas">Coletivas</TabsTrigger>
             <TabsTrigger value="leiloes">Leilões</TabsTrigger>
+            <TabsTrigger value="invisiveis">Invisíveis</TabsTrigger>
             <TabsTrigger value="settings">Configurações</TabsTrigger>
           </TabsList>
 
@@ -494,6 +496,10 @@ export default function Admin() {
 
           <TabsContent value="leiloes" className="mt-6">
             <AdminLeiloes />
+          </TabsContent>
+
+          <TabsContent value="invisiveis" className="mt-6">
+            <AdminOfertasInvisiveis />
           </TabsContent>
 
           <TabsContent value="settings" className="mt-6">

@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           auction_max_active_per_store: number
           flash_default_hours: number
+          geo_offer_max_active_per_store: number
           group_offer_max_active_per_store: number
           id: boolean
           review_prompt_hours: number
@@ -29,6 +30,7 @@ export type Database = {
         Insert: {
           auction_max_active_per_store?: number
           flash_default_hours?: number
+          geo_offer_max_active_per_store?: number
           group_offer_max_active_per_store?: number
           id?: boolean
           review_prompt_hours?: number
@@ -40,6 +42,7 @@ export type Database = {
         Update: {
           auction_max_active_per_store?: number
           flash_default_hours?: number
+          geo_offer_max_active_per_store?: number
           group_offer_max_active_per_store?: number
           id?: boolean
           review_prompt_hours?: number
@@ -231,6 +234,113 @@ export type Database = {
         }
         Relationships: []
       }
+      geo_offer_visits: {
+        Row: {
+          entered_at: string
+          geo_offer_id: string
+          id: string
+          notified_at: string | null
+          session_id: string | null
+          user_id: string | null
+          visit_date: string
+        }
+        Insert: {
+          entered_at?: string
+          geo_offer_id: string
+          id?: string
+          notified_at?: string | null
+          session_id?: string | null
+          user_id?: string | null
+          visit_date?: string
+        }
+        Update: {
+          entered_at?: string
+          geo_offer_id?: string
+          id?: string
+          notified_at?: string | null
+          session_id?: string | null
+          user_id?: string | null
+          visit_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "geo_offer_visits_geo_offer_id_fkey"
+            columns: ["geo_offer_id"]
+            isOneToOne: false
+            referencedRelation: "geo_offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      geo_offers: {
+        Row: {
+          category_slug: string
+          center_lat: number
+          center_lng: number
+          conditions: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          original_price: number
+          promo_price: number
+          radius_meters: number
+          share_token: string
+          status: Database["public"]["Enums"]["geo_offer_status"]
+          store_id: string
+          time_end: string
+          time_start: string
+          title: string
+          updated_at: string
+          valid_from: string
+          valid_until: string | null
+        }
+        Insert: {
+          category_slug: string
+          center_lat: number
+          center_lng: number
+          conditions?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          original_price?: number
+          promo_price?: number
+          radius_meters?: number
+          share_token?: string
+          status?: Database["public"]["Enums"]["geo_offer_status"]
+          store_id: string
+          time_end?: string
+          time_start?: string
+          title: string
+          updated_at?: string
+          valid_from?: string
+          valid_until?: string | null
+        }
+        Update: {
+          category_slug?: string
+          center_lat?: number
+          center_lng?: number
+          conditions?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          original_price?: number
+          promo_price?: number
+          radius_meters?: number
+          share_token?: string
+          status?: Database["public"]["Enums"]["geo_offer_status"]
+          store_id?: string
+          time_end?: string
+          time_start?: string
+          title?: string
+          updated_at?: string
+          valid_from?: string
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
       group_offer_participants: {
         Row: {
           created_at: string
@@ -344,6 +454,7 @@ export type Database = {
           expiring_favorites: boolean
           marketing: boolean
           new_offers_followed_stores: boolean
+          proximity_alerts: boolean
           updated_at: string
           user_id: string
         }
@@ -352,6 +463,7 @@ export type Database = {
           expiring_favorites?: boolean
           marketing?: boolean
           new_offers_followed_stores?: boolean
+          proximity_alerts?: boolean
           updated_at?: string
           user_id: string
         }
@@ -360,6 +472,7 @@ export type Database = {
           expiring_favorites?: boolean
           marketing?: boolean
           new_offers_followed_stores?: boolean
+          proximity_alerts?: boolean
           updated_at?: string
           user_id?: string
         }
@@ -918,6 +1031,37 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      active_geo_offer_for_store: {
+        Args: { p_store_id: string }
+        Returns: {
+          category_slug: string
+          center_lat: number
+          center_lng: number
+          conditions: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          original_price: number
+          promo_price: number
+          radius_meters: number
+          share_token: string
+          status: Database["public"]["Enums"]["geo_offer_status"]
+          store_id: string
+          time_end: string
+          time_start: string
+          title: string
+          updated_at: string
+          valid_from: string
+          valid_until: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "geo_offers"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       auction_current_price: {
         Args: { p_offer: Database["public"]["Tables"]["auction_offers"]["Row"] }
         Returns: number
@@ -928,6 +1072,19 @@ export type Database = {
         Args: { p_days?: number; p_store_id: string }
         Returns: Json
       }
+      geo_offer_register_visit: {
+        Args: {
+          p_lat: number
+          p_lng: number
+          p_session_id?: string
+          p_token: string
+        }
+        Returns: Json
+      }
+      geo_offer_state: {
+        Args: { p_lat?: number; p_lng?: number; p_token: string }
+        Returns: Json
+      }
       group_offer_state: { Args: { p_token: string }; Returns: Json }
       has_role: {
         Args: {
@@ -935,6 +1092,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      haversine_meters: {
+        Args: { lat1: number; lat2: number; lng1: number; lng2: number }
+        Returns: number
       }
       offer_rating_summary: { Args: { p_offer_id: string }; Returns: Json }
       offer_social_proof: { Args: { p_offer_ids: string[] }; Returns: Json }
@@ -986,6 +1147,7 @@ export type Database = {
         | "sold_out"
         | "expired"
         | "rejected"
+      geo_offer_status: "pending" | "approved" | "expired" | "rejected"
       group_offer_status: "pending" | "approved" | "rejected" | "expired"
       offer_status: "pending" | "approved" | "rejected" | "paused"
       offer_type: "desconto" | "cupom" | "brinde"
@@ -1132,6 +1294,7 @@ export const Constants = {
         "expired",
         "rejected",
       ],
+      geo_offer_status: ["pending", "approved", "expired", "rejected"],
       group_offer_status: ["pending", "approved", "rejected", "expired"],
       offer_status: ["pending", "approved", "rejected", "paused"],
       offer_type: ["desconto", "cupom", "brinde"],
