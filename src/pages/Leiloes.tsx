@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Gavel, Clock, TrendingDown, Package, Heart, Sparkles } from "lucide-react";
+import { StoreAvatar } from "@/components/site/StoreAvatar";
+import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { computeCurrentPrice, computeSecondsToNext, formatBRL, type AuctionOffer } from "@/lib/auction-api";
