@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle, BarChart3, QrCode } from "lucide-react";
+import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle, BarChart3, QrCode, Users, Share2, Copy, MessageCircle, Sparkles, Trash2 } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
@@ -237,6 +237,113 @@ export default function PainelLojista() {
                 <div>Cliques no WhatsApp: <strong>{totalClicks}</strong></div>
               </CardContent>
             </Card>
+
+            {activeColetiva && (
+              <Card className="md:col-span-3">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-primary" /> Sua coletiva ativa
+                    <Badge variant={activeColetiva.status === "approved" ? "default" : "secondary"}>
+                      {activeColetiva.status === "approved" ? "Ativa" : "Aguardando aprovação"}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex flex-col gap-4 sm:flex-row">
+                    {activeColetiva.image_url && (
+                      <img
+                        src={activeColetiva.image_url}
+                        alt={activeColetiva.title}
+                        className="h-28 w-full rounded-md object-cover sm:w-44"
+                      />
+                    )}
+                    <div className="flex-1 space-y-2">
+                      <h3 className="font-semibold text-foreground">{activeColetiva.title}</h3>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                        <span>De {formatBRLNumber(Number(activeColetiva.original_price))}</span>
+                        <span>
+                          Faixas: {(activeColetiva.tiers ?? []).map((t) => `${t.min_people}+ ${formatBRLNumber(Number(t.price))}`).join(" / ")}
+                        </span>
+                        {activeColetiva.ends_at && (
+                          <span>Encerra em {new Date(activeColetiva.ends_at).toLocaleString("pt-BR")}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="accent"
+                      size="sm"
+                      onClick={() => navigate(`/painel-lojista/coletiva/${activeColetiva.id}`)}
+                    >
+                      <Pencil className="h-4 w-4" /> Editar coletiva
+                    </Button>
+                    {activeColetiva.status === "approved" && (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const url = `${window.location.origin}/coletiva/${activeColetiva.share_token}`;
+                            navigator.clipboard.writeText(url);
+                            toast.success("Link copiado!");
+                          }}
+                        >
+                          <Copy className="h-4 w-4" /> Copiar link
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const url = `${window.location.origin}/coletiva/${activeColetiva.share_token}`;
+                            window.open(`https://wa.me/?text=${encodeURIComponent(`Vem comigo: ${url}`)}`, "_blank");
+                          }}
+                        >
+                          <MessageCircle className="h-4 w-4" /> WhatsApp
+                        </Button>
+                        <Button asChild variant="ghost" size="sm">
+                          <Link to={`/coletiva/${activeColetiva.share_token}`} target="_blank">
+                            <Share2 className="h-4 w-4" /> Ver pública
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={async () => {
+                            if (!confirm("Encerrar esta coletiva agora?")) return;
+                            const { error } = await supabase
+                              .from("group_offers" as any)
+                              .update({ status: "expired" })
+                              .eq("id", activeColetiva.id);
+                            if (error) return toast.error(error.message);
+                            toast.success("Coletiva encerrada");
+                            load();
+                          }}
+                        >
+                          Encerrar
+                        </Button>
+                      </>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={async () => {
+                        if (!confirm("Excluir esta coletiva? Esta ação não pode ser desfeita.")) return;
+                        const { error } = await supabase
+                          .from("group_offers" as any)
+                          .delete()
+                          .eq("id", activeColetiva.id);
+                        if (error) return toast.error(error.message);
+                        toast.success("Coletiva excluída");
+                        load();
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" /> Excluir
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             <Card className="md:col-span-3">
               <CardHeader>
