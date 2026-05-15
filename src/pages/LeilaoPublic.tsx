@@ -165,7 +165,9 @@ export default function LeilaoPublic() {
             <CardContent className="space-y-2 p-6">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="secondary" className="gap-1"><Gavel className="h-3 w-3" /> Leilão de oferta</Badge>
+                <StoreAvatar name={state.store_name ?? "Loja"} logoUrl={storeLogo} size={24} />
                 {state.store_name && <span className="text-xs uppercase tracking-wide text-muted-foreground">{state.store_name}</span>}
+                {storeFeatured && <StoreFeaturedBadge showLabel={false} />}
               </div>
               <h1 className="text-2xl font-bold text-foreground">{offer.title}</h1>
               {offer.description && <p className="text-sm text-muted-foreground">{offer.description}</p>}
