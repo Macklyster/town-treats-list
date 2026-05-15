@@ -350,6 +350,115 @@ export default function PainelLojista() {
               </Card>
             )}
 
+            {activeLeilao && (
+              <Card className="md:col-span-3">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Gavel className="h-5 w-5 text-primary" /> Seu leilão ativo
+                    <Badge variant={activeLeilao.status === "approved" ? "default" : "secondary"}>
+                      {activeLeilao.status === "approved" ? "Ativo" : "Aguardando aprovação"}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex flex-col gap-4 sm:flex-row">
+                    {activeLeilao.image_url && (
+                      <img
+                        src={activeLeilao.image_url}
+                        alt={activeLeilao.title}
+                        className="h-28 w-full rounded-md object-cover sm:w-44"
+                      />
+                    )}
+                    <div className="flex-1 space-y-2">
+                      <h3 className="font-semibold text-foreground">{activeLeilao.title}</h3>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                        <span>De {formatBRLAuc(Number(activeLeilao.starting_price))} até {formatBRLAuc(Number(activeLeilao.min_price))}</span>
+                        <span>−{formatBRLAuc(Number(activeLeilao.decrement_amount))} a cada {activeLeilao.decrement_interval_minutes} min</span>
+                        <span className="inline-flex items-center gap-1">
+                          <Package className="h-3 w-3" />
+                          {activeLeilao.reserved_quantity} de {activeLeilao.total_quantity} reservadas
+                        </span>
+                        {activeLeilao.ends_at && (
+                          <span>Encerra em {new Date(activeLeilao.ends_at).toLocaleString("pt-BR")}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="accent"
+                      size="sm"
+                      onClick={() => navigate(`/painel-lojista/leilao/${activeLeilao.id}`)}
+                    >
+                      <Pencil className="h-4 w-4" /> Editar leilão
+                    </Button>
+                    {activeLeilao.status === "approved" && (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const url = `${window.location.origin}/leilao/${activeLeilao.share_token}`;
+                            navigator.clipboard.writeText(url);
+                            toast.success("Link copiado!");
+                          }}
+                        >
+                          <Copy className="h-4 w-4" /> Copiar link
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const url = `${window.location.origin}/leilao/${activeLeilao.share_token}`;
+                            window.open(`https://wa.me/?text=${encodeURIComponent(`Leilão acontecendo agora: ${url}`)}`, "_blank");
+                          }}
+                        >
+                          <MessageCircle className="h-4 w-4" /> WhatsApp
+                        </Button>
+                        <Button asChild variant="ghost" size="sm">
+                          <Link to={`/leilao/${activeLeilao.share_token}`} target="_blank">
+                            <Share2 className="h-4 w-4" /> Ver pública
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={async () => {
+                            if (!confirm("Encerrar este leilão agora?")) return;
+                            const { error } = await supabase
+                              .from("auction_offers" as any)
+                              .update({ status: "expired" })
+                              .eq("id", activeLeilao.id);
+                            if (error) return toast.error(error.message);
+                            toast.success("Leilão encerrado");
+                            load();
+                          }}
+                        >
+                          Encerrar
+                        </Button>
+                      </>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={async () => {
+                        if (!confirm("Excluir este leilão? Esta ação não pode ser desfeita.")) return;
+                        const { error } = await supabase
+                          .from("auction_offers" as any)
+                          .delete()
+                          .eq("id", activeLeilao.id);
+                        if (error) return toast.error(error.message);
+                        toast.success("Leilão excluído");
+                        load();
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" /> Excluir
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <Card className="md:col-span-3">
               <CardHeader>
                 <CardTitle>Suas ofertas</CardTitle>
