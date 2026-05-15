@@ -33,6 +33,7 @@ import { Check, X, Star, Pencil, Trash2, ArrowUp, ArrowDown, Plus, Tag } from "l
 import { AdminBroadcast } from "@/components/admin/AdminBroadcast";
 import { AdminSettings } from "@/components/admin/AdminSettings";
 import { AdminReviews } from "@/components/admin/AdminReviews";
+import { AdminColetivas } from "@/components/admin/AdminColetivas";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
