@@ -369,7 +369,13 @@ export default function Assinatura() {
                         onClick={() => dbPlan && subscribe(dbPlan.id)}
                       >
                         {dbPlan && busy === dbPlan.id && <Loader2 className="h-4 w-4 animate-spin" />}
-                        {isCurrent ? "Plano ativo" : !dbPlan ? "Indisponível" : "Assinar"}
+                        {isCurrent
+                          ? "Plano ativo"
+                          : !dbPlan
+                          ? "Indisponível"
+                          : paidActive
+                          ? "Mudar para este plano"
+                          : "Assinar"}
                       </Button>
                     )}
                   </CardContent>
