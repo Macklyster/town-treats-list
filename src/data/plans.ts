@@ -77,6 +77,7 @@ export const PLAN_CATALOG: PlanCatalogItem[] = [
       "Selo de Loja Destaque",
       "Banner rotativo na home",
       "Ofertas relâmpago com contagem regressiva",
+      "OfertasFly Coletiva — compra coletiva viral no WhatsApp",
       "Posts nas redes da OfertasFly",
       "Dashboard de Inteligência (KPIs, heatmap e top ofertas)",
       "Comparativo com concorrentes da categoria e cidade",
