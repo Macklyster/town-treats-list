@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       app_settings: {
         Row: {
+          auction_max_active_per_store: number
           flash_default_hours: number
           group_offer_max_active_per_store: number
           id: boolean
@@ -26,6 +27,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          auction_max_active_per_store?: number
           flash_default_hours?: number
           group_offer_max_active_per_store?: number
           id?: boolean
@@ -36,6 +38,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          auction_max_active_per_store?: number
           flash_default_hours?: number
           group_offer_max_active_per_store?: number
           id?: boolean
@@ -46,6 +49,107 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      auction_offers: {
+        Row: {
+          category_slug: string
+          conditions: string | null
+          created_at: string
+          decrement_amount: number
+          decrement_interval_minutes: number
+          description: string | null
+          ends_at: string | null
+          id: string
+          image_url: string | null
+          min_price: number
+          reserved_quantity: number
+          share_token: string
+          starting_price: number
+          starts_at: string | null
+          status: Database["public"]["Enums"]["auction_status"]
+          store_id: string
+          title: string
+          total_quantity: number
+          updated_at: string
+        }
+        Insert: {
+          category_slug: string
+          conditions?: string | null
+          created_at?: string
+          decrement_amount: number
+          decrement_interval_minutes?: number
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          min_price: number
+          reserved_quantity?: number
+          share_token?: string
+          starting_price: number
+          starts_at?: string | null
+          status?: Database["public"]["Enums"]["auction_status"]
+          store_id: string
+          title: string
+          total_quantity?: number
+          updated_at?: string
+        }
+        Update: {
+          category_slug?: string
+          conditions?: string | null
+          created_at?: string
+          decrement_amount?: number
+          decrement_interval_minutes?: number
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          min_price?: number
+          reserved_quantity?: number
+          share_token?: string
+          starting_price?: number
+          starts_at?: string | null
+          status?: Database["public"]["Enums"]["auction_status"]
+          store_id?: string
+          title?: string
+          total_quantity?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      auction_reservations: {
+        Row: {
+          auction_id: string
+          id: string
+          reserved_at: string
+          reserved_price: number
+          user_id: string
+          whatsapp_clicked_at: string | null
+        }
+        Insert: {
+          auction_id: string
+          id?: string
+          reserved_at?: string
+          reserved_price: number
+          user_id: string
+          whatsapp_clicked_at?: string | null
+        }
+        Update: {
+          auction_id?: string
+          id?: string
+          reserved_at?: string
+          reserved_price?: number
+          user_id?: string
+          whatsapp_clicked_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auction_reservations_auction_id_fkey"
+            columns: ["auction_id"]
+            isOneToOne: false
+            referencedRelation: "auction_offers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       cancellation_reasons: {
         Row: {
@@ -806,6 +910,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      auction_current_price: {
+        Args: { p_offer: Database["public"]["Tables"]["auction_offers"]["Row"] }
+        Returns: number
+      }
+      auction_state: { Args: { p_token: string }; Returns: Json }
       category_benchmark: {
         Args: { p_days?: number; p_store_id: string }
         Returns: Json
@@ -833,6 +942,7 @@ export type Database = {
           store_name: string
         }[]
       }
+      reserve_auction: { Args: { p_token: string }; Returns: Json }
       store_intelligence: {
         Args: { p_days?: number; p_store_id: string }
         Returns: Json
@@ -851,6 +961,12 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "lojista" | "consumer"
+      auction_status:
+        | "pending"
+        | "approved"
+        | "sold_out"
+        | "expired"
+        | "rejected"
       group_offer_status: "pending" | "approved" | "rejected" | "expired"
       offer_status: "pending" | "approved" | "rejected" | "paused"
       offer_type: "desconto" | "cupom" | "brinde"
@@ -990,6 +1106,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "lojista", "consumer"],
+      auction_status: [
+        "pending",
+        "approved",
+        "sold_out",
+        "expired",
+        "rejected",
+      ],
       group_offer_status: ["pending", "approved", "rejected", "expired"],
       offer_status: ["pending", "approved", "rejected", "paused"],
       offer_type: ["desconto", "cupom", "brinde"],

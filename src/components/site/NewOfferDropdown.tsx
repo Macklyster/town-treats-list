@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Tag, Zap, Users, ChevronDown, Lock } from "lucide-react";
+import { Plus, Tag, Zap, Users, ChevronDown, Lock, Gavel } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,9 +14,10 @@ import { Badge } from "@/components/ui/badge";
 type Props = {
   isPlus: boolean;
   hasActiveColetiva: boolean;
+  hasActiveLeilao?: boolean;
 };
 
-export const NewOfferDropdown = ({ isPlus, hasActiveColetiva }: Props) => {
+export const NewOfferDropdown = ({ isPlus, hasActiveColetiva, hasActiveLeilao }: Props) => {
   const navigate = useNavigate();
   return (
     <DropdownMenu>
@@ -76,6 +77,31 @@ export const NewOfferDropdown = ({ isPlus, hasActiveColetiva }: Props) => {
               {hasActiveColetiva
                 ? "Você já tem uma ativa"
                 : "X pessoas compram, todos pagam menos"}
+            </span>
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          disabled={hasActiveLeilao}
+          onClick={() => {
+            if (hasActiveLeilao) return;
+            if (!isPlus) { navigate("/painel-lojista/assinatura"); return; }
+            navigate("/painel-lojista/leilao");
+          }}
+          title={hasActiveLeilao ? "Você já tem um leilão ativo" : !isPlus ? "Disponível no plano Plus" : undefined}
+        >
+          <Gavel className="mr-2 h-4 w-4 text-primary" />
+          <div className="flex flex-1 flex-col">
+            <span className="font-medium flex items-center gap-2">
+              Leilão de Oferta
+              {!isPlus && (
+                <Badge variant="secondary" className="text-[10px]">
+                  <Lock className="mr-1 h-2.5 w-2.5" />
+                  Plus
+                </Badge>
+              )}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {hasActiveLeilao ? "Você já tem um leilão ativo" : "Preço cai com o tempo (leilão reverso)"}
             </span>
           </div>
         </DropdownMenuItem>

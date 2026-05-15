@@ -15,6 +15,8 @@ import { toast } from "sonner";
 import { OfferQrDialog } from "@/components/site/OfferQrDialog";
 import { NewOfferDropdown } from "@/components/site/NewOfferDropdown";
 import { fetchActiveGroupOfferForStore, type GroupOffer } from "@/lib/group-offers-api";
+import { fetchActiveAuctionForStore, type AuctionOffer, formatBRL as formatBRLAuc } from "@/lib/auction-api";
+import { Gavel, Package } from "lucide-react";
 
 type StoreRow = {
   id: string;
@@ -47,6 +49,7 @@ export default function PainelLojista() {
   const [qrFor, setQrFor] = useState<OfferRow | null>(null);
   const [sub, setSub] = useState<Sub | null>(null);
   const [activeColetiva, setActiveColetiva] = useState<GroupOffer | null>(null);
+  const [activeLeilao, setActiveLeilao] = useState<AuctionOffer | null>(null);
   const [loading, setLoading] = useState(true);
   const subInfo = useSubscription(store?.id ?? null);
   const isPlus = !!subInfo.subscription && subInfo.subscription.status === "active" && subInfo.plan?.slug === "plus";
@@ -100,6 +103,8 @@ export default function PainelLojista() {
 
       const ac = await fetchActiveGroupOfferForStore(s.id);
       setActiveColetiva(ac);
+      const al = await fetchActiveAuctionForStore(s.id);
+      setActiveLeilao(al);
     }
     setLoading(false);
   };
@@ -132,7 +137,7 @@ export default function PainelLojista() {
                   <BarChart3 className="h-4 w-4" /> Inteligência
                 </Link>
               </Button>
-              <NewOfferDropdown isPlus={isPlus} hasActiveColetiva={!!activeColetiva} />
+              <NewOfferDropdown isPlus={isPlus} hasActiveColetiva={!!activeColetiva} hasActiveLeilao={!!activeLeilao} />
             </div>
           )}
         </div>
