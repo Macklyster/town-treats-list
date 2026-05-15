@@ -67,6 +67,8 @@ const App = () => (
             <Route path="/coletivas" element={<Coletivas />} />
             <Route path="/leilao/:token" element={<LeilaoPublic />} />
             <Route path="/leiloes" element={<Leiloes />} />
+            <Route path="/oferta-invisivel/:token" element={<OfertaInvisivelPublic />} />
+            <Route path="/ofertas-invisiveis" element={<OfertasInvisiveis />} />
             <Route path="/anuncie" element={<Anuncie />} />
             <Route path="/auth" element={<Auth />} />
             <Route
