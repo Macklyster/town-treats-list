@@ -58,6 +58,7 @@ const App = () => (
             <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
             <Route path="/oferta/:id" element={<OfferDetail />} />
             <Route path="/coletiva/:token" element={<ColetivaPublic />} />
+            <Route path="/coletivas" element={<Coletivas />} />
             <Route path="/anuncie" element={<Anuncie />} />
             <Route path="/auth" element={<Auth />} />
             <Route
