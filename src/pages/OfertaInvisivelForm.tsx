@@ -328,7 +328,7 @@ export default function OfertaInvisivelForm() {
                 </div>
                 <div>
                   <Label>Imagem</Label>
-                  <ImageUploader value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url ?? "" })} bucket="offer-images" />
+                  <ImageUploader value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url ?? "" })} storeId={storeId} bucket="offer-images" label="Imagem" />
                 </div>
                 <div>
                   <Label>Preço original (R$)</Label>
