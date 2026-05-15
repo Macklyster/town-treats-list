@@ -34,6 +34,7 @@ import { AdminBroadcast } from "@/components/admin/AdminBroadcast";
 import { AdminSettings } from "@/components/admin/AdminSettings";
 import { AdminReviews } from "@/components/admin/AdminReviews";
 import { AdminColetivas } from "@/components/admin/AdminColetivas";
+import { AdminLeiloes } from "@/components/admin/AdminLeiloes";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -242,6 +243,7 @@ export default function Admin() {
             <TabsTrigger value="notifications">Notificações</TabsTrigger>
             <TabsTrigger value="reviews">Avaliações</TabsTrigger>
             <TabsTrigger value="coletivas">Coletivas</TabsTrigger>
+            <TabsTrigger value="leiloes">Leilões</TabsTrigger>
             <TabsTrigger value="settings">Configurações</TabsTrigger>
           </TabsList>
 
