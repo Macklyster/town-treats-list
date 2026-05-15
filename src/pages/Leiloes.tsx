@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { computeCurrentPrice, computeSecondsToNext, formatBRL, type AuctionOffer } from "@/lib/auction-api";
 
-type Row = AuctionOffer & { store: { id: string; name: string; slug: string; logo_url: string | null } | null };
+type Row = AuctionOffer & { store: { id: string; name: string; slug: string; logo_url: string | null; featured_badge: boolean } | null };
 
 const HowItWorks = () => (
   <Card>
