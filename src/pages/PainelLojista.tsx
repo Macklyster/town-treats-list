@@ -463,6 +463,60 @@ export default function PainelLojista() {
               </Card>
             )}
 
+            {activeInvisivel && (
+              <Card className="md:col-span-3">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <EyeOff className="h-5 w-5 text-primary" /> Sua oferta invisível ativa
+                    <Badge variant={activeInvisivel.status === "approved" ? "default" : "secondary"}>
+                      {activeInvisivel.status === "approved" ? "Ativa" : "Aguardando aprovação"}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex flex-col gap-4 sm:flex-row">
+                    {activeInvisivel.image_url && (
+                      <img src={activeInvisivel.image_url} alt={activeInvisivel.title} className="h-28 w-full rounded-md object-cover sm:w-44" />
+                    )}
+                    <div className="flex-1 space-y-2">
+                      <h3 className="font-semibold text-foreground">{activeInvisivel.title}</h3>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                        <span><span className="line-through">R$ {Number(activeInvisivel.original_price).toFixed(2)}</span> → <strong>R$ {Number(activeInvisivel.promo_price).toFixed(2)}</strong></span>
+                        <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> Raio {activeInvisivel.radius_meters} m</span>
+                        <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" /> {formatGeoTime(activeInvisivel.time_start)}–{formatGeoTime(activeInvisivel.time_end)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="accent" size="sm" onClick={() => navigate(`/painel-lojista/oferta-invisivel/${activeInvisivel.id}`)}>
+                      <Pencil className="h-4 w-4" /> Editar
+                    </Button>
+                    {activeInvisivel.status === "approved" && (
+                      <>
+                        <Button variant="outline" size="sm" onClick={() => {
+                          const url = `${window.location.origin}/oferta-invisivel/${activeInvisivel.share_token}`;
+                          navigator.clipboard.writeText(url); toast.success("Link copiado!");
+                        }}><Copy className="h-4 w-4" /> Copiar link</Button>
+                        <Button variant="outline" size="sm" onClick={() => {
+                          const url = `${window.location.origin}/oferta-invisivel/${activeInvisivel.share_token}`;
+                          window.open(`https://wa.me/?text=${encodeURIComponent(`Tem uma oferta secreta perto de você: ${url}`)}`, "_blank");
+                        }}><MessageCircle className="h-4 w-4" /> WhatsApp</Button>
+                        <Button asChild variant="ghost" size="sm">
+                          <Link to={`/oferta-invisivel/${activeInvisivel.share_token}`} target="_blank"><Share2 className="h-4 w-4" /> Ver pública</Link>
+                        </Button>
+                      </>
+                    )}
+                    <Button variant="ghost" size="sm" onClick={async () => {
+                      if (!confirm("Excluir esta oferta invisível?")) return;
+                      const { error } = await supabase.from("geo_offers" as any).delete().eq("id", activeInvisivel.id);
+                      if (error) return toast.error(error.message);
+                      toast.success("Oferta excluída"); load();
+                    }}><Trash2 className="h-4 w-4" /> Excluir</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <Card className="md:col-span-3">
               <CardHeader>
                 <CardTitle>Suas ofertas</CardTitle>
