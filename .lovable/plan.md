@@ -1,75 +1,98 @@
-# Prova social em tempo real
+## Leilão de Oferta — Leilão Reverso (preço cai com o tempo)
 
-Exibir contadores de visualizações e cliques em tempo real nas ofertas das lojas dos planos **Destaque** e **Plus**, criando gatilho de validação social para o cliente e demonstração de resultado para o lojista.
+Novo tipo de oferta exclusivo do plano **Plus**: o preço inicial cai automaticamente em intervalos definidos até atingir um mínimo. O lojista informa a **quantidade de itens disponíveis**; cada cliente "reserva" uma unidade ao preço corrente, e o leilão encerra quando todas as unidades forem reservadas (ou quando o tempo expirar).
 
-## Onde aparece
+---
 
-1. `**OfferCard**` (grade de ofertas) — badge discreto sobre a imagem ou no rodapé do card:
-  - Ex.: "👁 47 viram hoje" e, quando aplicável, "🔥 12 vendo agora"
-  - Só aparece se a contagem do dia for ≥ um mínimo (ex.: 5) para não exibir "1 pessoa viu" (anti-prova-social), criar campo na aba Configurações do Admin para parametrizações futuras.
-2. `**OfferDetail**` (página da oferta) — bloco com mais detalhe abaixo do título:
-  - "👁 **47** pessoas viram esta oferta hoje"
-  - "💬 **8** clicaram para falar no WhatsApp hoje"
-  - "🔥 **3** vendo agora" (somente quando ≥ 2 sessões ativas nos últimos 5 min)
-3. `**PainelLojista**` (visão do lojista) — pequeno selo na linha da oferta mostrando o mesmo contador, reforçando o valor entregue pela plataforma.
+### 1. Banco de dados (migração)
 
-## Regras de exibição
+**Nova tabela `auction_offers`**:
 
-- **Apenas planos Destaque e Plus**: lojas Grátis/Básico não veem o widget no público nem no painel. (No painel mostramos um teaser "Disponível no Destaque" com link para `/painel-lojista/assinatura`.)
-- **Janela "hoje"**: do início do dia local (`America/Sao_Paulo`) até agora.
-- **"Vendo agora"**: sessões distintas (`session_id`) com evento `view` nos últimos 5 minutos.
-- **Anti-ruído**: esconder números abaixo do mínimo configurável (default 5 para "viram hoje", 2 para "vendo agora") para evitar prova social fraca.
-- **Privacidade**: nenhuma informação de usuário é exposta — só contagens agregadas.
+- `store_id`, `title`, `description`, `image_url`, `category_slug`, `conditions`
+- `starting_price`, `min_price`, `decrement_amount`, `decrement_interval_minutes`
+- **`total_quantity` (int, >= 1)** — quantidade total de itens ofertados
+- **`reserved_quantity` (int, default 0)** — contador de unidades já reservadas
+- `starts_at`, `ends_at`
+- `status`: enum `auction_status` = `pending | approved | sold_out | expired | rejected`
+- `share_token`, timestamps
 
-## Tempo real
+**Nova tabela `auction_reservations`** (uma linha por unidade reservada):
+- `auction_id`, `user_id`, `reserved_price`, `reserved_at`, `whatsapp_clicked_at`
+- Único por `(auction_id, user_id)` — cada usuário só reserva 1 unidade
 
-- Usar `supabase.channel().on('postgres_changes', { table: 'offer_events', filter: 'offer_id=eq.<id>' })` na página de detalhe para incrementar localmente.
-- Habilitar realtime para `offer_events` na publicação `supabase_realtime`.
-- Nos cards (lista), evitar 1 canal por card: refetch agregado a cada 60s via polling leve.
+**Trigger `validate_auction_offer`**: `min_price < starting_price`, `decrement_amount > 0`, `decrement_interval_minutes >= 5`, `total_quantity >= 1`, exige plano Plus ativo.
 
-## Detalhes técnicos
+**Trigger `set_auction_window`**: ao virar `approved`, calcula `starts_at = now()` e `ends_at = starts_at + ceil((starting - min) / decrement) * interval`.
 
-### Banco (migração)
+**RPC `auction_state(p_token text)`**: retorna oferta + preço corrente + segundos para próximo decremento + `reserved_quantity` + `total_quantity` + se o usuário atual já reservou.
 
-1. Adicionar `offer_events` à publicação realtime: `ALTER PUBLICATION supabase_realtime ADD TABLE public.offer_events;` e `ALTER TABLE public.offer_events REPLICA IDENTITY FULL;`.
-2. Nova função RPC `public.offer_social_proof(p_offer_ids uuid[])` (SECURITY DEFINER, STABLE):
-  - Para cada `offer_id`, junta com `stores` → `subscriptions` + `plans` para validar plano `destaque`/`plus` ativo.
-  - Retorna JSONB array `[{ offer_id, eligible, views_today, contacts_today, viewers_now }]`.
-  - Ofertas não elegíveis retornam `eligible: false` e contadores zerados.
-  - Aceita até N ids para uso no listing (com cap, ex.: 60).
-3. Índice de apoio: `CREATE INDEX IF NOT EXISTS idx_offer_events_offer_created ON public.offer_events (offer_id, created_at DESC);`
+**RPC `reserve_auction(p_token text)`** (SECURITY DEFINER):
+- Exige login; `SELECT ... FOR UPDATE` na linha do leilão
+- Bloqueia se `status != 'approved'`, se usuário já reservou, ou se `reserved_quantity >= total_quantity`
+- Calcula preço corrente, insere em `auction_reservations`, incrementa `reserved_quantity`
+- Se atingir `total_quantity`, marca `status = 'sold_out'`
+- Retorna preço travado + whatsapp da loja
 
-### Frontend
+**RLS**: public read em `approved`/`sold_out`; owner/admin gerenciam; reservations visíveis ao próprio usuário, dono da loja e admin.
 
-- `src/lib/social-proof.ts`:
-  - `fetchOfferSocialProof(ids: string[])` → `Map<id, SocialProof>` via RPC.
-  - `subscribeOfferSocialProof(id, onChange)` → canal realtime que dispara recontagem leve (chama RPC só para esse id).
-  - Constantes `MIN_VIEWS_TODAY = 5`, `MIN_VIEWERS_NOW = 2`.
-- `src/components/site/SocialProofBadge.tsx`:
-  - Variantes `compact` (card) e `detailed` (página).
-  - Recebe `SocialProof` e renderiza condicionalmente conforme thresholds.
-- Integração:
-  - `OfferCard`: aceita prop opcional `socialProof?: SocialProof`. `OffersSection` (e demais listas) faz 1 chamada agregada e injeta nos cards. Polling 60s.
-  - `OfferDetail`: chama o RPC ao montar, inscreve canal realtime e atualiza o badge `detailed`.
-  - `PainelLojista`: na tabela de ofertas, badge compacto por linha (1 chamada agregada para todas as ofertas da loja).
+**Realtime**: adicionar `auction_offers` e `auction_reservations` à publicação.
 
-### Catálogo de planos (`src/data/plans.ts`)
+**Edge function `auction-expire`** (cron 5 min): marca `expired` quando `now() > ends_at` e ainda restam unidades.
 
-Adicionar à lista `features`:
+**`app_settings`**: `auction_max_active_per_store` (default 1).
 
-- **Destaque**: `"Prova social em tempo real nos seus anúncios"`
-- **Plus**: `"Prova social em tempo real nos seus anúncios"`
+---
 
-### Sem mudança de comportamento de tracking
+### 2. Frontend — Painel do Lojista
 
-- O `track_offer_event` RPC e `trackOfferEvent` continuam iguais — já gravam `view` e `whatsapp_click` por sessão (com dedupe de 30 min para `view`). Para "viram hoje" considera-se cada sessão única que tenha pelo menos 1 evento `view` no dia.
+- **`NewOfferDropdown.tsx`**: opção "Leilão de Oferta" com badge **Plus**.
+- **Nova rota** `/painel-lojista/leilao/:id?` → **`LeilaoForm.tsx`**:
+  - Campos básicos (título, descrição, imagem, categoria, condições)
+  - **Quantidade de itens disponíveis** (input numérico, mín. 1)
+  - Preço inicial, preço mínimo, decremento (R$), intervalo (min)
+  - Pré-visualização: escada de preços hora a hora até o mínimo + tempo total estimado + linha "Quantidade ofertada: N unidades"
+- **`PainelLojista.tsx`**: card "Seu leilão ativo" com preço atual, **"X de N reservados"**, ações Editar / Copiar link / WhatsApp / Encerrar / Excluir.
 
-## Fora de escopo
+### 3. Frontend — Cliente
 
-- Sem A/B test do widget.
-- Sem notificação push para o lojista quando contador cresce.
-- Sem agregação histórica em tabela materializada — cálculo é direto sobre `offer_events` (eficiente com o índice).
+- **`/leilao/:token`** → **`LeilaoPublic.tsx`**:
+  - Preço grande animado, contagem regressiva até o próximo decremento
+  - **Indicador de estoque**: "X de N unidades disponíveis" + barra de progresso
+  - Botão "Reservar 1 unidade por R$ X" (exige login)
+  - Estado pós-reserva: preço travado + botão WhatsApp; botão desabilitado com "Você já reservou"
+  - Estado `sold_out`: badge "Esgotado"
+  - Realtime: assina `auction_offers` e `auction_reservations` para atualizar preço, contador e status ao vivo
+- **`/leiloes`** → **`Leiloes.tsx`**: login obrigatório; landing explicativa para deslogado; logado vê leilões ativos das lojas seguidas + da cidade. Card mostra preço corrente, próximo decremento e **"X de N restantes"**.
+- **`Header.tsx`**: novo item "Leilões".
+- **`App.tsx`**: rotas `/leilao/:token`, `/leiloes`, `/painel-lojista/leilao/:id?`.
 
-## Pergunta antes de implementar
+### 4. Catálogo de planos e Admin
 
-Os thresholds e a janela "vendo agora" estão razoáveis? Se preferir, posso (a) tornar configuráveis em `app_settings`, ou (b) começar com 5/2 fixos como acima.
+- **`src/data/plans.ts`**: feature "Leilão de Oferta — preço cai com o tempo" no plano **Plus**.
+- **`AdminLeiloes.tsx`** (nova aba em `Admin.tsx`): moderação aprovar/rejeitar/encerrar/excluir, com colunas de quantidade e reservas.
+
+### 5. Helpers
+
+- **`src/lib/auction-api.ts`**: `fetchAuctionByToken`, `fetchAuctionsForUser`, `reserveAuction`, `subscribeAuction`, `computeCurrentPrice(...)` puro para tick local.
+
+---
+
+### Regras de negócio
+
+| Item | Valor |
+|---|---|
+| Plano exigido | Plus |
+| Limite ativo por loja | 1 (configurável) |
+| Quantidade mínima | 1 unidade |
+| Decremento mínimo | R$ 1, intervalo mínimo 5 min |
+| Reserva por usuário | 1 unidade por leilão |
+| Encerramento | `sold_out` quando todas reservadas, ou `expired` no tempo limite |
+| Login para reservar | Sim |
+
+### Fora do escopo
+
+- Pagamento online (combinação via WhatsApp)
+- Reserva de múltiplas unidades por usuário
+- Fila de espera / notificações de "preço caiu"
+
+Confirma para eu implementar?
