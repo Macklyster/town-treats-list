@@ -21,6 +21,8 @@ import {
 } from "@/lib/auction-api";
 import { getSessionId } from "@/lib/offer-events";
 import { MessageCircle, Gavel, Clock, Package, TrendingDown, Eye, Users, ShoppingBag } from "lucide-react";
+import { StoreAvatar } from "@/components/site/StoreAvatar";
+import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { toast } from "sonner";
 
 const fmtTime = (s: number) => {
