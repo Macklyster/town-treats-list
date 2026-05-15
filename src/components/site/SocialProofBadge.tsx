@@ -48,7 +48,7 @@ export const SocialProofBadge = ({ sp, variant = "compact", className }: Props) 
           <span className="text-muted-foreground">pessoas viram hoje</span>
         </span>
       )}
-      {sp.eligible && sp.contacts_today > 0 && (
+      {sp.contacts_today > 0 && (
         <span className="inline-flex items-center gap-1.5 text-foreground">
           <MessageCircle className="h-4 w-4 text-accent-strong" />
           <strong>{sp.contacts_today}</strong>
