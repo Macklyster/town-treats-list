@@ -486,6 +486,10 @@ export default function Admin() {
             <AdminReviews />
           </TabsContent>
 
+          <TabsContent value="coletivas" className="mt-6">
+            <AdminColetivas />
+          </TabsContent>
+
           <TabsContent value="settings" className="mt-6">
             <AdminSettings />
           </TabsContent>
