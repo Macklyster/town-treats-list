@@ -20,6 +20,9 @@ export type Database = {
           group_offer_max_active_per_store: number
           id: boolean
           review_prompt_hours: number
+          social_proof_min_viewers_now: number
+          social_proof_min_views_today: number
+          social_proof_now_window_minutes: number
           updated_at: string
         }
         Insert: {
@@ -27,6 +30,9 @@ export type Database = {
           group_offer_max_active_per_store?: number
           id?: boolean
           review_prompt_hours?: number
+          social_proof_min_viewers_now?: number
+          social_proof_min_views_today?: number
+          social_proof_now_window_minutes?: number
           updated_at?: string
         }
         Update: {
@@ -34,6 +40,9 @@ export type Database = {
           group_offer_max_active_per_store?: number
           id?: boolean
           review_prompt_hours?: number
+          social_proof_min_viewers_now?: number
+          social_proof_min_views_today?: number
+          social_proof_now_window_minutes?: number
           updated_at?: string
         }
         Relationships: []
@@ -810,6 +819,7 @@ export type Database = {
         Returns: boolean
       }
       offer_rating_summary: { Args: { p_offer_id: string }; Returns: Json }
+      offer_social_proof: { Args: { p_offer_ids: string[] }; Returns: Json }
       pending_reviews_for_user: {
         Args: never
         Returns: {
