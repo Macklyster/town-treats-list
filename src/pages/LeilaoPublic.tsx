@@ -61,6 +61,17 @@ export default function LeilaoPublic() {
         .maybeSingle();
       setStoreLogo(st?.logo_url ?? null);
       setStoreFeatured(!!st?.featured_badge);
+      if (s.already_reserved && user) {
+        const { data: r } = await supabase
+          .from("auction_reservations" as any)
+          .select("reserved_price")
+          .eq("auction_id", s.offer.id)
+          .eq("user_id", user.id)
+          .maybeSingle();
+        setMyReservedPrice(r ? Number((r as any).reserved_price) : null);
+      } else {
+        setMyReservedPrice(null);
+      }
     }
   };
 
