@@ -54,8 +54,9 @@ const AuctionCard = ({ row }: { row: Row }) => {
       )}
       <div className="space-y-2 p-4">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          {row.store?.logo_url && <img src={row.store.logo_url} alt="" className="h-5 w-5 rounded-full object-cover" />}
+          <StoreAvatar name={row.store?.name ?? "Loja"} logoUrl={row.store?.logo_url ?? null} size={20} />
           <span className="truncate">{row.store?.name ?? "Loja"}</span>
+          {row.store?.featured_badge && <StoreFeaturedBadge showLabel={false} />}
           <Badge variant="secondary" className="ml-auto gap-1"><Gavel className="h-3 w-3" /> Leilão</Badge>
         </div>
         <h2 className="line-clamp-2 font-semibold text-foreground group-hover:text-primary">{row.title}</h2>
