@@ -14,9 +14,13 @@ import {
   computeCurrentPrice,
   computeSecondsToNext,
   formatBRL,
+  trackAuctionEvent,
+  fetchAuctionSocialProof,
   type AuctionState,
+  type AuctionSocialProof,
 } from "@/lib/auction-api";
-import { MessageCircle, Gavel, Clock, Package, TrendingDown } from "lucide-react";
+import { getSessionId } from "@/lib/offer-events";
+import { MessageCircle, Gavel, Clock, Package, TrendingDown, Eye, Users, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 
 const fmtTime = (s: number) => {
