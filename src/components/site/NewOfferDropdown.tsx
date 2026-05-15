@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Tag, Zap, Users, ChevronDown, Lock, Gavel } from "lucide-react";
+import { Plus, Tag, Zap, Users, ChevronDown, Lock, Gavel, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
