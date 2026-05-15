@@ -15,6 +15,8 @@ import {
   formatBRL,
 } from "@/lib/group-offers-api";
 import { MessageCircle, Copy, Check } from "lucide-react";
+import { StoreAvatar } from "@/components/site/StoreAvatar";
+import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { toast } from "sonner";
 
 export default function ColetivaPublic() {
@@ -25,6 +27,8 @@ export default function ColetivaPublic() {
   const { user, loading: authLoading } = useAuth();
   const [state, setState] = useState<GroupOfferState | null>(null);
   const [storeName, setStoreName] = useState<string>("");
+  const [storeLogo, setStoreLogo] = useState<string | null>(null);
+  const [storeFeatured, setStoreFeatured] = useState<boolean>(false);
   const [storeWhatsapp, setStoreWhatsapp] = useState<string | null>(null);
   const [joining, setJoining] = useState(false);
 
@@ -35,10 +39,12 @@ export default function ColetivaPublic() {
     if (s.found && s.offer) {
       const { data: st } = await supabase
         .from("stores")
-        .select("name, whatsapp")
+        .select("name, whatsapp, logo_url, featured_badge")
         .eq("id", s.offer.store_id)
         .maybeSingle();
       setStoreName(st?.name ?? "");
+      setStoreLogo(st?.logo_url ?? null);
+      setStoreFeatured(!!st?.featured_badge);
       setStoreWhatsapp(st?.whatsapp ?? null);
     }
   };
@@ -144,7 +150,11 @@ export default function ColetivaPublic() {
               </div>
             )}
             <CardContent className="space-y-2 p-6">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">{storeName}</p>
+              <div className="flex items-center gap-2">
+                <StoreAvatar name={storeName || "Loja"} logoUrl={storeLogo} size={28} />
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">{storeName}</p>
+                {storeFeatured && <StoreFeaturedBadge showLabel={false} />}
+              </div>
               <h1 className="text-2xl font-bold text-foreground">{offer.title}</h1>
               {offer.description && (
                 <p className="text-sm text-muted-foreground">{offer.description}</p>

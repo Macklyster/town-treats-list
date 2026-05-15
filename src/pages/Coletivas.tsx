@@ -8,13 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Users, Clock, Sparkles, TrendingDown, Share2, Heart } from "lucide-react";
+import { StoreAvatar } from "@/components/site/StoreAvatar";
+import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { formatBRLNumber } from "@/lib/format";
 import type { Tier, GroupOffer } from "@/lib/group-offers-api";
 
 type Row = GroupOffer & {
-  store: { id: string; name: string; slug: string; logo_url: string | null } | null;
+  store: { id: string; name: string; slug: string; logo_url: string | null; featured_badge: boolean } | null;
   participants_count: number;
 };
 
@@ -76,7 +78,7 @@ export default function Coletivas() {
       const { data } = await supabase
         .from("group_offers" as any)
         .select(
-          "id,title,description,image_url,category_slug,original_price,tiers,duration_hours,ends_at,status,share_token,store_id, store:stores(id,name,slug,logo_url), participants:group_offer_participants(count)",
+          "id,title,description,image_url,category_slug,original_price,tiers,duration_hours,ends_at,status,share_token,store_id, store:stores(id,name,slug,logo_url,featured_badge), participants:group_offer_participants(count)",
         )
         .eq("status", "approved")
         .in("store_id", storeIds)
@@ -176,10 +178,9 @@ export default function Coletivas() {
                     )}
                     <div className="space-y-2 p-4">
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        {r.store?.logo_url && (
-                          <img src={r.store.logo_url} alt="" className="h-5 w-5 rounded-full object-cover" />
-                        )}
+                        <StoreAvatar name={r.store?.name ?? "Loja"} logoUrl={r.store?.logo_url ?? null} size={20} />
                         <span className="truncate">{r.store?.name ?? "Loja"}</span>
+                        {r.store?.featured_badge && <StoreFeaturedBadge showLabel={false} />}
                       </div>
                       <h2 className="line-clamp-2 font-semibold text-foreground group-hover:text-primary">
                         {r.title}

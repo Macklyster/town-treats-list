@@ -21,6 +21,8 @@ import {
 } from "@/lib/auction-api";
 import { getSessionId } from "@/lib/offer-events";
 import { MessageCircle, Gavel, Clock, Package, TrendingDown, Eye, Users, ShoppingBag } from "lucide-react";
+import { StoreAvatar } from "@/components/site/StoreAvatar";
+import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { toast } from "sonner";
 
 const fmtTime = (s: number) => {
@@ -41,6 +43,8 @@ export default function LeilaoPublic() {
   const [tick, setTick] = useState(0);
   const [reserving, setReserving] = useState(false);
   const [proof, setProof] = useState<AuctionSocialProof | null>(null);
+  const [storeLogo, setStoreLogo] = useState<string | null>(null);
+  const [storeFeatured, setStoreFeatured] = useState<boolean>(false);
 
   const load = async () => {
     if (!token) return;
@@ -49,6 +53,13 @@ export default function LeilaoPublic() {
     if (s.offer?.id) {
       const p = await fetchAuctionSocialProof(s.offer.id);
       setProof(p);
+      const { data: st } = await supabase
+        .from("stores")
+        .select("logo_url, featured_badge")
+        .eq("id", s.offer.store_id)
+        .maybeSingle();
+      setStoreLogo(st?.logo_url ?? null);
+      setStoreFeatured(!!st?.featured_badge);
     }
   };
 
@@ -154,7 +165,9 @@ export default function LeilaoPublic() {
             <CardContent className="space-y-2 p-6">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="secondary" className="gap-1"><Gavel className="h-3 w-3" /> Leilão de oferta</Badge>
+                <StoreAvatar name={state.store_name ?? "Loja"} logoUrl={storeLogo} size={24} />
                 {state.store_name && <span className="text-xs uppercase tracking-wide text-muted-foreground">{state.store_name}</span>}
+                {storeFeatured && <StoreFeaturedBadge showLabel={false} />}
               </div>
               <h1 className="text-2xl font-bold text-foreground">{offer.title}</h1>
               {offer.description && <p className="text-sm text-muted-foreground">{offer.description}</p>}

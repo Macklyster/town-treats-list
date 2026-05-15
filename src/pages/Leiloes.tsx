@@ -8,11 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Gavel, Clock, TrendingDown, Package, Heart, Sparkles } from "lucide-react";
+import { StoreAvatar } from "@/components/site/StoreAvatar";
+import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { computeCurrentPrice, computeSecondsToNext, formatBRL, type AuctionOffer } from "@/lib/auction-api";
 
-type Row = AuctionOffer & { store: { id: string; name: string; slug: string; logo_url: string | null } | null };
+type Row = AuctionOffer & { store: { id: string; name: string; slug: string; logo_url: string | null; featured_badge: boolean } | null };
 
 const HowItWorks = () => (
   <Card>
@@ -52,8 +54,9 @@ const AuctionCard = ({ row }: { row: Row }) => {
       )}
       <div className="space-y-2 p-4">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          {row.store?.logo_url && <img src={row.store.logo_url} alt="" className="h-5 w-5 rounded-full object-cover" />}
+          <StoreAvatar name={row.store?.name ?? "Loja"} logoUrl={row.store?.logo_url ?? null} size={20} />
           <span className="truncate">{row.store?.name ?? "Loja"}</span>
+          {row.store?.featured_badge && <StoreFeaturedBadge showLabel={false} />}
           <Badge variant="secondary" className="ml-auto gap-1"><Gavel className="h-3 w-3" /> Leilão</Badge>
         </div>
         <h2 className="line-clamp-2 font-semibold text-foreground group-hover:text-primary">{row.title}</h2>
@@ -88,7 +91,7 @@ export default function Leiloes() {
       if (storeIds.length === 0) { setRows([]); setLoading(false); return; }
       const { data } = await supabase
         .from("auction_offers" as any)
-        .select("*, store:stores(id,name,slug,logo_url)")
+        .select("*, store:stores(id,name,slug,logo_url,featured_badge)")
         .eq("status", "approved")
         .in("store_id", storeIds)
         .order("created_at", { ascending: false });
