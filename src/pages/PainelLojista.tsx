@@ -13,6 +13,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { formatBRLNumber } from "@/lib/format";
 import { toast } from "sonner";
 import { OfferQrDialog } from "@/components/site/OfferQrDialog";
+import { NewOfferDropdown } from "@/components/site/NewOfferDropdown";
+import { fetchActiveGroupOfferForStore, type GroupOffer } from "@/lib/group-offers-api";
 
 type StoreRow = {
   id: string;
@@ -44,8 +46,10 @@ export default function PainelLojista() {
   const [totalClicks, setTotalClicks] = useState(0);
   const [qrFor, setQrFor] = useState<OfferRow | null>(null);
   const [sub, setSub] = useState<Sub | null>(null);
+  const [activeColetiva, setActiveColetiva] = useState<GroupOffer | null>(null);
   const [loading, setLoading] = useState(true);
   const subInfo = useSubscription(store?.id ?? null);
+  const isPlus = !!subInfo.subscription && subInfo.subscription.status === "active" && subInfo.plan?.slug === "plus";
 
   const load = async () => {
     if (!user) return;
@@ -93,6 +97,9 @@ export default function PainelLojista() {
       setClicks(counts);
       setQrScans(qr);
       setTotalClicks(totalWa);
+
+      const ac = await fetchActiveGroupOfferForStore(s.id);
+      setActiveColetiva(ac);
     }
     setLoading(false);
   };
@@ -125,11 +132,7 @@ export default function PainelLojista() {
                   <BarChart3 className="h-4 w-4" /> Inteligência
                 </Link>
               </Button>
-              <Button asChild variant="accent">
-                <Link to="/painel-lojista/oferta">
-                  <Plus className="h-4 w-4" /> Nova oferta
-                </Link>
-              </Button>
+              <NewOfferDropdown isPlus={isPlus} hasActiveColetiva={!!activeColetiva} />
             </div>
           )}
         </div>
