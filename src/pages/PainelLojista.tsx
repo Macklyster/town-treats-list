@@ -141,7 +141,7 @@ export default function PainelLojista() {
                   <BarChart3 className="h-4 w-4" /> Inteligência
                 </Link>
               </Button>
-              <NewOfferDropdown isPlus={isPlus} hasActiveColetiva={!!activeColetiva} hasActiveLeilao={!!activeLeilao} />
+              <NewOfferDropdown isPlus={isPlus} hasActiveColetiva={!!activeColetiva} hasActiveLeilao={!!activeLeilao} hasActiveInvisivel={!!activeInvisivel} />
             </div>
           )}
         </div>
