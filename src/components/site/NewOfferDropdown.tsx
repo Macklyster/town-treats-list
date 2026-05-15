@@ -15,9 +15,10 @@ type Props = {
   isPlus: boolean;
   hasActiveColetiva: boolean;
   hasActiveLeilao?: boolean;
+  hasActiveInvisivel?: boolean;
 };
 
-export const NewOfferDropdown = ({ isPlus, hasActiveColetiva, hasActiveLeilao }: Props) => {
+export const NewOfferDropdown = ({ isPlus, hasActiveColetiva, hasActiveLeilao, hasActiveInvisivel }: Props) => {
   const navigate = useNavigate();
   return (
     <DropdownMenu>
