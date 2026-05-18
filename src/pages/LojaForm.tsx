@@ -47,7 +47,10 @@ export default function LojaForm() {
     whatsapp: "",
     instagram: "",
     logo_url: "",
+    latitude: null as number | null,
+    longitude: null as number | null,
   });
+  const [pinManuallySet, setPinManuallySet] = useState(false);
 
   useEffect(() => {
     (async () => {
