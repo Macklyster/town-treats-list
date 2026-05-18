@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 import { ImageUploader } from "@/components/site/ImageUploader";
+import { LocationPicker } from "@/components/site/LocationPicker";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { slugify } from "@/lib/format";
@@ -46,7 +47,10 @@ export default function LojaForm() {
     whatsapp: "",
     instagram: "",
     logo_url: "",
+    latitude: null as number | null,
+    longitude: null as number | null,
   });
+  const [pinManuallySet, setPinManuallySet] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -69,7 +73,10 @@ export default function LojaForm() {
           whatsapp: data.whatsapp ?? "",
           instagram: data.instagram ?? "",
           logo_url: data.logo_url ?? "",
+          latitude: data.latitude ?? null,
+          longitude: data.longitude ?? null,
         });
+        if (data.latitude != null && data.longitude != null) setPinManuallySet(true);
       }
     })();
   }, [user?.id]);
@@ -101,8 +108,8 @@ export default function LojaForm() {
       setStoreId(resultId);
     }
 
-    // Geocode in background — don't block save
-    if (resultId && form.address && form.city && form.state) {
+    // Geocode in background only if user did NOT pick a point manually
+    if (!pinManuallySet && resultId && form.address && form.city && form.state) {
       supabase.functions
         .invoke("geocode-store", { body: { store_id: resultId } })
         .catch(() => {});
@@ -153,6 +160,15 @@ export default function LojaForm() {
                   </select>
                 </div>
               </div>
+
+              <LocationPicker
+                value={form.latitude != null && form.longitude != null ? { lat: form.latitude, lng: form.longitude } : null}
+                onChange={({ lat, lng }) => {
+                  setForm((f) => ({ ...f, latitude: lat, longitude: lng }));
+                  setPinManuallySet(true);
+                }}
+                addressQuery={[form.address, form.city, form.state, "Brasil"].filter(Boolean).join(", ")}
+              />
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label>Telefone</Label>
