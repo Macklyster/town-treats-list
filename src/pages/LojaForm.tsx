@@ -160,6 +160,15 @@ export default function LojaForm() {
                   </select>
                 </div>
               </div>
+
+              <LocationPicker
+                value={form.latitude != null && form.longitude != null ? { lat: form.latitude, lng: form.longitude } : null}
+                onChange={({ lat, lng }) => {
+                  setForm((f) => ({ ...f, latitude: lat, longitude: lng }));
+                  setPinManuallySet(true);
+                }}
+                addressQuery={[form.address, form.city, form.state, "Brasil"].filter(Boolean).join(", ")}
+              />
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label>Telefone</Label>
