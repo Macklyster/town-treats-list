@@ -316,11 +316,17 @@ const OfferDetail = () => {
                     </li>
                   )}
                 </ul>
-                {store.address && (
+                {(store.address || (store.latitude && store.longitude)) && (
                   <div className="mt-5 overflow-hidden rounded-xl border border-border">
                     <iframe
                       title={`Mapa de ${store.name}`}
-                      src={`https://www.google.com/maps?q=${encodeURIComponent(store.address)}&output=embed`}
+                      src={
+                        store.latitude && store.longitude
+                          ? `https://www.google.com/maps?q=${store.latitude},${store.longitude}&z=17&output=embed`
+                          : `https://www.google.com/maps?q=${encodeURIComponent(
+                              [store.address, store.city, store.state, "Brasil"].filter(Boolean).join(", "),
+                            )}&output=embed`
+                      }
                       className="h-48 w-full"
                       loading="lazy"
                     />
