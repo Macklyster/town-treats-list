@@ -73,7 +73,10 @@ export default function LojaForm() {
           whatsapp: data.whatsapp ?? "",
           instagram: data.instagram ?? "",
           logo_url: data.logo_url ?? "",
+          latitude: data.latitude ?? null,
+          longitude: data.longitude ?? null,
         });
+        if (data.latitude != null && data.longitude != null) setPinManuallySet(true);
       }
     })();
   }, [user?.id]);
