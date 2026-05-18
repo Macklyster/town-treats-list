@@ -246,7 +246,6 @@ export const shareOffer = async (
         files: [file],
         title: offer.title,
         text,
-        url: offerUrl(offer),
       });
       return "shared";
     } catch (err: any) {
