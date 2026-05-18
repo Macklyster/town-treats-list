@@ -108,8 +108,8 @@ export default function LojaForm() {
       setStoreId(resultId);
     }
 
-    // Geocode in background — don't block save
-    if (resultId && form.address && form.city && form.state) {
+    // Geocode in background only if user did NOT pick a point manually
+    if (!pinManuallySet && resultId && form.address && form.city && form.state) {
       supabase.functions
         .invoke("geocode-store", { body: { store_id: resultId } })
         .catch(() => {});
