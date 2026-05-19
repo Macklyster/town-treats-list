@@ -33,7 +33,7 @@ function PlacesSearch({
 }) {
   const places = useMapsLibrary("places");
   const inputRef = useRef<HTMLInputElement>(null);
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const autocompleteRef = useRef<any>(null);
 
   useEffect(() => {
     if (!places || !inputRef.current || autocompleteRef.current) return;
