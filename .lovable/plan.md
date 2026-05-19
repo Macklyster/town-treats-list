@@ -1,41 +1,71 @@
+# Plano — Google Maps no LocationPicker (cadastro de loja)
+
 ## Objetivo
 
-Permitir que o lojista selecione a localização exata da loja clicando/pressionando no mapa em `src/pages/LojaForm.tsx`, em vez de depender só da geocodificação por texto. Isso garante o ponteiro correto na página da loja e nas páginas de ofertas.
+Substituir o mapa Leaflet **apenas** dentro de `src/components/site/LocationPicker.tsx` por Google Maps + Places Autocomplete, para o lojista poder:
+- Digitar e ver sugestões de endereços/estabelecimentos reais do Google (inclusive a própria loja, se já estiver no Google Meu Negócio).
+- Selecionar/arrastar o pino no mapa do Google.
+- Usar "minha localização".
 
-## Mudanças
+`OffersMap.tsx`, `OfferDetail.tsx` e todas as outras telas continuam **inalteradas**, em Leaflet/OSM, mantendo custo zero no tráfego público.
 
-### 1. Novo componente `src/components/site/LocationPicker.tsx`
-- Mapa Leaflet (já usado em `OffersMap.tsx`) com marcador arrastável.
-- Props: `value: {lat, lng} | null`, `onChange(lat, lng)`, `initialCenter` (cidade/UF ou Brasil).
-- Comportamento:
-  - Clique no mapa = move marcador e dispara `onChange`.
-  - Marcador arrastável (drag) também atualiza coordenadas.
-  - Botão "Usar minha localização" (reusa `navigator.geolocation`).
-  - Botão "Buscar endereço digitado" — chama Nominatim direto (mesma fonte usada em `geocode-store`) para centralizar o mapa a partir do que o usuário digitou em endereço/cidade/UF, e o usuário ajusta o pino.
-  - Campo somente leitura mostrando lat/lng selecionados.
-- Altura ~320px, com instrução curta acima ("Toque no mapa para marcar o ponto exato da loja").
+## Pré-requisito do usuário
 
-### 2. `src/pages/LojaForm.tsx`
-- Adicionar `latitude` e `longitude` ao estado `form` e carregar de `data.latitude/longitude` no `useEffect`.
-- Renderizar `<LocationPicker>` logo abaixo dos campos de Endereço/Cidade/UF.
-- No `handleSubmit`:
-  - Se `latitude`/`longitude` selecionados manualmente → enviar junto no `insert`/`update` e **pular** a chamada à edge function `geocode-store`.
-  - Se não selecionados → manter o fallback atual (chama `geocode-store` em background).
-- Mensagem de ajuda: "Selecionando o ponto no mapa, a localização exibida será exatamente essa — sem depender de busca por endereço."
+Criar uma **Google Maps API key** no Google Cloud Console com:
+- **Maps JavaScript API** ativada
+- **Places API** ativada (para o Autocomplete)
+- **Geocoding API** ativada (fallback para resolver endereço digitado caso o usuário pule o autocomplete)
+- **Billing** ativado na conta (mesmo usando só a cota grátis)
+- **Restrições da key:**
+  - HTTP referrers: `https://ofertasfly.com.br/*`, `https://www.ofertasfly.com.br/*`, `https://*.lovable.app/*`, `http://localhost:*/*`
+  - APIs permitidas: só as 3 acima
 
-### 3. Migration de banco
-- Não é necessária: `stores.latitude` e `stores.longitude` já existem (usadas por `geocode-store` e `OffersMap`).
+Como a key vai rodar no **frontend** (Google Maps JS exige isso), ela é publicável — mas precisa ficar restrita por domínio para não ser abusada. Vamos expô-la como `VITE_GOOGLE_MAPS_API_KEY`.
 
-### 4. RLS / Edge functions
-- Sem mudanças. O update das colunas `latitude`/`longitude` pelo dono da loja já é coberto pela policy de update existente em `stores` (usada pelo formulário atual para outros campos).
+> Observação: variáveis `VITE_*` são embutidas no bundle do cliente. Isso é o padrão para Google Maps JS — a segurança vem das restrições de referrer na própria key, não de escondê-la.
 
-## Notas técnicas
+## Mudanças no código
 
-- Reaproveitar imports do Leaflet usados em `OffersMap.tsx` (mesmos ícones e tile OSM, sem dependência nova).
-- Tile OSM com `User-Agent` padrão do browser está OK (Leaflet já é usado em produção).
-- Tokens semânticos do design system para botões/labels — sem cores hardcoded.
+### 1. Dependências
+- Adicionar `@vis.gl/react-google-maps` (wrapper oficial mantido pelo time do Google, mais leve e moderno que `@react-google-maps/api`).
+
+### 2. `src/components/site/LocationPicker.tsx` (reescrita do componente)
+
+Substituir o mapa Leaflet por:
+- `<APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} libraries={["places"]}>`
+- `<Map>` com `mapId` opcional, controle de zoom, gestureHandling="greedy", `defaultCenter` e `defaultZoom` baseados em `value` ou no centro do Brasil.
+- `<AdvancedMarker draggable onDragEnd>` para o pino.
+- `onClick` no `<Map>` para mover o pino.
+- Campo de busca usando `useMapsLibrary("places")` + `PlaceAutocompleteElement` (novo elemento Web Component do Google, recomendado para 2025) ou fallback `Autocomplete` clássico se necessário. Ao escolher sugestão → `place.geometry.location` define o pino e recentraliza.
+- Botão "Usar minha localização" mantido (navigator.geolocation).
+- Mostra coordenadas selecionadas (igual hoje).
+- Se `VITE_GOOGLE_MAPS_API_KEY` estiver ausente → renderiza um aviso `<Alert>` orientando configurar a key e **não quebra a página**.
+
+Props mantidas iguais (`value`, `onChange`, `addressQuery`) para não impactar `LojaForm.tsx`.
+
+### 3. `src/pages/LojaForm.tsx`
+- Sem mudanças. A integração com o componente continua a mesma.
+
+### 4. Outras telas
+- `OffersMap.tsx`, `OfferDetail.tsx`, `main.tsx` (import do `leaflet/dist/leaflet.css`) → **intactos**. Leaflet permanece instalado.
+
+## Detalhes técnicos
+
+- **Sem edge function nova**: tudo client-side.
+- **Sem migration**: já temos `stores.latitude`/`longitude`.
+- **Tokens semânticos**: botões e labels continuam usando o design system existente.
+- **Fallback Geocoding**: se o usuário digitar endereço no campo de busca e não escolher sugestão, podemos opcionalmente chamar `geocoder.geocode({address})` para centralizar.
+- **Bundle**: `@vis.gl/react-google-maps` é ~20KB gzip; o SDK do Google é carregado dinamicamente só quando o LocationPicker monta (cadastro de loja), então não impacta as páginas públicas.
+
+## Passos de execução (após aprovação)
+
+1. Pedir a `VITE_GOOGLE_MAPS_API_KEY` (vou orientar passo a passo no Google Cloud Console e usar `add_secret`).
+2. Instalar `@vis.gl/react-google-maps`.
+3. Reescrever `LocationPicker.tsx`.
+4. Testar no `/painel-lojista/loja`: busca, clique no mapa, drag do pino, "usar minha localização", coordenadas refletidas no form e salvas no banco.
 
 ## Fora do escopo
 
-- Não mexer em `OffersMap.tsx`, `geocode-store`, nem em `OfferDetail.tsx` (mapa já corrigido na última iteração).
-- Não trocar provider de mapa (segue Leaflet/OSM, não Google).
+- Não trocar mapa público (OffersMap continua Leaflet/OSM).
+- Não mexer em `geocode-store` (continua usando Nominatim como fallback quando o lojista não marca o ponto).
+- Não adicionar Street View, rotas ou outras APIs pagas do Google.
