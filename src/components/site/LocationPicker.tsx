@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   APIProvider,
   Map,
-  AdvancedMarker,
+  Marker,
   useMap,
   useMapsLibrary,
 } from "@vis.gl/react-google-maps";
@@ -84,14 +84,13 @@ function MapContent({
       defaultZoom={value ? 16 : 4}
       gestureHandling="greedy"
       disableDefaultUI={false}
-      mapId="ofertasfly-location-picker"
       onClick={(e) => {
         if (e.detail.latLng) onChange(e.detail.latLng);
       }}
       style={{ width: "100%", height: 320 }}
     >
       {value && (
-        <AdvancedMarker
+        <Marker
           position={value}
           draggable
           onDragEnd={(e) => {
