@@ -315,6 +315,8 @@ export default function Assinatura() {
               </Button>
             </AlertDescription>
           </Alert>
+        )}
+
         {trialEligible && !sub && !loading && (
           <div className="relative mb-8 overflow-hidden rounded-2xl gradient-hero p-6 text-primary-foreground md:p-8">
             <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent/30 blur-3xl" aria-hidden />
