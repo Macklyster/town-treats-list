@@ -121,7 +121,13 @@ export default function Assinatura() {
 
   useEffect(() => {
     load();
-    if (params.get("success")) toast.success("Pagamento concluído! Aguardando confirmação...");
+    if (params.get("success")) {
+      if (params.get("trial")) {
+        toast.success("Seus 2 meses grátis começaram! Aproveite todos os recursos do plano.");
+      } else {
+        toast.success("Pagamento concluído! Aguardando confirmação...");
+      }
+    }
     if (params.get("canceled")) toast.info("Solicitação de cancelamento processada.");
     if (params.get("success") || params.get("canceled")) {
       let tries = 0;
