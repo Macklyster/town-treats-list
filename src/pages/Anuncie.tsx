@@ -130,35 +130,85 @@ const Anuncie = () => {
               <h2 className="text-display text-foreground md:text-[40px]">Planos para todo tipo de negócio</h2>
               <p className="mt-3 text-muted-foreground">Escolha o plano ideal e ajuste quando quiser.</p>
             </div>
+
+            {/* Banner Trial 2 meses grátis */}
+            <div className="relative mx-auto mt-10 max-w-4xl overflow-hidden rounded-2xl gradient-hero p-6 text-primary-foreground md:p-8">
+              <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent/30 blur-3xl" aria-hidden />
+              <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-accent/20 blur-3xl" aria-hidden />
+              <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex items-start gap-4">
+                  <div className="rounded-xl bg-accent/20 p-3 text-accent">
+                    <Gift className="h-7 w-7" />
+                  </div>
+                  <div>
+                    <div className="mb-1 inline-flex items-center gap-1 rounded-full bg-accent px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-accent-foreground">
+                      <Sparkles className="h-3 w-3" /> Oferta de boas-vindas
+                    </div>
+                    <h3 className="text-2xl font-bold leading-tight md:text-3xl">
+                      Teste qualquer plano pago por <span className="text-accent">2 meses grátis</span>.
+                    </h3>
+                    <p className="mt-1 max-w-xl text-sm opacity-90 md:text-base">
+                      Sem cobrança hoje. Cancele a qualquer momento dentro dos 60 dias e não pague nada.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 text-xs md:flex-col md:text-sm">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/10 px-3 py-1.5 backdrop-blur">
+                    <Shield className="h-3.5 w-3.5 text-accent" /> Sem fidelidade
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/10 px-3 py-1.5 backdrop-blur">
+                    <XCircle className="h-3.5 w-3.5 text-accent" /> Cancele em 1 clique
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/10 px-3 py-1.5 backdrop-blur">
+                    <Check className="h-3.5 w-3.5 text-accent" /> Acesso total
+                  </span>
+                </div>
+              </div>
+            </div>
+
             <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               {plans.map((p) => {
                 const Icon = p.icon;
                 const isFree = p.name === "Grátis";
+                const showTrial = !isFree;
                 return (
                   <div
                     key={p.name}
                     className={`relative flex flex-col rounded-2xl bg-card p-8 shadow-card ${
-                      p.highlight ? "ring-2 ring-accent shadow-pop" : ""
+                      showTrial ? "ring-2 ring-accent shadow-pop" : p.highlight ? "ring-2 ring-accent shadow-pop" : ""
                     }`}
                   >
-                    {p.highlight && (
-                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground">
-                        Mais popular
+                    {showTrial ? (
+                      <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground shadow-md">
+                        <Gift className="h-3 w-3" /> 2 MESES GRÁTIS
                       </span>
-                    )}
-                    {isFree && (
-                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-strong px-3 py-1 text-xs font-bold text-primary-foreground">
-                        Comece sem pagar
-                      </span>
+                    ) : (
+                      isFree && (
+                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-strong px-3 py-1 text-xs font-bold text-primary-foreground">
+                          Comece sem pagar
+                        </span>
+                      )
                     )}
                     <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-accent/15 text-accent-strong">
                       <Icon className="h-6 w-6" />
                     </div>
                     <h3 className="text-xl font-medium text-foreground">{p.name}</h3>
-                    <div className="mt-3">
-                      <span className="text-4xl font-bold text-foreground">{p.price}</span>
-                      <span className="text-muted-foreground"> {p.period}</span>
-                    </div>
+                    {showTrial ? (
+                      <div className="mt-3">
+                        <div className="text-4xl font-bold text-foreground">
+                          R$ 0
+                          <span className="text-sm font-normal text-muted-foreground"> /2 meses</span>
+                        </div>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Depois, {p.price}{p.period} · cancele antes e não pague nada
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="mt-3">
+                        <span className="text-4xl font-bold text-foreground">{p.price}</span>
+                        <span className="text-muted-foreground"> {p.period}</span>
+                      </div>
+                    )}
                     <ul className="mt-6 space-y-3 text-sm">
                       {p.features.map((f) => (
                         <li key={f} className="flex items-start gap-2">
@@ -169,16 +219,20 @@ const Anuncie = () => {
                     </ul>
                     <Button
                       asChild
-                      variant={isFree ? "accent" : p.highlight ? "accent" : "outline"}
+                      variant={isFree ? "accent" : "accent"}
                       className="mt-8 w-full"
                     >
                       <a href={isFree ? "/painel-lojista/loja" : "/painel-lojista/assinatura"}>
-                        {isFree ? "Começar grátis" : "Quero esse plano"}
+                        {isFree ? "Começar grátis" : "Começar 2 meses grátis"}
                       </a>
                     </Button>
+                    {showTrial && (
+                      <p className="mt-2 text-center text-[11px] text-muted-foreground">
+                        Sem cobrança hoje · Cancele quando quiser
+                      </p>
+                    )}
                   </div>
                 );
-              })}
             </div>
           </div>
         </section>
