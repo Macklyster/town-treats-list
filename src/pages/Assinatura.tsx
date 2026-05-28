@@ -462,7 +462,6 @@ export default function Assinatura() {
             })}
           </div>
         )}
-        )}
       </main>
 
       <AlertDialog open={cancelOpen} onOpenChange={setCancelOpen}>
