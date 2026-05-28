@@ -11,7 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Check, Send, Sparkles } from "lucide-react";
+import { Check, Send, Sparkles, Gift, Shield, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { PLAN_CATALOG } from "@/data/plans";
 import { formatBRL } from "@/lib/format";
