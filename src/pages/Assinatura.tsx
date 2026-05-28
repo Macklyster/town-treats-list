@@ -97,7 +97,8 @@ export default function Assinatura() {
       supabase.from("plans").select("*").eq("active", true).order("sort_order"),
       supabase.from("stores").select("id").eq("owner_id", user.id).limit(1),
     ]);
-    setPlans((pls ?? []) as any);
+    const loadedPlans = (pls ?? []) as Plan[];
+    setPlans(loadedPlans);
     const sId = stores?.[0]?.id ?? null;
     setStoreId(sId);
     if (sId) {
@@ -105,9 +106,15 @@ export default function Assinatura() {
         .from("subscriptions")
         .select("id,status,plan_id,current_period_end,stripe_subscription_id,cancel_at_period_end,canceled_at")
         .eq("store_id", sId)
-        .order("created_at", { ascending: false })
-        .limit(1);
-      setSub((subs?.[0] as any) ?? null);
+        .order("created_at", { ascending: false });
+      const list = (subs ?? []) as Sub[];
+      setSub(list[0] ?? null);
+      // Trial é elegível se a loja NUNCA assinou um plano pago (price_cents > 0).
+      const paidPlanIds = new Set(loadedPlans.filter((p) => p.price_cents > 0).map((p) => p.id));
+      const hadPaid = list.some((s) => s.plan_id && paidPlanIds.has(s.plan_id));
+      setTrialEligible(!hadPaid);
+    } else {
+      setTrialEligible(true);
     }
     setLoading(false);
   };
