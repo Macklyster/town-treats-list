@@ -1,71 +1,60 @@
-# Plano — Google Maps no LocationPicker (cadastro de loja)
+# 2 meses grátis em planos pagos
 
-## Objetivo
+Oferecer **60 dias grátis** (≈ 2 meses) em qualquer plano pago da página `/assinatura`, aplicando o trial via Stripe e usando copy/UX de conversão consagrados (urgência, ancoragem de valor, redução de risco, prova social, garantia de cancelamento).
 
-Substituir o mapa Leaflet **apenas** dentro de `src/components/site/LocationPicker.tsx` por Google Maps + Places Autocomplete, para o lojista poder:
-- Digitar e ver sugestões de endereços/estabelecimentos reais do Google (inclusive a própria loja, se já estiver no Google Meu Negócio).
-- Selecionar/arrastar o pino no mapa do Google.
-- Usar "minha localização".
+## Regra de elegibilidade
 
-`OffersMap.tsx`, `OfferDetail.tsx` e todas as outras telas continuam **inalteradas**, em Leaflet/OSM, mantendo custo zero no tráfego público.
+Para evitar abuso (mesmo lojista resgatando o trial várias vezes) e manter a oferta crível:
 
-## Pré-requisito do usuário
+- **Elegível**: lojista cuja loja **nunca teve uma subscription paga** (`active`/`trialing`/`past_due`/`canceled` em qualquer plano pago anterior). Ou seja, primeira assinatura paga da loja.
+- **Não elegível**: quem já assinou um plano pago antes (mesmo que tenha cancelado), e quem está apenas trocando entre planos pagos (upgrade/downgrade continua com proration normal, sem novo trial).
 
-Criar uma **Google Maps API key** no Google Cloud Console com:
-- **Maps JavaScript API** ativada
-- **Places API** ativada (para o Autocomplete)
-- **Geocoding API** ativada (fallback para resolver endereço digitado caso o usuário pule o autocomplete)
-- **Billing** ativado na conta (mesmo usando só a cota grátis)
-- **Restrições da key:**
-  - HTTP referrers: `https://ofertasfly.com.br/*`, `https://www.ofertasfly.com.br/*`, `https://*.lovable.app/*`, `http://localhost:*/*`
-  - APIs permitidas: só as 3 acima
+## Mudanças
 
-Como a key vai rodar no **frontend** (Google Maps JS exige isso), ela é publicável — mas precisa ficar restrita por domínio para não ser abusada. Vamos expô-la como `VITE_GOOGLE_MAPS_API_KEY`.
+### 1. Backend — `supabase/functions/create-checkout/index.ts`
 
-> Observação: variáveis `VITE_*` são embutidas no bundle do cliente. Isso é o padrão para Google Maps JS — a segurança vem das restrições de referrer na própria key, não de escondê-la.
+- Consultar `subscriptions` da loja: se **não existir nenhuma** linha com `plan_id` de plano pago (price > 0), adicionar ao `stripe.checkout.sessions.create`:
+  ```ts
+  subscription_data: {
+    trial_period_days: 60,
+    trial_settings: { end_behavior: { missing_payment_method: "cancel" } },
+    metadata: { ... }
+  }
+  ```
+- Coletar cartão durante o trial (`payment_method_collection: "always"`) para cobrança automática ao fim dos 60 dias.
+- Retornar no response um flag `trial_applied: boolean` (útil para toast/analytics no front).
 
-## Mudanças no código
+### 2. Frontend — `src/pages/Assinatura.tsx`
 
-### 1. Dependências
-- Adicionar `@vis.gl/react-google-maps` (wrapper oficial mantido pelo time do Google, mais leve e moderno que `@react-google-maps/api`).
+- Calcular `isTrialEligible` no client (mesma regra: sem `sub` ativo nem histórico de plano pago — `sub === null` é suficiente para o caso atual já que só guardamos a última).
+- Em cada card de plano pago, quando elegível:
+  - **Faixa de destaque** no topo do card: "🎁 2 MESES GRÁTIS" (cor `accent`, contraste alto).
+  - **Ancoragem de preço**: mostrar preço riscado dos 2 primeiros meses + "Depois R$ X/mês".
+  - **Microcopy de redução de risco** abaixo do botão: "Sem cobrança nos primeiros 60 dias · Cancele quando quiser · Sem multa".
+  - **CTA**: trocar "Assinar" por **"Começar 2 meses grátis"** (mantém "Mudar para este plano" quando já paid_active).
+- **Banner topo** (só quando elegível e sem assinatura ativa): bloco `gradient-hero` curto com:
+  - Headline: "Teste qualquer plano pago por 2 meses, por nossa conta."
+  - Subhead: "Sem cobrança hoje. Cancele a qualquer momento dentro do período de teste e não pague nada."
+  - Selo de garantia ("Cancele em 1 clique") + ícone Shield.
+- Toast pós-checkout: quando `?success=1` e trial foi aplicado, mensagem "Seus 2 meses grátis começaram! Aproveite todos os recursos."
 
-### 2. `src/components/site/LocationPicker.tsx` (reescrita do componente)
+### 3. Plano Grátis
 
-Substituir o mapa Leaflet por:
-- `<APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} libraries={["places"]}>`
-- `<Map>` com `mapId` opcional, controle de zoom, gestureHandling="greedy", `defaultCenter` e `defaultZoom` baseados em `value` ou no centro do Brasil.
-- `<AdvancedMarker draggable onDragEnd>` para o pino.
-- `onClick` no `<Map>` para mover o pino.
-- Campo de busca usando `useMapsLibrary("places")` + `PlaceAutocompleteElement` (novo elemento Web Component do Google, recomendado para 2025) ou fallback `Autocomplete` clássico se necessário. Ao escolher sugestão → `place.geometry.location` define o pino e recentraliza.
-- Botão "Usar minha localização" mantido (navigator.geolocation).
-- Mostra coordenadas selecionadas (igual hoje).
-- Se `VITE_GOOGLE_MAPS_API_KEY` estiver ausente → renderiza um aviso `<Alert>` orientando configurar a key e **não quebra a página**.
+- Permanece como está (não recebe a faixa de trial — a faixa só aparece em planos com `priceCents > 0`).
 
-Props mantidas iguais (`value`, `onChange`, `addressQuery`) para não impactar `LojaForm.tsx`.
+### 4. Página `/anuncie` (incluir no escopo)
 
-### 3. `src/pages/LojaForm.tsx`
-- Sem mudanças. A integração com o componente continua a mesma.
+- Incluir agora;
 
-### 4. Outras telas
-- `OffersMap.tsx`, `OfferDetail.tsx`, `main.tsx` (import do `leaflet/dist/leaflet.css`) → **intactos**. Leaflet permanece instalado.
+## Boas práticas de marketing aplicadas
 
-## Detalhes técnicos
+- **Risk reversal**: "sem cobrança hoje" + "cancele quando quiser" reduz fricção da decisão.
+- **Ancoragem**: mostrar preço cheio riscado durante o trial reforça percepção de economia.
+- **Especificidade**: "2 meses" / "60 dias" converte mais que "trial gratuito".
+- **Escassez controlada**: oferta apenas para primeira assinatura (legítima, não falsa urgência).
+- **Clareza pós-trial**: deixar explícito quando e quanto será cobrado evita chargeback e cancelamento por surpresa.
 
-- **Sem edge function nova**: tudo client-side.
-- **Sem migration**: já temos `stores.latitude`/`longitude`.
-- **Tokens semânticos**: botões e labels continuam usando o design system existente.
-- **Fallback Geocoding**: se o usuário digitar endereço no campo de busca e não escolher sugestão, podemos opcionalmente chamar `geocoder.geocode({address})` para centralizar.
-- **Bundle**: `@vis.gl/react-google-maps` é ~20KB gzip; o SDK do Google é carregado dinamicamente só quando o LocationPicker monta (cadastro de loja), então não impacta as páginas públicas.
+## Arquivos tocados
 
-## Passos de execução (após aprovação)
-
-1. Pedir a `VITE_GOOGLE_MAPS_API_KEY` (vou orientar passo a passo no Google Cloud Console e usar `add_secret`).
-2. Instalar `@vis.gl/react-google-maps`.
-3. Reescrever `LocationPicker.tsx`.
-4. Testar no `/painel-lojista/loja`: busca, clique no mapa, drag do pino, "usar minha localização", coordenadas refletidas no form e salvas no banco.
-
-## Fora do escopo
-
-- Não trocar mapa público (OffersMap continua Leaflet/OSM).
-- Não mexer em `geocode-store` (continua usando Nominatim como fallback quando o lojista não marca o ponto).
-- Não adicionar Street View, rotas ou outras APIs pagas do Google.
+- `supabase/functions/create-checkout/index.ts` (lógica trial)
+- `src/pages/Assinatura.tsx` (UI, copy, banner, badge, CTA)

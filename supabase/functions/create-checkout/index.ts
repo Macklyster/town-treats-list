@@ -34,10 +34,9 @@ Deno.serve(async (req) => {
     // block duplicate active subs
     const { data: existing } = await supabase
       .from("subscriptions")
-      .select("id,status,stripe_customer_id")
+      .select("id,status,stripe_customer_id,plan_id")
       .eq("store_id", store_id)
-      .order("created_at", { ascending: false })
-      .limit(1);
+      .order("created_at", { ascending: false });
     const current = existing?.[0];
     if (current && ["active", "trialing"].includes(current.status)) {
       return new Response(
@@ -45,6 +44,25 @@ Deno.serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Trial eligibility: 60 days free for first-ever paid subscription on this store.
+    // Disqualifies any prior subscription on a paid plan (price_cents > 0), regardless of status.
+    let trialEligible = true;
+    if (existing && existing.length > 0) {
+      const priorPlanIds = Array.from(
+        new Set(existing.map((s: any) => s.plan_id).filter(Boolean))
+      );
+      if (priorPlanIds.length > 0) {
+        const { data: priorPlans } = await supabase
+          .from("plans")
+          .select("id,price_cents")
+          .in("id", priorPlanIds);
+        if ((priorPlans ?? []).some((p: any) => (p.price_cents ?? 0) > 0)) {
+          trialEligible = false;
+        }
+      }
+    }
+    const trialApplied = trialEligible && (plan.price_cents ?? 0) > 0;
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
       apiVersion: "2024-06-20",
@@ -64,6 +82,7 @@ Deno.serve(async (req) => {
       mode: "subscription",
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
+      payment_method_collection: trialApplied ? "always" : undefined,
       line_items: [
         plan.stripe_price_id
           ? { price: plan.stripe_price_id, quantity: 1 }
@@ -77,15 +96,24 @@ Deno.serve(async (req) => {
               quantity: 1,
             },
       ],
-      metadata: { user_id: user.id, store_id, plan_id },
-      subscription_data: { metadata: { user_id: user.id, store_id, plan_id } },
-      success_url: `${origin}/assinatura?success=1`,
+      metadata: { user_id: user.id, store_id, plan_id, trial_applied: String(trialApplied) },
+      subscription_data: {
+        metadata: { user_id: user.id, store_id, plan_id, trial_applied: String(trialApplied) },
+        ...(trialApplied
+          ? {
+              trial_period_days: 60,
+              trial_settings: { end_behavior: { missing_payment_method: "cancel" } },
+            }
+          : {}),
+      },
+      success_url: `${origin}/assinatura?success=1${trialApplied ? "&trial=1" : ""}`,
       cancel_url: `${origin}/assinatura?canceled=1`,
     });
 
-    return new Response(JSON.stringify({ url: session.url }), {
+    return new Response(JSON.stringify({ url: session.url, trial_applied: trialApplied }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+
   } catch (e) {
     console.error(e);
     return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: corsHeaders });
