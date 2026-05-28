@@ -39,7 +39,6 @@ const faq = [
     a: "Você envia as informações e fotos do produto/serviço. Nosso time formata e publica para garantir a melhor apresentação.",
   },
   {
-  {
     q: "Existe fidelidade?",
     a: "Não. Os planos são mensais e você pode cancelar quando quiser.",
   },
