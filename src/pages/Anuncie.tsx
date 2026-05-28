@@ -39,8 +39,13 @@ const faq = [
     a: "Você envia as informações e fotos do produto/serviço. Nosso time formata e publica para garantir a melhor apresentação.",
   },
   {
+  {
     q: "Existe fidelidade?",
     a: "Não. Os planos são mensais e você pode cancelar quando quiser.",
+  },
+  {
+    q: "Como funcionam os 2 meses grátis?",
+    a: "Em qualquer plano pago, sua primeira assinatura ganha 60 dias grátis. Você informa o cartão para garantir a continuidade após o período, mas nada é cobrado nos 2 primeiros meses. Cancele antes do fim do trial e não paga nada.",
   },
   {
     q: "Como meus clientes encontram minha oferta?",
