@@ -66,6 +66,7 @@ export default function Assinatura() {
   const navigate = useNavigate();
   const [plans, setPlans] = useState<Plan[]>([]);
   const [sub, setSub] = useState<Sub | null>(null);
+  const [trialEligible, setTrialEligible] = useState(false);
   const [storeId, setStoreId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
