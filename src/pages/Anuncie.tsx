@@ -237,8 +237,6 @@ const Anuncie = () => {
             </div>
           </div>
         </section>
-          </div>
-        </section>
 
         {/* Formulário */}
         <section id="contato" className="container py-20">
