@@ -315,6 +315,40 @@ export default function Assinatura() {
               </Button>
             </AlertDescription>
           </Alert>
+        {trialEligible && !sub && !loading && (
+          <div className="relative mb-8 overflow-hidden rounded-2xl gradient-hero p-6 text-primary-foreground md:p-8">
+            <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent/30 blur-3xl" aria-hidden />
+            <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-accent/20 blur-3xl" aria-hidden />
+            <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="flex items-start gap-4">
+                <div className="rounded-xl bg-accent/20 p-3 text-accent">
+                  <Gift className="h-7 w-7" />
+                </div>
+                <div>
+                  <div className="mb-1 inline-flex items-center gap-1 rounded-full bg-accent px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-accent-foreground">
+                    <Sparkles className="h-3 w-3" /> Oferta de boas-vindas
+                  </div>
+                  <h2 className="text-2xl font-bold leading-tight md:text-3xl">
+                    Teste qualquer plano pago por <span className="text-accent">2 meses grátis</span>.
+                  </h2>
+                  <p className="mt-1 max-w-xl text-sm opacity-90 md:text-base">
+                    Sem cobrança hoje. Cancele a qualquer momento dentro dos 60 dias e não pague nada.
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-3 text-xs md:flex-col md:text-sm">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/10 px-3 py-1.5 backdrop-blur">
+                  <Shield className="h-3.5 w-3.5 text-accent" /> Sem fidelidade
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/10 px-3 py-1.5 backdrop-blur">
+                  <XCircle className="h-3.5 w-3.5 text-accent" /> Cancele em 1 clique
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/10 px-3 py-1.5 backdrop-blur">
+                  <Check className="h-3.5 w-3.5 text-accent" /> Acesso total aos recursos
+                </span>
+              </div>
+            </div>
+          </div>
         )}
 
         {loading ? <p>Carregando…</p> : (
@@ -327,15 +361,22 @@ export default function Assinatura() {
                 ? !paidActive
                 : !!dbPlan && sub?.plan_id === dbPlan.id && !!paidActive;
               const Icon = catalog.icon;
+              const showTrial = !isFreePlan && trialEligible && !paidActive;
               return (
                 <Card
                   key={catalog.slug}
-                  className={`relative ${isCurrent ? "ring-2 ring-accent" : catalog.highlight ? "ring-2 ring-accent/40" : ""}`}
+                  className={`relative ${isCurrent ? "ring-2 ring-accent" : showTrial ? "ring-2 ring-accent" : catalog.highlight ? "ring-2 ring-accent/40" : ""}`}
                 >
-                  {catalog.highlight && !isCurrent && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground">
-                      Mais popular
+                  {showTrial && !isCurrent ? (
+                    <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground shadow-md">
+                      <Gift className="h-3 w-3" /> 2 MESES GRÁTIS
                     </span>
+                  ) : (
+                    catalog.highlight && !isCurrent && (
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground">
+                        Mais popular
+                      </span>
+                    )
                   )}
                   <CardHeader>
                     <div className="flex items-center justify-between">
@@ -347,10 +388,22 @@ export default function Assinatura() {
                       </div>
                       {isCurrent && <Badge>Plano atual</Badge>}
                     </div>
-                    <div className="mt-2 text-display text-foreground">
-                      {formatBRL(catalog.priceCents)}
-                      <span className="text-sm font-normal text-muted-foreground"> {catalog.period}</span>
-                    </div>
+                    {showTrial ? (
+                      <div className="mt-2">
+                        <div className="text-display text-foreground">
+                          R$ 0
+                          <span className="text-sm font-normal text-muted-foreground"> nos 2 primeiros meses</span>
+                        </div>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Depois, {formatBRL(catalog.priceCents)}{catalog.period} · cancele antes e não pague nada
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="mt-2 text-display text-foreground">
+                        {formatBRL(catalog.priceCents)}
+                        <span className="text-sm font-normal text-muted-foreground"> {catalog.period}</span>
+                      </div>
+                    )}
                     {!isFreePlan && isCurrent && sub?.current_period_end && (
                       <p className="mt-1 text-xs text-muted-foreground">
                         {willCancel ? "Termina em " : "Renova em "}
@@ -376,27 +429,37 @@ export default function Assinatura() {
                         {isCurrent ? "Plano atual" : "Voltar ao plano grátis"}
                       </Button>
                     ) : (
-                      <Button
-                        className="mt-6 w-full"
-                        variant={isCurrent ? "outline" : catalog.highlight ? "accent" : "default"}
-                        disabled={isCurrent || !dbPlan || busy === dbPlan?.id}
-                        onClick={() => dbPlan && subscribe(dbPlan.id)}
-                      >
-                        {dbPlan && busy === dbPlan.id && <Loader2 className="h-4 w-4 animate-spin" />}
-                        {isCurrent
-                          ? "Plano ativo"
-                          : !dbPlan
-                          ? "Indisponível"
-                          : paidActive
-                          ? "Mudar para este plano"
-                          : "Assinar"}
-                      </Button>
+                      <>
+                        <Button
+                          className="mt-6 w-full"
+                          variant={isCurrent ? "outline" : showTrial || catalog.highlight ? "accent" : "default"}
+                          disabled={isCurrent || !dbPlan || busy === dbPlan?.id}
+                          onClick={() => dbPlan && subscribe(dbPlan.id)}
+                        >
+                          {dbPlan && busy === dbPlan.id && <Loader2 className="h-4 w-4 animate-spin" />}
+                          {isCurrent
+                            ? "Plano ativo"
+                            : !dbPlan
+                            ? "Indisponível"
+                            : paidActive
+                            ? "Mudar para este plano"
+                            : showTrial
+                            ? "Começar 2 meses grátis"
+                            : "Assinar"}
+                        </Button>
+                        {showTrial && (
+                          <p className="mt-2 text-center text-[11px] leading-snug text-muted-foreground">
+                            Sem cobrança nos primeiros 60 dias · Cancele quando quiser · Sem multa
+                          </p>
+                        )}
+                      </>
                     )}
                   </CardContent>
                 </Card>
               );
             })}
           </div>
+        )}
         )}
       </main>
 
