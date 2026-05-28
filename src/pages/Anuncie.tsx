@@ -233,7 +233,10 @@ const Anuncie = () => {
                     )}
                   </div>
                 );
+              })}
             </div>
+          </div>
+        </section>
           </div>
         </section>
 
