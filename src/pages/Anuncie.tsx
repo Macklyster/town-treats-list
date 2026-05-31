@@ -157,7 +157,7 @@ const Anuncie = () => {
                       <Sparkles className="h-3 w-3" /> Oferta de boas-vindas
                     </div>
                     <h3 className="text-2xl font-bold leading-tight md:text-3xl">
-                      Teste qualquer plano pago por <span className="text-accent">2 meses grátis</span>.
+                      Teste qualquer plano pago por <span className="inline-block rounded-xl bg-background px-3 py-0.5 text-[#0F0F0E] shadow-soft">2 meses grátis</span>.
                     </h3>
                     <p className="mt-1 max-w-xl text-sm opacity-90 md:text-base">
                       Sem cobrança hoje. Cancele a qualquer momento dentro dos 60 dias e não pague nada.
