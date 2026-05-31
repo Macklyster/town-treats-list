@@ -454,6 +454,67 @@ export default function OfertaForm() {
                 )}
               </div>
 
+              {/* Agendamento (Destaque/Plus) */}
+              <div className="rounded-md border p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-start gap-2">
+                    {canSchedule ? (
+                      <CalendarClock className="mt-0.5 h-5 w-5 text-primary" />
+                    ) : (
+                      <Lock className="mt-0.5 h-5 w-5 text-muted-foreground" />
+                    )}
+                    <div>
+                      <Label className="text-sm">Agendar publicação</Label>
+                      <p className="text-xs text-muted-foreground">
+                        {canSchedule
+                          ? `Envie com no mínimo ${scheduleSettings.minLeadHours}h e no máximo ${scheduleSettings.maxLeadDays} dias de antecedência. Análise em até ${scheduleSettings.slaHours}h.`
+                          : "Disponível nos planos Destaque e Plus."}
+                      </p>
+                    </div>
+                  </div>
+                  {canSchedule ? (
+                    <Switch
+                      checked={form.is_scheduled}
+                      onCheckedChange={(v) => setForm({ ...form, is_scheduled: v })}
+                    />
+                  ) : (
+                    <Button asChild size="sm" variant="outline">
+                      <Link to="/painel-lojista/assinatura">Fazer upgrade</Link>
+                    </Button>
+                  )}
+                </div>
+                {canSchedule && form.is_scheduled && (
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <Label className="text-sm">Início *</Label>
+                      <Input
+                        type="datetime-local"
+                        value={form.scheduled_start_at}
+                        onChange={(e) => setForm({ ...form, scheduled_start_at: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm">Fim (opcional)</Label>
+                      <Input
+                        type="datetime-local"
+                        value={form.scheduled_end_at}
+                        onChange={(e) => setForm({ ...form, scheduled_end_at: e.target.value })}
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground sm:col-span-2">
+                      A oferta entra em análise e é publicada automaticamente no horário marcado, desde que aprovada antes.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {!form.is_scheduled && (
+                <p className="text-xs text-muted-foreground">
+                  Validade mínima de {scheduleSettings.minValidityHours}h a partir do envio. SLA de análise: até {scheduleSettings.slaHours}h.
+                </p>
+              )}
+
+
               <div className="flex gap-3 pt-2">
                 <Button type="submit" variant="accent" disabled={loading || blocked}>Salvar</Button>
                 <Button type="button" variant="ghost" onClick={() => navigate("/painel-lojista")}>Cancelar</Button>
