@@ -1,60 +1,90 @@
-# 2 meses grátis em planos pagos
 
-Oferecer **60 dias grátis** (≈ 2 meses) em qualquer plano pago da página `/assinatura`, aplicando o trial via Stripe e usando copy/UX de conversão consagrados (urgência, ancoragem de valor, redução de risco, prova social, garantia de cancelamento).
+## Visão geral
 
-## Regra de elegibilidade
+Adicionar agendamento de ofertas para os planos **Destaque** e **Plus**, com parâmetros globais configuráveis pelo admin para evitar frustração (janelas de antecedência e SLA de aprovação), refletindo as regras no formulário do lojista, no FAQ da página `/anuncie` e nas páginas de Termos de Uso e Política de Privacidade.
 
-Para evitar abuso (mesmo lojista resgatando o trial várias vezes) e manter a oferta crível:
+## 1. Banco de dados (migration única)
 
-- **Elegível**: lojista cuja loja **nunca teve uma subscription paga** (`active`/`trialing`/`past_due`/`canceled` em qualquer plano pago anterior). Ou seja, primeira assinatura paga da loja.
-- **Não elegível**: quem já assinou um plano pago antes (mesmo que tenha cancelado), e quem está apenas trocando entre planos pagos (upgrade/downgrade continua com proration normal, sem novo trial).
+**1.1. `app_settings` — novas colunas globais:**
+- `scheduled_offer_min_lead_hours` int default `12` — antecedência mínima entre `now()` e `scheduled_start_at`.
+- `scheduled_offer_max_lead_days` int default `30` — antecedência máxima permitida.
+- `offer_approval_sla_hours` int default `24` — prazo prometido de análise pelo admin (exibido ao lojista).
+- `offer_min_validity_hours` int default `6` — antecedência mínima entre `now()` e `valid_until` em ofertas não agendadas (evita aprovar oferta que vai expirar logo).
 
-## Mudanças
+**1.2. `offers` — novas colunas para agendamento:**
+- `is_scheduled` boolean default `false`
+- `scheduled_start_at` timestamptz null
+- `scheduled_end_at` timestamptz null (opcional; se nulo, expira por `valid_until`)
+- `scheduled_published_at` timestamptz null (carimbado quando o cron publica)
 
-### 1. Backend — `supabase/functions/create-checkout/index.ts`
+**1.3. Trigger `validate_offer_schedule()` em `offers`** (BEFORE INSERT/UPDATE):
+- Exige plano **Destaque** ou **Plus** ativo (via `subscriptions`+`plans.slug in ('destaque','plus')`) quando `is_scheduled = true`.
+- Valida `scheduled_start_at > now() + min_lead_hours` e `<= now() + max_lead_days`.
+- Se `scheduled_end_at` informado, valida `> scheduled_start_at` e `<= valid_until` (quando houver).
+- Quando `is_scheduled=false` e `valid_until` informado, exige `valid_until >= now() + offer_min_validity_hours` (somente em INSERT ou ao mudar para `pending/approved`).
+- Ao admin aprovar uma oferta agendada, mantém `status='approved'` mas a oferta só fica visível ao público a partir de `scheduled_start_at`.
 
-- Consultar `subscriptions` da loja: se **não existir nenhuma** linha com `plan_id` de plano pago (price > 0), adicionar ao `stripe.checkout.sessions.create`:
-  ```ts
-  subscription_data: {
-    trial_period_days: 60,
-    trial_settings: { end_behavior: { missing_payment_method: "cancel" } },
-    metadata: { ... }
-  }
-  ```
-- Coletar cartão durante o trial (`payment_method_collection: "always"`) para cobrança automática ao fim dos 60 dias.
-- Retornar no response um flag `trial_applied: boolean` (útil para toast/analytics no front).
+**1.4. RLS pública de `offers` — atualizar policy `approved offers public read`:**
+- Visível se `status='approved' AND (is_scheduled=false OR scheduled_start_at <= now()) AND (scheduled_end_at IS NULL OR scheduled_end_at > now())`.
+- Donos da loja e admin continuam vendo tudo.
 
-### 2. Frontend — `src/pages/Assinatura.tsx`
+**1.5. Cron job (pg_cron + pg_net) — opcional/leve:** apenas para carimbar `scheduled_published_at` e disparar notificação push aos seguidores quando entra no ar (a visibilidade já é controlada pela RLS, não depende do cron).
 
-- Calcular `isTrialEligible` no client (mesma regra: sem `sub` ativo nem histórico de plano pago — `sub === null` é suficiente para o caso atual já que só guardamos a última).
-- Em cada card de plano pago, quando elegível:
-  - **Faixa de destaque** no topo do card: "🎁 2 MESES GRÁTIS" (cor `accent`, contraste alto).
-  - **Ancoragem de preço**: mostrar preço riscado dos 2 primeiros meses + "Depois R$ X/mês".
-  - **Microcopy de redução de risco** abaixo do botão: "Sem cobrança nos primeiros 60 dias · Cancele quando quiser · Sem multa".
-  - **CTA**: trocar "Assinar" por **"Começar 2 meses grátis"** (mantém "Mudar para este plano" quando já paid_active).
-- **Banner topo** (só quando elegível e sem assinatura ativa): bloco `gradient-hero` curto com:
-  - Headline: "Teste qualquer plano pago por 2 meses, por nossa conta."
-  - Subhead: "Sem cobrança hoje. Cancele a qualquer momento dentro do período de teste e não pague nada."
-  - Selo de garantia ("Cancele em 1 clique") + ícone Shield.
-- Toast pós-checkout: quando `?success=1` e trial foi aplicado, mensagem "Seus 2 meses grátis começaram! Aproveite todos os recursos."
+## 2. Admin — `src/pages/admin/Configuracoes.tsx`
 
-### 3. Plano Grátis
+Nova seção **"Parâmetros de Ofertas"** com inputs numéricos:
+- Antecedência mínima de agendamento (h)
+- Antecedência máxima de agendamento (dias)
+- SLA de aprovação (h)
+- Validade mínima de ofertas não agendadas (h)
 
-- Permanece como está (não recebe a faixa de trial — a faixa só aparece em planos com `priceCents > 0`).
+Salva em `app_settings` via update (admin RLS já permite).
 
-### 4. Página `/anuncie` (incluir no escopo)
+## 3. Lojista — formulário de oferta (`src/pages/painel-lojista/OfertaForm.tsx` ou equivalente)
 
-- Incluir agora;
+- Carregar `app_settings` + plano ativo da loja.
+- Se plano = **Destaque** ou **Plus**: exibir toggle **"Agendar publicação"**.
+  - Ao ativar: campos `scheduled_start_at` (datetime) e opcionalmente `scheduled_end_at`, com `min`/`max` calculados a partir dos settings.
+  - Microcopy: *"Disponível para os planos Destaque e Plus. Envie com até X dias e no mínimo Y horas de antecedência. Análise em até Z horas."*
+- Se plano básico: mostrar badge "Disponível em Destaque/Plus" com link para `/painel-lojista/assinatura`.
+- Para qualquer oferta: validar `valid_until` ≥ `offer_min_validity_hours`, com mensagem clara.
+- Validação Zod no client + erro do trigger no server.
 
-## Boas práticas de marketing aplicadas
+## 4. FAQ — `src/pages/Anuncie.tsx`
 
-- **Risk reversal**: "sem cobrança hoje" + "cancele quando quiser" reduz fricção da decisão.
-- **Ancoragem**: mostrar preço cheio riscado durante o trial reforça percepção de economia.
-- **Especificidade**: "2 meses" / "60 dias" converte mais que "trial gratuito".
-- **Escassez controlada**: oferta apenas para primeira assinatura (legítima, não falsa urgência).
-- **Clareza pós-trial**: deixar explícito quando e quanto será cobrado evita chargeback e cancelamento por surpresa.
+Adicionar perguntas:
+- **"Posso agendar minha oferta?"** — explica disponibilidade nos planos Destaque/Plus, janela mín/máx (lê de `app_settings`).
+- **"Em quanto tempo minha oferta é aprovada?"** — SLA dinâmico.
+- **"Minha oferta precisa ter validade mínima?"** — explica `offer_min_validity_hours`.
 
-## Arquivos tocados
+## 5. Termos de Uso e Política de Privacidade
 
-- `supabase/functions/create-checkout/index.ts` (lógica trial)
-- `src/pages/Assinatura.tsx` (UI, copy, banner, badge, CTA)
+Localizar/criar `src/pages/Termos.tsx` e `src/pages/Privacidade.tsx`. Adicionar/atualizar seção **"Publicação e Agendamento de Ofertas"**:
+- Direito do admin de recusar/atrasar ofertas fora das janelas configuradas.
+- SLA de análise é alvo, não garantia contratual.
+- Ofertas agendadas só ficam públicas no horário previsto após aprovação.
+- Privacidade: tratamento de timestamps e logs de aprovação.
+
+Linkar no rodapé se ainda não estiver.
+
+## 6. Aprovação no painel admin (`src/pages/admin/Ofertas.tsx`)
+
+- Coluna/badge **"Agendada"** com `scheduled_start_at` formatado.
+- Filtro "Apenas agendadas".
+- Ordenação priorizando ofertas cujo `scheduled_start_at` está próximo (urgência).
+
+## Detalhes técnicos
+
+- Timezone: usar `America/Sao_Paulo` na UI (display) e `timestamptz` no banco.
+- Reaproveitar `set_updated_at` trigger.
+- Sem novas edge functions obrigatórias — opcional `publish-scheduled-offers` se quiser disparar push no momento exato (via pg_cron a cada 5 min).
+- Nenhuma alteração em Stripe/checkout.
+
+## Arquivos afetados
+
+- Migration nova (1 arquivo)
+- `src/pages/admin/Configuracoes.tsx`
+- `src/pages/admin/Ofertas.tsx`
+- Form de oferta do lojista (a confirmar caminho exato ao implementar)
+- `src/pages/Anuncie.tsx`
+- `src/pages/Termos.tsx` e `src/pages/Privacidade.tsx` (criar se não existirem) + link no `Footer`
