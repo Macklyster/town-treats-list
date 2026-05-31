@@ -27,6 +27,10 @@ type Initial = {
   spMinViews: number;
   spMinNow: number;
   spWindow: number;
+  schedMinLead: number;
+  schedMaxLead: number;
+  slaHours: number;
+  minValidity: number;
 };
 
 export const AdminSettings = () => {
@@ -36,6 +40,10 @@ export const AdminSettings = () => {
   const [spMinViews, setSpMinViews] = useState<string>("5");
   const [spMinNow, setSpMinNow] = useState<string>("2");
   const [spWindow, setSpWindow] = useState<string>("5");
+  const [schedMinLead, setSchedMinLead] = useState<string>("12");
+  const [schedMaxLead, setSchedMaxLead] = useState<string>("30");
+  const [slaHours, setSlaHours] = useState<string>("24");
+  const [minValidity, setMinValidity] = useState<string>("6");
   const [initial, setInitial] = useState<Initial>({
     flash: 2,
     review: 3,
@@ -43,6 +51,10 @@ export const AdminSettings = () => {
     spMinViews: 5,
     spMinNow: 2,
     spWindow: 5,
+    schedMinLead: 12,
+    schedMaxLead: 30,
+    slaHours: 24,
+    minValidity: 6,
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -52,7 +64,7 @@ export const AdminSettings = () => {
     supabase
       .from("app_settings")
       .select(
-        "flash_default_hours, review_prompt_hours, group_offer_max_active_per_store, social_proof_min_views_today, social_proof_min_viewers_now, social_proof_now_window_minutes",
+        "flash_default_hours, review_prompt_hours, group_offer_max_active_per_store, social_proof_min_views_today, social_proof_min_viewers_now, social_proof_now_window_minutes, scheduled_offer_min_lead_hours, scheduled_offer_max_lead_days, offer_approval_sla_hours, offer_min_validity_hours",
       )
       .eq("id", true)
       .maybeSingle()
@@ -64,13 +76,21 @@ export const AdminSettings = () => {
         const sv = (data as any)?.social_proof_min_views_today ?? 5;
         const sn = (data as any)?.social_proof_min_viewers_now ?? 2;
         const sw = (data as any)?.social_proof_now_window_minutes ?? 5;
+        const sml = (data as any)?.scheduled_offer_min_lead_hours ?? 12;
+        const sxl = (data as any)?.scheduled_offer_max_lead_days ?? 30;
+        const sla = (data as any)?.offer_approval_sla_hours ?? 24;
+        const mv = (data as any)?.offer_min_validity_hours ?? 6;
         setFlashHours(String(f));
         setReviewHours(String(r));
         setGroupMax(String(g));
         setSpMinViews(String(sv));
         setSpMinNow(String(sn));
         setSpWindow(String(sw));
-        setInitial({ flash: f, review: r, groupMax: g, spMinViews: sv, spMinNow: sn, spWindow: sw });
+        setSchedMinLead(String(sml));
+        setSchedMaxLead(String(sxl));
+        setSlaHours(String(sla));
+        setMinValidity(String(mv));
+        setInitial({ flash: f, review: r, groupMax: g, spMinViews: sv, spMinNow: sn, spWindow: sw, schedMinLead: sml, schedMaxLead: sxl, slaHours: sla, minValidity: mv });
         setLoading(false);
       });
   }, []);
