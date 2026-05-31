@@ -78,7 +78,19 @@ export default function OfertaForm() {
     auto_renew: false,
     auto_renew_days: 7,
     auto_renew_count: 0,
+    is_scheduled: false,
+    scheduled_start_at: "",
+    scheduled_end_at: "",
   });
+  const [scheduleSettings, setScheduleSettings] = useState<ScheduleSettings>({
+    minLeadHours: 12,
+    maxLeadDays: 30,
+    slaHours: 24,
+    minValidityHours: 6,
+  });
+
+  const planSlug = sub.plan?.slug ?? null;
+  const canSchedule = sub.paidActive && (planSlug === "destaque" || planSlug === "plus");
 
   const togglePayment = (id: PaymentMethodId) =>
     setPaymentMethods((prev) =>
