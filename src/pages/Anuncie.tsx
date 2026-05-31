@@ -36,7 +36,7 @@ const faq = [
   },
   {
     q: "Quem cria as artes e os textos das ofertas?",
-    a: "Você envia as informações e fotos do produto/serviço. Nosso time formata e publica para garantir a melhor apresentação.",
+    a: "Você tem total controle: cria o anúncio, envia a arte e preenche todas as configurações. Após concluir, o anúncio vai para análise do time OfertasFly e, uma vez aprovado, é publicado na plataforma.",
   },
   {
     q: "Existe fidelidade?",
