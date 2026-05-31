@@ -21,7 +21,11 @@ export type Database = {
           geo_offer_max_active_per_store: number
           group_offer_max_active_per_store: number
           id: boolean
+          offer_approval_sla_hours: number
+          offer_min_validity_hours: number
           review_prompt_hours: number
+          scheduled_offer_max_lead_days: number
+          scheduled_offer_min_lead_hours: number
           social_proof_min_viewers_now: number
           social_proof_min_views_today: number
           social_proof_now_window_minutes: number
@@ -33,7 +37,11 @@ export type Database = {
           geo_offer_max_active_per_store?: number
           group_offer_max_active_per_store?: number
           id?: boolean
+          offer_approval_sla_hours?: number
+          offer_min_validity_hours?: number
           review_prompt_hours?: number
+          scheduled_offer_max_lead_days?: number
+          scheduled_offer_min_lead_hours?: number
           social_proof_min_viewers_now?: number
           social_proof_min_views_today?: number
           social_proof_now_window_minutes?: number
@@ -45,7 +53,11 @@ export type Database = {
           geo_offer_max_active_per_store?: number
           group_offer_max_active_per_store?: number
           id?: boolean
+          offer_approval_sla_hours?: number
+          offer_min_validity_hours?: number
           review_prompt_hours?: number
+          scheduled_offer_max_lead_days?: number
+          scheduled_offer_min_lead_hours?: number
           social_proof_min_viewers_now?: number
           social_proof_min_views_today?: number
           social_proof_now_window_minutes?: number
@@ -648,10 +660,14 @@ export type Database = {
           id: string
           image_url: string | null
           is_flash: boolean
+          is_scheduled: boolean
           last_auto_renewed_at: string | null
           original_price: number
           popularity: number
           promo_price: number
+          scheduled_end_at: string | null
+          scheduled_published_at: string | null
+          scheduled_start_at: string | null
           status: Database["public"]["Enums"]["offer_status"]
           store_id: string
           title: string
@@ -674,10 +690,14 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_flash?: boolean
+          is_scheduled?: boolean
           last_auto_renewed_at?: string | null
           original_price?: number
           popularity?: number
           promo_price?: number
+          scheduled_end_at?: string | null
+          scheduled_published_at?: string | null
+          scheduled_start_at?: string | null
           status?: Database["public"]["Enums"]["offer_status"]
           store_id: string
           title: string
@@ -700,10 +720,14 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_flash?: boolean
+          is_scheduled?: boolean
           last_auto_renewed_at?: string | null
           original_price?: number
           popularity?: number
           promo_price?: number
+          scheduled_end_at?: string | null
+          scheduled_published_at?: string | null
+          scheduled_start_at?: string | null
           status?: Database["public"]["Enums"]["offer_status"]
           store_id?: string
           title?: string

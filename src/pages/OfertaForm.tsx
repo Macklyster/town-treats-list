@@ -16,7 +16,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
 import { Link } from "react-router-dom";
-import { AlertCircle, Bell, RefreshCw } from "lucide-react";
+import { AlertCircle, Bell, RefreshCw, CalendarClock, Lock } from "lucide-react";
 import { ImageUploader } from "@/components/site/ImageUploader";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PAYMENT_METHODS, type PaymentMethodId, parseConditions, buildConditions } from "@/lib/payment-methods";
@@ -36,7 +36,17 @@ const schema = z.object({
   valid_until: z.string().optional().or(z.literal("")),
   is_flash: z.boolean().optional(),
   flash_duration_hours: z.number().int().min(1).max(72).optional(),
+  is_scheduled: z.boolean().optional(),
+  scheduled_start_at: z.string().optional().or(z.literal("")),
+  scheduled_end_at: z.string().optional().or(z.literal("")),
 });
+
+type ScheduleSettings = {
+  minLeadHours: number;
+  maxLeadDays: number;
+  slaHours: number;
+  minValidityHours: number;
+};
 
 export default function OfertaForm() {
   const { user } = useAuth();
@@ -68,7 +78,19 @@ export default function OfertaForm() {
     auto_renew: false,
     auto_renew_days: 7,
     auto_renew_count: 0,
+    is_scheduled: false,
+    scheduled_start_at: "",
+    scheduled_end_at: "",
   });
+  const [scheduleSettings, setScheduleSettings] = useState<ScheduleSettings>({
+    minLeadHours: 12,
+    maxLeadDays: 30,
+    slaHours: 24,
+    minValidityHours: 6,
+  });
+
+  const planSlug = sub.plan?.slug ?? null;
+  const canSchedule = sub.paidActive && (planSlug === "destaque" || planSlug === "plus");
 
   const togglePayment = (id: PaymentMethodId) =>
     setPaymentMethods((prev) =>
@@ -77,11 +99,24 @@ export default function OfertaForm() {
 
   useEffect(() => {
     (async () => {
-      const [{ data: cats }, { data: stores }] = await Promise.all([
+      const [{ data: cats }, { data: stores }, { data: settings }] = await Promise.all([
         supabase.from("categories").select("slug,name").order("sort_order"),
         supabase.from("stores").select("id").eq("owner_id", user!.id).limit(1),
+        supabase
+          .from("app_settings")
+          .select("scheduled_offer_min_lead_hours, scheduled_offer_max_lead_days, offer_approval_sla_hours, offer_min_validity_hours")
+          .eq("id", true)
+          .maybeSingle(),
       ]);
       setCategories(cats ?? []);
+      if (settings) {
+        setScheduleSettings({
+          minLeadHours: (settings as any).scheduled_offer_min_lead_hours ?? 12,
+          maxLeadDays: (settings as any).scheduled_offer_max_lead_days ?? 30,
+          slaHours: (settings as any).offer_approval_sla_hours ?? 24,
+          minValidityHours: (settings as any).offer_min_validity_hours ?? 6,
+        });
+      }
       const sId = stores?.[0]?.id ?? null;
       setStoreId(sId);
       if (!sId) {
@@ -95,6 +130,12 @@ export default function OfertaForm() {
           const parsedCond = parseConditions(data.conditions ?? "");
           setPaymentMethods(parsedCond.methods);
           setOfferStatus(data.status);
+          const toLocal = (ts: string | null) => {
+            if (!ts) return "";
+            const d = new Date(ts);
+            const pad = (n: number) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+          };
           setForm({
             title: data.title,
             category_slug: data.category_slug,
@@ -111,6 +152,9 @@ export default function OfertaForm() {
             auto_renew: !!(data as any).auto_renew,
             auto_renew_days: (data as any).auto_renew_days ?? 7,
             auto_renew_count: (data as any).auto_renew_count ?? 0,
+            is_scheduled: !!(data as any).is_scheduled,
+            scheduled_start_at: toLocal((data as any).scheduled_start_at),
+            scheduled_end_at: toLocal((data as any).scheduled_end_at),
           });
         }
       }
@@ -141,13 +185,42 @@ export default function OfertaForm() {
       toast.error(`Seu plano permite apenas ${sub.featuredSlots} oferta(s) em destaque.`);
       return;
     }
+    // Validação extra de agendamento (client-side)
+    if (form.is_scheduled) {
+      if (!canSchedule) {
+        toast.error("Agendamento exclusivo dos planos Destaque e Plus.");
+        return;
+      }
+      if (!form.scheduled_start_at) {
+        toast.error("Informe a data e hora de início do agendamento.");
+        return;
+      }
+      const start = new Date(form.scheduled_start_at);
+      const now = new Date();
+      const minMs = scheduleSettings.minLeadHours * 3600 * 1000;
+      const maxMs = scheduleSettings.maxLeadDays * 86400 * 1000;
+      if (start.getTime() - now.getTime() < minMs) {
+        toast.error(`Agende com pelo menos ${scheduleSettings.minLeadHours}h de antecedência.`);
+        return;
+      }
+      if (start.getTime() - now.getTime() > maxMs) {
+        toast.error(`Agendamento máximo de ${scheduleSettings.maxLeadDays} dias no futuro.`);
+        return;
+      }
+      if (form.scheduled_end_at && new Date(form.scheduled_end_at) <= start) {
+        toast.error("Fim do agendamento deve ser após o início.");
+        return;
+      }
+    }
     setLoading(true);
-    const payload = {
+    const payload: any = {
       ...form,
       conditions: buildConditions(paymentMethods, form.conditions),
       store_id: storeId,
       valid_until: form.valid_until || null,
       status: "pending" as const,
+      scheduled_start_at: form.is_scheduled && form.scheduled_start_at ? new Date(form.scheduled_start_at).toISOString() : null,
+      scheduled_end_at: form.is_scheduled && form.scheduled_end_at ? new Date(form.scheduled_end_at).toISOString() : null,
     };
     const { error } = isEdit
       ? await supabase.from("offers").update(payload).eq("id", id!)
@@ -380,6 +453,67 @@ export default function OfertaForm() {
                   </div>
                 )}
               </div>
+
+              {/* Agendamento (Destaque/Plus) */}
+              <div className="rounded-md border p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-start gap-2">
+                    {canSchedule ? (
+                      <CalendarClock className="mt-0.5 h-5 w-5 text-primary" />
+                    ) : (
+                      <Lock className="mt-0.5 h-5 w-5 text-muted-foreground" />
+                    )}
+                    <div>
+                      <Label className="text-sm">Agendar publicação</Label>
+                      <p className="text-xs text-muted-foreground">
+                        {canSchedule
+                          ? `Envie com no mínimo ${scheduleSettings.minLeadHours}h e no máximo ${scheduleSettings.maxLeadDays} dias de antecedência. Análise em até ${scheduleSettings.slaHours}h.`
+                          : "Disponível nos planos Destaque e Plus."}
+                      </p>
+                    </div>
+                  </div>
+                  {canSchedule ? (
+                    <Switch
+                      checked={form.is_scheduled}
+                      onCheckedChange={(v) => setForm({ ...form, is_scheduled: v })}
+                    />
+                  ) : (
+                    <Button asChild size="sm" variant="outline">
+                      <Link to="/painel-lojista/assinatura">Fazer upgrade</Link>
+                    </Button>
+                  )}
+                </div>
+                {canSchedule && form.is_scheduled && (
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <Label className="text-sm">Início *</Label>
+                      <Input
+                        type="datetime-local"
+                        value={form.scheduled_start_at}
+                        onChange={(e) => setForm({ ...form, scheduled_start_at: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm">Fim (opcional)</Label>
+                      <Input
+                        type="datetime-local"
+                        value={form.scheduled_end_at}
+                        onChange={(e) => setForm({ ...form, scheduled_end_at: e.target.value })}
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground sm:col-span-2">
+                      A oferta entra em análise e é publicada automaticamente no horário marcado, desde que aprovada antes.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {!form.is_scheduled && (
+                <p className="text-xs text-muted-foreground">
+                  Validade mínima de {scheduleSettings.minValidityHours}h a partir do envio. SLA de análise: até {scheduleSettings.slaHours}h.
+                </p>
+              )}
+
 
               <div className="flex gap-3 pt-2">
                 <Button type="submit" variant="accent" disabled={loading || blocked}>Salvar</Button>

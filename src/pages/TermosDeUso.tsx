@@ -45,13 +45,34 @@ const TermosDeUso = () => {
             entre consumidores e lojistas, devendo as partes resolverem eventuais conflitos entre si.
           </p>
 
-          <h2 className="mt-8 text-2xl font-semibold">6. Alterações</h2>
+          <h2 className="mt-8 text-2xl font-semibold">6. Publicação e Agendamento de Ofertas</h2>
+          <p>
+            Toda oferta enviada pelo lojista passa por análise prévia da equipe OfertasFly antes de ficar
+            visível ao público. Nossa meta de SLA de aprovação é de até <strong>24 horas</strong> após o
+            envio — esse prazo é um objetivo operacional e não constitui garantia contratual; pode ser
+            ajustado pela administração e está disponível no painel do lojista.
+          </p>
+          <p>
+            Lojistas dos planos <strong>Destaque</strong> e <strong>Plus</strong> podem agendar a
+            publicação de ofertas dentro de uma janela definida pela OfertasFly (atualmente, mínimo de
+            12 horas e máximo de 30 dias de antecedência). Ofertas agendadas, mesmo já aprovadas, só
+            ficam públicas a partir do horário marcado. A OfertasFly se reserva o direito de recusar,
+            atrasar ou remover ofertas que estejam fora dessas janelas, violem estes Termos ou cuja
+            análise não seja viável em tempo hábil.
+          </p>
+          <p>
+            Para todas as demais ofertas, exigimos uma validade mínima (atualmente <strong>6 horas</strong>
+            a partir do envio) para que a aprovação faça sentido e o consumidor tenha tempo de
+            aproveitar.
+          </p>
+
+          <h2 className="mt-8 text-2xl font-semibold">7. Alterações</h2>
           <p>
             Reservamo-nos o direito de modificar estes Termos a qualquer momento. As alterações
             entrarão em vigor a partir da sua publicação no site.
           </p>
 
-          <h2 className="mt-8 text-2xl font-semibold">7. Contato</h2>
+          <h2 className="mt-8 text-2xl font-semibold">8. Contato</h2>
           <p>
             Em caso de dúvidas, entre em contato pelo e-mail{" "}
             <a href="mailto:contato@ofertasfly.com.br" className="text-accent-strong underline">

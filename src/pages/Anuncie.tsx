@@ -47,6 +47,18 @@ const faq = [
     a: "Em qualquer plano pago, sua primeira assinatura ganha 60 dias grátis. Você informa o cartão para garantir a continuidade após o período, mas nada é cobrado nos 2 primeiros meses. Cancele antes do fim do trial e não paga nada.",
   },
   {
+    q: "Posso agendar minha oferta para publicar em outra data?",
+    a: "Sim, nos planos Destaque e Plus você pode agendar a publicação. Envie com no mínimo 12 horas e no máximo 30 dias de antecedência (esses limites podem ser ajustados pela equipe OfertasFly). A oferta entra em análise e, uma vez aprovada, é publicada automaticamente no horário marcado.",
+  },
+  {
+    q: "Em quanto tempo minha oferta é aprovada?",
+    a: "Nossa meta é aprovar em até 24 horas após o envio. Por isso, recomendamos agendar com folga: se faltar tempo hábil para análise, a oferta pode não ser publicada no horário desejado.",
+  },
+  {
+    q: "Existe validade mínima para uma oferta?",
+    a: "Sim. Ofertas não agendadas precisam ter validade de pelo menos 6 horas a partir do envio, para que a aprovação faça sentido e o consumidor tenha tempo de aproveitar.",
+  },
+  {
     q: "Como meus clientes encontram minha oferta?",
     a: "Sua oferta aparece nas buscas, na categoria correspondente e pode ser destacada na home, dependendo do plano.",
   },
