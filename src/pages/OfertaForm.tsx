@@ -99,11 +99,24 @@ export default function OfertaForm() {
 
   useEffect(() => {
     (async () => {
-      const [{ data: cats }, { data: stores }] = await Promise.all([
+      const [{ data: cats }, { data: stores }, { data: settings }] = await Promise.all([
         supabase.from("categories").select("slug,name").order("sort_order"),
         supabase.from("stores").select("id").eq("owner_id", user!.id).limit(1),
+        supabase
+          .from("app_settings")
+          .select("scheduled_offer_min_lead_hours, scheduled_offer_max_lead_days, offer_approval_sla_hours, offer_min_validity_hours")
+          .eq("id", true)
+          .maybeSingle(),
       ]);
       setCategories(cats ?? []);
+      if (settings) {
+        setScheduleSettings({
+          minLeadHours: (settings as any).scheduled_offer_min_lead_hours ?? 12,
+          maxLeadDays: (settings as any).scheduled_offer_max_lead_days ?? 30,
+          slaHours: (settings as any).offer_approval_sla_hours ?? 24,
+          minValidityHours: (settings as any).offer_min_validity_hours ?? 6,
+        });
+      }
       const sId = stores?.[0]?.id ?? null;
       setStoreId(sId);
       if (!sId) {
@@ -117,6 +130,12 @@ export default function OfertaForm() {
           const parsedCond = parseConditions(data.conditions ?? "");
           setPaymentMethods(parsedCond.methods);
           setOfferStatus(data.status);
+          const toLocal = (ts: string | null) => {
+            if (!ts) return "";
+            const d = new Date(ts);
+            const pad = (n: number) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+          };
           setForm({
             title: data.title,
             category_slug: data.category_slug,
@@ -133,6 +152,9 @@ export default function OfertaForm() {
             auto_renew: !!(data as any).auto_renew,
             auto_renew_days: (data as any).auto_renew_days ?? 7,
             auto_renew_count: (data as any).auto_renew_count ?? 0,
+            is_scheduled: !!(data as any).is_scheduled,
+            scheduled_start_at: toLocal((data as any).scheduled_start_at),
+            scheduled_end_at: toLocal((data as any).scheduled_end_at),
           });
         }
       }
