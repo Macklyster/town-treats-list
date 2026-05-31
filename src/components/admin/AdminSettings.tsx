@@ -302,6 +302,73 @@ export const AdminSettings = () => {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle>Agendamento e aprovação de ofertas</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 max-w-md">
+          <p className="text-sm text-muted-foreground">
+            Janelas que controlam o envio de ofertas agendadas (planos Destaque/Plus) e a validade mínima das demais. Esses limites aparecem no formulário do lojista e no FAQ público.
+          </p>
+          <div className="space-y-2">
+            <Label htmlFor="sched_min_lead">Antecedência mínima de agendamento (horas)</Label>
+            <Input
+              id="sched_min_lead"
+              type="number"
+              min={1}
+              max={168}
+              step={1}
+              value={schedMinLead}
+              disabled={loading || saving}
+              onChange={(e) => { setSchedMinLead(e.target.value); setError(null); }}
+            />
+            <p className="text-xs text-muted-foreground">Tempo mínimo entre o envio e o horário agendado, para garantir análise.</p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="sched_max_lead">Antecedência máxima de agendamento (dias)</Label>
+            <Input
+              id="sched_max_lead"
+              type="number"
+              min={1}
+              max={180}
+              step={1}
+              value={schedMaxLead}
+              disabled={loading || saving}
+              onChange={(e) => { setSchedMaxLead(e.target.value); setError(null); }}
+            />
+            <p className="text-xs text-muted-foreground">Quão longe no futuro o lojista pode agendar.</p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="sla_hours">SLA de aprovação (horas)</Label>
+            <Input
+              id="sla_hours"
+              type="number"
+              min={1}
+              max={168}
+              step={1}
+              value={slaHours}
+              disabled={loading || saving}
+              onChange={(e) => { setSlaHours(e.target.value); setError(null); }}
+            />
+            <p className="text-xs text-muted-foreground">Prazo prometido para análise. Exibido ao lojista no formulário e no FAQ.</p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="min_validity">Validade mínima de ofertas não agendadas (horas)</Label>
+            <Input
+              id="min_validity"
+              type="number"
+              min={1}
+              max={168}
+              step={1}
+              value={minValidity}
+              disabled={loading || saving}
+              onChange={(e) => { setMinValidity(e.target.value); setError(null); }}
+            />
+            <p className="text-xs text-muted-foreground">Evita aprovar ofertas que vão expirar logo após o envio.</p>
+          </div>
+        </CardContent>
+      </Card>
+
       {error && <p className="text-sm font-medium text-destructive">{error}</p>}
 
       <div className="flex gap-2">
@@ -318,6 +385,10 @@ export const AdminSettings = () => {
               setSpMinViews(String(initial.spMinViews));
               setSpMinNow(String(initial.spMinNow));
               setSpWindow(String(initial.spWindow));
+              setSchedMinLead(String(initial.schedMinLead));
+              setSchedMaxLead(String(initial.schedMaxLead));
+              setSlaHours(String(initial.slaHours));
+              setMinValidity(String(initial.minValidity));
               setError(null);
             }}
             disabled={saving}
