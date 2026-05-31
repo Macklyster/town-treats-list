@@ -36,7 +36,17 @@ const schema = z.object({
   valid_until: z.string().optional().or(z.literal("")),
   is_flash: z.boolean().optional(),
   flash_duration_hours: z.number().int().min(1).max(72).optional(),
+  is_scheduled: z.boolean().optional(),
+  scheduled_start_at: z.string().optional().or(z.literal("")),
+  scheduled_end_at: z.string().optional().or(z.literal("")),
 });
+
+type ScheduleSettings = {
+  minLeadHours: number;
+  maxLeadDays: number;
+  slaHours: number;
+  minValidityHours: number;
+};
 
 export default function OfertaForm() {
   const { user } = useAuth();
