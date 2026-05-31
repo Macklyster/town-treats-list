@@ -66,7 +66,7 @@ const TermosDeUso = () => {
             aproveitar.
           </p>
 
-          <h2 className="mt-8 text-2xl font-semibold">6. Alterações</h2>
+          <h2 className="mt-8 text-2xl font-semibold">7. Alterações</h2>
           <p>
             Reservamo-nos o direito de modificar estes Termos a qualquer momento. As alterações
             entrarão em vigor a partir da sua publicação no site.
