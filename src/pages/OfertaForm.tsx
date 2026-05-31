@@ -185,13 +185,42 @@ export default function OfertaForm() {
       toast.error(`Seu plano permite apenas ${sub.featuredSlots} oferta(s) em destaque.`);
       return;
     }
+    // Validação extra de agendamento (client-side)
+    if (form.is_scheduled) {
+      if (!canSchedule) {
+        toast.error("Agendamento exclusivo dos planos Destaque e Plus.");
+        return;
+      }
+      if (!form.scheduled_start_at) {
+        toast.error("Informe a data e hora de início do agendamento.");
+        return;
+      }
+      const start = new Date(form.scheduled_start_at);
+      const now = new Date();
+      const minMs = scheduleSettings.minLeadHours * 3600 * 1000;
+      const maxMs = scheduleSettings.maxLeadDays * 86400 * 1000;
+      if (start.getTime() - now.getTime() < minMs) {
+        toast.error(`Agende com pelo menos ${scheduleSettings.minLeadHours}h de antecedência.`);
+        return;
+      }
+      if (start.getTime() - now.getTime() > maxMs) {
+        toast.error(`Agendamento máximo de ${scheduleSettings.maxLeadDays} dias no futuro.`);
+        return;
+      }
+      if (form.scheduled_end_at && new Date(form.scheduled_end_at) <= start) {
+        toast.error("Fim do agendamento deve ser após o início.");
+        return;
+      }
+    }
     setLoading(true);
-    const payload = {
+    const payload: any = {
       ...form,
       conditions: buildConditions(paymentMethods, form.conditions),
       store_id: storeId,
       valid_until: form.valid_until || null,
       status: "pending" as const,
+      scheduled_start_at: form.is_scheduled && form.scheduled_start_at ? new Date(form.scheduled_start_at).toISOString() : null,
+      scheduled_end_at: form.is_scheduled && form.scheduled_end_at ? new Date(form.scheduled_end_at).toISOString() : null,
     };
     const { error } = isEdit
       ? await supabase.from("offers").update(payload).eq("id", id!)
