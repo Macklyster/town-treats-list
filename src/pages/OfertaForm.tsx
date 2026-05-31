@@ -16,7 +16,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
 import { Link } from "react-router-dom";
-import { AlertCircle, Bell, RefreshCw } from "lucide-react";
+import { AlertCircle, Bell, RefreshCw, CalendarClock, Lock } from "lucide-react";
 import { ImageUploader } from "@/components/site/ImageUploader";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PAYMENT_METHODS, type PaymentMethodId, parseConditions, buildConditions } from "@/lib/payment-methods";
