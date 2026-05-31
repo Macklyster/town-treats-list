@@ -14,6 +14,10 @@ const schema = z.object({
   social_proof_min_views_today: z.number().int().min(0).max(1000),
   social_proof_min_viewers_now: z.number().int().min(0).max(100),
   social_proof_now_window_minutes: z.number().int().min(1).max(120),
+  scheduled_offer_min_lead_hours: z.number().int().min(1).max(168),
+  scheduled_offer_max_lead_days: z.number().int().min(1).max(180),
+  offer_approval_sla_hours: z.number().int().min(1).max(168),
+  offer_min_validity_hours: z.number().int().min(1).max(168),
 });
 
 type Initial = {
