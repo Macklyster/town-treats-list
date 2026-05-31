@@ -28,7 +28,7 @@ const plans = PLAN_CATALOG.map((p) => ({
 const faq = [
   {
     q: "Como cadastro minha empresa?",
-    a: "É só preencher o formulário ao lado e nossa equipe entra em contato em até 1 dia útil para entender seu negócio e ativar seu plano.",
+    a: "Crie sua conta na plataforma. Após a assinatura e aprovação, você cadastra sua loja e, uma vez aprovada, já pode publicar anúncios.",
   },
   {
     q: "Posso trocar de plano depois?",
