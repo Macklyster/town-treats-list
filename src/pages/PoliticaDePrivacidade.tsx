@@ -55,7 +55,15 @@ const PoliticaDePrivacidade = () => {
             correção, exclusão ou portabilidade dos seus dados a qualquer momento.
           </p>
 
-          <h2 className="mt-8 text-2xl font-semibold">7. Contato</h2>
+          <h2 className="mt-8 text-2xl font-semibold">7. Publicação e Agendamento de Ofertas</h2>
+          <p>
+            Para viabilizar a moderação e o agendamento de ofertas, registramos timestamps de envio,
+            aprovação, publicação e expiração, bem como logs administrativos da análise. Esses dados
+            são tratados com finalidade de operação da plataforma, segurança e auditoria, e ficam
+            acessíveis ao próprio lojista e à equipe OfertasFly.
+          </p>
+
+          <h2 className="mt-8 text-2xl font-semibold">8. Contato</h2>
           <p>
             Para exercer seus direitos ou tirar dúvidas, escreva para{" "}
             <a href="mailto:contato@ofertasfly.com.br" className="text-accent-strong underline">
