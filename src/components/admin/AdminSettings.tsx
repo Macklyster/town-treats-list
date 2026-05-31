@@ -101,7 +101,11 @@ export const AdminSettings = () => {
     Number(groupMax) !== initial.groupMax ||
     Number(spMinViews) !== initial.spMinViews ||
     Number(spMinNow) !== initial.spMinNow ||
-    Number(spWindow) !== initial.spWindow;
+    Number(spWindow) !== initial.spWindow ||
+    Number(schedMinLead) !== initial.schedMinLead ||
+    Number(schedMaxLead) !== initial.schedMaxLead ||
+    Number(slaHours) !== initial.slaHours ||
+    Number(minValidity) !== initial.minValidity;
 
   const handleSave = async () => {
     setError(null);
@@ -112,9 +116,17 @@ export const AdminSettings = () => {
       social_proof_min_views_today: Number(spMinViews),
       social_proof_min_viewers_now: Number(spMinNow),
       social_proof_now_window_minutes: Number(spWindow),
+      scheduled_offer_min_lead_hours: Number(schedMinLead),
+      scheduled_offer_max_lead_days: Number(schedMaxLead),
+      offer_approval_sla_hours: Number(slaHours),
+      offer_min_validity_hours: Number(minValidity),
     });
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Valor inválido");
+      return;
+    }
+    if (parsed.data.scheduled_offer_min_lead_hours >= parsed.data.scheduled_offer_max_lead_days * 24) {
+      setError("Antecedência mínima (h) deve ser menor que o máximo (em horas).");
       return;
     }
     setSaving(true);
@@ -137,6 +149,10 @@ export const AdminSettings = () => {
       spMinViews: parsed.data.social_proof_min_views_today,
       spMinNow: parsed.data.social_proof_min_viewers_now,
       spWindow: parsed.data.social_proof_now_window_minutes,
+      schedMinLead: parsed.data.scheduled_offer_min_lead_hours,
+      schedMaxLead: parsed.data.scheduled_offer_max_lead_days,
+      slaHours: parsed.data.offer_approval_sla_hours,
+      minValidity: parsed.data.offer_min_validity_hours,
     });
     toast.success("Configurações salvas");
   };
