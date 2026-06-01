@@ -1,90 +1,75 @@
+## Diagnóstico atual
 
-## Visão geral
+**Catálogo (`src/data/plans.ts`) — exibido em /anuncie e /assinatura:**
+- Grátis — R$ 0 — 1 oferta/mês
+- Básico — R$ 79/mês — 3 ofertas
+- Destaque — R$ 149/mês — 10 ofertas + selo, agendamento, relâmpago, dashboard (plano em destaque)
+- Plus — R$ 249/mês — ilimitado + coletivas, leilão, invisível, consultor
 
-Adicionar agendamento de ofertas para os planos **Destaque** e **Plus**, com parâmetros globais configuráveis pelo admin para evitar frustração (janelas de antecedência e SLA de aprovação), refletindo as regras no formulário do lojista, no FAQ da página `/anuncie` e nas páginas de Termos de Uso e Política de Privacidade.
+**Banco (`plans`):** preços diferentes do catálogo (Básico R$ 49, Destaque R$ 99, Plus R$ 199). Só o catálogo é mostrado, mas o checkout lê do banco → inconsistência que pode quebrar a confiança no momento do pagamento.
 
-## 1. Banco de dados (migration única)
+**Promo atual:** banner "2 meses grátis" no anual — mas não existe plano anual nem toggle mensal/anual implementado.
 
-**1.1. `app_settings` — novas colunas globais:**
-- `scheduled_offer_min_lead_hours` int default `12` — antecedência mínima entre `now()` e `scheduled_start_at`.
-- `scheduled_offer_max_lead_days` int default `30` — antecedência máxima permitida.
-- `offer_approval_sla_hours` int default `24` — prazo prometido de análise pelo admin (exibido ao lojista).
-- `offer_min_validity_hours` int default `6` — antecedência mínima entre `now()` e `valid_until` em ofertas não agendadas (evita aprovar oferta que vai expirar logo).
+## Problemas de conversão identificados
 
-**1.2. `offers` — novas colunas para agendamento:**
-- `is_scheduled` boolean default `false`
-- `scheduled_start_at` timestamptz null
-- `scheduled_end_at` timestamptz null (opcional; se nulo, expira por `valid_until`)
-- `scheduled_published_at` timestamptz null (carimbado quando o cron publica)
+1. **Salto grande de R$ 79 → R$ 149 (+89%)** entre Básico e Destaque. Boa parte dos lojistas que querem testar agendamento/relâmpago vão travar aqui.
+2. **Plano Grátis quase inútil** (1 oferta/mês). Não gera hábito nem mostra valor da plataforma → poucos viram pagantes.
+3. **Sem trial nos planos pagos.** Lojista precisa colocar cartão sem nunca ter testado o painel.
+4. **Sem opção anual de verdade.** O banner "2 meses grátis" promete algo que não existe → frustra na hora de assinar.
+5. **Destaque tem 9 benefícios, Plus tem 14** — diferença visual grande, mas o "OfertasFly Coletiva / Leilão / Invisível" são features que poucos lojistas vão usar logo de cara. O Plus parece "caro demais para o que sobra de útil no dia a dia".
+6. **Preços do banco desalinhados com catálogo** — risco operacional independente da estratégia.
 
-**1.3. Trigger `validate_offer_schedule()` em `offers`** (BEFORE INSERT/UPDATE):
-- Exige plano **Destaque** ou **Plus** ativo (via `subscriptions`+`plans.slug in ('destaque','plus')`) quando `is_scheduled = true`.
-- Valida `scheduled_start_at > now() + min_lead_hours` e `<= now() + max_lead_days`.
-- Se `scheduled_end_at` informado, valida `> scheduled_start_at` e `<= valid_until` (quando houver).
-- Quando `is_scheduled=false` e `valid_until` informado, exige `valid_until >= now() + offer_min_validity_hours` (somente em INSERT ou ao mudar para `pending/approved`).
-- Ao admin aprovar uma oferta agendada, mantém `status='approved'` mas a oferta só fica visível ao público a partir de `scheduled_start_at`.
+## Estratégia proposta
 
-**1.4. RLS pública de `offers` — atualizar policy `approved offers public read`:**
-- Visível se `status='approved' AND (is_scheduled=false OR scheduled_start_at <= now()) AND (scheduled_end_at IS NULL OR scheduled_end_at > now())`.
-- Donos da loja e admin continuam vendo tudo.
+### A. Reposicionar o funil (4 níveis → mesma quantidade, mas com ponte melhor)
 
-**1.5. Cron job (pg_cron + pg_net) — opcional/leve:** apenas para carimbar `scheduled_published_at` e disparar notificação push aos seguidores quando entra no ar (a visibilidade já é controlada pela RLS, não depende do cron).
+```text
+Grátis    Starter         Destaque       Plus
+R$ 0      R$ 49/mês       R$ 129/mês     R$ 249/mês
+1 oferta  3 ofertas       10 ofertas     ilimitado
+                          (mais popular)
+```
 
-## 2. Admin — `src/pages/admin/Configuracoes.tsx`
+- **Grátis** continua, mas vira "Teste por 14 dias do Destaque" no onboarding (CTA principal). Quem não converter cai automaticamente no Grátis (1 oferta/mês) — não perde a conta.
+- **Starter** (renomeia Básico) — R$ 49: preço de entrada psicológico abaixo de R$ 50. Inclui agendamento de ofertas (hoje só no Destaque) para já tirar uma objeção comum.
+- **Destaque** vira R$ 129 (era 149) — reduz salto Starter→Destaque para 2,6x (era 1,9x mas com diferença absoluta menor). Continua "mais popular".
+- **Plus** mantém R$ 249, mas reforça os 3 produtos exclusivos (Coletiva, Leilão, Invisível) como "kit de aquisição viral".
 
-Nova seção **"Parâmetros de Ofertas"** com inputs numéricos:
-- Antecedência mínima de agendamento (h)
-- Antecedência máxima de agendamento (dias)
-- SLA de aprovação (h)
-- Validade mínima de ofertas não agendadas (h)
+### B. Adicionar toggle Mensal / Anual com 2 meses grátis
 
-Salva em `app_settings` via update (admin RLS já permite).
+- Anual = 10× o valor mensal (dois meses gratis), cobrado uma vez.
+- Toggle no topo da seção de planos em `/anuncie#planos` e em `/painel-lojista/assinatura`.
+- Cria um segundo preço por plano (mensal e anual) no banco e no catálogo.
+- Resolve a promessa do banner atual + aumenta LTV e reduz churn no primeiro mês.
 
-## 3. Lojista — formulário de oferta (`src/pages/painel-lojista/OfertaForm.tsx` ou equivalente)
+### C. Trial de 14 dias no Destaque
 
-- Carregar `app_settings` + plano ativo da loja.
-- Se plano = **Destaque** ou **Plus**: exibir toggle **"Agendar publicação"**.
-  - Ao ativar: campos `scheduled_start_at` (datetime) e opcionalmente `scheduled_end_at`, com `min`/`max` calculados a partir dos settings.
-  - Microcopy: *"Disponível para os planos Destaque e Plus. Envie com até X dias e no mínimo Y horas de antecedência. Análise em até Z horas."*
-- Se plano básico: mostrar badge "Disponível em Destaque/Plus" com link para `/painel-lojista/assinatura`.
-- Para qualquer oferta: validar `valid_until` ≥ `offer_min_validity_hours`, com mensagem clara.
-- Validação Zod no client + erro do trigger no server.
+- Botão principal do hero passa a ser "Testar 14 dias grátis" em vez de "Quero anunciar".
+- Sem cobrança no cartão durante o trial; só cobra no dia 15 se não cancelar.
+- Reduz a fricção do "será que vale R$ 129?".
 
-## 4. FAQ — `src/pages/Anuncie.tsx`
+### D. Ajustes de copy / prova social (sem mexer em features)
 
-Adicionar perguntas:
-- **"Posso agendar minha oferta?"** — explica disponibilidade nos planos Destaque/Plus, janela mín/máx (lê de `app_settings`).
-- **"Em quanto tempo minha oferta é aprovada?"** — SLA dinâmico.
-- **"Minha oferta precisa ter validade mínima?"** — explica `offer_min_validity_hours`.
+- Adicionar "garantia de 7 dias" no Destaque e Plus → devolve dinheiro se cancelar na primeira semana.
+- Adicionar microcopy abaixo de cada preço: "cancele quando quiser", "sem fidelidade", "suporte humano".
+- Adicionar comparativo lado-a-lado de features-chave (tabela) abaixo dos cards, para o lojista enxergar rapidamente o que ganha subindo de plano.
 
-## 5. Termos de Uso e Política de Privacidade
+### E. Higiene: alinhar banco × catálogo
 
-Localizar/criar `src/pages/Termos.tsx` e `src/pages/Privacidade.tsx`. Adicionar/atualizar seção **"Publicação e Agendamento de Ofertas"**:
-- Direito do admin de recusar/atrasar ofertas fora das janelas configuradas.
-- SLA de análise é alvo, não garantia contratual.
-- Ofertas agendadas só ficam públicas no horário previsto após aprovação.
-- Privacidade: tratamento de timestamps e logs de aprovação.
+- Atualizar `plans` no banco para os novos preços (Starter 4900, Destaque 12900, Plus 24900) com colunas separadas para mensal/anual e `stripe_price_id` por variação.
+- `Assinatura.tsx` passa a ler também o ciclo (mensal/anual) escolhido.
 
-Linkar no rodapé se ainda não estiver.
+## O que precisa ser feito (resumo de execução)
 
-## 6. Aprovação no painel admin (`src/pages/admin/Ofertas.tsx`)
+1. Editar `src/data/plans.ts`: renomear "Básico" → "Starter", adicionar campo `priceCentsYearly`, mover "Agendamento de ofertas" para Starter, ajustar preço do Destaque para R$ 129.
+2. Adicionar toggle Mensal/Anual nas seções de planos em `src/pages/Anuncie.tsx` e `src/pages/Assinatura.tsx`.
+3. Migração no banco: adicionar `price_cents_yearly`, `stripe_price_id_yearly`, atualizar valores e slugs, manter compatibilidade do `basico` → `starter` ou redirecionar.
+4. Trial de 14 dias: adicionar `trial_period_days: 14` no `create-checkout` para o plano Destaque + atualizar CTA do hero.
+5. Adicionar tabela comparativa abaixo dos cards de plano + selos de garantia/sem fidelidade.
 
-- Coluna/badge **"Agendada"** com `scheduled_start_at` formatado.
-- Filtro "Apenas agendadas".
-- Ordenação priorizando ofertas cujo `scheduled_start_at` está próximo (urgência).
+## Decisões que preciso confirmar antes de implementar
 
-## Detalhes técnicos
-
-- Timezone: usar `America/Sao_Paulo` na UI (display) e `timestamptz` no banco.
-- Reaproveitar `set_updated_at` trigger.
-- Sem novas edge functions obrigatórias — opcional `publish-scheduled-offers` se quiser disparar push no momento exato (via pg_cron a cada 5 min).
-- Nenhuma alteração em Stripe/checkout.
-
-## Arquivos afetados
-
-- Migration nova (1 arquivo)
-- `src/pages/admin/Configuracoes.tsx`
-- `src/pages/admin/Ofertas.tsx`
-- Form de oferta do lojista (a confirmar caminho exato ao implementar)
-- `src/pages/Anuncie.tsx`
-- `src/pages/Termos.tsx` e `src/pages/Privacidade.tsx` (criar se não existirem) + link no `Footer`
+- Topo da régua de preços (R$ 49 / 129 / 249) está OK ou prefere outros valores?
+- Quer mesmo o trial de 14 dias do Destaque, ou prefere manter o Grátis como porta de entrada única?
+- Em qual plano o trial deve cair (Destaque) e o Grátis fica como fallback pós-trial?
+- Posso renomear "Básico" para "Starter" ou prefere outro nome (ex.: "Essencial")?
