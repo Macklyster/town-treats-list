@@ -17,8 +17,10 @@ import { PLAN_CATALOG } from "@/data/plans";
 import { formatBRL } from "@/lib/format";
 
 const plans = PLAN_CATALOG.map((p) => ({
+  slug: p.slug,
   name: p.name,
-  price: formatBRL(p.priceCents),
+  priceCents: p.priceCents,
+  priceCentsYearly: p.priceCentsYearly,
   period: p.period,
   icon: p.icon,
   highlight: p.highlight,
