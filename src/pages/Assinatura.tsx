@@ -494,11 +494,18 @@ export default function Assinatura() {
                             ? "Mudar para este plano"
                             : showTrial
                             ? "Começar 2 meses grátis"
+                            : isYearly
+                            ? "Assinar plano anual"
                             : "Assinar"}
                         </Button>
                         {showTrial && (
                           <p className="mt-2 text-center text-[11px] leading-snug text-muted-foreground">
                             Sem cobrança nos primeiros 60 dias · Cancele quando quiser · Sem multa
+                          </p>
+                        )}
+                        {isYearly && !showTrial && (
+                          <p className="mt-2 text-center text-[11px] leading-snug text-muted-foreground">
+                            Cobrança única anual · Cancele quando quiser
                           </p>
                         )}
                       </>
