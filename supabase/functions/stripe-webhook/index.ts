@@ -14,11 +14,14 @@ Deno.serve(async (req) => {
   const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
   const body = await req.text();
 
+  if (!sig || !webhookSecret) {
+    console.error("[stripe-webhook] missing signature or webhook secret");
+    return new Response("missing signature", { status: 400 });
+  }
+
   let event: Stripe.Event;
   try {
-    event = sig && webhookSecret
-      ? await stripe.webhooks.constructEventAsync(body, sig, webhookSecret)
-      : (JSON.parse(body) as Stripe.Event);
+    event = await stripe.webhooks.constructEventAsync(body, sig, webhookSecret);
   } catch (e) {
     return new Response(`bad sig: ${e}`, { status: 400 });
   }

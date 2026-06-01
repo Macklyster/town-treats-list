@@ -168,6 +168,21 @@ export default function OfertaForm() {
       toast.error(parsed.error.errors[0].message);
       return;
     }
+    if (Number(form.promo_price) <= 0) {
+      toast.error("Informe um preço promocional maior que zero.");
+      return;
+    }
+    if (Number(form.promo_price) >= Number(form.original_price)) {
+      toast.error("O preço promocional deve ser menor que o preço original.");
+      return;
+    }
+    if (form.valid_until) {
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      if (new Date(form.valid_until + "T23:59:59") < today) {
+        toast.error("A validade não pode ser uma data passada.");
+        return;
+      }
+    }
     if (!storeId) return;
     if (!sub.isActive) {
       toast.error("Você precisa de um plano ativo para publicar ofertas.");
@@ -176,7 +191,7 @@ export default function OfertaForm() {
     if (!isEdit && sub.offerCount >= sub.maxOffers) {
       toast.error(
         sub.isFree
-          ? "Limite do plano Grátis: 1 oferta por mês. Faça upgrade para publicar mais."
+          ? `Limite do plano Grátis: ${sub.maxOffers} oferta(s) por mês. Faça upgrade para publicar mais.`
           : `Limite do plano atingido (${sub.maxOffers} ofertas).`,
       );
       return;
@@ -250,7 +265,7 @@ export default function OfertaForm() {
                 <AlertDescription className="flex flex-wrap items-center justify-between gap-3">
                   <span>
                     {sub.isFree
-                      ? "Plano Grátis permite 1 oferta por mês. Faça upgrade para publicar mais."
+                      ? `Plano Grátis permite ${sub.maxOffers} oferta(s) por mês. Faça upgrade para publicar mais.`
                       : `Seu plano permite ${sub.maxOffers} oferta(s). Faça upgrade para criar mais.`}
                   </span>
                   <Button asChild size="sm" variant="accent">
