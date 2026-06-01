@@ -63,7 +63,19 @@ Deno.serve(async (req) => {
         }
       }
     }
-    const trialApplied = trialEligible && (plan.price_cents ?? 0) > 0;
+    // Yearly subscriptions don't get the 60-day trial (the 2 free months are already baked into the yearly price).
+    const trialApplied = cycle === "monthly" && trialEligible && (plan.price_cents ?? 0) > 0;
+
+    // Resolve price for chosen cycle.
+    const yearlyAmount = plan.price_cents_yearly ?? (plan.price_cents ? plan.price_cents * 10 : null);
+    const yearlyPriceId = plan.stripe_price_id_yearly ?? null;
+    const useYearly = cycle === "yearly" && (yearlyPriceId || yearlyAmount);
+    if (cycle === "yearly" && !useYearly) {
+      return new Response(JSON.stringify({ error: "Plano anual não disponível para este plano." }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
       apiVersion: "2024-06-20",
