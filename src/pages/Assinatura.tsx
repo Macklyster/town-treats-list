@@ -73,6 +73,9 @@ export default function Assinatura() {
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState<string>("");
   const [cancelDetails, setCancelDetails] = useState("");
+  const [cycle, setCycle] = useState<"monthly" | "yearly">(
+    params.get("cycle") === "yearly" ? "yearly" : "monthly",
+  );
 
   const openExternalUrl = (url: string) => {
     const isEmbedded = window.self !== window.top;
