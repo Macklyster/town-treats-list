@@ -15,6 +15,7 @@ type CityContextValue = {
 };
 
 const STORAGE_KEY = "ofertasfly:city";
+const DISMISS_KEY = "ofertasfly:city_dismissed";
 const CityContext = createContext<CityContextValue | undefined>(undefined);
 
 const readStored = (): City | null => {
