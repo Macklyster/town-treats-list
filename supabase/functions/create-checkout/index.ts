@@ -97,21 +97,33 @@ Deno.serve(async (req) => {
       customer_email: customerId ? undefined : user.email,
       payment_method_collection: trialApplied ? "always" : undefined,
       line_items: [
-        plan.stripe_price_id
-          ? { price: plan.stripe_price_id, quantity: 1 }
-          : {
-              price_data: {
-                currency: "brl",
-                product_data: { name: `OfertasFly - Plano ${plan.name}` },
-                unit_amount: plan.price_cents,
-                recurring: { interval: "month" },
-              },
-              quantity: 1,
-            },
+        useYearly
+          ? (yearlyPriceId
+              ? { price: yearlyPriceId, quantity: 1 }
+              : {
+                  price_data: {
+                    currency: "brl",
+                    product_data: { name: `OfertasFly - Plano ${plan.name} (Anual)` },
+                    unit_amount: yearlyAmount!,
+                    recurring: { interval: "year" },
+                  },
+                  quantity: 1,
+                })
+          : (plan.stripe_price_id
+              ? { price: plan.stripe_price_id, quantity: 1 }
+              : {
+                  price_data: {
+                    currency: "brl",
+                    product_data: { name: `OfertasFly - Plano ${plan.name}` },
+                    unit_amount: plan.price_cents,
+                    recurring: { interval: "month" },
+                  },
+                  quantity: 1,
+                }),
       ],
-      metadata: { user_id: user.id, store_id, plan_id, trial_applied: String(trialApplied) },
+      metadata: { user_id: user.id, store_id, plan_id, cycle, trial_applied: String(trialApplied) },
       subscription_data: {
-        metadata: { user_id: user.id, store_id, plan_id, trial_applied: String(trialApplied) },
+        metadata: { user_id: user.id, store_id, plan_id, cycle, trial_applied: String(trialApplied) },
         ...(trialApplied
           ? {
               trial_period_days: 60,
