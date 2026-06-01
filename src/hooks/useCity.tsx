@@ -79,7 +79,10 @@ export const CityProvider = ({ children }: { children: ReactNode }) => {
       setCity,
       clearCity,
       openSelector: () => setSelectorOpen(true),
-      closeSelector: () => setSelectorOpen(false),
+      closeSelector: () => {
+        sessionStorage.setItem(DISMISS_KEY, "1");
+        setSelectorOpen(false);
+      },
       selectorOpen,
       availableCities,
       loadingCities,
