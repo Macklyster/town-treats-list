@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Trial eligibility: 60 days free for first-ever paid subscription on this store.
+    // Trial eligibility: 14 days free for first-ever paid subscription on this store.
     // Disqualifies any prior subscription on a paid plan (price_cents > 0), regardless of status.
     let trialEligible = true;
     if (existing && existing.length > 0) {
@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
         }
       }
     }
-    // Yearly subscriptions don't get the 60-day trial (the 2 free months are already baked into the yearly price).
+    // Yearly subscriptions don't get the 14-day trial (the 2 free months are already baked into the yearly price).
     const trialApplied = cycle === "monthly" && trialEligible && (plan.price_cents ?? 0) > 0;
 
     // Resolve price for chosen cycle.
@@ -126,7 +126,7 @@ Deno.serve(async (req) => {
         metadata: { user_id: user.id, store_id, plan_id, cycle, trial_applied: String(trialApplied) },
         ...(trialApplied
           ? {
-              trial_period_days: 60,
+              trial_period_days: 14,
               trial_settings: { end_behavior: { missing_payment_method: "cancel" } },
             }
           : {}),
