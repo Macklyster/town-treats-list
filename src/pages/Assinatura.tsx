@@ -508,6 +508,7 @@ export default function Assinatura() {
               );
             })}
           </div>
+          </>
         )}
       </main>
 
