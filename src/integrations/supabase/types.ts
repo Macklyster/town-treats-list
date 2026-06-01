@@ -1221,6 +1221,8 @@ export type Database = {
         | "canceled"
         | "incomplete"
         | "unpaid"
+        | "incomplete_expired"
+        | "paused"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1368,6 +1370,8 @@ export const Constants = {
         "canceled",
         "incomplete",
         "unpaid",
+        "incomplete_expired",
+        "paused",
       ],
     },
   },
