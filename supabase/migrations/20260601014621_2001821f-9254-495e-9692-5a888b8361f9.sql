@@ -1,0 +1,1 @@
+DELETE FROM public.stores WHERE id = '551405c3-a53b-4436-8a08-0367991ba3cf';
