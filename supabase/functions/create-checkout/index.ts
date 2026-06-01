@@ -22,7 +22,8 @@ Deno.serve(async (req) => {
     if (uErr || !userData.user) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
     const user = userData.user;
 
-    const { plan_id, store_id } = await req.json();
+    const { plan_id, store_id, cycle: rawCycle } = await req.json();
+    const cycle: "monthly" | "yearly" = rawCycle === "yearly" ? "yearly" : "monthly";
     if (!plan_id || !store_id) return new Response(JSON.stringify({ error: "missing fields" }), { status: 400, headers: corsHeaders });
 
     const { data: plan } = await supabase.from("plans").select("*").eq("id", plan_id).single();
@@ -62,7 +63,19 @@ Deno.serve(async (req) => {
         }
       }
     }
-    const trialApplied = trialEligible && (plan.price_cents ?? 0) > 0;
+    // Yearly subscriptions don't get the 60-day trial (the 2 free months are already baked into the yearly price).
+    const trialApplied = cycle === "monthly" && trialEligible && (plan.price_cents ?? 0) > 0;
+
+    // Resolve price for chosen cycle.
+    const yearlyAmount = plan.price_cents_yearly ?? (plan.price_cents ? plan.price_cents * 10 : null);
+    const yearlyPriceId = plan.stripe_price_id_yearly ?? null;
+    const useYearly = cycle === "yearly" && (yearlyPriceId || yearlyAmount);
+    if (cycle === "yearly" && !useYearly) {
+      return new Response(JSON.stringify({ error: "Plano anual não disponível para este plano." }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
       apiVersion: "2024-06-20",
@@ -84,21 +97,33 @@ Deno.serve(async (req) => {
       customer_email: customerId ? undefined : user.email,
       payment_method_collection: trialApplied ? "always" : undefined,
       line_items: [
-        plan.stripe_price_id
-          ? { price: plan.stripe_price_id, quantity: 1 }
-          : {
-              price_data: {
-                currency: "brl",
-                product_data: { name: `OfertasFly - Plano ${plan.name}` },
-                unit_amount: plan.price_cents,
-                recurring: { interval: "month" },
-              },
-              quantity: 1,
-            },
+        useYearly
+          ? (yearlyPriceId
+              ? { price: yearlyPriceId, quantity: 1 }
+              : {
+                  price_data: {
+                    currency: "brl",
+                    product_data: { name: `OfertasFly - Plano ${plan.name} (Anual)` },
+                    unit_amount: yearlyAmount!,
+                    recurring: { interval: "year" },
+                  },
+                  quantity: 1,
+                })
+          : (plan.stripe_price_id
+              ? { price: plan.stripe_price_id, quantity: 1 }
+              : {
+                  price_data: {
+                    currency: "brl",
+                    product_data: { name: `OfertasFly - Plano ${plan.name}` },
+                    unit_amount: plan.price_cents,
+                    recurring: { interval: "month" },
+                  },
+                  quantity: 1,
+                }),
       ],
-      metadata: { user_id: user.id, store_id, plan_id, trial_applied: String(trialApplied) },
+      metadata: { user_id: user.id, store_id, plan_id, cycle, trial_applied: String(trialApplied) },
       subscription_data: {
-        metadata: { user_id: user.id, store_id, plan_id, trial_applied: String(trialApplied) },
+        metadata: { user_id: user.id, store_id, plan_id, cycle, trial_applied: String(trialApplied) },
         ...(trialApplied
           ? {
               trial_period_days: 60,

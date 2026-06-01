@@ -769,9 +769,11 @@ export type Database = {
           max_offers: number
           name: string
           price_cents: number
+          price_cents_yearly: number | null
           slug: string
           sort_order: number
           stripe_price_id: string | null
+          stripe_price_id_yearly: string | null
         }
         Insert: {
           active?: boolean
@@ -782,9 +784,11 @@ export type Database = {
           max_offers?: number
           name: string
           price_cents?: number
+          price_cents_yearly?: number | null
           slug: string
           sort_order?: number
           stripe_price_id?: string | null
+          stripe_price_id_yearly?: string | null
         }
         Update: {
           active?: boolean
@@ -795,9 +799,11 @@ export type Database = {
           max_offers?: number
           name?: string
           price_cents?: number
+          price_cents_yearly?: number | null
           slug?: string
           sort_order?: number
           stripe_price_id?: string | null
+          stripe_price_id_yearly?: string | null
         }
         Relationships: []
       }

@@ -17,8 +17,10 @@ import { PLAN_CATALOG } from "@/data/plans";
 import { formatBRL } from "@/lib/format";
 
 const plans = PLAN_CATALOG.map((p) => ({
+  slug: p.slug,
   name: p.name,
-  price: formatBRL(p.priceCents),
+  priceCents: p.priceCents,
+  priceCentsYearly: p.priceCentsYearly,
   period: p.period,
   icon: p.icon,
   highlight: p.highlight,
@@ -68,6 +70,7 @@ const CONSULTANT_WHATSAPP = "5544991630747";
 
 const Anuncie = () => {
   const [submitting, setSubmitting] = useState(false);
+  const [cycle, setCycle] = useState<"monthly" | "yearly">("monthly");
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -200,21 +203,69 @@ const Anuncie = () => {
               </div>
             </div>
 
-            <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {/* Toggle Mensal / Anual */}
+            <div className="mt-10 flex justify-center">
+              <div className="inline-flex items-center rounded-full border border-border bg-background p-1 shadow-soft">
+                <button
+                  type="button"
+                  onClick={() => setCycle("monthly")}
+                  className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                    cycle === "monthly" ? "bg-accent text-accent-foreground shadow" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Mensal
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCycle("yearly")}
+                  className={`relative rounded-full px-4 py-2 text-sm font-semibold transition ${
+                    cycle === "yearly" ? "bg-accent text-accent-foreground shadow" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Anual
+                  <span className="ml-2 inline-flex items-center rounded-full bg-accent-strong px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
+                    -17%
+                  </span>
+                </button>
+              </div>
+            </div>
+            <p className="mt-2 text-center text-xs text-muted-foreground">
+              No plano anual você paga o equivalente a <strong>10 meses</strong> — 2 meses grátis.
+            </p>
+
+            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               {plans.map((p) => {
                 const Icon = p.icon;
-                const isFree = p.name === "Grátis";
-                const showTrial = !isFree;
+                const isFree = p.slug === "gratis";
+                const yearlyAvailable = !isFree && !!p.priceCentsYearly;
+                const isYearly = cycle === "yearly" && yearlyAvailable;
+                const showTrial = !isFree && cycle === "monthly";
+                const displayPrice = isYearly
+                  ? formatBRL(p.priceCentsYearly!)
+                  : formatBRL(p.priceCents);
+                const displayPeriod = isYearly ? "/ano" : p.period;
+                const ctaHref = isFree
+                  ? "/painel-lojista/loja"
+                  : `/painel-lojista/assinatura?cycle=${isYearly ? "yearly" : "monthly"}`;
+                const ctaLabel = isFree
+                  ? "Começar grátis"
+                  : isYearly
+                  ? "Assinar plano anual"
+                  : "Começar 2 meses grátis";
                 return (
                   <div
                     key={p.name}
                     className={`relative flex flex-col rounded-2xl bg-card p-8 shadow-card ${
-                      showTrial ? "ring-2 ring-accent shadow-pop" : p.highlight ? "ring-2 ring-accent shadow-pop" : ""
+                      !isFree ? "ring-2 ring-accent shadow-pop" : p.highlight ? "ring-2 ring-accent shadow-pop" : ""
                     }`}
                   >
                     {showTrial ? (
                       <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground shadow-md">
                         <Gift className="h-3 w-3" /> 2 MESES GRÁTIS
+                      </span>
+                    ) : isYearly ? (
+                      <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-accent-strong px-3 py-1 text-xs font-bold text-primary-foreground shadow-md">
+                        <Sparkles className="h-3 w-3" /> 2 MESES GRÁTIS NO ANUAL
                       </span>
                     ) : (
                       isFree && (
@@ -234,13 +285,18 @@ const Anuncie = () => {
                           <span className="text-sm font-normal text-muted-foreground"> /2 meses</span>
                         </div>
                         <p className="mt-1 text-xs text-muted-foreground">
-                          Depois, {p.price}{p.period} · cancele antes e não pague nada
+                          Depois, {formatBRL(p.priceCents)}{p.period} · cancele antes e não pague nada
                         </p>
                       </div>
                     ) : (
                       <div className="mt-3">
-                        <span className="text-4xl font-bold text-foreground">{p.price}</span>
-                        <span className="text-muted-foreground"> {p.period}</span>
+                        <span className="text-4xl font-bold text-foreground">{displayPrice}</span>
+                        <span className="text-muted-foreground"> {displayPeriod}</span>
+                        {isYearly && (
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            <s className="opacity-60">{formatBRL(p.priceCents * 12)}/ano</s> · Economize {formatBRL(p.priceCents * 2)}
+                          </p>
+                        )}
                       </div>
                     )}
                     <ul className="mt-6 space-y-3 text-sm">
@@ -251,18 +307,12 @@ const Anuncie = () => {
                         </li>
                       ))}
                     </ul>
-                    <Button
-                      asChild
-                      variant={isFree ? "accent" : "accent"}
-                      className="mt-8 w-full"
-                    >
-                      <a href={isFree ? "/painel-lojista/loja" : "/painel-lojista/assinatura"}>
-                        {isFree ? "Começar grátis" : "Começar 2 meses grátis"}
-                      </a>
+                    <Button asChild variant="accent" className="mt-8 w-full">
+                      <a href={ctaHref}>{ctaLabel}</a>
                     </Button>
-                    {showTrial && (
+                    {!isFree && (
                       <p className="mt-2 text-center text-[11px] text-muted-foreground">
-                        Sem cobrança hoje · Cancele quando quiser
+                        {isYearly ? "Cobrança única anual · Cancele quando quiser" : "Sem cobrança hoje · Cancele quando quiser"}
                       </p>
                     )}
                   </div>

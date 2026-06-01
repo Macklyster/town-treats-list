@@ -4,6 +4,8 @@ export type PlanCatalogItem = {
   slug: "gratis" | "basico" | "destaque" | "plus";
   name: string;
   priceCents: number;
+  /** Preço anual (cobrado uma vez por ano). Quando definido, equivale a 10× o mensal — 2 meses grátis. */
+  priceCentsYearly?: number;
   period: string;
   icon: LucideIcon;
   highlight: boolean;
@@ -38,6 +40,7 @@ export const PLAN_CATALOG: PlanCatalogItem[] = [
     slug: "basico",
     name: "Starter",
     priceCents: 4900,
+    priceCentsYearly: 49000,
     period: "/mês",
     icon: ClipboardList,
     highlight: false,
@@ -53,6 +56,7 @@ export const PLAN_CATALOG: PlanCatalogItem[] = [
     slug: "destaque",
     name: "Destaque",
     priceCents: 12900,
+    priceCentsYearly: 129000,
     period: "/mês",
     icon: Star,
     highlight: true,
@@ -72,6 +76,7 @@ export const PLAN_CATALOG: PlanCatalogItem[] = [
     slug: "plus",
     name: "Plus",
     priceCents: 24900,
+    priceCentsYearly: 249000,
     period: "/mês",
     icon: Zap,
     highlight: false,

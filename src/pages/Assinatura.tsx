@@ -73,6 +73,9 @@ export default function Assinatura() {
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState<string>("");
   const [cancelDetails, setCancelDetails] = useState("");
+  const [cycle, setCycle] = useState<"monthly" | "yearly">(
+    params.get("cycle") === "yearly" ? "yearly" : "monthly",
+  );
 
   const openExternalUrl = (url: string) => {
     const isEmbedded = window.self !== window.top;
@@ -169,7 +172,7 @@ export default function Assinatura() {
     }
     setBusy(planId);
     const { data, error } = await supabase.functions.invoke("create-checkout", {
-      body: { plan_id: planId, store_id: storeId },
+      body: { plan_id: planId, store_id: storeId, cycle },
     });
     setBusy(null);
     if (error || !data?.url) {
@@ -354,6 +357,37 @@ export default function Assinatura() {
         )}
 
         {loading ? <p>Carregando…</p> : (
+          <>
+            {/* Toggle Mensal / Anual */}
+            <div className="mb-6 flex flex-col items-center gap-1">
+              <div className="inline-flex items-center rounded-full border border-border bg-background p-1 shadow-soft">
+                <button
+                  type="button"
+                  onClick={() => setCycle("monthly")}
+                  className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                    cycle === "monthly" ? "bg-accent text-accent-foreground shadow" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Mensal
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCycle("yearly")}
+                  className={`relative rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                    cycle === "yearly" ? "bg-accent text-accent-foreground shadow" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Anual
+                  <span className="ml-2 inline-flex items-center rounded-full bg-accent-strong px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
+                    -17%
+                  </span>
+                </button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Anual = 10 meses (2 meses grátis), cobrado uma vez por ano.
+              </p>
+            </div>
+
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {PLAN_CATALOG.map((catalog) => {
               const isFreePlan = catalog.slug === "gratis";
@@ -363,7 +397,10 @@ export default function Assinatura() {
                 ? !paidActive
                 : !!dbPlan && sub?.plan_id === dbPlan.id && !!paidActive;
               const Icon = catalog.icon;
-              const showTrial = !isFreePlan && trialEligible && !paidActive;
+              const yearlyAvailable = !isFreePlan && !!catalog.priceCentsYearly;
+              const isYearly = cycle === "yearly" && yearlyAvailable;
+              // Yearly subscriptions don't get the 60-day trial (2 free months already baked into the yearly price).
+              const showTrial = !isFreePlan && !isYearly && trialEligible && !paidActive;
               return (
                 <Card
                   key={catalog.slug}
@@ -398,6 +435,16 @@ export default function Assinatura() {
                         </div>
                         <p className="mt-1 text-xs text-muted-foreground">
                           Depois, {formatBRL(catalog.priceCents)}{catalog.period} · cancele antes e não pague nada
+                        </p>
+                      </div>
+                    ) : isYearly ? (
+                      <div className="mt-2">
+                        <div className="text-display text-foreground">
+                          {formatBRL(catalog.priceCentsYearly!)}
+                          <span className="text-sm font-normal text-muted-foreground"> /ano</span>
+                        </div>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          <s className="opacity-60">{formatBRL(catalog.priceCents * 12)}/ano</s> · economize {formatBRL(catalog.priceCents * 2)}
                         </p>
                       </div>
                     ) : (
@@ -447,11 +494,18 @@ export default function Assinatura() {
                             ? "Mudar para este plano"
                             : showTrial
                             ? "Começar 2 meses grátis"
+                            : isYearly
+                            ? "Assinar plano anual"
                             : "Assinar"}
                         </Button>
                         {showTrial && (
                           <p className="mt-2 text-center text-[11px] leading-snug text-muted-foreground">
                             Sem cobrança nos primeiros 60 dias · Cancele quando quiser · Sem multa
+                          </p>
+                        )}
+                        {isYearly && !showTrial && (
+                          <p className="mt-2 text-center text-[11px] leading-snug text-muted-foreground">
+                            Cobrança única anual · Cancele quando quiser
                           </p>
                         )}
                       </>
@@ -461,6 +515,7 @@ export default function Assinatura() {
               );
             })}
           </div>
+          </>
         )}
       </main>
 
