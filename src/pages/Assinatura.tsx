@@ -172,7 +172,7 @@ export default function Assinatura() {
     }
     setBusy(planId);
     const { data, error } = await supabase.functions.invoke("create-checkout", {
-      body: { plan_id: planId, store_id: storeId },
+      body: { plan_id: planId, store_id: storeId, cycle },
     });
     setBusy(null);
     if (error || !data?.url) {
