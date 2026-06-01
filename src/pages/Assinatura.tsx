@@ -437,6 +437,16 @@ export default function Assinatura() {
                           Depois, {formatBRL(catalog.priceCents)}{catalog.period} · cancele antes e não pague nada
                         </p>
                       </div>
+                    ) : isYearly ? (
+                      <div className="mt-2">
+                        <div className="text-display text-foreground">
+                          {formatBRL(catalog.priceCentsYearly!)}
+                          <span className="text-sm font-normal text-muted-foreground"> /ano</span>
+                        </div>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          <s className="opacity-60">{formatBRL(catalog.priceCents * 12)}/ano</s> · economize {formatBRL(catalog.priceCents * 2)}
+                        </p>
+                      </div>
                     ) : (
                       <div className="mt-2 text-display text-foreground">
                         {formatBRL(catalog.priceCents)}
