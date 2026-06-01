@@ -168,7 +168,8 @@ const Anuncie = () => {
               <p className="mt-3 text-muted-foreground">Escolha o plano ideal e ajuste quando quiser.</p>
             </div>
 
-            {/* Banner Trial 2 meses grátis */}
+            {/* Banner Trial 2 meses grátis — exclusivo do ciclo mensal */}
+            {cycle === "monthly" && (
             <div className="relative mx-auto mt-10 max-w-4xl overflow-hidden rounded-2xl gradient-hero p-6 text-primary-foreground md:p-8">
               <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent/30 blur-3xl" aria-hidden />
               <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-accent/20 blur-3xl" aria-hidden />
@@ -182,7 +183,7 @@ const Anuncie = () => {
                       <Sparkles className="h-3 w-3" /> Oferta de boas-vindas
                     </div>
                     <h3 className="text-2xl font-bold leading-tight md:text-3xl">
-                      Teste qualquer plano pago por <span className="inline-block rounded-xl bg-background px-3 py-0.5 text-[#0F0F0E] shadow-soft">2 meses grátis</span>.
+                      Teste qualquer plano mensal por <span className="inline-block rounded-xl bg-background px-3 py-0.5 text-[#0F0F0E] shadow-soft">2 meses grátis</span>.
                     </h3>
                     <p className="mt-1 max-w-xl text-sm opacity-90 md:text-base">
                       Sem cobrança hoje. Cancele a qualquer momento dentro dos 60 dias e não pague nada.
@@ -202,6 +203,7 @@ const Anuncie = () => {
                 </div>
               </div>
             </div>
+            )}
 
             {/* Toggle Mensal / Anual */}
             <div className="mt-10 flex justify-center">
