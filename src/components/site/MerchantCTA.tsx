@@ -14,11 +14,11 @@ export const MerchantCTA = () => {
               Para Lojistas
             </span>
             <h2 className="mt-4 text-3xl font-bold leading-tight md:text-4xl">
-              Comece grátis: 1 oferta por mês, sem cartão.
+              14 dias grátis no plano Plus, sem cartão.
             </h2>
             <p className="mt-4 text-lg opacity-85">
-              Cadastre sua loja na OfertasFly e publique sua primeira oferta sem pagar nada.
-              Faça upgrade quando quiser para destaque, ofertas ilimitadas e relâmpago.
+              Cadastre sua loja na OfertasFly e teste todos os recursos premium por 14 dias.
+              Depois escolha o plano ideal: Starter (3 ofertas/mês), Destaque (10 ofertas) ou Plus (ilimitado).
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild variant="accent" size="lg">
