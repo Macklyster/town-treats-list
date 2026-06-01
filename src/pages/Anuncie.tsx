@@ -64,20 +64,42 @@ const faq = [
   },
 ];
 
+const CONSULTANT_WHATSAPP = "5544991630747";
+
 const Anuncie = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const name = String(data.get("name") ?? "").trim();
+    const company = String(data.get("company") ?? "").trim();
+    const email = String(data.get("email") ?? "").trim();
+    const phone = String(data.get("phone") ?? "").trim();
+    const message = String(data.get("message") ?? "").trim();
+
+    const text =
+      `Olá! Quero falar com um consultor da OfertasFly.%0A%0A` +
+      `*Nome:* ${name}%0A` +
+      `*Empresa:* ${company}%0A` +
+      `*E-mail:* ${email}%0A` +
+      `*Telefone/WhatsApp:* ${phone}` +
+      (message ? `%0A%0A*Mensagem:*%0A${message}` : "");
+
+    const url = `https://wa.me/${CONSULTANT_WHATSAPP}?text=${text.replace(/ /g, "%20")}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+
     setTimeout(() => {
       setSubmitting(false);
-      (e.target as HTMLFormElement).reset();
-      toast.success("Recebemos seu contato!", {
-        description: "Em breve um consultor da OfertasFly vai falar com você.",
+      form.reset();
+      toast.success("Abrindo o WhatsApp...", {
+        description: "Conclua o envio da mensagem para falar com um consultor.",
       });
-    }, 700);
+    }, 400);
   };
+
 
   return (
     <div className="min-h-screen bg-background">
