@@ -34,9 +34,9 @@ export const CityProvider = ({ children }: { children: ReactNode }) => {
   const [availableCities, setAvailableCities] = useState<City[]>([]);
   const [loadingCities, setLoadingCities] = useState(true);
 
-  // Auto-open selector on first visit
+  // Auto-open selector on first visit (unless user dismissed it this session)
   useEffect(() => {
-    if (!city) setSelectorOpen(true);
+    if (!city && !sessionStorage.getItem(DISMISS_KEY)) setSelectorOpen(true);
   }, []); // eslint-disable-line
 
   // Load available cities (distinct from approved stores)
