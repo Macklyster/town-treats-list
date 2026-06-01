@@ -34,7 +34,7 @@ export function ReviewList({ offerId }: { offerId: string }) {
       let profileMap = new Map<string, { full_name: string | null; avatar_url: string | null }>();
       if (userIds.length > 0) {
         const { data: profiles } = await supabase
-          .from("profiles")
+          .from("public_profiles" as any)
           .select("id, full_name, avatar_url")
           .in("id", userIds);
         profileMap = new Map(
