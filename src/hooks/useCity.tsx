@@ -15,6 +15,7 @@ type CityContextValue = {
 };
 
 const STORAGE_KEY = "ofertasfly:city";
+const DISMISS_KEY = "ofertasfly:city_dismissed";
 const CityContext = createContext<CityContextValue | undefined>(undefined);
 
 const readStored = (): City | null => {
@@ -33,9 +34,9 @@ export const CityProvider = ({ children }: { children: ReactNode }) => {
   const [availableCities, setAvailableCities] = useState<City[]>([]);
   const [loadingCities, setLoadingCities] = useState(true);
 
-  // Auto-open selector on first visit
+  // Auto-open selector on first visit (unless user dismissed it this session)
   useEffect(() => {
-    if (!city) setSelectorOpen(true);
+    if (!city && !sessionStorage.getItem(DISMISS_KEY)) setSelectorOpen(true);
   }, []); // eslint-disable-line
 
   // Load available cities (distinct from approved stores)
@@ -78,7 +79,10 @@ export const CityProvider = ({ children }: { children: ReactNode }) => {
       setCity,
       clearCity,
       openSelector: () => setSelectorOpen(true),
-      closeSelector: () => setSelectorOpen(false),
+      closeSelector: () => {
+        sessionStorage.setItem(DISMISS_KEY, "1");
+        setSelectorOpen(false);
+      },
       selectorOpen,
       availableCities,
       loadingCities,
