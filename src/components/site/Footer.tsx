@@ -57,10 +57,22 @@ export const Footer = () => {
             <li className="flex items-center gap-2"><MapPin className="h-4 w-4" /> Douradina — Paraná — Brasil</li>
           </ul>
           <div className="mt-4 flex gap-3">
-            <a href="#" aria-label="Instagram" className="rounded-full bg-charcoal-foreground/10 p-2 hover:bg-accent hover:text-accent-foreground">
+            <a
+              href="https://www.instagram.com/ofertasfly"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="rounded-full bg-charcoal-foreground/10 p-2 hover:bg-accent hover:text-accent-foreground"
+            >
               <Instagram className="h-4 w-4" />
             </a>
-            <a href="#" aria-label="Facebook" className="rounded-full bg-charcoal-foreground/10 p-2 hover:bg-accent hover:text-accent-foreground">
+            <a
+              href="https://www.facebook.com/ofertasfly"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+              className="rounded-full bg-charcoal-foreground/10 p-2 hover:bg-accent hover:text-accent-foreground"
+            >
               <Facebook className="h-4 w-4" />
             </a>
           </div>

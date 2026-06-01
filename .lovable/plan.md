@@ -1,75 +1,45 @@
-## Diagnóstico atual
+# Varredura pré-lançamento OfertasFly — 27/06
 
-**Catálogo (`src/data/plans.ts`) — exibido em /anuncie e /assinatura:**
-- Grátis — R$ 0 — 1 oferta/mês
-- Básico — R$ 79/mês — 3 ofertas
-- Destaque — R$ 149/mês — 10 ofertas + selo, agendamento, relâmpago, dashboard (plano em destaque)
-- Plus — R$ 249/mês — ilimitado + coletivas, leilão, invisível, consultor
+Auditoria estruturada em 6 frentes. Cada item é uma verificação + correção sob demanda. Você aprova o plano e eu executo frente por frente, reportando achados e aplicando fixes.
 
-**Banco (`plans`):** preços diferentes do catálogo (Básico R$ 49, Destaque R$ 99, Plus R$ 199). Só o catálogo é mostrado, mas o checkout lê do banco → inconsistência que pode quebrar a confiança no momento do pagamento.
+## 1. Fluxo de assinatura & cobrança (alto risco)
+- Conferir textos de trial (14 dias) em **todas** as telas: `/anuncie`, `/painel-lojista/assinatura`, e-mails, success/cancel URLs.
+- Validar `change-subscription-plan`, `customer-portal`, `reactivate-subscription` e `stripe-webhook` end-to-end (status, `current_period_end`, `cancel_at_period_end`).
+- Conferir que plano Grátis não tenta abrir checkout e que o gating (`useSubscription`) bate com `max_offers` / `featured_slots` reais.
+- Checar consistência de preços entre `PLAN_CATALOG` (front) e tabela `plans` (banco).
 
-**Promo atual:** banner "2 meses grátis" no anual — mas não existe plano anual nem toggle mensal/anual implementado.
+## 2. Fluxos de oferta (core do produto)
+- Criar / editar / aprovar / expirar nos 4 tipos: oferta padrão, coletiva, leilão, invisível.
+- Agendamento (`is_scheduled`, `scheduled_start_at`) e flash (`is_flash`, `flash_ends_at`) — verificar contagem regressiva e expiração automática (`flash-expire`, `auto-renew-offers`, `group-offer-expire`).
+- Limites por plano (Starter 3 / Destaque 10 / Plus ilimitado) realmente bloqueando.
 
-## Problemas de conversão identificados
+## 3. Painel lojista & Admin
+- Loop em todas as rotas `/painel-lojista/*` e `/admin` testando estados vazios, loading e erro.
+- Dashboard de Inteligência: KPIs, heatmap, top ofertas com dados reais.
+- Aprovação/rejeição de ofertas, lojas e reviews pelo admin.
 
-1. **Salto grande de R$ 79 → R$ 149 (+89%)** entre Básico e Destaque. Boa parte dos lojistas que querem testar agendamento/relâmpago vão travar aqui.
-2. **Plano Grátis quase inútil** (1 oferta/mês). Não gera hábito nem mostra valor da plataforma → poucos viram pagantes.
-3. **Sem trial nos planos pagos.** Lojista precisa colocar cartão sem nunca ter testado o painel.
-4. **Sem opção anual de verdade.** O banner "2 meses grátis" promete algo que não existe → frustra na hora de assinar.
-5. **Destaque tem 9 benefícios, Plus tem 14** — diferença visual grande, mas o "OfertasFly Coletiva / Leilão / Invisível" são features que poucos lojistas vão usar logo de cara. O Plus parece "caro demais para o que sobra de útil no dia a dia".
-6. **Preços do banco desalinhados com catálogo** — risco operacional independente da estratégia.
+## 4. Experiência pública (visitante)
+- Home, `/ofertas/:cidade`, `/ofertas/:cidade/:categoria`, `/loja/:slug`, páginas públicas de coletiva/leilão/invisível.
+- Seletor de cidade, busca, filtros, favoritos, share.
+- SEO: títulos, descriptions, JSON-LD, sitemap, canonical, OG tags.
 
-## Estratégia proposta
+## 5. UI/UX & responsividade
+- Varredura visual mobile (375px) e desktop em todas as páginas-chave.
+- Textos desatualizados (trial, preços, benefícios, copy de CTA).
+- Estados de loading, vazio e erro padronizados.
+- PWA: manifest, ícones, install banner, service worker.
 
-### A. Reposicionar o funil (4 níveis → mesma quantidade, mas com ponte melhor)
+## 6. Backend & segurança
+- Rodar `supabase--linter` para checar RLS, índices e advisories.
+- Rodar `security--run_security_scan` para varredura completa.
+- Conferir grants nas tabelas `public.*` e policies sensíveis (`subscriptions`, `stores`, `user_roles`).
+- Logs das edge functions críticas (erros recentes).
 
-```text
-Grátis    Starter         Destaque       Plus
-R$ 0      R$ 49/mês       R$ 129/mês     R$ 249/mês
-1 oferta  3 ofertas       10 ofertas     ilimitado
-                          (mais popular)
-```
+## Entregáveis por frente
+Para cada frente acima eu entrego:
+1. Lista de achados (bug / UI desatualizada / risco).
+2. Severidade (bloqueia lançamento / importante / cosmético).
+3. Correção aplicada ou proposta com escopo claro.
 
-- **Grátis** continua, mas vira "Teste por 14 dias do Destaque" no onboarding (CTA principal). Quem não converter cai automaticamente no Grátis (1 oferta/mês) — não perde a conta.
-- **Starter** (renomeia Básico) — R$ 49: preço de entrada psicológico abaixo de R$ 50. Inclui agendamento de ofertas (hoje só no Destaque) para já tirar uma objeção comum.
-- **Destaque** vira R$ 129 (era 149) — reduz salto Starter→Destaque para 2,6x (era 1,9x mas com diferença absoluta menor). Continua "mais popular".
-- **Plus** mantém R$ 249, mas reforça os 3 produtos exclusivos (Coletiva, Leilão, Invisível) como "kit de aquisição viral".
-
-### B. Adicionar toggle Mensal / Anual com 2 meses grátis
-
-- Anual = 10× o valor mensal (dois meses gratis), cobrado uma vez.
-- Toggle no topo da seção de planos em `/anuncie#planos` e em `/painel-lojista/assinatura`.
-- Cria um segundo preço por plano (mensal e anual) no banco e no catálogo.
-- Resolve a promessa do banner atual + aumenta LTV e reduz churn no primeiro mês.
-
-### C. Trial de 14 dias no Destaque
-
-- Botão principal do hero passa a ser "Testar 14 dias grátis" em vez de "Quero anunciar".
-- Sem cobrança no cartão durante o trial; só cobra no dia 15 se não cancelar.
-- Reduz a fricção do "será que vale R$ 129?".
-
-### D. Ajustes de copy / prova social (sem mexer em features)
-
-- Adicionar "garantia de 7 dias" no Destaque e Plus → devolve dinheiro se cancelar na primeira semana.
-- Adicionar microcopy abaixo de cada preço: "cancele quando quiser", "sem fidelidade", "suporte humano".
-- Adicionar comparativo lado-a-lado de features-chave (tabela) abaixo dos cards, para o lojista enxergar rapidamente o que ganha subindo de plano.
-
-### E. Higiene: alinhar banco × catálogo
-
-- Atualizar `plans` no banco para os novos preços (Starter 4900, Destaque 12900, Plus 24900) com colunas separadas para mensal/anual e `stripe_price_id` por variação.
-- `Assinatura.tsx` passa a ler também o ciclo (mensal/anual) escolhido.
-
-## O que precisa ser feito (resumo de execução)
-
-1. Editar `src/data/plans.ts`: renomear "Básico" → "Starter", adicionar campo `priceCentsYearly`, mover "Agendamento de ofertas" para Starter, ajustar preço do Destaque para R$ 129.
-2. Adicionar toggle Mensal/Anual nas seções de planos em `src/pages/Anuncie.tsx` e `src/pages/Assinatura.tsx`.
-3. Migração no banco: adicionar `price_cents_yearly`, `stripe_price_id_yearly`, atualizar valores e slugs, manter compatibilidade do `basico` → `starter` ou redirecionar.
-4. Trial de 14 dias: adicionar `trial_period_days: 14` no `create-checkout` para o plano Destaque + atualizar CTA do hero.
-5. Adicionar tabela comparativa abaixo dos cards de plano + selos de garantia/sem fidelidade.
-
-## Decisões que preciso confirmar antes de implementar
-
-- Topo da régua de preços (R$ 49 / 129 / 249) está OK ou prefere outros valores?
-- Quer mesmo o trial de 14 dias do Destaque, ou prefere manter o Grátis como porta de entrada única?
-- Em qual plano o trial deve cair (Destaque) e o Grátis fica como fallback pós-trial?
-- Posso renomear "Básico" para "Starter" ou prefere outro nome (ex.: "Essencial")?
+## Como prefere executar?
+Posso ir **frente por frente em ordem** (1→6, recomendado) ou **paralelo por prioridade** (assinatura + ofertas primeiro, resto depois). Diga "pode ir" para começar pela frente 1.

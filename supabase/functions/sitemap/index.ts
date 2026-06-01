@@ -49,6 +49,9 @@ Deno.serve(async (req) => {
     const urls: UrlEntry[] = [
       { loc: `${SITE_URL}/`, changefreq: "daily", priority: 1.0, lastmod: today },
       { loc: `${SITE_URL}/anuncie`, changefreq: "weekly", priority: 0.7 },
+      { loc: `${SITE_URL}/coletivas`, changefreq: "daily", priority: 0.6 },
+      { loc: `${SITE_URL}/leiloes`, changefreq: "daily", priority: 0.6 },
+      { loc: `${SITE_URL}/ofertas-invisiveis`, changefreq: "daily", priority: 0.6 },
       { loc: `${SITE_URL}/termos-de-uso`, changefreq: "yearly", priority: 0.2 },
       { loc: `${SITE_URL}/politica-de-privacidade`, changefreq: "yearly", priority: 0.2 },
     ];

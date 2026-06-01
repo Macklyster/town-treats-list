@@ -54,7 +54,7 @@ export default function PainelLojista() {
   const [activeInvisivel, setActiveInvisivel] = useState<GeoOffer | null>(null);
   const [loading, setLoading] = useState(true);
   const subInfo = useSubscription(store?.id ?? null);
-  const isPlus = !!subInfo.subscription && subInfo.subscription.status === "active" && subInfo.plan?.slug === "plus";
+  const isPlus = !!subInfo.subscription && ["active", "trialing"].includes(subInfo.subscription.status) && subInfo.plan?.slug === "plus";
 
   const load = async () => {
     if (!user) return;

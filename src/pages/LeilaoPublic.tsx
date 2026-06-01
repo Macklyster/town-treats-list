@@ -24,6 +24,7 @@ import { MessageCircle, Gavel, Clock, Package, TrendingDown, Eye, Users, Shoppin
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { toast } from "sonner";
+import { SEO } from "@/components/seo/SEO";
 
 const fmtTime = (s: number) => {
   if (s <= 0) return "0s";
@@ -165,6 +166,12 @@ export default function LeilaoPublic() {
 
   return (
     <div className="flex min-h-screen flex-col bg-muted/20">
+      <SEO
+        title={`${offer.title} — Leilão ${state.store_name ?? "OfertasFly"}`}
+        description={offer.description ?? `Leilão reverso de oferta no OfertasFly. O preço cai com o tempo.`}
+        path={`/leilao/${token}`}
+        image={offer.image_url ?? undefined}
+      />
       <Header />
       <main className="container flex-1 py-10">
         <div className="mx-auto max-w-2xl space-y-6">
