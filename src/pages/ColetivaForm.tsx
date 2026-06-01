@@ -55,7 +55,7 @@ export default function ColetivaForm() {
   const [savedToken, setSavedToken] = useState<string | null>(null);
   const sub = useSubscription(storeId);
 
-  const isPlus = !!sub.subscription && sub.subscription.status === "active" && (sub.plan?.slug === "plus");
+  const isPlus = !!sub.subscription && ["active", "trialing"].includes(sub.subscription.status) && (sub.plan?.slug === "plus");
 
   const [form, setForm] = useState({
     title: "",

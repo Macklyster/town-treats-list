@@ -48,7 +48,6 @@ export const PLAN_CATALOG: PlanCatalogItem[] = [
       "Até 3 ofertas ativas",
       "Página da loja personalizada",
       "Aparece nas buscas e categorias",
-      "Agendamento de ofertas",
       "Suporte por e-mail",
     ],
   },
