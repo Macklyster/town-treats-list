@@ -64,20 +64,42 @@ const faq = [
   },
 ];
 
+const CONSULTANT_WHATSAPP = "5544991630747";
+
 const Anuncie = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const name = String(data.get("name") ?? "").trim();
+    const company = String(data.get("company") ?? "").trim();
+    const email = String(data.get("email") ?? "").trim();
+    const phone = String(data.get("phone") ?? "").trim();
+    const message = String(data.get("message") ?? "").trim();
+
+    const text =
+      `Olá! Quero falar com um consultor da OfertasFly.%0A%0A` +
+      `*Nome:* ${name}%0A` +
+      `*Empresa:* ${company}%0A` +
+      `*E-mail:* ${email}%0A` +
+      `*Telefone/WhatsApp:* ${phone}` +
+      (message ? `%0A%0A*Mensagem:*%0A${message}` : "");
+
+    const url = `https://wa.me/${CONSULTANT_WHATSAPP}?text=${text.replace(/ /g, "%20")}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+
     setTimeout(() => {
       setSubmitting(false);
-      (e.target as HTMLFormElement).reset();
-      toast.success("Recebemos seu contato!", {
-        description: "Em breve um consultor da OfertasFly vai falar com você.",
+      form.reset();
+      toast.success("Abrindo o WhatsApp...", {
+        description: "Conclua o envio da mensagem para falar com um consultor.",
       });
-    }, 700);
+    }, 400);
   };
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -278,26 +300,26 @@ const Anuncie = () => {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="name">Nome *</Label>
-                  <Input id="name" required className="mt-2" />
+                  <Input id="name" name="name" required className="mt-2" />
                 </div>
                 <div>
                   <Label htmlFor="company">Empresa *</Label>
-                  <Input id="company" required className="mt-2" />
+                  <Input id="company" name="company" required className="mt-2" />
                 </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="email">E-mail *</Label>
-                  <Input id="email" type="email" required className="mt-2" />
+                  <Input id="email" name="email" type="email" required className="mt-2" />
                 </div>
                 <div>
                   <Label htmlFor="phone">Telefone / WhatsApp *</Label>
-                  <Input id="phone" required className="mt-2" />
+                  <Input id="phone" name="phone" required className="mt-2" />
                 </div>
               </div>
               <div>
                 <Label htmlFor="message">Mensagem</Label>
-                <Textarea id="message" rows={5} className="mt-2" placeholder="Conte um pouco sobre o seu negócio..." />
+                <Textarea id="message" name="message" rows={5} className="mt-2" placeholder="Conte um pouco sobre o seu negócio..." />
               </div>
               <Button type="submit" variant="accent" size="lg" className="w-full" disabled={submitting}>
                 <Send className="h-4 w-4" />
