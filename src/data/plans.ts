@@ -4,6 +4,8 @@ export type PlanCatalogItem = {
   slug: "gratis" | "basico" | "destaque" | "plus";
   name: string;
   priceCents: number;
+  /** Preço anual (cobrado uma vez por ano). Quando definido, equivale a 10× o mensal — 2 meses grátis. */
+  priceCentsYearly?: number;
   period: string;
   icon: LucideIcon;
   highlight: boolean;
