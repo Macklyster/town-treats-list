@@ -76,6 +76,7 @@ export const PLAN_CATALOG: PlanCatalogItem[] = [
     slug: "plus",
     name: "Plus",
     priceCents: 24900,
+    priceCentsYearly: 249000,
     period: "/mês",
     icon: Zap,
     highlight: false,
