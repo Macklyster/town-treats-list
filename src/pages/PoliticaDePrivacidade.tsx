@@ -1,9 +1,17 @@
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { SEO } from "@/components/seo/SEO";
+
+const LAST_UPDATE = "01/06/2026";
 
 const PoliticaDePrivacidade = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Política de Privacidade — OfertasFly"
+        description="Como o OfertasFly coleta, usa e protege seus dados pessoais. LGPD, cookies, direitos e contato."
+        path="/politica-de-privacidade"
+      />
       <Header />
       <main className="container max-w-4xl py-12">
         <h1 className="mb-6 text-4xl font-bold">Política de Privacidade</h1>
@@ -73,7 +81,7 @@ const PoliticaDePrivacidade = () => {
           </p>
 
           <p className="mt-8 text-sm text-muted-foreground">
-            Última atualização: {new Date().toLocaleDateString("pt-BR")}
+            Última atualização: {LAST_UPDATE}
           </p>
         </div>
       </main>

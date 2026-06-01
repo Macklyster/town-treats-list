@@ -18,6 +18,7 @@ import { MessageCircle, Copy, Check } from "lucide-react";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { toast } from "sonner";
+import { SEO } from "@/components/seo/SEO";
 
 export default function ColetivaPublic() {
   const { token } = useParams();
@@ -139,6 +140,12 @@ export default function ColetivaPublic() {
 
   return (
     <div className="flex min-h-screen flex-col bg-muted/20">
+      <SEO
+        title={`${offer.title} — Coletiva ${storeName || "OfertasFly"}`}
+        description={offer.description ?? `Participe da oferta coletiva no OfertasFly.`}
+        path={`/coletiva/${token}`}
+        image={offer.image_url ?? undefined}
+      />
       <Header />
       <main className="container flex-1 py-10">
         <div className="mx-auto max-w-2xl space-y-6">

@@ -1,9 +1,17 @@
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { SEO } from "@/components/seo/SEO";
+
+const LAST_UPDATE = "01/06/2026";
 
 const TermosDeUso = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Termos de Uso — OfertasFly"
+        description="Termos e condições de uso da plataforma OfertasFly: cadastro, ofertas, responsabilidades e direitos dos usuários."
+        path="/termos-de-uso"
+      />
       <Header />
       <main className="container max-w-4xl py-12">
         <h1 className="mb-6 text-4xl font-bold">Termos de Uso</h1>
@@ -82,7 +90,7 @@ const TermosDeUso = () => {
           </p>
 
           <p className="mt-8 text-sm text-muted-foreground">
-            Última atualização: {new Date().toLocaleDateString("pt-BR")}
+            Última atualização: {LAST_UPDATE}
           </p>
         </div>
       </main>
