@@ -45,8 +45,8 @@ const faq = [
     a: "Não. Os planos são mensais e você pode cancelar quando quiser.",
   },
   {
-    q: "Como funcionam os 2 meses grátis?",
-    a: "Em qualquer plano pago, sua primeira assinatura ganha 60 dias grátis. Você informa o cartão para garantir a continuidade após o período, mas nada é cobrado nos 2 primeiros meses. Cancele antes do fim do trial e não paga nada.",
+    q: "Como funcionam os 14 dias grátis?",
+    a: "Em qualquer plano pago, sua primeira assinatura ganha 14 dias grátis. Você informa o cartão para garantir a continuidade após o período, mas nada é cobrado nos 14 primeiros dias. Cancele antes do fim do trial e não paga nada.",
   },
   {
     q: "Posso agendar minha oferta para publicar em outra data?",
@@ -168,7 +168,7 @@ const Anuncie = () => {
               <p className="mt-3 text-muted-foreground">Escolha o plano ideal e ajuste quando quiser.</p>
             </div>
 
-            {/* Banner Trial 2 meses grátis — exclusivo do ciclo mensal */}
+            {/* Banner Trial 14 dias grátis — exclusivo do ciclo mensal */}
             {cycle === "monthly" && (
             <div className="relative mx-auto mt-10 max-w-4xl overflow-hidden rounded-2xl gradient-hero p-6 text-primary-foreground md:p-8">
               <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent/30 blur-3xl" aria-hidden />
@@ -183,10 +183,10 @@ const Anuncie = () => {
                       <Sparkles className="h-3 w-3" /> Oferta de boas-vindas
                     </div>
                     <h3 className="text-2xl font-bold leading-tight md:text-3xl">
-                      Teste qualquer plano mensal por <span className="inline-block rounded-xl bg-background px-3 py-0.5 text-[#0F0F0E] shadow-soft">2 meses grátis</span>.
+                      Teste qualquer plano mensal por <span className="inline-block rounded-xl bg-background px-3 py-0.5 text-[#0F0F0E] shadow-soft">14 dias grátis</span>.
                     </h3>
                     <p className="mt-1 max-w-xl text-sm opacity-90 md:text-base">
-                      Sem cobrança hoje. Cancele a qualquer momento dentro dos 60 dias e não pague nada.
+                      Sem cobrança hoje. Cancele a qualquer momento dentro dos 14 dias e não pague nada.
                     </p>
                   </div>
                 </div>
@@ -253,7 +253,7 @@ const Anuncie = () => {
                   ? "Começar grátis"
                   : isYearly
                   ? "Assinar plano anual"
-                  : "Começar 2 meses grátis";
+                  : "Começar 14 dias grátis";
                 return (
                   <div
                     key={p.name}
@@ -263,7 +263,7 @@ const Anuncie = () => {
                   >
                     {showTrial ? (
                       <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground shadow-md">
-                        <Gift className="h-3 w-3" /> 2 MESES GRÁTIS
+                        <Gift className="h-3 w-3" /> 14 DIAS GRÁTIS
                       </span>
                     ) : isYearly ? (
                       <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-accent-strong px-3 py-1 text-xs font-bold text-primary-foreground shadow-md">
@@ -284,7 +284,7 @@ const Anuncie = () => {
                       <div className="mt-3">
                         <div className="text-4xl font-bold text-foreground">
                           R$ 0
-                          <span className="text-sm font-normal text-muted-foreground"> /2 meses</span>
+                          <span className="text-sm font-normal text-muted-foreground"> /14 dias</span>
                         </div>
                         <p className="mt-1 text-xs text-muted-foreground">
                           Depois, {formatBRL(p.priceCents)}{p.period} · cancele antes e não pague nada
