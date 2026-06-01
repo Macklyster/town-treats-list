@@ -22,7 +22,8 @@ Deno.serve(async (req) => {
     if (uErr || !userData.user) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
     const user = userData.user;
 
-    const { plan_id, store_id } = await req.json();
+    const { plan_id, store_id, cycle: rawCycle } = await req.json();
+    const cycle: "monthly" | "yearly" = rawCycle === "yearly" ? "yearly" : "monthly";
     if (!plan_id || !store_id) return new Response(JSON.stringify({ error: "missing fields" }), { status: 400, headers: corsHeaders });
 
     const { data: plan } = await supabase.from("plans").select("*").eq("id", plan_id).single();
