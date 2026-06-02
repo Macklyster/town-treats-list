@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -9,38 +10,44 @@ import { CitySelector } from "@/components/site/CitySelector";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import OfferDetail from "./pages/OfferDetail.tsx";
-import Anuncie from "./pages/Anuncie.tsx";
-import Auth from "./pages/Auth.tsx";
-import PainelLojista from "./pages/PainelLojista.tsx";
-import OfertaForm from "./pages/OfertaForm.tsx";
-import ColetivaForm from "./pages/ColetivaForm.tsx";
-import ColetivaPublic from "./pages/ColetivaPublic.tsx";
-import Coletivas from "./pages/Coletivas.tsx";
-import Leiloes from "./pages/Leiloes.tsx";
-import LeilaoForm from "./pages/LeilaoForm.tsx";
-import LeilaoPublic from "./pages/LeilaoPublic.tsx";
-import OfertaInvisivelForm from "./pages/OfertaInvisivelForm.tsx";
-import OfertaInvisivelPublic from "./pages/OfertaInvisivelPublic.tsx";
-import OfertasInvisiveis from "./pages/OfertasInvisiveis.tsx";
-import LojaForm from "./pages/LojaForm.tsx";
-import Admin from "./pages/Admin.tsx";
-import Assinatura from "./pages/Assinatura.tsx";
-import TermosDeUso from "./pages/TermosDeUso.tsx";
-import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade.tsx";
-import Notificacoes from "./pages/Notificacoes.tsx";
-import Inteligencia from "./pages/Inteligencia.tsx";
 import { ScrollToHash } from "./components/ScrollToHash";
 import { BackToTopButton } from "./components/site/BackToTopButton";
 import { InstallAppBanner } from "./components/site/InstallAppBanner";
 import { ReviewPromptDialog } from "./components/site/ReviewPromptDialog";
-import CityOffers from "./pages/CityOffers.tsx";
-import StorePage from "./pages/StorePage.tsx";
+
+// Lazy-load all secondary/auth-only routes to keep the home bundle small.
+const OfferDetail = lazy(() => import("./pages/OfferDetail.tsx"));
+const Anuncie = lazy(() => import("./pages/Anuncie.tsx"));
+const Auth = lazy(() => import("./pages/Auth.tsx"));
+const PainelLojista = lazy(() => import("./pages/PainelLojista.tsx"));
+const OfertaForm = lazy(() => import("./pages/OfertaForm.tsx"));
+const ColetivaForm = lazy(() => import("./pages/ColetivaForm.tsx"));
+const ColetivaPublic = lazy(() => import("./pages/ColetivaPublic.tsx"));
+const Coletivas = lazy(() => import("./pages/Coletivas.tsx"));
+const Leiloes = lazy(() => import("./pages/Leiloes.tsx"));
+const LeilaoForm = lazy(() => import("./pages/LeilaoForm.tsx"));
+const LeilaoPublic = lazy(() => import("./pages/LeilaoPublic.tsx"));
+const OfertaInvisivelForm = lazy(() => import("./pages/OfertaInvisivelForm.tsx"));
+const OfertaInvisivelPublic = lazy(() => import("./pages/OfertaInvisivelPublic.tsx"));
+const OfertasInvisiveis = lazy(() => import("./pages/OfertasInvisiveis.tsx"));
+const LojaForm = lazy(() => import("./pages/LojaForm.tsx"));
+const Admin = lazy(() => import("./pages/Admin.tsx"));
+const Assinatura = lazy(() => import("./pages/Assinatura.tsx"));
+const TermosDeUso = lazy(() => import("./pages/TermosDeUso.tsx"));
+const PoliticaDePrivacidade = lazy(() => import("./pages/PoliticaDePrivacidade.tsx"));
+const Notificacoes = lazy(() => import("./pages/Notificacoes.tsx"));
+const Inteligencia = lazy(() => import("./pages/Inteligencia.tsx"));
+const CityOffers = lazy(() => import("./pages/CityOffers.tsx"));
+const StorePage = lazy(() => import("./pages/StorePage.tsx"));
 
 const OfertasRedirect = () => {
   const { search } = useLocation();
   return <Navigate to={`/${search}#ofertas`} replace />;
 };
+
+const RouteFallback = () => (
+  <div className="container py-20 text-center text-muted-foreground">Carregando…</div>
+);
 
 const queryClient = new QueryClient();
 
@@ -54,106 +61,108 @@ const App = () => (
           <CityProvider>
             <CitySelector />
             <ScrollToHash />
-            <Routes>
-              <Route path="/" element={<Index />} />
-            <Route path="/ofertas" element={<OfertasRedirect />} />
-            <Route path="/ofertas/:cidadeSlug" element={<CityOffers />} />
-            <Route path="/ofertas/:cidadeSlug/:categoriaSlug" element={<CityOffers />} />
-            <Route path="/loja/:storeSlug" element={<StorePage />} />
-            <Route path="/termos-de-uso" element={<TermosDeUso />} />
-            <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
-            <Route path="/oferta/:id" element={<OfferDetail />} />
-            <Route path="/coletiva/:token" element={<ColetivaPublic />} />
-            <Route path="/coletivas" element={<Coletivas />} />
-            <Route path="/leilao/:token" element={<LeilaoPublic />} />
-            <Route path="/leiloes" element={<Leiloes />} />
-            <Route path="/oferta-invisivel/:token" element={<OfertaInvisivelPublic />} />
-            <Route path="/ofertas-invisiveis" element={<OfertasInvisiveis />} />
-            <Route path="/anuncie" element={<Anuncie />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route
-              path="/perfil/notificacoes"
-              element={
-                <ProtectedRoute>
-                  <Notificacoes />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/painel-lojista"
-              element={
-                <ProtectedRoute requireRole="lojista">
-                  <PainelLojista />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/painel-lojista/loja"
-              element={
-                <ProtectedRoute requireRole="lojista">
-                  <LojaForm />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/painel-lojista/oferta/:id?"
-              element={
-                <ProtectedRoute requireRole="lojista">
-                  <OfertaForm />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/painel-lojista/coletiva/:id?"
-              element={
-                <ProtectedRoute requireRole="lojista">
-                  <ColetivaForm />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/painel-lojista/leilao/:id?"
-              element={
-                <ProtectedRoute requireRole="lojista">
-                  <LeilaoForm />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/painel-lojista/oferta-invisivel/:id?"
-              element={
-                <ProtectedRoute requireRole="lojista">
-                  <OfertaInvisivelForm />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/painel-lojista/assinatura"
-              element={
-                <ProtectedRoute requireRole="lojista">
-                  <Assinatura />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/painel-lojista/inteligencia"
-              element={
-                <ProtectedRoute requireRole="lojista">
-                  <Inteligencia />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute requireRole="admin">
-                  <Admin />
-                </ProtectedRoute>
-              }
-            />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={<RouteFallback />}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/ofertas" element={<OfertasRedirect />} />
+                <Route path="/ofertas/:cidadeSlug" element={<CityOffers />} />
+                <Route path="/ofertas/:cidadeSlug/:categoriaSlug" element={<CityOffers />} />
+                <Route path="/loja/:storeSlug" element={<StorePage />} />
+                <Route path="/termos-de-uso" element={<TermosDeUso />} />
+                <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
+                <Route path="/oferta/:id" element={<OfferDetail />} />
+                <Route path="/coletiva/:token" element={<ColetivaPublic />} />
+                <Route path="/coletivas" element={<Coletivas />} />
+                <Route path="/leilao/:token" element={<LeilaoPublic />} />
+                <Route path="/leiloes" element={<Leiloes />} />
+                <Route path="/oferta-invisivel/:token" element={<OfertaInvisivelPublic />} />
+                <Route path="/ofertas-invisiveis" element={<OfertasInvisiveis />} />
+                <Route path="/anuncie" element={<Anuncie />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route
+                  path="/perfil/notificacoes"
+                  element={
+                    <ProtectedRoute>
+                      <Notificacoes />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/painel-lojista"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <PainelLojista />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/painel-lojista/loja"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <LojaForm />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/painel-lojista/oferta/:id?"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <OfertaForm />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/painel-lojista/coletiva/:id?"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <ColetivaForm />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/painel-lojista/leilao/:id?"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <LeilaoForm />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/painel-lojista/oferta-invisivel/:id?"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <OfertaInvisivelForm />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/painel-lojista/assinatura"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <Assinatura />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/painel-lojista/inteligencia"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <Inteligencia />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute requireRole="admin">
+                      <Admin />
+                    </ProtectedRoute>
+                  }
+                />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
             <BackToTopButton />
             <InstallAppBanner />
             <ReviewPromptDialog />
