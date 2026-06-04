@@ -137,6 +137,16 @@ export default function PainelLojista() {
           {store && (
             <div className="flex flex-wrap gap-2">
               <Button asChild variant="outline">
+                <Link to="/painel-lojista/cupons">
+                  <Ticket className="h-4 w-4" /> Cupons
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/painel-lojista/historico">
+                  <History className="h-4 w-4" /> Histórico
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
                 <Link to="/painel-lojista/inteligencia">
                   <BarChart3 className="h-4 w-4" /> Inteligência
                 </Link>
