@@ -171,6 +171,29 @@ export default function LeilaoPublic() {
         description={offer.description ?? `Leilão reverso de oferta no OfertasFly. O preço cai com o tempo.`}
         path={`/leilao/${token}`}
         image={offer.image_url ?? undefined}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: offer.title,
+          description: offer.description ?? undefined,
+          image: offer.image_url ? [offer.image_url] : undefined,
+          brand: state.store_name ? { "@type": "Brand", name: state.store_name } : undefined,
+          offers: {
+            "@type": "Offer",
+            priceCurrency: "BRL",
+            price: (live?.price ?? Number(offer.min_price)).toFixed(2),
+            availability:
+              offer.status === "sold_out" || remainingUnits <= 0
+                ? "https://schema.org/SoldOut"
+                : offer.status === "approved"
+                  ? "https://schema.org/InStock"
+                  : "https://schema.org/PreOrder",
+            priceValidUntil: offer.ends_at
+              ? new Date(offer.ends_at).toISOString().slice(0, 10)
+              : undefined,
+            url: typeof window !== "undefined" ? window.location.href : undefined,
+          },
+        }}
       />
       <Header />
       <main className="container flex-1 py-10">
