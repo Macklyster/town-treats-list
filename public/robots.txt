@@ -12,5 +12,10 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /auth
+Disallow: /painel-lojista
+Disallow: /admin
+Disallow: /inteligencia
 
+Sitemap: https://ofertasfly.com.br/sitemap.xml
 Sitemap: https://ougpesguavrqbeethbjl.supabase.co/functions/v1/sitemap
