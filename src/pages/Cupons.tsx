@@ -495,7 +495,7 @@ export default function Cupons() {
                       Solicitado em {new Date(r.created_at).toLocaleString("pt-BR")}
                     </div>
                     {r.redeemed_at && (
-                      <div className="text-xs text-success">
+                      <div className="text-xs text-primary">
                         Confirmado em {new Date(r.redeemed_at).toLocaleString("pt-BR")}
                       </div>
                     )}
