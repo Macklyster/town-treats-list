@@ -40,6 +40,7 @@ type Coupon = {
   discount_value: number;
   max_uses: number | null;
   uses_count: number;
+  max_per_user: number;
   valid_until: string | null;
   active: boolean;
   created_at: string;
@@ -63,6 +64,7 @@ const emptyForm = {
   discount_type: "percent" as "percent" | "amount",
   discount_value: "10",
   max_uses: "",
+  max_per_user: "1",
   valid_until: "",
   offer_id: "none",
   active: true,
@@ -153,6 +155,7 @@ export default function Cupons() {
       discount_type: form.discount_type,
       discount_value: value,
       max_uses: form.max_uses ? Number(form.max_uses) : null,
+      max_per_user: form.max_per_user ? Math.max(1, Number(form.max_per_user)) : 1,
       valid_until: form.valid_until || null,
       active: form.active,
     };
@@ -290,15 +293,26 @@ export default function Cupons() {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <Label>Limite de usos</Label>
+                    <Label>Limite total</Label>
                     <Input
                       type="number"
                       min="1"
                       placeholder="ilimitado"
                       value={form.max_uses}
                       onChange={(e) => setForm({ ...form, max_uses: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label>Por usuário</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={form.max_per_user}
+                      onChange={(e) =>
+                        setForm({ ...form, max_per_user: e.target.value })
+                      }
                     />
                   </div>
                   <div>
