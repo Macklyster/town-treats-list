@@ -122,6 +122,7 @@ export default function Coletivas() {
         title="Ofertas Coletivas — OfertasFly"
         description="Compra coletiva: quanto mais amigos entram, menor o preço. Veja as ofertas coletivas das lojas que você segue."
         path="/coletivas"
+        jsonLd={faqToJsonLd(COLETIVAS_FAQ)}
       />
       <Header />
       <main className="container flex-1 py-8">
