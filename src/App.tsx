@@ -154,6 +154,22 @@ const App = () => (
                   }
                 />
                 <Route
+                  path="/painel-lojista/cupons"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <Cupons />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/painel-lojista/historico"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <Historico />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/admin"
                   element={
                     <ProtectedRoute requireRole="admin">
