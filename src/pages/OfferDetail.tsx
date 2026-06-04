@@ -109,34 +109,43 @@ const OfferDetail = () => {
   const cLabel = cityObj ? cityLabel(cityObj) : "";
   const seoTitle = `${offer.title} — ${offer.storeName}${cLabel ? ` em ${cLabel}` : ""} | OfertasFly`;
   const seoDesc = (offer.description || `${offer.title} na ${offer.storeName}${cLabel ? ` em ${cLabel}` : ""}. Aproveite a oferta no OfertasFly.`).slice(0, 160);
-  const offerLd = {
+  const priceValidUntil = offer.validUntil
+    ? new Date(offer.validUntil).toISOString().slice(0, 10)
+    : undefined;
+  const productLd: Record<string, any> = {
     "@context": "https://schema.org",
-    "@type": "Offer",
+    "@type": "Product",
     name: offer.title,
-    description: offer.description || undefined,
-    image: offer.image,
-    url: absoluteUrl(`/oferta/${offer.id}`),
-    price: offer.promoPrice || undefined,
-    priceCurrency: "BRL",
-    availability: "https://schema.org/InStock",
-    validThrough: offer.validUntil || undefined,
-    aggregateRating:
-      rating && rating.count > 0
-        ? {
-            "@type": "AggregateRating",
-            ratingValue: rating.avg,
-            reviewCount: rating.count,
-          }
-        : undefined,
-    seller: {
-      "@type": "LocalBusiness",
-      name: offer.storeName,
-      address: store?.address
-        ? { "@type": "PostalAddress", streetAddress: store.address, addressLocality: store?.city, addressRegion: store?.state, addressCountry: "BR" }
-        : undefined,
-      telephone: store?.phone || undefined,
+    description: offer.description || `${offer.title} na ${offer.storeName}${cLabel ? ` em ${cLabel}` : ""}.`,
+    image: offer.image ? [offer.image] : undefined,
+    sku: offer.id,
+    brand: { "@type": "Brand", name: offer.storeName },
+    offers: {
+      "@type": "Offer",
+      url: absoluteUrl(`/oferta/${offer.id}`),
+      price: offer.promoPrice > 0 ? offer.promoPrice.toFixed(2) : undefined,
+      priceCurrency: "BRL",
+      availability: "https://schema.org/InStock",
+      priceValidUntil,
+      seller: {
+        "@type": "LocalBusiness",
+        name: offer.storeName,
+        address: store?.address
+          ? { "@type": "PostalAddress", streetAddress: store.address, addressLocality: store?.city, addressRegion: store?.state, addressCountry: "BR" }
+          : undefined,
+        telephone: store?.phone || undefined,
+      },
     },
   };
+  if (rating && rating.count > 0) {
+    productLd.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: rating.avg,
+      reviewCount: rating.count,
+      bestRating: 5,
+      worstRating: 1,
+    };
+  }
   const breadcrumbLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
