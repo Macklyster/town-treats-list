@@ -18,6 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { Link } from "react-router-dom";
 import { AlertCircle, Bell, RefreshCw, CalendarClock, Lock } from "lucide-react";
 import { ImageUploader } from "@/components/site/ImageUploader";
+import { MediaPicker } from "@/components/cms/MediaPicker";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PAYMENT_METHODS, type PaymentMethodId, parseConditions, buildConditions } from "@/lib/payment-methods";
 import { useFlashSettings } from "@/hooks/useFlashSettings";
@@ -323,6 +324,20 @@ export default function OfertaForm() {
                 storeId={storeId}
                 label="Imagem da oferta"
               />
+              {storeId && (
+                <MediaPicker
+                  storeId={storeId}
+                  selected={form.image_url ? [] : []}
+                  onChange={(_ids, _cover) => {
+                    // Picker returns asset ids; we need URL of cover
+                    import("@/integrations/supabase/client").then(({ supabase }) => {
+                      supabase.from("media_assets").select("url").eq("id", _cover).single().then(({ data }) => {
+                        if (data?.url) setForm((f) => ({ ...f, image_url: data.url }));
+                      });
+                    });
+                  }}
+                />
+              )}
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>

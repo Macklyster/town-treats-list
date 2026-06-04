@@ -29,15 +29,19 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import * as LucideIcons from "lucide-react";
-import { Check, X, Star, Pencil, Trash2, ArrowUp, ArrowDown, Plus, Tag } from "lucide-react";
+import { Check, X, Star, Pencil, Trash2, ArrowUp, ArrowDown, Plus, Tag, Copy, Images } from "lucide-react";
 import { AdminBroadcast } from "@/components/admin/AdminBroadcast";
 import { AdminSettings } from "@/components/admin/AdminSettings";
 import { AdminReviews } from "@/components/admin/AdminReviews";
 import { AdminColetivas } from "@/components/admin/AdminColetivas";
 import { AdminLeiloes } from "@/components/admin/AdminLeiloes";
 import { AdminOfertasInvisiveis } from "@/components/admin/AdminOfertasInvisiveis";
+import { AdminMedia } from "@/components/admin/AdminMedia";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { OfferBulkBar } from "@/components/cms/OfferBulkBar";
+import { duplicateOffer } from "@/lib/media-api";
 
 type Category = {
   slug: string;
@@ -88,6 +92,22 @@ export default function Admin() {
   const [stores, setStores] = useState<AdminStore[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedOffers, setSelectedOffers] = useState<string[]>([]);
+
+  const toggleSelect = (id: string) =>
+    setSelectedOffers((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  const toggleSelectAll = () =>
+    setSelectedOffers((prev) => (prev.length === offers.length ? [] : offers.map((o) => o.id)));
+
+  const handleDuplicate = async (id: string) => {
+    try {
+      await duplicateOffer(id);
+      toast.success("Oferta duplicada como rascunho");
+      load();
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+  };
 
   const [catDialogOpen, setCatDialogOpen] = useState(false);
   const [editingCat, setEditingCat] = useState<Category | null>(null);
@@ -246,6 +266,7 @@ export default function Admin() {
             <TabsTrigger value="coletivas">Coletivas</TabsTrigger>
             <TabsTrigger value="leiloes">Leilões</TabsTrigger>
             <TabsTrigger value="invisiveis">Invisíveis</TabsTrigger>
+            <TabsTrigger value="media">Mídia</TabsTrigger>
             <TabsTrigger value="settings">Configurações</TabsTrigger>
           </TabsList>
 
@@ -257,11 +278,27 @@ export default function Admin() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead className="text-left text-muted-foreground">
-                        <tr><th className="py-2">Título</th><th>Loja</th><th>Status</th><th>Relâmpago</th><th>Destaque</th><th className="text-right">Ações</th></tr>
+                        <tr>
+                          <th className="py-2 w-8">
+                            <Checkbox
+                              checked={offers.length > 0 && selectedOffers.length === offers.length}
+                              onCheckedChange={toggleSelectAll}
+                              aria-label="Selecionar todas"
+                            />
+                          </th>
+                          <th className="py-2">Título</th><th>Loja</th><th>Status</th><th>Relâmpago</th><th>Destaque</th><th className="text-right">Ações</th>
+                        </tr>
                       </thead>
                       <tbody className="divide-y">
                         {offers.map((o) => (
-                          <tr key={o.id}>
+                          <tr key={o.id} className={selectedOffers.includes(o.id) ? "bg-muted/40" : ""}>
+                            <td className="py-3">
+                              <Checkbox
+                                checked={selectedOffers.includes(o.id)}
+                                onCheckedChange={() => toggleSelect(o.id)}
+                                aria-label={`Selecionar ${o.title}`}
+                              />
+                            </td>
                             <td className="py-3 font-medium text-foreground">{o.title}</td>
                             <td>{o.store?.name ?? "—"}</td>
                             <td><Badge variant={o.status === "approved" ? "default" : "secondary"}>{o.status}</Badge></td>
@@ -303,6 +340,9 @@ export default function Admin() {
                                 <Button size="sm" variant="ghost" onClick={() => updateOffer(o.id, { featured: !o.featured })}>
                                   <Star className="h-3.5 w-3.5" />
                                 </Button>
+                                <Button size="sm" variant="ghost" title="Duplicar" onClick={() => handleDuplicate(o.id)}>
+                                  <Copy className="h-3.5 w-3.5" />
+                                </Button>
                                 {o.is_flash && o.status === "approved" && (
                                   <Button size="sm" variant="outline" onClick={() => sendFlashBroadcast(o.id)}>
                                     📣 Broadcast
@@ -318,6 +358,17 @@ export default function Admin() {
                 )}
               </CardContent>
             </Card>
+            <div className="mt-4">
+              <OfferBulkBar
+                ids={selectedOffers}
+                categories={categories.map((c) => ({ slug: c.slug, name: c.name }))}
+                onCleared={() => setSelectedOffers([])}
+                onDone={() => {
+                  setSelectedOffers([]);
+                  load();
+                }}
+              />
+            </div>
           </TabsContent>
 
           <TabsContent value="stores" className="mt-6">
@@ -501,6 +552,12 @@ export default function Admin() {
           <TabsContent value="invisiveis" className="mt-6">
             <AdminOfertasInvisiveis />
           </TabsContent>
+
+          <TabsContent value="media" className="mt-6">
+            <AdminMedia />
+          </TabsContent>
+
+
 
           <TabsContent value="settings" className="mt-6">
             <AdminSettings />

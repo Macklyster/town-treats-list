@@ -43,6 +43,7 @@ const Cupons = lazy(() => import("./pages/Cupons.tsx"));
 const Historico = lazy(() => import("./pages/Historico.tsx"));
 const MeusCupons = lazy(() => import("./pages/MeusCupons.tsx"));
 const MeuCupomDetalhe = lazy(() => import("./pages/MeuCupomDetalhe.tsx"));
+const Biblioteca = lazy(() => import("./pages/Biblioteca.tsx"));
 
 const OfertasRedirect = () => {
   const { search } = useLocation();
@@ -184,6 +185,14 @@ const App = () => (
                   element={
                     <ProtectedRoute requireRole="lojista">
                       <Historico />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/painel-lojista/midia"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <Biblioteca />
                     </ProtectedRoute>
                   }
                 />

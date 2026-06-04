@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle, BarChart3, QrCode, Users, Share2, Copy, MessageCircle, Sparkles, Trash2, Ticket, History } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { OfferBulkBar } from "@/components/cms/OfferBulkBar";
+import { duplicateOffer } from "@/lib/media-api";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
@@ -55,6 +58,29 @@ export default function PainelLojista() {
   const [loading, setLoading] = useState(true);
   const subInfo = useSubscription(store?.id ?? null);
   const isPlus = !!subInfo.subscription && ["active", "trialing"].includes(subInfo.subscription.status) && subInfo.plan?.slug === "plus";
+  const [selectedOffers, setSelectedOffers] = useState<string[]>([]);
+  const [categoriesList, setCategoriesList] = useState<{ slug: string; name: string }[]>([]);
+
+  useEffect(() => {
+    supabase.from("categories").select("slug,name").order("sort_order").then(({ data }) => {
+      setCategoriesList((data ?? []) as any);
+    });
+  }, []);
+
+  const toggleSelect = (id: string) =>
+    setSelectedOffers((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  const toggleSelectAll = () =>
+    setSelectedOffers((prev) => (prev.length === offers.length ? [] : offers.map((o) => o.id)));
+
+  const handleDuplicate = async (id: string) => {
+    try {
+      await duplicateOffer(id);
+      toast.success("Oferta duplicada como rascunho");
+      load();
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+  };
 
   const load = async () => {
     if (!user) return;
@@ -144,6 +170,11 @@ export default function PainelLojista() {
               <Button asChild variant="outline">
                 <Link to="/painel-lojista/historico">
                   <History className="h-4 w-4" /> Histórico
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/painel-lojista/midia">
+                  <Sparkles className="h-4 w-4" /> Mídia
                 </Link>
               </Button>
               <Button asChild variant="outline">
@@ -539,6 +570,13 @@ export default function PainelLojista() {
                     <table className="w-full text-sm">
                       <thead className="text-left text-muted-foreground">
                         <tr>
+                          <th className="py-2 w-8">
+                            <Checkbox
+                              checked={offers.length > 0 && selectedOffers.length === offers.length}
+                              onCheckedChange={toggleSelectAll}
+                              aria-label="Selecionar todas"
+                            />
+                          </th>
                           <th className="py-2">Título</th>
                           <th>Categoria</th>
                           <th>Preço</th>
@@ -551,7 +589,14 @@ export default function PainelLojista() {
                       </thead>
                       <tbody className="divide-y">
                         {offers.map((o) => (
-                          <tr key={o.id}>
+                          <tr key={o.id} className={selectedOffers.includes(o.id) ? "bg-muted/40" : ""}>
+                            <td className="py-3">
+                              <Checkbox
+                                checked={selectedOffers.includes(o.id)}
+                                onCheckedChange={() => toggleSelect(o.id)}
+                                aria-label={`Selecionar ${o.title}`}
+                              />
+                            </td>
                             <td className="py-3 font-medium text-foreground">{o.title}</td>
                             <td>{o.category_slug}</td>
                             <td>{formatBRLNumber(Number(o.promo_price))}</td>
@@ -576,6 +621,9 @@ export default function PainelLojista() {
                                 <Button size="sm" variant="ghost" title="Editar" onClick={() => navigate(`/painel-lojista/oferta/${o.id}`)}>
                                   <Pencil className="h-3.5 w-3.5" />
                                 </Button>
+                                <Button size="sm" variant="ghost" title="Duplicar" onClick={() => handleDuplicate(o.id)}>
+                                  <Copy className="h-3.5 w-3.5" />
+                                </Button>
                                 <Button size="sm" variant="ghost" onClick={() => handleDelete(o.id)}>
                                   Excluir
                                 </Button>
@@ -587,6 +635,14 @@ export default function PainelLojista() {
                     </table>
                   </div>
                 )}
+                <div className="mt-4">
+                  <OfferBulkBar
+                    ids={selectedOffers}
+                    categories={categoriesList}
+                    onCleared={() => setSelectedOffers([])}
+                    onDone={() => { setSelectedOffers([]); load(); }}
+                  />
+                </div>
               </CardContent>
             </Card>
           </div>
