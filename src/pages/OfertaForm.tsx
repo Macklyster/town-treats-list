@@ -18,6 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { Link } from "react-router-dom";
 import { AlertCircle, Bell, RefreshCw, CalendarClock, Lock } from "lucide-react";
 import { ImageUploader } from "@/components/site/ImageUploader";
+import { MediaPicker } from "@/components/cms/MediaPicker";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PAYMENT_METHODS, type PaymentMethodId, parseConditions, buildConditions } from "@/lib/payment-methods";
 import { useFlashSettings } from "@/hooks/useFlashSettings";
