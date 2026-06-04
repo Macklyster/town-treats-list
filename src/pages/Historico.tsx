@@ -2,11 +2,17 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
+  ArrowRight,
   Eye,
   MessageCircle,
   Phone,
   QrCode,
   Activity,
+  Sparkles,
+  TrendingUp,
+  Target,
+  Clock,
+  Lock,
 } from "lucide-react";
 import {
   ResponsiveContainer,
