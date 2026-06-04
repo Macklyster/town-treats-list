@@ -4,6 +4,7 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { OfferCard } from "@/components/site/OfferCard";
 import { SEO } from "@/components/seo/SEO";
+import { FaqSection, faqToJsonLd } from "@/components/site/FaqSection";
 import { categories } from "@/data/categories";
 import {
   fetchOffers,
