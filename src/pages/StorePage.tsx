@@ -7,6 +7,7 @@ import { SEO } from "@/components/seo/SEO";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { FollowStoreButton } from "@/components/site/FollowStoreButton";
+import { CouponRedeemList } from "@/components/site/CouponRedeemList";
 import {
   fetchStoreBySlug,
   fetchOffersByStoreId,
@@ -122,6 +123,10 @@ const StorePage = () => {
           </div>
           <FollowStoreButton storeId={store.id} />
         </header>
+
+        <div className="mb-8">
+          <CouponRedeemList storeId={store.id} />
+        </div>
 
         <h2 className="mb-5 text-xl font-semibold text-foreground">
           Ofertas de {store.name} {cityObj.city && `em ${cityLabel(cityObj)}`}
