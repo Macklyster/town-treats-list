@@ -184,6 +184,8 @@ export default function Leiloes() {
               {rows.map((r) => <AuctionCard key={r.id} row={r} />)}
             </div>
           )}
+
+          <FaqSection items={LEILOES_FAQ} />
         </div>
       </main>
       <Footer />
