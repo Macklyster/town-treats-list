@@ -570,6 +570,13 @@ export default function PainelLojista() {
                     <table className="w-full text-sm">
                       <thead className="text-left text-muted-foreground">
                         <tr>
+                          <th className="py-2 w-8">
+                            <Checkbox
+                              checked={offers.length > 0 && selectedOffers.length === offers.length}
+                              onCheckedChange={toggleSelectAll}
+                              aria-label="Selecionar todas"
+                            />
+                          </th>
                           <th className="py-2">Título</th>
                           <th>Categoria</th>
                           <th>Preço</th>
@@ -582,7 +589,14 @@ export default function PainelLojista() {
                       </thead>
                       <tbody className="divide-y">
                         {offers.map((o) => (
-                          <tr key={o.id}>
+                          <tr key={o.id} className={selectedOffers.includes(o.id) ? "bg-muted/40" : ""}>
+                            <td className="py-3">
+                              <Checkbox
+                                checked={selectedOffers.includes(o.id)}
+                                onCheckedChange={() => toggleSelect(o.id)}
+                                aria-label={`Selecionar ${o.title}`}
+                              />
+                            </td>
                             <td className="py-3 font-medium text-foreground">{o.title}</td>
                             <td>{o.category_slug}</td>
                             <td>{formatBRLNumber(Number(o.promo_price))}</td>
@@ -607,6 +621,9 @@ export default function PainelLojista() {
                                 <Button size="sm" variant="ghost" title="Editar" onClick={() => navigate(`/painel-lojista/oferta/${o.id}`)}>
                                   <Pencil className="h-3.5 w-3.5" />
                                 </Button>
+                                <Button size="sm" variant="ghost" title="Duplicar" onClick={() => handleDuplicate(o.id)}>
+                                  <Copy className="h-3.5 w-3.5" />
+                                </Button>
                                 <Button size="sm" variant="ghost" onClick={() => handleDelete(o.id)}>
                                   Excluir
                                 </Button>
@@ -618,6 +635,14 @@ export default function PainelLojista() {
                     </table>
                   </div>
                 )}
+                <div className="mt-4">
+                  <OfferBulkBar
+                    ids={selectedOffers}
+                    categories={categoriesList}
+                    onCleared={() => setSelectedOffers([])}
+                    onDone={() => { setSelectedOffers([]); load(); }}
+                  />
+                </div>
               </CardContent>
             </Card>
           </div>
