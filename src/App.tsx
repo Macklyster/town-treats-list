@@ -189,6 +189,14 @@ const App = () => (
                   }
                 />
                 <Route
+                  path="/painel-lojista/midia"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <Biblioteca />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/admin"
                   element={
                     <ProtectedRoute requireRole="admin">
