@@ -163,7 +163,7 @@ const OfferDetail = () => {
         description={seoDesc}
         path={`/oferta/${offer.id}`}
         image={offer.image}
-        jsonLd={[offerLd, breadcrumbLd]}
+        jsonLd={[productLd, breadcrumbLd]}
       />
       <Header />
       <main className="container py-10">
