@@ -92,6 +92,22 @@ export default function Admin() {
   const [stores, setStores] = useState<AdminStore[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedOffers, setSelectedOffers] = useState<string[]>([]);
+
+  const toggleSelect = (id: string) =>
+    setSelectedOffers((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  const toggleSelectAll = () =>
+    setSelectedOffers((prev) => (prev.length === offers.length ? [] : offers.map((o) => o.id)));
+
+  const handleDuplicate = async (id: string) => {
+    try {
+      await duplicateOffer(id);
+      toast.success("Oferta duplicada como rascunho");
+      load();
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+  };
 
   const [catDialogOpen, setCatDialogOpen] = useState(false);
   const [editingCat, setEditingCat] = useState<Category | null>(null);
