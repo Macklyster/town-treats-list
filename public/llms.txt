@@ -1,0 +1,17 @@
+# OfertasFly
+
+> OfertasFly reúne ofertas, cupons e descontos do comércio local brasileiro. Consumidores encontram promoções por cidade e categoria; lojistas publicam ofertas, leilões e compras coletivas com planos a partir de 14 dias grátis.
+
+## Pages
+
+- [Início](/): Ofertas e cupons da sua cidade.
+- [Anuncie sua loja](/anuncie): Planos para lojistas, com 14 dias grátis e sem fidelidade.
+- [Compras coletivas](/coletivas): Ofertas que destravam preço conforme o grupo cresce.
+- [Leilões](/leiloes): Leilões reversos e disputas por descontos.
+- [Ofertas invisíveis](/ofertas-invisiveis): Ofertas surpresa reveladas no momento da compra.
+- [Termos de uso](/termos-de-uso): Condições gerais de uso da plataforma.
+- [Política de privacidade](/politica-de-privacidade): Como tratamos dados pessoais.
+
+## Optional
+
+- [Entrar](/auth): Acesso ao painel do lojista.
