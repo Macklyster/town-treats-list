@@ -238,6 +238,8 @@ export default function Coletivas() {
               })}
             </div>
           )}
+
+          <FaqSection items={COLETIVAS_FAQ} />
         </div>
       </main>
       <Footer />
