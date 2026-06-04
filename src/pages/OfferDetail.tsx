@@ -17,6 +17,7 @@ import { parseConditions, getMethod } from "@/lib/payment-methods";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { trackOfferEvent } from "@/lib/offer-events";
 import { FollowStoreButton } from "@/components/site/FollowStoreButton";
+import { CouponRedeemList } from "@/components/site/CouponRedeemList";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { CountdownBadge } from "@/components/site/CountdownBadge";
 import NotFound from "./NotFound";
@@ -292,6 +293,12 @@ const OfferDetail = () => {
             </div>
 
             <InstallAppInline />
+
+            {store && (
+              <div className="mb-6">
+                <CouponRedeemList storeId={offer.storeId} offerId={offer.id} />
+              </div>
+            )}
 
             {store && (
               <div className="rounded-2xl bg-card p-6 shadow-card">
