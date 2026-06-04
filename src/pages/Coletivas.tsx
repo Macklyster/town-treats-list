@@ -8,6 +8,30 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Users, Clock, Sparkles, TrendingDown, Share2, Heart } from "lucide-react";
+import { FaqSection, faqToJsonLd, type FaqItem } from "@/components/site/FaqSection";
+
+const COLETIVAS_FAQ: FaqItem[] = [
+  {
+    q: "Como funciona uma oferta coletiva?",
+    a: "Cada coletiva tem uma escada de preços. Conforme mais pessoas entram, o preço cai para todos. No final, todos pagam o último preço alcançado pelo grupo.",
+  },
+  {
+    q: "Preciso pagar para entrar na coletiva?",
+    a: "Não. Você só confirma a participação. O pagamento é feito direto com a loja, dentro do prazo combinado, pelo preço final atingido pelo grupo.",
+  },
+  {
+    q: "O que acontece se a coletiva não atingir o número mínimo de pessoas?",
+    a: "Você paga o preço da última faixa atingida. Se nenhuma faixa de desconto for atingida, a oferta segue pelo preço inicial — ou a loja pode cancelar conforme as condições informadas.",
+  },
+  {
+    q: "Posso compartilhar a coletiva com amigos?",
+    a: "Sim, e é o jeito mais rápido de derrubar o preço. Use o botão de WhatsApp para enviar seu link de convite — quanto mais gente entra pelo seu link, mais barato fica para todo mundo.",
+  },
+  {
+    q: "Por que só vejo coletivas das lojas que sigo?",
+    a: "As coletivas são exclusivas para clientes das lojas. Siga as lojas que você gosta na OfertasFly para receber as coletivas delas no seu feed.",
+  },
+];
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { useAuth } from "@/hooks/useAuth";
