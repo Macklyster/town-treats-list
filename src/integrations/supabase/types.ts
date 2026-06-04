@@ -269,6 +269,7 @@ export type Database = {
           discount_value: number
           id: string
           kind: Database["public"]["Enums"]["coupon_kind"]
+          max_per_user: number
           max_uses: number | null
           offer_id: string | null
           store_id: string
@@ -285,6 +286,7 @@ export type Database = {
           discount_value: number
           id?: string
           kind?: Database["public"]["Enums"]["coupon_kind"]
+          max_per_user?: number
           max_uses?: number | null
           offer_id?: string | null
           store_id: string
@@ -301,6 +303,7 @@ export type Database = {
           discount_value?: number
           id?: string
           kind?: Database["public"]["Enums"]["coupon_kind"]
+          max_per_user?: number
           max_uses?: number | null
           offer_id?: string | null
           store_id?: string
@@ -1276,6 +1279,7 @@ export type Database = {
           store_name: string
         }[]
       }
+      redeem_coupon: { Args: { p_coupon_id: string }; Returns: Json }
       reserve_auction: { Args: { p_token: string }; Returns: Json }
       store_intelligence: {
         Args: { p_days?: number; p_store_id: string }
