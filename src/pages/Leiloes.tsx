@@ -13,6 +13,30 @@ import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { computeCurrentPrice, computeSecondsToNext, formatBRL, type AuctionOffer } from "@/lib/auction-api";
+import { FaqSection, faqToJsonLd, type FaqItem } from "@/components/site/FaqSection";
+
+const LEILOES_FAQ: FaqItem[] = [
+  {
+    q: "O que é um leilão reverso de oferta?",
+    a: "É um leilão onde o preço cai sozinho com o tempo, em vez de subir. Quanto mais você espera, mais barato fica — mas alguém pode reservar antes de você e travar o preço.",
+  },
+  {
+    q: "Como funciona a reserva?",
+    a: "Ao clicar em reservar, o preço atual fica travado para você. Depois é só combinar a retirada e o pagamento direto com a loja pelo WhatsApp.",
+  },
+  {
+    q: "Quantas unidades cada leilão tem?",
+    a: "Cada leilão tem uma quantidade limitada definida pela loja. Quando todas as unidades são reservadas, o leilão encerra como esgotado.",
+  },
+  {
+    q: "Posso cancelar a reserva?",
+    a: "A reserva é um compromisso com a loja. Cancelamentos seguem a política informada pela loja nas condições do leilão.",
+  },
+  {
+    q: "Por que só vejo leilões das lojas que sigo?",
+    a: "Os leilões são exclusivos para clientes da loja. Siga as lojas que você gosta na OfertasFly para receber os leilões delas no seu feed.",
+  },
+];
 
 type Row = AuctionOffer & { store: { id: string; name: string; slug: string; logo_url: string | null; featured_badge: boolean } | null };
 
