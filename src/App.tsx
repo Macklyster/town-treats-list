@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -14,6 +14,7 @@ import { ScrollToHash } from "./components/ScrollToHash";
 import { BackToTopButton } from "./components/site/BackToTopButton";
 import { InstallAppBanner } from "./components/site/InstallAppBanner";
 import { ReviewPromptDialog } from "./components/site/ReviewPromptDialog";
+import { PageSkeleton } from "./components/site/PageSkeleton";
 
 // Lazy-load all secondary/auth-only routes to keep the home bundle small.
 const OfferDetail = lazy(() => import("./pages/OfferDetail.tsx"));
@@ -50,9 +51,41 @@ const OfertasRedirect = () => {
   return <Navigate to={`/${search}#ofertas`} replace />;
 };
 
-const RouteFallback = () => (
-  <div className="container py-20 text-center text-muted-foreground">Carregando…</div>
-);
+// Pre-warm lazy route chunks during browser idle time so navigations after the
+// first paint feel instant (no Suspense fallback flash).
+const prefetchRoutes = () => {
+  const loaders: Array<() => Promise<unknown>> = [
+    () => import("./pages/OfferDetail.tsx"),
+    () => import("./pages/Coletivas.tsx"),
+    () => import("./pages/Leiloes.tsx"),
+    () => import("./pages/OfertasInvisiveis.tsx"),
+    () => import("./pages/CityOffers.tsx"),
+    () => import("./pages/StorePage.tsx"),
+    () => import("./pages/Auth.tsx"),
+    () => import("./pages/Anuncie.tsx"),
+  ];
+  loaders.forEach((load) => {
+    try {
+      load();
+    } catch {}
+  });
+};
+
+const RoutePrefetcher = () => {
+  useEffect(() => {
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+    };
+    const schedule = w.requestIdleCallback
+      ? (cb: () => void) => w.requestIdleCallback!(cb, { timeout: 2500 })
+      : (cb: () => void) => window.setTimeout(cb, 1500);
+    const id = schedule(prefetchRoutes);
+    return () => {
+      if (typeof id === "number") clearTimeout(id);
+    };
+  }, []);
+  return null;
+};
 
 const queryClient = new QueryClient();
 
@@ -66,7 +99,8 @@ const App = () => (
           <CityProvider>
             <CitySelector />
             <ScrollToHash />
-            <Suspense fallback={<RouteFallback />}>
+            <RoutePrefetcher />
+            <Suspense fallback={<PageSkeleton />}>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/ofertas" element={<OfertasRedirect />} />

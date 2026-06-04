@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth, AppRole } from "@/hooks/useAuth";
+import { PageSkeleton } from "@/components/site/PageSkeleton";
 
 type Props = {
   children: React.ReactNode;
@@ -11,9 +12,7 @@ export const ProtectedRoute = ({ children, requireRole }: Props) => {
   const location = useLocation();
 
   if (loading) {
-    return (
-      <div className="container py-20 text-center text-muted-foreground">Carregando…</div>
-    );
+    return <PageSkeleton />;
   }
   if (!user) {
     return <Navigate to={`/auth?redirect=${encodeURIComponent(location.pathname)}`} replace />;
