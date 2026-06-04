@@ -93,9 +93,18 @@ const CityOffers = () => {
     })),
   };
 
+  const faqItems = [
+    { q: `Como funcionam as ofertas em ${cityName}?`, a: `Nossas ofertas em ${cityName} são publicadas diretamente pelos lojistas locais. Você navega, escolhe a promoção e resgata o cupom na loja ou online.` },
+    { q: "Os cupons são gratuitos?", a: "Sim. A maioria dos cupons e descontos é gratuita para o consumidor. O lojista paga apenas para divulgar nossa plataforma." },
+    { q: "Como resgato um cupom?", a: "Basta clicar no botão 'Resgatar cupom' na página da oferta. Após a verificação, o cupom fica disponível em 'Meus Cupons' com instruções de uso." },
+    { q: "As ofertas têm validade?", a: "Sim. Cada oferta exibe a data de validade. Cupons fora do prazo não podem ser resgatados, então aproveite enquanto duram." },
+    { q: "Posso usar mais de um cupom por compra?", a: "Isso depende da política de cada loja. Recomendamos ler os termos da oferta ou consultar o atendente no momento da compra." },
+  ];
+  const faqLd = faqToJsonLd(faqItems);
+
   return (
     <div className="min-h-screen bg-background">
-      <SEO title={title} description={description} path={path} jsonLd={[breadcrumb, itemList]} />
+      <SEO title={title} description={description} path={path} jsonLd={[breadcrumb, itemList, faqLd]} />
       <Header />
       <main className="container py-10">
         <nav className="mb-4 flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
