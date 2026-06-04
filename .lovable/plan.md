@@ -1,45 +1,15 @@
-# Varredura pré-lançamento OfertasFly — 27/06
+Adicionar um banner de upgrade (Plus/Destaque) na tela Histórico, posicionado entre o gráfico de atividade diária (30d) e a linha do tempo. O banner destaca os benefícios exclusivos da tela Inteligência para incentivar upgrade.
 
-Auditoria estruturada em 6 frentes. Cada item é uma verificação + correção sob demanda. Você aprova o plano e eu executo frente por frente, reportando achados e aplicando fixes.
-
-## 1. Fluxo de assinatura & cobrança (alto risco)
-- Conferir textos de trial (14 dias) em **todas** as telas: `/anuncie`, `/painel-lojista/assinatura`, e-mails, success/cancel URLs.
-- Validar `change-subscription-plan`, `customer-portal`, `reactivate-subscription` e `stripe-webhook` end-to-end (status, `current_period_end`, `cancel_at_period_end`).
-- Conferir que plano Grátis não tenta abrir checkout e que o gating (`useSubscription`) bate com `max_offers` / `featured_slots` reais.
-- Checar consistência de preços entre `PLAN_CATALOG` (front) e tabela `plans` (banco).
-
-## 2. Fluxos de oferta (core do produto)
-- Criar / editar / aprovar / expirar nos 4 tipos: oferta padrão, coletiva, leilão, invisível.
-- Agendamento (`is_scheduled`, `scheduled_start_at`) e flash (`is_flash`, `flash_ends_at`) — verificar contagem regressiva e expiração automática (`flash-expire`, `auto-renew-offers`, `group-offer-expire`).
-- Limites por plano (Starter 3 / Destaque 10 / Plus ilimitado) realmente bloqueando.
-
-## 3. Painel lojista & Admin
-- Loop em todas as rotas `/painel-lojista/*` e `/admin` testando estados vazios, loading e erro.
-- Dashboard de Inteligência: KPIs, heatmap, top ofertas com dados reais.
-- Aprovação/rejeição de ofertas, lojas e reviews pelo admin.
-
-## 4. Experiência pública (visitante)
-- Home, `/ofertas/:cidade`, `/ofertas/:cidade/:categoria`, `/loja/:slug`, páginas públicas de coletiva/leilão/invisível.
-- Seletor de cidade, busca, filtros, favoritos, share.
-- SEO: títulos, descriptions, JSON-LD, sitemap, canonical, OG tags.
-
-## 5. UI/UX & responsividade
-- Varredura visual mobile (375px) e desktop em todas as páginas-chave.
-- Textos desatualizados (trial, preços, benefícios, copy de CTA).
-- Estados de loading, vazio e erro padronizados.
-- PWA: manifest, ícones, install banner, service worker.
-
-## 6. Backend & segurança
-- Rodar `supabase--linter` para checar RLS, índices e advisories.
-- Rodar `security--run_security_scan` para varredura completa.
-- Conferir grants nas tabelas `public.*` e policies sensíveis (`subscriptions`, `stores`, `user_roles`).
-- Logs das edge functions críticas (erros recentes).
-
-## Entregáveis por frente
-Para cada frente acima eu entrego:
-1. Lista de achados (bug / UI desatualizada / risco).
-2. Severidade (bloqueia lançamento / importante / cosmético).
-3. Correção aplicada ou proposta com escopo claro.
-
-## Como prefere executar?
-Posso ir **frente por frente em ordem** (1→6, recomendado) ou **paralelo por prioridade** (assinatura + ofertas primeiro, resto depois). Diga "pode ir" para começar pela frente 1.
+**Mudanças técnicas:**
+- Editar `src/pages/Historico.tsx`:
+  - Inserir import de ícones adicionais do Lucide (Sparkles, TrendingUp, Target, Clock, ArrowRight, Lock).
+  - Adicionar um `<Card>` estilizado (gradiente sutil, borda primary/20) com:
+    - Título "Quer insights mais profundos?" com badge Plus/Destaque.
+    - Lista de 4 benefícios com ícones:
+      1. Heatmap de horário de pico (Clock)
+      2. Ranking de ofertas que mais convertem (TrendingUp)
+      3. Benchmark com concorrentes da mesma categoria (Target)
+      4. Comparativo de percentil e média da cidade (Sparkles)
+    - Botão CTA "Ver Inteligência da Loja" com ícone ArrowRight, rota `/painel-lojista/inteligencia`.
+    - Observação de que é exclusivo dos planos Destaque e Plus (Lock).
+  - Posicionar o banner entre o `</Card>` do gráfico de atividade diária e o `<Card>` da linha do tempo.
