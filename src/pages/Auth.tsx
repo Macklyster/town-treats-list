@@ -93,6 +93,12 @@ export default function Auth() {
 
   return (
     <div className="flex min-h-screen flex-col bg-muted/30">
+      <SEO
+        title="Entrar ou criar conta — Lojistas | OfertasFly"
+        description="Acesse o painel do lojista da OfertasFly para gerenciar sua loja, publicar ofertas e acompanhar resultados."
+        path="/auth"
+        noindex
+      />
       <Header />
       <main className="flex flex-1 items-center justify-center px-4 py-10">
         <Card className="w-full max-w-md">
