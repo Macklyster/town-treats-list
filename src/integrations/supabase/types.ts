@@ -579,6 +579,62 @@ export type Database = {
           },
         ]
       }
+      media_assets: {
+        Row: {
+          alt_text: string | null
+          bytes: number | null
+          created_at: string
+          filename: string | null
+          height: number | null
+          id: string
+          storage_path: string | null
+          store_id: string
+          tags: string[]
+          updated_at: string
+          uploaded_by: string | null
+          url: string
+          width: number | null
+        }
+        Insert: {
+          alt_text?: string | null
+          bytes?: number | null
+          created_at?: string
+          filename?: string | null
+          height?: number | null
+          id?: string
+          storage_path?: string | null
+          store_id: string
+          tags?: string[]
+          updated_at?: string
+          uploaded_by?: string | null
+          url: string
+          width?: number | null
+        }
+        Update: {
+          alt_text?: string | null
+          bytes?: number | null
+          created_at?: string
+          filename?: string | null
+          height?: number | null
+          id?: string
+          storage_path?: string | null
+          store_id?: string
+          tags?: string[]
+          updated_at?: string
+          uploaded_by?: string | null
+          url?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "media_assets_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_preferences: {
         Row: {
           city_new_offers: boolean
@@ -683,6 +739,45 @@ export type Database = {
           user_agent?: string | null
         }
         Relationships: []
+      }
+      offer_media: {
+        Row: {
+          created_at: string
+          is_cover: boolean
+          media_id: string
+          offer_id: string
+          position: number
+        }
+        Insert: {
+          created_at?: string
+          is_cover?: boolean
+          media_id: string
+          offer_id: string
+          position?: number
+        }
+        Update: {
+          created_at?: string
+          is_cover?: boolean
+          media_id?: string
+          offer_id?: string
+          position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offer_media_media_id_fkey"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offer_media_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       offer_review_photos: {
         Row: {
@@ -1239,6 +1334,7 @@ export type Database = {
         Returns: Json
       }
       claim_unique_coupon: { Args: { p_coupon_id: string }; Returns: Json }
+      duplicate_offer: { Args: { p_offer_id: string }; Returns: string }
       geo_offer_register_visit: {
         Args: {
           p_lat: number
