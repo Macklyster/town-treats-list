@@ -29,15 +29,19 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import * as LucideIcons from "lucide-react";
-import { Check, X, Star, Pencil, Trash2, ArrowUp, ArrowDown, Plus, Tag } from "lucide-react";
+import { Check, X, Star, Pencil, Trash2, ArrowUp, ArrowDown, Plus, Tag, Copy, Images } from "lucide-react";
 import { AdminBroadcast } from "@/components/admin/AdminBroadcast";
 import { AdminSettings } from "@/components/admin/AdminSettings";
 import { AdminReviews } from "@/components/admin/AdminReviews";
 import { AdminColetivas } from "@/components/admin/AdminColetivas";
 import { AdminLeiloes } from "@/components/admin/AdminLeiloes";
 import { AdminOfertasInvisiveis } from "@/components/admin/AdminOfertasInvisiveis";
+import { AdminMedia } from "@/components/admin/AdminMedia";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { OfferBulkBar } from "@/components/cms/OfferBulkBar";
+import { duplicateOffer } from "@/lib/media-api";
 
 type Category = {
   slug: string;
