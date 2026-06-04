@@ -188,6 +188,13 @@ const CityOffers = () => {
             </div>
           </section>
         )}
+
+        <div className="mt-16">
+          <FaqSection
+            title={category ? `Dúvidas sobre ${category.name} em ${cityName}` : `Dúvidas sobre ofertas em ${cityName}`}
+            items={faqItems}
+          />
+        </div>
       </main>
       <Footer />
     </div>
