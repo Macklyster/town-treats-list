@@ -278,11 +278,27 @@ export default function Admin() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead className="text-left text-muted-foreground">
-                        <tr><th className="py-2">Título</th><th>Loja</th><th>Status</th><th>Relâmpago</th><th>Destaque</th><th className="text-right">Ações</th></tr>
+                        <tr>
+                          <th className="py-2 w-8">
+                            <Checkbox
+                              checked={offers.length > 0 && selectedOffers.length === offers.length}
+                              onCheckedChange={toggleSelectAll}
+                              aria-label="Selecionar todas"
+                            />
+                          </th>
+                          <th className="py-2">Título</th><th>Loja</th><th>Status</th><th>Relâmpago</th><th>Destaque</th><th className="text-right">Ações</th>
+                        </tr>
                       </thead>
                       <tbody className="divide-y">
                         {offers.map((o) => (
-                          <tr key={o.id}>
+                          <tr key={o.id} className={selectedOffers.includes(o.id) ? "bg-muted/40" : ""}>
+                            <td className="py-3">
+                              <Checkbox
+                                checked={selectedOffers.includes(o.id)}
+                                onCheckedChange={() => toggleSelect(o.id)}
+                                aria-label={`Selecionar ${o.title}`}
+                              />
+                            </td>
                             <td className="py-3 font-medium text-foreground">{o.title}</td>
                             <td>{o.store?.name ?? "—"}</td>
                             <td><Badge variant={o.status === "approved" ? "default" : "secondary"}>{o.status}</Badge></td>
@@ -323,6 +339,9 @@ export default function Admin() {
                                 )}
                                 <Button size="sm" variant="ghost" onClick={() => updateOffer(o.id, { featured: !o.featured })}>
                                   <Star className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button size="sm" variant="ghost" title="Duplicar" onClick={() => handleDuplicate(o.id)}>
+                                  <Copy className="h-3.5 w-3.5" />
                                 </Button>
                                 {o.is_flash && o.status === "approved" && (
                                   <Button size="sm" variant="outline" onClick={() => sendFlashBroadcast(o.id)}>
