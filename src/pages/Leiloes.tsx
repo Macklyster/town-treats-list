@@ -130,6 +130,7 @@ export default function Leiloes() {
         title="Leilões de Oferta — OfertasFly"
         description="Leilão reverso: o preço cai com o tempo. Veja os leilões ativos das lojas que você segue."
         path="/leiloes"
+        jsonLd={faqToJsonLd(LEILOES_FAQ)}
       />
       <Header />
       <main className="container flex-1 py-8">
