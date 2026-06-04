@@ -240,6 +240,54 @@ export default function Historico() {
               </CardContent>
             </Card>
 
+            <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/5">
+              <CardContent className="p-6">
+                <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Badge className="gap-1 bg-primary/10 text-primary hover:bg-primary/15">
+                        <Sparkles className="h-3 w-3" /> Destaque & Plus
+                      </Badge>
+                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                        <Lock className="h-3 w-3" /> Exclusivo
+                      </span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground">
+                        Quer insights mais profundos?
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Vá além do histórico bruto. A Inteligência da Loja transforma seus dados em decisões.
+                      </p>
+                    </div>
+                    <ul className="grid gap-2 sm:grid-cols-2">
+                      {[
+                        { icon: Clock, label: "Heatmap de horário de pico" },
+                        { icon: TrendingUp, label: "Ranking das ofertas que mais convertem" },
+                        { icon: Target, label: "Benchmark com concorrentes da categoria" },
+                        { icon: Sparkles, label: "Percentil e média da sua cidade" },
+                      ].map(({ icon: Icon, label }) => (
+                        <li key={label} className="flex items-start gap-2 text-sm text-foreground">
+                          <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                          <span>{label}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="flex shrink-0 md:flex-col md:items-end">
+                    <Button asChild size="lg" className="gap-2">
+                      <Link to="/painel-lojista/inteligencia">
+                        Ver Inteligência da Loja
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+
+
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">Linha do tempo</CardTitle>
