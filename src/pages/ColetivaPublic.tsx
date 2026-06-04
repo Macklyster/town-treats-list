@@ -145,6 +145,33 @@ export default function ColetivaPublic() {
         description={offer.description ?? `Participe da oferta coletiva no OfertasFly.`}
         path={`/coletiva/${token}`}
         image={offer.image_url ?? undefined}
+        jsonLd={(() => {
+          const prices = (offer.tiers ?? []).map((t) => Number(t.price)).filter((n) => !isNaN(n));
+          const low = prices.length ? Math.min(...prices) : Number(offer.original_price) || 0;
+          const high = prices.length ? Math.max(...prices) : Number(offer.original_price) || 0;
+          return {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: offer.title,
+            description: offer.description ?? undefined,
+            image: offer.image_url ? [offer.image_url] : undefined,
+            brand: storeName ? { "@type": "Brand", name: storeName } : undefined,
+            offers: {
+              "@type": "AggregateOffer",
+              priceCurrency: "BRL",
+              lowPrice: low.toFixed(2),
+              highPrice: high.toFixed(2),
+              offerCount: prices.length || 1,
+              availability:
+                offer.status === "approved"
+                  ? "https://schema.org/InStock"
+                  : "https://schema.org/SoldOut",
+              priceValidUntil: offer.ends_at
+                ? new Date(offer.ends_at).toISOString().slice(0, 10)
+                : undefined,
+            },
+          };
+        })()}
       />
       <Header />
       <main className="container flex-1 py-10">
