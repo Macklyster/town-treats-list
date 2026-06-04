@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SEO } from "@/components/seo/SEO";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
