@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { SEO } from "@/components/seo/SEO";
+import { FaqSection, faqToJsonLd } from "@/components/site/FaqSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
