@@ -41,6 +41,8 @@ const CityOffers = lazy(() => import("./pages/CityOffers.tsx"));
 const StorePage = lazy(() => import("./pages/StorePage.tsx"));
 const Cupons = lazy(() => import("./pages/Cupons.tsx"));
 const Historico = lazy(() => import("./pages/Historico.tsx"));
+const MeusCupons = lazy(() => import("./pages/MeusCupons.tsx"));
+const MeuCupomDetalhe = lazy(() => import("./pages/MeuCupomDetalhe.tsx"));
 
 const OfertasRedirect = () => {
   const { search } = useLocation();
@@ -81,6 +83,22 @@ const App = () => (
                 <Route path="/ofertas-invisiveis" element={<OfertasInvisiveis />} />
                 <Route path="/anuncie" element={<Anuncie />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route
+                  path="/meus-cupons"
+                  element={
+                    <ProtectedRoute>
+                      <MeusCupons />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/meus-cupons/:id"
+                  element={
+                    <ProtectedRoute>
+                      <MeuCupomDetalhe />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route
                   path="/perfil/notificacoes"
                   element={
