@@ -39,6 +39,8 @@ const Notificacoes = lazy(() => import("./pages/Notificacoes.tsx"));
 const Inteligencia = lazy(() => import("./pages/Inteligencia.tsx"));
 const CityOffers = lazy(() => import("./pages/CityOffers.tsx"));
 const StorePage = lazy(() => import("./pages/StorePage.tsx"));
+const Cupons = lazy(() => import("./pages/Cupons.tsx"));
+const Historico = lazy(() => import("./pages/Historico.tsx"));
 
 const OfertasRedirect = () => {
   const { search } = useLocation();
@@ -148,6 +150,22 @@ const App = () => (
                   element={
                     <ProtectedRoute requireRole="lojista">
                       <Inteligencia />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/painel-lojista/cupons"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <Cupons />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/painel-lojista/historico"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <Historico />
                     </ProtectedRoute>
                   }
                 />

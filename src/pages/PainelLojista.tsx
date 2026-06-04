@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle, BarChart3, QrCode, Users, Share2, Copy, MessageCircle, Sparkles, Trash2 } from "lucide-react";
+import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle, BarChart3, QrCode, Users, Share2, Copy, MessageCircle, Sparkles, Trash2, Ticket, History } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
@@ -136,6 +136,16 @@ export default function PainelLojista() {
           </div>
           {store && (
             <div className="flex flex-wrap gap-2">
+              <Button asChild variant="outline">
+                <Link to="/painel-lojista/cupons">
+                  <Ticket className="h-4 w-4" /> Cupons
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/painel-lojista/historico">
+                  <History className="h-4 w-4" /> Histórico
+                </Link>
+              </Button>
               <Button asChild variant="outline">
                 <Link to="/painel-lojista/inteligencia">
                   <BarChart3 className="h-4 w-4" /> Inteligência

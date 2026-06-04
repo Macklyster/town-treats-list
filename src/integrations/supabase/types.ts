@@ -225,6 +225,107 @@ export type Database = {
         }
         Relationships: []
       }
+      coupon_redemptions: {
+        Row: {
+          coupon_id: string
+          created_at: string
+          id: string
+          redeemed_at: string | null
+          unique_code: string | null
+          user_id: string | null
+        }
+        Insert: {
+          coupon_id: string
+          created_at?: string
+          id?: string
+          redeemed_at?: string | null
+          unique_code?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          coupon_id?: string
+          created_at?: string
+          id?: string
+          redeemed_at?: string | null
+          unique_code?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupon_redemptions_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coupons: {
+        Row: {
+          active: boolean
+          code: string | null
+          created_at: string
+          discount_type: Database["public"]["Enums"]["discount_type"]
+          discount_value: number
+          id: string
+          kind: Database["public"]["Enums"]["coupon_kind"]
+          max_uses: number | null
+          offer_id: string | null
+          store_id: string
+          title: string
+          updated_at: string
+          uses_count: number
+          valid_until: string | null
+        }
+        Insert: {
+          active?: boolean
+          code?: string | null
+          created_at?: string
+          discount_type: Database["public"]["Enums"]["discount_type"]
+          discount_value: number
+          id?: string
+          kind?: Database["public"]["Enums"]["coupon_kind"]
+          max_uses?: number | null
+          offer_id?: string | null
+          store_id: string
+          title: string
+          updated_at?: string
+          uses_count?: number
+          valid_until?: string | null
+        }
+        Update: {
+          active?: boolean
+          code?: string | null
+          created_at?: string
+          discount_type?: Database["public"]["Enums"]["discount_type"]
+          discount_value?: number
+          id?: string
+          kind?: Database["public"]["Enums"]["coupon_kind"]
+          max_uses?: number | null
+          offer_id?: string | null
+          store_id?: string
+          title?: string
+          updated_at?: string
+          uses_count?: number
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupons_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coupons_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       favorites: {
         Row: {
           created_at: string
@@ -1134,6 +1235,7 @@ export type Database = {
         Args: { p_days?: number; p_store_id: string }
         Returns: Json
       }
+      claim_unique_coupon: { Args: { p_coupon_id: string }; Returns: Json }
       geo_offer_register_visit: {
         Args: {
           p_lat: number
@@ -1209,6 +1311,8 @@ export type Database = {
         | "sold_out"
         | "expired"
         | "rejected"
+      coupon_kind: "fixed" | "unique"
+      discount_type: "percent" | "amount"
       geo_offer_status: "pending" | "approved" | "expired" | "rejected"
       group_offer_status: "pending" | "approved" | "rejected" | "expired"
       offer_status: "pending" | "approved" | "rejected" | "paused"
@@ -1358,6 +1462,8 @@ export const Constants = {
         "expired",
         "rejected",
       ],
+      coupon_kind: ["fixed", "unique"],
+      discount_type: ["percent", "amount"],
       geo_offer_status: ["pending", "approved", "expired", "rejected"],
       group_offer_status: ["pending", "approved", "rejected", "expired"],
       offer_status: ["pending", "approved", "rejected", "paused"],
