@@ -51,9 +51,18 @@ const Index = () => {
     },
   };
 
+  const organizationLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "OfertasFly",
+    url: absoluteUrl("/"),
+    logo: absoluteUrl("/icons/icon-512.png"),
+    sameAs: [],
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      <SEO title={title} description={description} path="/" jsonLd={websiteLd} />
+      <SEO title={title} description={description} path="/" jsonLd={[websiteLd, organizationLd]} />
       <Header />
       <main>
         <HeroSearch />

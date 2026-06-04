@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SEO } from "@/components/seo/SEO";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
@@ -106,6 +107,20 @@ const Anuncie = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Anuncie sua loja — Planos a partir de R$ 0 | OfertasFly"
+        description="Cadastre sua loja na OfertasFly, publique ofertas e cupons para a sua cidade. Planos com 14 dias grátis, sem fidelidade. Comece a vender mais hoje."
+        path="/anuncie"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faq.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }}
+      />
       <Header />
       <main>
         {/* Hero */}
