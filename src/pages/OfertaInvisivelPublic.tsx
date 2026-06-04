@@ -105,7 +105,40 @@ export default function OfertaInvisivelPublic() {
 
   return (
     <div className="flex min-h-screen flex-col bg-muted/20">
-      <SEO title={`${offer.title} — Oferta Invisível`} description="Esta oferta só aparece quando você está perto da loja." path={`/oferta-invisivel/${token}`} />
+      <SEO
+        title={`${offer.title} — Oferta Invisível`}
+        description="Esta oferta só aparece quando você está perto da loja."
+        path={`/oferta-invisivel/${token}`}
+        image={(offer as any).image_url ?? undefined}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: offer.title,
+          description: (offer as any).description ?? undefined,
+          image: (offer as any).image_url ? [(offer as any).image_url] : undefined,
+          brand: state.store_name ? { "@type": "Brand", name: state.store_name } : undefined,
+          offers: {
+            "@type": "Offer",
+            priceCurrency: "BRL",
+            price: Number((offer as any).promo_price ?? 0).toFixed(2),
+            availability:
+              state.status === "approved"
+                ? "https://schema.org/InStock"
+                : "https://schema.org/OutOfStock",
+            areaServed: state.store_name
+              ? { "@type": "Place", name: state.store_name }
+              : undefined,
+            eligibleRegion: offer.radius_meters
+              ? {
+                  "@type": "GeoShape",
+                  description: `Disponível em raio de ${offer.radius_meters}m da loja`,
+                }
+              : undefined,
+            availabilityStarts: offer.time_start ?? undefined,
+            availabilityEnds: offer.time_end ?? undefined,
+          },
+        }}
+      />
       <Header />
       <main className="container flex-1 py-8">
         <div className="mx-auto max-w-2xl space-y-6">
