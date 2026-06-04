@@ -58,6 +58,29 @@ export default function PainelLojista() {
   const [loading, setLoading] = useState(true);
   const subInfo = useSubscription(store?.id ?? null);
   const isPlus = !!subInfo.subscription && ["active", "trialing"].includes(subInfo.subscription.status) && subInfo.plan?.slug === "plus";
+  const [selectedOffers, setSelectedOffers] = useState<string[]>([]);
+  const [categoriesList, setCategoriesList] = useState<{ slug: string; name: string }[]>([]);
+
+  useEffect(() => {
+    supabase.from("categories").select("slug,name").order("sort_order").then(({ data }) => {
+      setCategoriesList((data ?? []) as any);
+    });
+  }, []);
+
+  const toggleSelect = (id: string) =>
+    setSelectedOffers((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  const toggleSelectAll = () =>
+    setSelectedOffers((prev) => (prev.length === offers.length ? [] : offers.map((o) => o.id)));
+
+  const handleDuplicate = async (id: string) => {
+    try {
+      await duplicateOffer(id);
+      toast.success("Oferta duplicada como rascunho");
+      load();
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+  };
 
   const load = async () => {
     if (!user) return;
