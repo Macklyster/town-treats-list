@@ -84,9 +84,18 @@ export default function OfertasInvisiveis() {
     })();
   }, [user?.id]);
 
+  const faqItems = [
+    { q: "O que é uma Oferta Invisível?", a: "É uma promoção que só fica visível quando você está dentro do raio geográfico definido pela loja (entre 50 e 5.000 metros). Fora da área, a oferta permanece oculta." },
+    { q: "Preciso pagar para ver as Ofertas Invisíveis?", a: "Não. O acesso é gratuito para clientes cadastrados. Basta fazer login e seguir as lojas de seu interesse." },
+    { q: "Como recebo alertas quando estiver perto de uma loja?", a: "Ative as notificações push no navegador ou app. Assim, sempre que uma loja que você segue publicar uma oferta invisível e você entrar no raio, você será avisado." },
+    { q: "A oferta some se eu sair do raio?", a: "Sim. Se você sair da área de alcance ou o horário da promoção terminar, a oferta volta a ficar invisível até que as condições sejam atendidas novamente." },
+    { q: "Qual a diferença entre Oferta Invisível e oferta normal?", a: "Ofertas normais são públicas e visíveis para todos. As Invisíveis são geolocalizadas e restritas a quem está próximo e segue a loja." },
+  ];
+  const faqLd = faqToJsonLd(faqItems);
+
   return (
     <div className="flex min-h-screen flex-col bg-muted/20">
-      <SEO title="Ofertas Invisíveis — OfertasFly" description="Promoções que só aparecem quando você está perto da loja." path="/ofertas-invisiveis" />
+      <SEO title="Ofertas Invisíveis — OfertasFly" description="Promoções que só aparecem quando você está perto da loja." path="/ofertas-invisiveis" jsonLd={[faqLd]} />
       <Header />
       <main className="container flex-1 py-8">
         <div className="mx-auto max-w-5xl space-y-6">
@@ -128,6 +137,8 @@ export default function OfertasInvisiveis() {
               {rows.map((r) => <InvisibleCard key={r.id} row={r} />)}
             </div>
           )}
+
+          <FaqSection title="Dúvidas sobre Ofertas Invisíveis" items={faqItems} />
         </div>
       </main>
       <Footer />
