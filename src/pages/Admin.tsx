@@ -358,6 +358,17 @@ export default function Admin() {
                 )}
               </CardContent>
             </Card>
+            <div className="mt-4">
+              <OfferBulkBar
+                ids={selectedOffers}
+                categories={categories.map((c) => ({ slug: c.slug, name: c.name }))}
+                onCleared={() => setSelectedOffers([])}
+                onDone={() => {
+                  setSelectedOffers([]);
+                  load();
+                }}
+              />
+            </div>
           </TabsContent>
 
           <TabsContent value="stores" className="mt-6">
