@@ -147,6 +147,11 @@ export default function PainelLojista() {
                 </Link>
               </Button>
               <Button asChild variant="outline">
+                <Link to="/painel-lojista/midia">
+                  <Sparkles className="h-4 w-4" /> Mídia
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
                 <Link to="/painel-lojista/inteligencia">
                   <BarChart3 className="h-4 w-4" /> Inteligência
                 </Link>
