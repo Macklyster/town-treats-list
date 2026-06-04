@@ -110,9 +110,11 @@ const OfferDetail = () => {
   const cLabel = cityObj ? cityLabel(cityObj) : "";
   const seoTitle = `${offer.title} — ${offer.storeName}${cLabel ? ` em ${cLabel}` : ""} | OfertasFly`;
   const seoDesc = (offer.description || `${offer.title} na ${offer.storeName}${cLabel ? ` em ${cLabel}` : ""}. Aproveite a oferta no OfertasFly.`).slice(0, 160);
-  const priceValidUntil = offer.validUntil
-    ? new Date(offer.validUntil).toISOString().slice(0, 10)
-    : undefined;
+  const priceValidUntil = (() => {
+    if (!offer.validUntil) return undefined;
+    const d = new Date(offer.validUntil);
+    return Number.isNaN(d.getTime()) ? undefined : d.toISOString().slice(0, 10);
+  })();
   const productLd: Record<string, any> = {
     "@context": "https://schema.org",
     "@type": "Product",
