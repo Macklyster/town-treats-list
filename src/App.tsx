@@ -17,7 +17,26 @@ import { ReviewPromptDialog } from "./components/site/ReviewPromptDialog";
 import { PageSkeleton } from "./components/site/PageSkeleton";
 
 // Lazy-load all secondary/auth-only routes to keep the home bundle small.
-const OfferDetail = lazy(() => import("./pages/OfferDetail.tsx"));
+// Wrap dynamic imports so a stale chunk URL (after deploy/HMR) triggers a
+// one-time hard reload instead of crashing the route with a blank screen.
+const lazyWithReload = <T,>(loader: () => Promise<T>) =>
+  lazy(() =>
+    (loader() as Promise<any>).catch((err) => {
+      const msg = String(err?.message ?? err);
+      if (/Failed to fetch dynamically imported module|Importing a module script failed/i.test(msg)) {
+        const key = "__chunk_reload__";
+        if (!sessionStorage.getItem(key)) {
+          sessionStorage.setItem(key, "1");
+          window.location.reload();
+          return new Promise(() => {}) as any;
+        }
+      }
+      throw err;
+    }),
+  );
+
+const OfferDetail = lazyWithReload(() => import("./pages/OfferDetail.tsx"));
+
 const Anuncie = lazy(() => import("./pages/Anuncie.tsx"));
 const Auth = lazy(() => import("./pages/Auth.tsx"));
 const PainelLojista = lazy(() => import("./pages/PainelLojista.tsx"));
