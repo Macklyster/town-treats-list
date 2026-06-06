@@ -17,34 +17,53 @@ import { ReviewPromptDialog } from "./components/site/ReviewPromptDialog";
 import { PageSkeleton } from "./components/site/PageSkeleton";
 
 // Lazy-load all secondary/auth-only routes to keep the home bundle small.
-const OfferDetail = lazy(() => import("./pages/OfferDetail.tsx"));
-const Anuncie = lazy(() => import("./pages/Anuncie.tsx"));
-const Auth = lazy(() => import("./pages/Auth.tsx"));
-const PainelLojista = lazy(() => import("./pages/PainelLojista.tsx"));
-const OfertaForm = lazy(() => import("./pages/OfertaForm.tsx"));
-const ColetivaForm = lazy(() => import("./pages/ColetivaForm.tsx"));
-const ColetivaPublic = lazy(() => import("./pages/ColetivaPublic.tsx"));
-const Coletivas = lazy(() => import("./pages/Coletivas.tsx"));
-const Leiloes = lazy(() => import("./pages/Leiloes.tsx"));
-const LeilaoForm = lazy(() => import("./pages/LeilaoForm.tsx"));
-const LeilaoPublic = lazy(() => import("./pages/LeilaoPublic.tsx"));
-const OfertaInvisivelForm = lazy(() => import("./pages/OfertaInvisivelForm.tsx"));
-const OfertaInvisivelPublic = lazy(() => import("./pages/OfertaInvisivelPublic.tsx"));
-const OfertasInvisiveis = lazy(() => import("./pages/OfertasInvisiveis.tsx"));
-const LojaForm = lazy(() => import("./pages/LojaForm.tsx"));
-const Admin = lazy(() => import("./pages/Admin.tsx"));
-const Assinatura = lazy(() => import("./pages/Assinatura.tsx"));
-const TermosDeUso = lazy(() => import("./pages/TermosDeUso.tsx"));
-const PoliticaDePrivacidade = lazy(() => import("./pages/PoliticaDePrivacidade.tsx"));
-const Notificacoes = lazy(() => import("./pages/Notificacoes.tsx"));
-const Inteligencia = lazy(() => import("./pages/Inteligencia.tsx"));
-const CityOffers = lazy(() => import("./pages/CityOffers.tsx"));
-const StorePage = lazy(() => import("./pages/StorePage.tsx"));
-const Cupons = lazy(() => import("./pages/Cupons.tsx"));
-const Historico = lazy(() => import("./pages/Historico.tsx"));
-const MeusCupons = lazy(() => import("./pages/MeusCupons.tsx"));
-const MeuCupomDetalhe = lazy(() => import("./pages/MeuCupomDetalhe.tsx"));
-const Biblioteca = lazy(() => import("./pages/Biblioteca.tsx"));
+// Wrap dynamic imports so a stale chunk URL (after deploy/HMR) triggers a
+// one-time hard reload instead of crashing the route with a blank screen.
+const lazyWithReload = <T,>(loader: () => Promise<T>) =>
+  lazy(() =>
+    (loader() as Promise<any>).catch((err) => {
+      const msg = String(err?.message ?? err);
+      if (/Failed to fetch dynamically imported module|Importing a module script failed/i.test(msg)) {
+        const key = "__chunk_reload__";
+        if (!sessionStorage.getItem(key)) {
+          sessionStorage.setItem(key, "1");
+          window.location.reload();
+          return new Promise(() => {}) as any;
+        }
+      }
+      throw err;
+    }),
+  );
+
+const OfferDetail = lazyWithReload(() => import("./pages/OfferDetail.tsx"));
+
+const Anuncie = lazyWithReload(() => import("./pages/Anuncie.tsx"));
+const Auth = lazyWithReload(() => import("./pages/Auth.tsx"));
+const PainelLojista = lazyWithReload(() => import("./pages/PainelLojista.tsx"));
+const OfertaForm = lazyWithReload(() => import("./pages/OfertaForm.tsx"));
+const ColetivaForm = lazyWithReload(() => import("./pages/ColetivaForm.tsx"));
+const ColetivaPublic = lazyWithReload(() => import("./pages/ColetivaPublic.tsx"));
+const Coletivas = lazyWithReload(() => import("./pages/Coletivas.tsx"));
+const Leiloes = lazyWithReload(() => import("./pages/Leiloes.tsx"));
+const LeilaoForm = lazyWithReload(() => import("./pages/LeilaoForm.tsx"));
+const LeilaoPublic = lazyWithReload(() => import("./pages/LeilaoPublic.tsx"));
+const OfertaInvisivelForm = lazyWithReload(() => import("./pages/OfertaInvisivelForm.tsx"));
+const OfertaInvisivelPublic = lazyWithReload(() => import("./pages/OfertaInvisivelPublic.tsx"));
+const OfertasInvisiveis = lazyWithReload(() => import("./pages/OfertasInvisiveis.tsx"));
+const LojaForm = lazyWithReload(() => import("./pages/LojaForm.tsx"));
+const Admin = lazyWithReload(() => import("./pages/Admin.tsx"));
+const Assinatura = lazyWithReload(() => import("./pages/Assinatura.tsx"));
+const TermosDeUso = lazyWithReload(() => import("./pages/TermosDeUso.tsx"));
+const PoliticaDePrivacidade = lazyWithReload(() => import("./pages/PoliticaDePrivacidade.tsx"));
+const Notificacoes = lazyWithReload(() => import("./pages/Notificacoes.tsx"));
+const Inteligencia = lazyWithReload(() => import("./pages/Inteligencia.tsx"));
+const CityOffers = lazyWithReload(() => import("./pages/CityOffers.tsx"));
+const StorePage = lazyWithReload(() => import("./pages/StorePage.tsx"));
+const Cupons = lazyWithReload(() => import("./pages/Cupons.tsx"));
+const Historico = lazyWithReload(() => import("./pages/Historico.tsx"));
+const MeusCupons = lazyWithReload(() => import("./pages/MeusCupons.tsx"));
+const MeuCupomDetalhe = lazyWithReload(() => import("./pages/MeuCupomDetalhe.tsx"));
+const Biblioteca = lazyWithReload(() => import("./pages/Biblioteca.tsx"));
 
 const OfertasRedirect = () => {
   const { search } = useLocation();
@@ -80,6 +99,7 @@ const RoutePrefetcher = () => {
       ? (cb: () => void) => w.requestIdleCallback!(cb, { timeout: 2500 })
       : (cb: () => void) => window.setTimeout(cb, 1500);
     const id = schedule(prefetchRoutes);
+    sessionStorage.removeItem("__chunk_reload__");
     return () => {
       if (typeof id === "number") clearTimeout(id);
     };
