@@ -99,6 +99,7 @@ const RoutePrefetcher = () => {
       ? (cb: () => void) => w.requestIdleCallback!(cb, { timeout: 2500 })
       : (cb: () => void) => window.setTimeout(cb, 1500);
     const id = schedule(prefetchRoutes);
+    sessionStorage.removeItem("__chunk_reload__");
     return () => {
       if (typeof id === "number") clearTimeout(id);
     };
