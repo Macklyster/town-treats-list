@@ -12,7 +12,8 @@ import {
   UIOffer,
 } from "@/lib/offers-api";
 import { Button } from "@/components/ui/button";
-import { Clock, MapPin, Phone, Instagram, MessageCircle, ArrowLeft } from "lucide-react";
+import { Clock, MapPin, Phone, Instagram, MessageCircle, ChevronRight } from "lucide-react";
+import { SectionCard } from "@/components/site/SectionCard";
 import { parseConditions, getMethod } from "@/lib/payment-methods";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { trackOfferEvent } from "@/lib/offer-events";
@@ -170,12 +171,20 @@ const OfferDetail = () => {
       />
       <Header />
       <main className="container py-10">
-        <Link
-          to="/#ofertas"
-          className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-accent-strong"
-        >
-          <ArrowLeft className="h-4 w-4" /> Voltar para ofertas
-        </Link>
+        <nav className="mb-6 flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+          <Link to="/" className="hover:text-primary">Início</Link>
+          {cSlug && (
+            <>
+              <ChevronRight className="h-3 w-3 opacity-60" />
+              <Link to={`/ofertas/${cSlug}`} className="hover:text-primary">{cLabel}</Link>
+            </>
+          )}
+          <ChevronRight className="h-3 w-3 opacity-60" />
+          <Link to={`/loja/${store?.slug ?? ""}`} className="hover:text-primary">{offer.storeName}</Link>
+          <ChevronRight className="h-3 w-3 opacity-60" />
+          <span className="text-foreground">{offer.title}</span>
+        </nav>
+
 
         <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr]">
           <div>
@@ -355,16 +364,17 @@ const OfferDetail = () => {
           </aside>
         </div>
 
-        <section className="mt-16">
-          <h2 className="text-2xl font-semibold text-foreground md:text-[28px]">
-            Avaliações de clientes
-          </h2>
-          <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_1.5fr]">
+        <SectionCard
+          className="mt-16"
+          eyebrow="Prova social"
+          title="Avaliações de clientes"
+        >
+          <div className="grid gap-8 lg:grid-cols-[1fr_1.5fr]">
             <div>
               {rating && rating.count > 0 ? (
                 <RatingSummary offerId={offer.id} />
               ) : (
-                <div className="rounded-2xl bg-card p-5 shadow-card text-sm text-muted-foreground">
+                <div className="rounded-2xl border border-dashed border-border p-5 text-sm text-muted-foreground">
                   Ainda sem avaliações para esta oferta.
                 </div>
               )}
@@ -373,17 +383,20 @@ const OfferDetail = () => {
               <ReviewList offerId={offer.id} />
             </div>
           </div>
-        </section>
+        </SectionCard>
 
         {related.length > 0 && (
-          <section className="mt-20">
-            <h2 className="text-2xl font-semibold text-foreground md:text-[28px]">Você também pode gostar</h2>
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <SectionCard
+            className="mt-10"
+            eyebrow="Descubra mais"
+            title="Você também pode gostar"
+          >
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {related.map((o) => (
                 <OfferCard key={o.id} offer={o} />
               ))}
             </div>
-          </section>
+          </SectionCard>
         )}
       </main>
       <Footer />
