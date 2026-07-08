@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Ticket, CheckCircle2 } from "lucide-react";
 import { Header } from "@/components/site/Header";
+import { PageHero } from "@/components/site/PageHero";
 import { Footer } from "@/components/site/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

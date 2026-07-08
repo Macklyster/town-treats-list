@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/site/Header";
+import { PageHero } from "@/components/site/PageHero";
 import { Footer } from "@/components/site/Footer";
 import { SEO } from "@/components/seo/SEO";
 import { FaqSection, faqToJsonLd } from "@/components/site/FaqSection";
