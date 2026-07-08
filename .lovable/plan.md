@@ -1,88 +1,99 @@
-## Nova Home OfertasFly — "Aurora Tech"
 
-Reconstrução completa da Home como plataforma viva (não landing page), com personalização por cidade/localização/interesses/histórico. Stack mantida (Vite + React, upgrade para React 19), Tailwind + shadcn + Framer Motion + Lucide.
+# Nova Home — Modelo "OfertasFly Light"
 
-### Direção visual — Aurora Tech
+Análise da referência anexa e plano de implementação. A base atual (Aurora Tech, tudo escuro/glass) será **substituída pela nova identidade clara**, mantendo APIs, hooks e backend já criados (`events`, `user_interests`, `user_view_history`, `company_flyscore`, `home-api.ts`).
 
-- **Paleta** (tokens HSL em `index.css`, semânticos):
-  - `--background: #0a0a1a` (near-black indigo)
-  - `--surface: #141432` (glass base)
-  - `--primary: #4f46e5` (indigo elétrico)
-  - `--accent: #22d3ee` (cyan aurora)
-  - `--foreground: #f5f7ff`, `--muted-foreground: #8b93b8`
-  - Gradientes: `--gradient-aurora: linear-gradient(135deg, #4f46e5 0%, #22d3ee 100%)`, `--gradient-glow: radial-gradient(circle, #4f46e566 0%, transparent 70%)`
-  - Sombras: `--shadow-glow: 0 20px 60px -20px #4f46e580`, `--shadow-glass: 0 8px 32px 0 #00000040`
-- **Tipografia**: `Space Grotesk` (display, h1–h3) + `Inter` (body) via `@fontsource`. Instalação: `bun add @fontsource/space-grotesk @fontsource/inter`, imports em `src/main.tsx`, `fontFamily` no `tailwind.config.ts`.
-- **Efeitos**: glass (`backdrop-blur-xl bg-white/[0.03] border border-white/10`), aurora blobs animados no hero, hover-glow em cards, transições <300ms.
+## Leitura da referência
 
-### Componentização (novos, sob `src/components/home/`)
+A imagem transmite **produto maduro, tipo Rappi/iFood + Airbnb**: base clara e arejada, um único bloco escuro no hero para dar peso à marca, e roxo (#6D28D9 / indigo-violet) como acento único e consistente. É mais "produto" do que "landing" — cada seção mostra dados reais em cards compactos e escaneáveis.
 
+Elementos-chave observados:
+- **Header branco**, logo + tagline, search central grande com botão roxo sólido, seletor de cidade, favoritos, botão "Entrar" roxo. Abaixo, **chips de categoria** horizontais (Pizzarias, Barbearias, Lava Jato, Clínicas, Lojas… "Mais").
+- **Hero escuro** (não tela toda — apenas um bloco arredondado): título "Descubra o melhor da sua cidade" com "sua cidade" em roxo, subtítulo curto, dois CTAs (Explorar sólido roxo / Cadastrar empresa outline). À direita, **imagem real** de ambiente + micro-card flutuante com avatar + rating + FlyScore. No canto direito, **card de métricas** (empresas ativas, ofertas publicadas, usuários, cidade atual) em glass escuro.
+- **Empresas em destaque**: carrossel horizontal com setas laterais, cards claros ~1:1 com badge "Aberto agora" verde, logo circular, nome + verificado, categoria, rating + FlyScore, distância + bairro.
+- **Ofertas do dia**: mesma pegada, cards com badge de % OFF vermelho no topo esquerdo, imagem, nome loja, título curto, preço promo + riscado, botão "Ver oferta" roxo.
+- **Descubra perto de você + Recomendadas**: linha em 2 colunas — mapa à esquerda (card com pins roxos + botão flutuante "Explorar no mapa") e 3 cards de empresas recomendadas à direita.
+- **Faixa "Entenda o FlyScore"**: barra horizontal clara mostrando os 6 pilares em ícones + valores, e um badge circular grande "96/100 FlyScore Médio" à direita.
+- **Reviews + Galeria**: 2 colunas. Reviews com avatar + verificado + estrelas + texto + thumbnails. Galeria com grid 3x2 + tile "+28 fotos".
+- **CTA roxo largo** ("Seu negócio merece ser encontrado") com 2 botões brancos.
+- **Footer institucional claro**: 5 colunas (Navegação, Institucional, Ajuda, Baixe o app com badges Google Play/App Store), redes sociais à esquerda, copyright.
+
+Tom geral: **claro, denso mas respirável, roxo como única cor de marca**, tipografia sem-serifa moderna, cantos arredondados médios (16-20px), sombras suaves.
+
+## Direção visual
+
+- **Modo**: light por padrão (a home vive fora do `theme-aurora` escuro atual).
+- **Tokens** (adicionar em `src/index.css` sob um wrapper `.theme-fly-light`):
+  - `--bg: 0 0% 100%`, `--surface: 240 20% 99%`, `--muted-surface: 240 10% 96%`
+  - `--fg: 240 15% 12%`, `--fg-muted: 240 8% 45%`
+  - `--brand: 262 83% 58%` (violeta principal), `--brand-strong: 262 75% 48%`, `--brand-soft: 262 100% 97%`
+  - `--success: 142 70% 40%` (badge "Aberto agora")
+  - `--danger: 0 84% 55%` (badge OFF)
+  - `--ring: 262 83% 58%`
+  - `--radius-card: 20px`, `--shadow-card: 0 1px 2px rgba(15,15,30,.04), 0 8px 24px -12px rgba(76,29,149,.12)`
+  - Hero dark island: `--hero-bg: 240 20% 7%`
+- **Tipografia**: manter `Space Grotesk` (display) + `Inter` (body) já carregados; pesos 500/600/700 nos títulos.
+
+## Componentização
+
+Reescrever/renomear os componentes em `src/components/home/`:
+
+- `HomeHeader.tsx` → versão clara: logo + tagline "Descubra. Conecte. Valorize.", `SearchBar` grande central com botão roxo, `CitySelector`, ícone favoritos, botão "Entrar" roxo. Segunda linha com **`CategoryChips`** (novo) usando `src/data/categories.ts`, com scroll horizontal + item "Mais".
+- `HomeHero.tsx` → bloco escuro arredondado (`bg-[hsl(var(--hero-bg))]`) ocupando `container` com `mt-6`. Grid 3 colunas:
+  - Esquerda: título com "sua cidade" em `text-brand`, subtítulo, 2 CTAs.
+  - Centro: imagem real (usar primeira `featured` ou placeholder) com micro-card `FeaturedStorePeek` (avatar + nome + rating + FlyScore) flutuando no bottom.
+  - Direita: `HeroMetricsCard` em glass escuro com 4 métricas dinâmicas (empresas ativas, ofertas, usuários, cidade). Números vindos de `home-api.ts` (`fetchHomeStats`, novo).
+- `CategoryChips.tsx` (novo) — chips clicáveis linkando a `/categoria/:slug`.
+- `FeaturedCompanies.tsx` → cards claros novos (`CompanyCard` reescrito): imagem topo com badge "Aberto agora" verde/"Fecha às HH:MM" âmbar, logo circular sobreposta, nome + selo verificado, categoria, `RatingStars` + `FlyScoreChip`, distância + bairro. Setas laterais mantidas.
+- `OffersOfTheDay.tsx` → cards claros com badge OFF vermelho topo-esquerda, título, preço promo grande + preço original riscado, CTA "Ver oferta" roxo. Layout carrossel horizontal como referência.
+- `NearbyMap.tsx` + `Recommended.tsx` → agrupar em uma linha `DiscoverRow` (2 colunas no desktop, empilhado no mobile). Mapa reutiliza `OffersMap` com overlay claro e botão flutuante "Explorar no mapa" → `/mapa` ou `#mapa`.
+- `FlyScoreSection.tsx` → reformulado como **faixa horizontal clara** (não círculo grande): 6 ícones + labels + valor médio agregado, badge circular "96/100 FlyScore Médio" no canto direito, link "Saiba como funciona" abre modal educativo (mantém conteúdo dos 6 pilares).
+- `ReviewsCarousel.tsx` → cards claros lado a lado, avatar + nome verificado + "há X dias" + estrelas + review truncada + thumbnails de fotos.
+- `GalleryGrid.tsx` → grid 3x2 no desktop / 2x2 mobile, último tile "+N fotos" roxo.
+- `CTABanner.tsx` → faixa horizontal roxa (gradiente sutil `--brand` → `--brand-strong`), logo à esquerda, texto no meio, 2 botões brancos à direita.
+- `HomeFooter.tsx` → 5 colunas (Marca+redes, Navegação, Institucional, Ajuda, Baixe o app com badges reais). Fundo `#0b0b12`, texto claro, copyright.
+
+Componentes atuais a **remover** da Home (não da base): `HappeningNow` sai da home nesta iteração (fica disponível como componente para reuso; a referência não mostra essa seção — evitamos ruído). Se o usuário quiser, entra em fase 2.
+
+## Página `src/pages/Index.tsx`
+
+Nova composição, sem `theme-aurora`, com fundo `bg-background`:
 ```
-HomeHeader.tsx          — sticky, glass, logo, SearchBar inteligente, city, favoritos, login
-HomeHero.tsx            — 2 colunas, aurora bg animado, CTA duplo, card glass "empresa destaque"
-FeaturedCompanies.tsx   — carousel Embla, CompanyCard (banner, logo, verificado, FlyScore, distância, status)
-CompanyCard.tsx
-OffersOfTheDay.tsx      — grid OfferCard (imagem, tag OFF, preço antigo/novo, CTA)
-HappeningNow.tsx        — cards horizontais scroll: happy hour, eventos, shows, feiras
-NearbyMap.tsx           — MapCard com pins customizados (react-leaflet já ausente → usar existente ou embed estático + CTA "Explorar mapa")
-Recommended.tsx         — baseado em categoria/localização/histórico
-FlyScoreSection.tsx     — educativa: 6 pilares em círculo, modal detalhado
-ReviewsCarousel.tsx     — cards com avatar, fotos, estrelas
-GalleryGrid.tsx         — grid + lightbox + "+28 fotos"
-CTABanner.tsx           — gradiente aurora, headline, 2 CTAs
-HomeFooter.tsx          — institucional, ajuda, redes, stores, LGPD
+HomeHeader (com CategoryChips)
+HomeHero (dark island + metrics card)
+FeaturedCompanies
+OffersOfTheDay
+DiscoverRow (NearbyMap + Recommended)
+FlyScoreBar
+ReviewsAndGallery (Reviews + Galeria em 2 colunas)
+CTABanner
+HomeFooter
 ```
+SEO/JSON-LD atuais (WebSite + Organization) preservados.
 
-Utilitários: `Motion` wrappers com Framer Motion (fadeInUp, staggerChildren), `SkeletonHome` para loading.
+## APIs
 
-### Backend (novas tabelas + RLS + GRANTs)
+- `src/lib/home-api.ts`: adicionar `fetchHomeStats(city)` retornando `{ activeCompanies, publishedOffers, connectedUsers, cityLabel }` — usa `count: 'exact', head: true` em `stores`, `offers` e `profiles`. Sem mudanças de schema.
+- Nada muda em `events`, `user_interests`, `user_view_history`, `company_flyscore` (permanecem para uso futuro / Recommended já consome).
 
-Migração SQL única:
+## Ordem de execução (uma iteração)
 
-- `public.user_interests(user_id, category_slug, weight, created_at)` — RLS: dono lê/grava.
-- `public.events(id, store_id, city, state, kind, title, description, image_url, starts_at, ends_at, created_at)` — RLS: public read (approved), owner/admin write. `kind` enum: `happy_hour|show|feira|evento|promocao`.
-- `public.user_view_history(user_id, entity_type, entity_id, city, viewed_at)` — RLS: dono lê/grava. Índice `(user_id, viewed_at desc)`.
-- `public.company_flyscore(store_id pk, overall, pilares jsonb, updated_at)` — RLS: public read, admin write.
+1. Adicionar tokens `.theme-fly-light` em `src/index.css` (paleta clara + brand roxo + sombras).
+2. Reescrever `HomeHeader` + novo `CategoryChips` + refinar `SearchBar`/`CitySelector` visual.
+3. Reescrever `HomeHero` com hero-island escuro, imagem, micro-card, métricas.
+4. Reescrever `CompanyCard`, `FeaturedCompanies`, `OffersOfTheDay` (visual claro).
+5. Compor `DiscoverRow` (Nearby + Recommended lado a lado).
+6. Refazer `FlyScoreSection` como barra horizontal + badge circular.
+7. Compor `ReviewsAndGallery` em 2 colunas.
+8. Reescrever `CTABanner` roxo horizontal e `HomeFooter` 5 colunas com badges das lojas.
+9. Atualizar `src/pages/Index.tsx` para a nova composição e remover wrapper `theme-aurora`.
+10. Adicionar `fetchHomeStats` em `home-api.ts` e ligar ao hero.
+11. QA responsivo (mobile: chips scroll, hero empilha, carrosséis com swipe, footer em accordion).
 
-Todas com `GRANT SELECT/INSERT/UPDATE/DELETE` para `authenticated`, `GRANT ALL` para `service_role`, `GRANT SELECT` para `anon` onde public.
+## O que NÃO muda
 
-Admin CRUD de eventos em painel existente (aba nova em `AdminOfertasInvisiveis`-style).
+- Rotas, auth, edge functions, migrações já aplicadas.
+- Demais páginas (`CityOffers`, `OfertasInvisiveis`, Admin, etc.) permanecem no tema atual.
+- Componentes utilitários (`OffersMap`, `RatingStars`, `SocialProofBadge`, `StoreAvatar`, `CountdownBadge`) são reutilizados.
 
-### Personalização
-
-- **Saudação**: bom dia/tarde/noite + nome do `profiles` se logado.
-- **Cidade**: já existe (`useCity`).
-- **Distância**: já existe (`useUserLocation` + `lib/geo`).
-- **FlyScore**: leitura de `company_flyscore` com fallback calculado.
-- **Recomendadas**: query pondera `user_interests` + proximidade + histórico recente.
-- **Acontecendo Agora**: `events` where `now() between starts_at and ends_at` and `city = ?`.
-
-### SEO & Performance
-
-- `SEO` existente com JSON-LD `WebSite`, `Organization`, `ItemList` (empresas destaque), `FAQPage` (FlyScore).
-- Imagens: `loading="lazy"`, `decoding="async"`, dimensões explícitas.
-- Code splitting: seções pesadas (Mapa, Gallery lightbox) via `lazy()` do wrapper `lazyWithReload` existente em `App.tsx`.
-- Skeletons imediatos para evitar CLS.
-
-### Rota
-
-Substitui `src/pages/Index.tsx` por composição das novas seções. Componentes antigos (`HeroSearch`, `FeaturedCarousel`, `CategoryGrid`, `HowItWorks`, `MerchantCTA`, `OffersSection`) permanecem intactos e usados em outras páginas.
-
-### Ordem de implementação (1 iteração)
-
-1. `bun add @fontsource/space-grotesk @fontsource/inter`; imports em `main.tsx`; tokens em `index.css`; `tailwind.config.ts` (fonts + gradients + glow).
-2. Migração SQL (4 tabelas + RLS + GRANTs).
-3. `types.ts` regenera automaticamente; APIs em `src/lib/`: `events-api.ts`, `interests-api.ts`, `history-api.ts`, `flyscore-api.ts`.
-4. Componentes `src/components/home/*` + `SkeletonHome`.
-5. Nova `src/pages/Index.tsx` compondo tudo.
-6. Ajustes de acessibilidade (aria-labels, focus rings cyan) e responsividade (mobile-first breakpoints sm/md/lg/xl).
-
-### O que NÃO muda
-
-- Rotas existentes, auth, edge functions, painel lojista/admin (só ganha aba eventos), demais páginas públicas.
-- Header global compartilhado — a Home usa `HomeHeader` próprio; outras páginas continuam com `Header` atual.
-
-### Riscos
-
-- React 19 upgrade pode exigir bump de `react-helmet-async` / `@types/react`; verifico após install e ajusto se necessário.
-- Se não tiver dados de `events`/`flyscore` populados, seções exibem estado vazio elegante ("Em breve na sua cidade") ao invés de sumir.
+Confirma seguir com essa direção clara + hero-island roxo?
