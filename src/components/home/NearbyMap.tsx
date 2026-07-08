@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { MapPin, Navigation } from "lucide-react";
+import { Link } from "react-router-dom";
+import { MapPin } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { useCity } from "@/hooks/useCity";
 import { useUserLocation } from "@/hooks/useUserLocation";
@@ -10,7 +10,7 @@ const OffersMap = lazy(() => import("@/components/site/OffersMap").then((m) => (
 
 export const NearbyMap = () => {
   const { city } = useCity();
-  const { loc, request } = useUserLocation();
+  const { loc } = useUserLocation();
   const [offers, setOffers] = useState<UIOffer[]>([]);
 
   useEffect(() => {
@@ -18,41 +18,32 @@ export const NearbyMap = () => {
   }, [city?.city]);
 
   return (
-    <section className="container py-16 md:py-20">
+    <div>
       <SectionHeading
-        eyebrow="Descubra perto"
-        title={<>Explore o que está <span className="aurora-gradient-text">ao seu redor</span></>}
-        description="Ativa sua localização e veja empresas, ofertas e eventos próximos em um mapa interativo."
-        action={
-          <button
-            onClick={request}
-            className="inline-flex items-center gap-2 rounded-full aurora-gradient-bg px-4 py-2 text-sm font-medium aurora-glow hover:brightness-110 transition"
-          >
-            <Navigation className="h-4 w-4" /> Usar minha localização
-          </button>
-        }
+        title="Descubra perto de você"
+        description="Explore empresas incríveis próximas de você."
       />
-
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-        className="relative rounded-3xl overflow-hidden aurora-glass aurora-glow h-[440px] md:h-[520px]"
-      >
+      <div className="relative rounded-2xl overflow-hidden bg-card border border-border shadow-soft h-[320px]">
         {offers.length ? (
-          <Suspense fallback={<div className="h-full w-full grid place-items-center text-[hsl(var(--aurora-muted))]">Carregando mapa…</div>}>
+          <Suspense fallback={<div className="h-full w-full grid place-items-center text-muted-foreground text-sm">Carregando mapa…</div>}>
             <OffersMap offers={offers} userLoc={loc} />
           </Suspense>
         ) : (
-          <div className="h-full w-full grid place-items-center text-[hsl(var(--aurora-muted))]">
+          <div className="h-full w-full grid place-items-center text-muted-foreground text-sm">
             <div className="text-center">
-              <MapPin className="h-8 w-8 mx-auto mb-2 text-[hsl(var(--aurora-cyan))]" />
+              <MapPin className="h-8 w-8 mx-auto mb-2 text-primary" />
               Nenhuma empresa geolocalizada {city ? `em ${city.city}` : ""} ainda.
             </div>
           </div>
         )}
-      </motion.div>
-    </section>
+        <Link
+          to="/#ofertas"
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 inline-flex items-center gap-2 rounded-full bg-card border border-border shadow-card px-4 py-2 text-xs font-semibold text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition"
+        >
+          <MapPin className="h-3.5 w-3.5" />
+          Explorar no mapa
+        </Link>
+      </div>
+    </div>
   );
 };

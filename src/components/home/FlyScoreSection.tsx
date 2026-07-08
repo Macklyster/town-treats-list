@@ -1,114 +1,115 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Award, BadgeCheck, MessageSquare, Sparkles, Timer, TrendingUp, X } from "lucide-react";
-import { SectionHeading } from "./SectionHeading";
+import { Award, BadgeCheck, MessageSquare, Sparkles, Star, Timer, TrendingUp, X, Zap } from "lucide-react";
 
 const PILARES = [
-  { icon: BadgeCheck, label: "Verificação", desc: "Documento, endereço e responsável confirmados." },
-  { icon: MessageSquare, label: "Avaliações", desc: "Média e volume real de reviews da comunidade." },
-  { icon: Timer, label: "Resposta", desc: "Velocidade em responder mensagens e reservas." },
-  { icon: TrendingUp, label: "Popularidade", desc: "Engajamento, visitas e cupons resgatados." },
-  { icon: Award, label: "Consistência", desc: "Constância na qualidade ao longo do tempo." },
-  { icon: Sparkles, label: "Experiência", desc: "Fotos, cardápio, cupons e pós-atendimento." },
+  { icon: Star, label: "Avaliações", value: "4,8", desc: "Média e volume real de reviews da comunidade." },
+  { icon: Zap, label: "Atualização", value: "98%", desc: "Frequência com que a empresa atualiza suas ofertas." },
+  { icon: Timer, label: "Resposta", value: "95%", desc: "Velocidade em responder mensagens e reservas." },
+  { icon: BadgeCheck, label: "Informações", value: "100%", desc: "Documento, endereço e responsável confirmados." },
+  { icon: TrendingUp, label: "Engajamento", value: "92%", desc: "Cupons resgatados, visitas e interações." },
+  { icon: Sparkles, label: "Presença Digital", value: "94%", desc: "Fotos, cardápio, redes sociais e presença online." },
 ];
 
-export const FlyScoreSection = () => {
-  const [open, setOpen] = useState<number | null>(null);
+export const FlyScoreBar = () => {
+  const [open, setOpen] = useState(false);
 
   return (
-    <section className="container py-16 md:py-24">
-      <SectionHeading
-        eyebrow="FlyScore™"
-        align="center"
-        title={<>O algoritmo que traduz <span className="aurora-gradient-text">confiança</span> em nota</>}
-        description="6 pilares combinados em tempo real para revelar quais empresas realmente merecem sua atenção."
-      />
-
-      <div className="relative mt-8 grid gap-8 lg:grid-cols-[1fr_1.2fr] items-center">
-        {/* circular indicator */}
-        <div className="relative mx-auto grid place-items-center h-[300px] w-[300px] md:h-[360px] md:w-[360px]">
-          <div className="absolute inset-0 rounded-full aurora-shine opacity-30 blur-2xl" />
-          <div className="relative h-full w-full rounded-full aurora-glass-strong aurora-glow grid place-items-center">
-            <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full -rotate-90">
-              <circle cx="50" cy="50" r="44" stroke="hsl(var(--aurora-fg) / 0.06)" strokeWidth="4" fill="none" />
-              <motion.circle
-                cx="50" cy="50" r="44" fill="none" strokeWidth="4"
-                stroke="url(#aurora-grad)" strokeLinecap="round"
-                initial={{ strokeDasharray: "0 276" }}
-                whileInView={{ strokeDasharray: "252 276" }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
-              />
-              <defs>
-                <linearGradient id="aurora-grad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="hsl(var(--aurora-indigo))" />
-                  <stop offset="100%" stopColor="hsl(var(--aurora-cyan))" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <div className="text-center">
-              <div className="text-6xl md:text-7xl font-bold aurora-gradient-text">9.1</div>
-              <div className="text-xs uppercase tracking-[0.2em] text-[hsl(var(--aurora-muted))] mt-2">
-                Média das top 20
-              </div>
+    <section className="container py-6 md:py-10">
+      <div className="rounded-2xl bg-card border border-border shadow-soft p-5 md:p-6 flex flex-col lg:flex-row items-center gap-6">
+        <div className="flex-1 min-w-0 w-full">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="h-10 w-10 shrink-0 rounded-xl bg-primary/10 grid place-items-center">
+              <Award className="h-5 w-5 text-primary" />
             </div>
+            <div>
+              <h2 className="text-lg font-semibold text-foreground leading-tight">
+                Entenda o FlyScore™
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Nosso índice exclusivo que avalia a qualidade das empresas em 6 pilares importantes.
+              </p>
+              <button
+                onClick={() => setOpen(true)}
+                className="mt-1 text-xs font-semibold text-primary hover:underline"
+              >
+                Saiba como funciona
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+            {PILARES.map((p) => {
+              const I = p.icon;
+              return (
+                <button
+                  key={p.label}
+                  onClick={() => setOpen(true)}
+                  className="text-center rounded-xl border border-border bg-background p-3 hover:border-primary hover:bg-primary-light transition"
+                >
+                  <I className="h-4 w-4 text-primary mx-auto mb-1" />
+                  <div className="text-sm font-bold text-foreground">{p.value}</div>
+                  <div className="text-[10px] text-muted-foreground leading-tight mt-0.5">{p.label}</div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* pilares */}
-        <div className="grid grid-cols-2 gap-3">
-          {PILARES.map((p, i) => {
-            const Icon = p.icon;
-            return (
-              <motion.button
-                key={p.label}
-                type="button"
-                onClick={() => setOpen(i)}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.35, delay: i * 0.05 }}
-                className="text-left rounded-2xl aurora-glass aurora-ring p-4 group"
-              >
-                <div className="h-9 w-9 rounded-xl aurora-gradient-violet grid place-items-center mb-3">
-                  <Icon className="h-4 w-4 text-white" />
-                </div>
-                <div className="text-sm font-semibold">{p.label}</div>
-                <div className="text-xs text-[hsl(var(--aurora-muted))] mt-1 line-clamp-2">{p.desc}</div>
-              </motion.button>
-            );
-          })}
+        <div className="shrink-0 relative h-32 w-32 grid place-items-center">
+          <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full -rotate-90">
+            <circle cx="50" cy="50" r="44" stroke="hsl(var(--muted))" strokeWidth="8" fill="none" />
+            <circle
+              cx="50" cy="50" r="44" fill="none" strokeWidth="8"
+              stroke="hsl(var(--primary))" strokeLinecap="round"
+              strokeDasharray="265 276"
+            />
+          </svg>
+          <div className="text-center">
+            <div className="text-3xl font-bold text-foreground leading-none">
+              96<span className="text-sm text-muted-foreground font-medium">/100</span>
+            </div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">
+              FlyScore Médio
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* modal */}
-      {open !== null && (
-        <div
-          className="fixed inset-0 z-[70] grid place-items-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
-          onClick={() => setOpen(null)}
-        >
-          <div
-            className="relative max-w-md w-full rounded-3xl aurora-glass-strong p-6 aurora-glow animate-in zoom-in-95 duration-200"
-            onClick={(e) => e.stopPropagation()}
-          >
+      {open && (
+        <div className="fixed inset-0 z-[70] grid place-items-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setOpen(false)}>
+          <div className="relative max-w-lg w-full rounded-2xl bg-card p-6 shadow-pop" onClick={(e) => e.stopPropagation()}>
             <button
-              className="absolute top-4 right-4 h-8 w-8 rounded-full aurora-glass grid place-items-center"
-              onClick={() => setOpen(null)}
+              className="absolute top-4 right-4 h-8 w-8 rounded-full border border-border grid place-items-center hover:bg-muted"
+              onClick={() => setOpen(false)}
               aria-label="Fechar"
             >
               <X className="h-4 w-4" />
             </button>
-            <div className="h-12 w-12 rounded-2xl aurora-gradient-bg grid place-items-center mb-4">
-              {(() => { const I = PILARES[open].icon; return <I className="h-6 w-6 text-white" />; })()}
-            </div>
-            <h3 className="text-xl font-semibold">{PILARES[open].label}</h3>
-            <p className="mt-2 text-sm text-[hsl(var(--aurora-muted))] leading-relaxed">
-              {PILARES[open].desc} Este pilar contribui para o cálculo do FlyScore junto com os outros 5 fatores,
-              atualizado continuamente conforme novas interações acontecem na plataforma.
+            <h3 className="text-xl font-semibold text-foreground">Como o FlyScore™ é calculado</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Combinamos 6 pilares em tempo real para revelar quais empresas realmente merecem sua atenção:
             </p>
+            <ul className="mt-4 space-y-3">
+              {PILARES.map((p) => {
+                const I = p.icon;
+                return (
+                  <li key={p.label} className="flex items-start gap-3">
+                    <div className="h-8 w-8 shrink-0 rounded-lg bg-primary/10 grid place-items-center">
+                      <I className="h-4 w-4 text-primary" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold text-foreground">{p.label}</div>
+                      <div className="text-xs text-muted-foreground">{p.desc}</div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         </div>
       )}
     </section>
   );
 };
+
+// Kept for compat: existing Index imports FlyScoreSection
+export const FlyScoreSection = FlyScoreBar;

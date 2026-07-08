@@ -33,6 +33,29 @@ export type UIEvent = {
 
 const FALLBACK_COVER = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80";
 
+export type HomeStats = {
+  activeCompanies: number;
+  publishedOffers: number;
+  connectedUsers: number;
+  cities: number;
+};
+
+export async function fetchHomeStats(): Promise<HomeStats> {
+  const [stores, offers, users, cts] = await Promise.all([
+    supabase.from("stores").select("*", { count: "exact", head: true }).eq("approved", true),
+    supabase.from("offers").select("*", { count: "exact", head: true }).eq("status", "approved"),
+    supabase.from("public_profiles").select("*", { count: "exact", head: true }),
+    supabase.from("stores").select("city").eq("approved", true),
+  ]);
+  const cities = new Set((cts.data ?? []).map((r: any) => (r.city ?? "").trim()).filter((c: string) => c && c !== "Não informado"));
+  return {
+    activeCompanies: stores.count ?? 0,
+    publishedOffers: offers.count ?? 0,
+    connectedUsers: users.count ?? 0,
+    cities: cities.size,
+  };
+}
+
 export async function fetchFeaturedCompanies(city?: { city: string; state: string } | null): Promise<UICompany[]> {
   let q = supabase
     .from("stores")

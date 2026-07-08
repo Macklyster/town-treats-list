@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { CompanyCard } from "./CompanyCard";
@@ -25,40 +26,45 @@ export const FeaturedCompanies = () => {
   if (!loading && !items.length) return null;
 
   return (
-    <section className="container py-16 md:py-20">
+    <section className="container py-10 md:py-14">
       <SectionHeading
-        eyebrow="Empresas em destaque"
-        title={<>As mais amadas <span className="aurora-gradient-text">da sua região</span></>}
-        description="Verificadas, avaliadas pela comunidade e com melhor FlyScore da semana."
+        title="Empresas em destaque"
+        description="As melhores empresas da cidade, escolhidas para você."
         action={
-          <div className="flex gap-2">
-            <button
-              onClick={() => scroll(-1)}
-              className="h-10 w-10 rounded-full aurora-glass grid place-items-center hover:bg-white/10 transition"
-              aria-label="Anterior"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button
-              onClick={() => scroll(1)}
-              className="h-10 w-10 rounded-full aurora-glass grid place-items-center hover:bg-white/10 transition"
-              aria-label="Próximo"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
+          <Link to="/#ofertas" className="hidden md:inline-flex text-sm font-medium text-primary hover:underline">
+            Ver todas →
+          </Link>
         }
       />
-      <div ref={scrollRef} className="aurora-scroll-x flex gap-5 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4">
-        {loading
-          ? Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="shrink-0 w-[320px] aspect-[4/5] rounded-2xl aurora-glass animate-pulse" />
-            ))
-          : items.map((c) => (
-              <div key={c.id} className="shrink-0 w-[320px] snap-start">
-                <CompanyCard company={c} />
-              </div>
-            ))}
+      <div className="relative">
+        <button
+          onClick={() => scroll(-1)}
+          className="hidden md:grid absolute -left-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 rounded-full bg-card border border-border shadow-card place-items-center hover:bg-primary hover:text-primary-foreground hover:border-primary transition"
+          aria-label="Anterior"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+        <button
+          onClick={() => scroll(1)}
+          className="hidden md:grid absolute -right-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 rounded-full bg-card border border-border shadow-card place-items-center hover:bg-primary hover:text-primary-foreground hover:border-primary transition"
+          aria-label="Próximo"
+        >
+          <ChevronRight className="h-5 w-5" />
+        </button>
+        <div
+          ref={scrollRef}
+          className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {loading
+            ? Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="shrink-0 w-[260px] aspect-[4/5] rounded-2xl bg-muted animate-pulse" />
+              ))
+            : items.map((c) => (
+                <div key={c.id} className="shrink-0 w-[260px] snap-start">
+                  <CompanyCard company={c} />
+                </div>
+              ))}
+        </div>
       </div>
     </section>
   );
