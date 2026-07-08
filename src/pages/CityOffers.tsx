@@ -3,6 +3,8 @@ import { Link, useParams, Navigate } from "react-router-dom";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { OfferCard } from "@/components/site/OfferCard";
+import { PageHero } from "@/components/site/PageHero";
+import { EmptyState } from "@/components/site/EmptyState";
 import { SEO } from "@/components/seo/SEO";
 import { FaqSection, faqToJsonLd } from "@/components/site/FaqSection";
 import { categories } from "@/data/categories";
@@ -18,7 +20,7 @@ import {
   absoluteUrl,
   type CityLike,
 } from "@/lib/slug";
-import { ChevronRight } from "lucide-react";
+import { MapPin, Sparkles, Tag } from "lucide-react";
 
 const CityOffers = () => {
   const { cidadeSlug = "", categoriaSlug } = useParams();
@@ -102,39 +104,55 @@ const CityOffers = () => {
   ];
   const faqLd = faqToJsonLd(faqItems);
 
+  const crumbs = [
+    { label: "Início", to: "/" },
+    { label: cityName, to: `/ofertas/${cidadeSlug}` },
+    ...(category ? [{ label: category.name }] : []),
+  ];
+
+  const heroAside = (
+    <div className="grid grid-cols-2 gap-3 rounded-2xl bg-white/5 p-4 backdrop-blur md:min-w-[240px]">
+      <div>
+        <div className="text-xs uppercase tracking-wider text-[hsl(var(--hero-muted))]">Ofertas</div>
+        <div className="mt-1 font-display text-2xl">{list.length}</div>
+      </div>
+      <div>
+        <div className="text-xs uppercase tracking-wider text-[hsl(var(--hero-muted))]">Categorias</div>
+        <div className="mt-1 font-display text-2xl">{otherCategoriesPresent.length || 1}</div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <SEO title={title} description={description} path={path} jsonLd={[breadcrumb, itemList, faqLd]} />
       <Header />
-      <main className="container py-10">
-        <nav className="mb-4 flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
-          <Link to="/" className="hover:text-accent-strong">Início</Link>
-          <ChevronRight className="h-3.5 w-3.5" />
-          <Link to={`/ofertas/${cidadeSlug}`} className="hover:text-accent-strong">{cityName}</Link>
-          {category && (
-            <>
-              <ChevronRight className="h-3.5 w-3.5" />
-              <span className="text-foreground">{category.name}</span>
-            </>
-          )}
-        </nav>
-
-        <header className="mb-8 max-w-3xl">
-          <h1 className="text-display text-foreground md:text-[40px]">
-            {category ? `${category.name} em ${cityName}` : `Ofertas em ${cityName}`}
-          </h1>
-          <p className="mt-3 text-muted-foreground">
-            {category
+      <main className="container space-y-10 py-8 md:py-10">
+        <PageHero
+          eyebrow={
+            <span className="inline-flex items-center gap-1.5">
+              <MapPin className="h-3 w-3" /> {cityName}
+            </span>
+          }
+          title={category ? `${category.name} em ${cityName}` : `Ofertas em ${cityName}`}
+          subtitle={
+            category
               ? `Veja as melhores ofertas de ${category.name.toLowerCase()} em ${cityName}: descontos, cupons e brindes de lojas locais.`
-              : `Descubra cupons, descontos e promoções das lojas de ${cityName}. Economize apoiando o comércio do seu bairro.`}
-          </p>
-        </header>
+              : `Descubra cupons, descontos e promoções das lojas de ${cityName}. Economize apoiando o comércio do seu bairro.`
+          }
+          crumbs={crumbs}
+          aside={heroAside}
+        />
 
         {otherCategoriesPresent.length > 0 && (
-          <div className="mb-8 flex flex-wrap gap-2">
+          <div className="sticky top-[var(--header-h)] z-30 -mx-4 flex gap-2 overflow-x-auto bg-background/85 px-4 py-3 backdrop-blur md:mx-0 md:rounded-2xl md:border md:border-border md:bg-card md:px-4 md:shadow-soft">
             <Link
               to={`/ofertas/${cidadeSlug}`}
-              className={`rounded-full border px-3 py-1 text-sm ${!category ? "bg-accent text-accent-foreground border-accent" : "bg-card hover:bg-secondary"}`}
+              className={`shrink-0 rounded-full border px-4 py-1.5 text-sm transition ${
+                !category
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-card text-foreground hover:border-primary hover:text-primary"
+              }`}
             >
               Todas
             </Link>
@@ -142,7 +160,11 @@ const CityOffers = () => {
               <Link
                 key={c.slug}
                 to={`/ofertas/${cidadeSlug}/${c.slug}`}
-                className={`rounded-full border px-3 py-1 text-sm ${category?.slug === c.slug ? "bg-accent text-accent-foreground border-accent" : "bg-card hover:bg-secondary"}`}
+                className={`shrink-0 rounded-full border px-4 py-1.5 text-sm transition ${
+                  category?.slug === c.slug
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card text-foreground hover:border-primary hover:text-primary"
+                }`}
               >
                 {c.name}
               </Link>
@@ -151,16 +173,21 @@ const CityOffers = () => {
         )}
 
         {loading ? (
-          <p className="text-muted-foreground">Carregando…</p>
-        ) : list.length === 0 ? (
-          <div className="rounded-2xl border border-dashed p-16 text-center">
-            <p className="text-lg font-medium">Nenhuma oferta encontrada</p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {category
-                ? `Ainda não temos ofertas de ${category.name.toLowerCase()} em ${cityName}.`
-                : `Ainda não temos ofertas em ${cityName}.`}
-            </p>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-72 animate-pulse rounded-3xl bg-muted" />
+            ))}
           </div>
+        ) : list.length === 0 ? (
+          <EmptyState
+            icon={Tag}
+            title="Nenhuma oferta encontrada"
+            description={
+              category
+                ? `Ainda não temos ofertas de ${category.name.toLowerCase()} em ${cityName}. Volte em breve.`
+                : `Ainda não temos ofertas em ${cityName}. Volte em breve.`
+            }
+          />
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {list.map((o) => (
@@ -170,9 +197,14 @@ const CityOffers = () => {
         )}
 
         {cities.length > 1 && (
-          <section className="mt-16 border-t pt-10">
-            <h2 className="text-xl font-semibold text-foreground">Ofertas em outras cidades</h2>
-            <div className="mt-4 flex flex-wrap gap-2">
+          <section className="rounded-3xl border border-border bg-card p-6 shadow-card md:p-8">
+            <div className="flex items-center gap-2 label-eyebrow text-primary">
+              <Sparkles className="h-3.5 w-3.5" /> Explore mais cidades
+            </div>
+            <h2 className="mt-2 font-display text-xl font-medium text-foreground md:text-2xl">
+              Ofertas em outras cidades
+            </h2>
+            <div className="mt-5 flex flex-wrap gap-2">
               {cities
                 .filter((c) => makeCitySlug(c) !== cidadeSlug)
                 .slice(0, 24)
@@ -180,7 +212,7 @@ const CityOffers = () => {
                   <Link
                     key={makeCitySlug(c)}
                     to={`/ofertas/${makeCitySlug(c)}`}
-                    className="rounded-full border bg-card px-3 py-1 text-sm hover:bg-secondary"
+                    className="rounded-full border border-border bg-background px-3 py-1.5 text-sm text-foreground transition hover:border-primary hover:text-primary"
                   >
                     {cityLabel(c)}
                   </Link>
@@ -189,12 +221,10 @@ const CityOffers = () => {
           </section>
         )}
 
-        <div className="mt-16">
-          <FaqSection
-            title={category ? `Dúvidas sobre ${category.name} em ${cityName}` : `Dúvidas sobre ofertas em ${cityName}`}
-            items={faqItems}
-          />
-        </div>
+        <FaqSection
+          title={category ? `Dúvidas sobre ${category.name} em ${cityName}` : `Dúvidas sobre ofertas em ${cityName}`}
+          items={faqItems}
+        />
       </main>
       <Footer />
     </div>

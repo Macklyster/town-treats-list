@@ -1,99 +1,55 @@
+# Redesign OfertasFly Light — todas as páginas
 
-# Nova Home — Modelo "OfertasFly Light"
+Aplicar o mesmo padrão visual da nova Home (fundo cream claro, acento violeta `--primary 262`, hero-islands escuros pontuais, cards arredondados 20px, sombras suaves, tipografia Syne + DM Sans) em todas as páginas do produto.
 
-Análise da referência anexa e plano de implementação. A base atual (Aurora Tech, tudo escuro/glass) será **substituída pela nova identidade clara**, mantendo APIs, hooks e backend já criados (`events`, `user_interests`, `user_view_history`, `company_flyscore`, `home-api.ts`).
+Os tokens já são globais em `src/index.css`, então não há refactor de design system — o trabalho é substituir chrome (Header/Footer), reescrever hero de cada página, padronizar cards, botões, badges e vazio-estados.
 
-## Leitura da referência
+## Fundações compartilhadas (feito 1x, antes das ondas)
 
-A imagem transmite **produto maduro, tipo Rappi/iFood + Airbnb**: base clara e arejada, um único bloco escuro no hero para dar peso à marca, e roxo (#6D28D9 / indigo-violet) como acento único e consistente. É mais "produto" do que "landing" — cada seção mostra dados reais em cards compactos e escaneáveis.
+1. **Header/Footer globais**: substituir `src/components/site/Header.tsx` e `Footer.tsx` pelo visual do `HomeHeader`/`HomeFooter` (logo + tagline, busca grande com botão violeta sólido, city selector, chips de categoria opcionais por rota, footer 5 colunas). Mantém todas as rotas e handlers atuais.
+2. **Componentes de página reutilizáveis** em `src/components/site/`:
+   - `PageHero` — hero-island escuro arredondado com título display, subtítulo, breadcrumb opcional, slot de métricas/CTA.
+   - `PageShell` — wrapper `container py-10` + skip-link + padding responsivo consistente.
+   - `EmptyState` — ícone violeta em círculo claro, título Syne, CTA violeta.
+   - `SectionCard` — card branco `rounded-3xl shadow-card` com header/eyebrow padronizado.
+   - `StatPill`, `FilterBar`, `SortMenu` — controles claros com foco violeta.
+3. **Botões**: converter usos de `variant="accent"` que ainda apontam pro velho amarelo para `variant="default"` (violeta), mantendo `outline` claro. Não mexer no sistema de variantes.
 
-Elementos-chave observados:
-- **Header branco**, logo + tagline, search central grande com botão roxo sólido, seletor de cidade, favoritos, botão "Entrar" roxo. Abaixo, **chips de categoria** horizontais (Pizzarias, Barbearias, Lava Jato, Clínicas, Lojas… "Mais").
-- **Hero escuro** (não tela toda — apenas um bloco arredondado): título "Descubra o melhor da sua cidade" com "sua cidade" em roxo, subtítulo curto, dois CTAs (Explorar sólido roxo / Cadastrar empresa outline). À direita, **imagem real** de ambiente + micro-card flutuante com avatar + rating + FlyScore. No canto direito, **card de métricas** (empresas ativas, ofertas publicadas, usuários, cidade atual) em glass escuro.
-- **Empresas em destaque**: carrossel horizontal com setas laterais, cards claros ~1:1 com badge "Aberto agora" verde, logo circular, nome + verificado, categoria, rating + FlyScore, distância + bairro.
-- **Ofertas do dia**: mesma pegada, cards com badge de % OFF vermelho no topo esquerdo, imagem, nome loja, título curto, preço promo + riscado, botão "Ver oferta" roxo.
-- **Descubra perto de você + Recomendadas**: linha em 2 colunas — mapa à esquerda (card com pins roxos + botão flutuante "Explorar no mapa") e 3 cards de empresas recomendadas à direita.
-- **Faixa "Entenda o FlyScore"**: barra horizontal clara mostrando os 6 pilares em ícones + valores, e um badge circular grande "96/100 FlyScore Médio" à direita.
-- **Reviews + Galeria**: 2 colunas. Reviews com avatar + verificado + estrelas + texto + thumbnails. Galeria com grid 3x2 + tile "+28 fotos".
-- **CTA roxo largo** ("Seu negócio merece ser encontrado") com 2 botões brancos.
-- **Footer institucional claro**: 5 colunas (Navegação, Institucional, Ajuda, Baixe o app com badges Google Play/App Store), redes sociais à esquerda, copyright.
+## Ondas de entrega (uma iteração por onda)
 
-Tom geral: **claro, denso mas respirável, roxo como única cor de marca**, tipografia sem-serifa moderna, cantos arredondados médios (16-20px), sombras suaves.
+### Onda 1 — Descoberta pública
+- `CityOffers.tsx`: hero-island com nome da cidade + métricas (lojas, ofertas ativas), `CategoryChips` sticky abaixo, grid de `OfferCard` no novo estilo (imagem 4:3, badge OFF vermelho, preço promo grande, CTA violeta), mapa em card claro à direita no desktop.
+- `StorePage.tsx`: capa com overlay escuro, avatar circular grande, badges (verificado, aberto agora verde, FlyScore chip), tabs Sobre/Ofertas/Avaliações/Galeria em pílulas violetas, seções em `SectionCard`.
+- `OfferDetail.tsx`: galeria à esquerda, painel de compra à direita em `SectionCard` sticky, contador (`CountdownBadge`) integrado, prova social, seção de loja + ofertas relacionadas.
 
-## Direção visual
+### Onda 2 — Conversão do usuário final
+- `Cupons.tsx` + `MeusCupons.tsx` + `MeuCupomDetalhe.tsx`: header claro com eyebrow, cards de cupom com faixa violeta lateral, código em mono grande, estado "Usado" com badge verde `--open`.
+- `Historico.tsx`, `Notificacoes.tsx`: lista em `SectionCard` com item denso, timestamps em `text-muted-foreground`, ações inline.
+- `OfertasInvisiveis.tsx` + `OfertaInvisivelPublic.tsx`: hero escuro com selo "Oferta Invisível", reveal card violeta.
+- `Coletivas.tsx` + `ColetivaPublic.tsx` + `Leiloes.tsx` + `LeilaoPublic.tsx`: mesmo padrão hero-island + `SectionCard` + progress/bid em violeta.
 
-- **Modo**: light por padrão (a home vive fora do `theme-aurora` escuro atual).
-- **Tokens** (adicionar em `src/index.css` sob um wrapper `.theme-fly-light`):
-  - `--bg: 0 0% 100%`, `--surface: 240 20% 99%`, `--muted-surface: 240 10% 96%`
-  - `--fg: 240 15% 12%`, `--fg-muted: 240 8% 45%`
-  - `--brand: 262 83% 58%` (violeta principal), `--brand-strong: 262 75% 48%`, `--brand-soft: 262 100% 97%`
-  - `--success: 142 70% 40%` (badge "Aberto agora")
-  - `--danger: 0 84% 55%` (badge OFF)
-  - `--ring: 262 83% 58%`
-  - `--radius-card: 20px`, `--shadow-card: 0 1px 2px rgba(15,15,30,.04), 0 8px 24px -12px rgba(76,29,149,.12)`
-  - Hero dark island: `--hero-bg: 240 20% 7%`
-- **Tipografia**: manter `Space Grotesk` (display) + `Inter` (body) já carregados; pesos 500/600/700 nos títulos.
+### Onda 3 — Entrada e monetização
+- `Auth.tsx`: split-screen — esquerda hero-island escuro com claim + prova social, direita card branco com form Syne, botão Google outline, botão principal violeta.
+- `Anuncie.tsx`: hero-island longo, seção de planos em 3 cards claros (Starter/Destaque/Plus) com plano do meio destacado em violeta, FAQ em accordion claro, CTA final banner violeta.
+- `Assinatura.tsx`: cabeçalho com status do plano em `StatPill`, cards de plano lado a lado, seção de faturamento em `SectionCard`, avisos usando `warning` tokens.
 
-## Componentização
+### Onda 4 — Áreas internas
+- `PainelLojista.tsx`: sidebar clara sticky esquerda com navegação em pílulas violetas, dashboard cards (ofertas ativas, views, cupons, FlyScore) em grid, gráfico simples, tabela de ofertas com row hover violeta claro.
+- `LojaForm.tsx`, `OfertaForm.tsx`, `OfertaInvisivelForm.tsx`, `ColetivaForm.tsx`, `LeilaoForm.tsx`, `Biblioteca.tsx`: formulários em `SectionCard` de coluna única max-w-3xl, labels DM Sans 14, inputs `rounded-xl border-input` com foco violeta, botões primários violeta, botão secundário outline.
+- `Admin.tsx` + subcomponentes (`AdminBroadcast`, `AdminColetivas`, `AdminLeiloes`, `AdminMedia`, `AdminOfertasInvisiveis`, `AdminReviews`, `AdminSettings`): header escuro compacto, tabs em pílulas, tabelas com header cinza claro, ações em ícones violeta.
+- `Inteligencia.tsx`: dashboard em grid bento, KPIs em `SectionCard`, gráficos com stroke violeta.
+- `NotFound.tsx`, `PoliticaDePrivacidade.tsx`, `TermosDeUso.tsx`: hero-island curto + conteúdo em `SectionCard` prose.
 
-Reescrever/renomear os componentes em `src/components/home/`:
+## Detalhes técnicos
 
-- `HomeHeader.tsx` → versão clara: logo + tagline "Descubra. Conecte. Valorize.", `SearchBar` grande central com botão roxo, `CitySelector`, ícone favoritos, botão "Entrar" roxo. Segunda linha com **`CategoryChips`** (novo) usando `src/data/categories.ts`, com scroll horizontal + item "Mais".
-- `HomeHero.tsx` → bloco escuro arredondado (`bg-[hsl(var(--hero-bg))]`) ocupando `container` com `mt-6`. Grid 3 colunas:
-  - Esquerda: título com "sua cidade" em `text-brand`, subtítulo, 2 CTAs.
-  - Centro: imagem real (usar primeira `featured` ou placeholder) com micro-card `FeaturedStorePeek` (avatar + nome + rating + FlyScore) flutuando no bottom.
-  - Direita: `HeroMetricsCard` em glass escuro com 4 métricas dinâmicas (empresas ativas, ofertas, usuários, cidade). Números vindos de `home-api.ts` (`fetchHomeStats`, novo).
-- `CategoryChips.tsx` (novo) — chips clicáveis linkando a `/categoria/:slug`.
-- `FeaturedCompanies.tsx` → cards claros novos (`CompanyCard` reescrito): imagem topo com badge "Aberto agora" verde/"Fecha às HH:MM" âmbar, logo circular sobreposta, nome + selo verificado, categoria, `RatingStars` + `FlyScoreChip`, distância + bairro. Setas laterais mantidas.
-- `OffersOfTheDay.tsx` → cards claros com badge OFF vermelho topo-esquerda, título, preço promo grande + preço original riscado, CTA "Ver oferta" roxo. Layout carrossel horizontal como referência.
-- `NearbyMap.tsx` + `Recommended.tsx` → agrupar em uma linha `DiscoverRow` (2 colunas no desktop, empilhado no mobile). Mapa reutiliza `OffersMap` com overlay claro e botão flutuante "Explorar no mapa" → `/mapa` ou `#mapa`.
-- `FlyScoreSection.tsx` → reformulado como **faixa horizontal clara** (não círculo grande): 6 ícones + labels + valor médio agregado, badge circular "96/100 FlyScore Médio" no canto direito, link "Saiba como funciona" abre modal educativo (mantém conteúdo dos 6 pilares).
-- `ReviewsCarousel.tsx` → cards claros lado a lado, avatar + nome verificado + "há X dias" + estrelas + review truncada + thumbnails de fotos.
-- `GalleryGrid.tsx` → grid 3x2 no desktop / 2x2 mobile, último tile "+N fotos" roxo.
-- `CTABanner.tsx` → faixa horizontal roxa (gradiente sutil `--brand` → `--brand-strong`), logo à esquerda, texto no meio, 2 botões brancos à direita.
-- `HomeFooter.tsx` → 5 colunas (Marca+redes, Navegação, Institucional, Ajuda, Baixe o app com badges reais). Fundo `#0b0b12`, texto claro, copyright.
+- **Sem novas dependências**. Fontes Syne/DM Sans já carregadas em `main.tsx`. Framer Motion já disponível.
+- **Sem alterações de dados, RLS, edge functions ou rotas**. Apenas apresentação.
+- **Tokens**: usar exclusivamente `bg-background`, `bg-card`, `text-foreground`, `text-primary`, `bg-primary text-primary-foreground`, `bg-[hsl(var(--hero-bg))]`, `bg-[hsl(var(--open-bg))] text-[hsl(var(--open))]`, etc. Zero cores hex/rgb hardcoded, zero `text-white`/`bg-black` fora do hero-island (onde uso `text-[hsl(var(--hero-fg))]`).
+- **Responsivo**: mobile-first, breakpoints `md` (768) e `lg` (1024). Hero-islands viram coluna única no mobile; sidebars viram bottom sheet ou top bar.
+- **Acessibilidade**: manter labels ARIA existentes, foco visível violeta (`focus-visible:ring-2 ring-ring`), contraste AA no cream + violeta.
+- **Componentes que NÃO mudam**: `OffersMap`, `RatingStars`, `RatingSummary`, `StoreAvatar`, `CountdownBadge`, `SocialProofBadge`, `MediaLibrary`, `MediaPicker`, `ImageUploader`, hooks, libs, integrações Supabase, tipos.
+- **`src/components/home/*`**: já no padrão novo, não mexer.
 
-Componentes atuais a **remover** da Home (não da base): `HappeningNow` sai da home nesta iteração (fica disponível como componente para reuso; a referência não mostra essa seção — evitamos ruído). Se o usuário quiser, entra em fase 2.
+## Ordem de execução proposta
 
-## Página `src/pages/Index.tsx`
-
-Nova composição, sem `theme-aurora`, com fundo `bg-background`:
-```
-HomeHeader (com CategoryChips)
-HomeHero (dark island + metrics card)
-FeaturedCompanies
-OffersOfTheDay
-DiscoverRow (NearbyMap + Recommended)
-FlyScoreBar
-ReviewsAndGallery (Reviews + Galeria em 2 colunas)
-CTABanner
-HomeFooter
-```
-SEO/JSON-LD atuais (WebSite + Organization) preservados.
-
-## APIs
-
-- `src/lib/home-api.ts`: adicionar `fetchHomeStats(city)` retornando `{ activeCompanies, publishedOffers, connectedUsers, cityLabel }` — usa `count: 'exact', head: true` em `stores`, `offers` e `profiles`. Sem mudanças de schema.
-- Nada muda em `events`, `user_interests`, `user_view_history`, `company_flyscore` (permanecem para uso futuro / Recommended já consome).
-
-## Ordem de execução (uma iteração)
-
-1. Adicionar tokens `.theme-fly-light` em `src/index.css` (paleta clara + brand roxo + sombras).
-2. Reescrever `HomeHeader` + novo `CategoryChips` + refinar `SearchBar`/`CitySelector` visual.
-3. Reescrever `HomeHero` com hero-island escuro, imagem, micro-card, métricas.
-4. Reescrever `CompanyCard`, `FeaturedCompanies`, `OffersOfTheDay` (visual claro).
-5. Compor `DiscoverRow` (Nearby + Recommended lado a lado).
-6. Refazer `FlyScoreSection` como barra horizontal + badge circular.
-7. Compor `ReviewsAndGallery` em 2 colunas.
-8. Reescrever `CTABanner` roxo horizontal e `HomeFooter` 5 colunas com badges das lojas.
-9. Atualizar `src/pages/Index.tsx` para a nova composição e remover wrapper `theme-aurora`.
-10. Adicionar `fetchHomeStats` em `home-api.ts` e ligar ao hero.
-11. QA responsivo (mobile: chips scroll, hero empilha, carrosséis com swipe, footer em accordion).
-
-## O que NÃO muda
-
-- Rotas, auth, edge functions, migrações já aplicadas.
-- Demais páginas (`CityOffers`, `OfertasInvisiveis`, Admin, etc.) permanecem no tema atual.
-- Componentes utilitários (`OffersMap`, `RatingStars`, `SocialProofBadge`, `StoreAvatar`, `CountdownBadge`) são reutilizados.
-
-Confirma seguir com essa direção clara + hero-island roxo?
+Entrego **uma onda por mensagem** para você validar visualmente antes de seguir. Começo pelas Fundações + Onda 1 (Descoberta pública) na próxima iteração. Confirma?
