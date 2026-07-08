@@ -17,6 +17,7 @@ import {
   UIOffer,
 } from "@/lib/offers-api";
 import { absoluteUrl, citySlug, cityLabel } from "@/lib/slug";
+import { OpeningHoursDisplay, hasOpeningHours } from "@/components/site/OpeningHoursDisplay";
 import { Instagram, MapPin, Phone, Tag } from "lucide-react";
 
 const StorePage = () => {
@@ -149,6 +150,14 @@ const StorePage = () => {
             </ul>
           </SectionCard>
         )}
+
+        {hasOpeningHours(store.opening_hours) && (
+          <SectionCard eyebrow="Atendimento" title="Horário de funcionamento">
+            <OpeningHoursDisplay value={store.opening_hours} />
+          </SectionCard>
+        )}
+
+
 
         <CouponRedeemList storeId={store.id} />
 
