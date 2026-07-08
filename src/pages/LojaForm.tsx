@@ -190,6 +190,13 @@ export default function LojaForm() {
                 <Input value={form.instagram} onChange={(e) => setForm({ ...form, instagram: e.target.value })} placeholder="@minhaloja" />
               </div>
 
+              <OpeningHoursEditor
+                value={form.opening_hours}
+                onChange={(oh) => setForm({ ...form, opening_hours: oh })}
+              />
+
+
+
               <ImageUploader
                 value={form.logo_url}
                 onChange={(url) => setForm({ ...form, logo_url: url })}
