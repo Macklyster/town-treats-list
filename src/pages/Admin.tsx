@@ -537,8 +537,9 @@ export default function Admin() {
                     </tbody>
                   </table>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </SectionCard>
+
           </TabsContent>
 
           <TabsContent value="notifications" className="mt-6">
