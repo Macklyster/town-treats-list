@@ -453,16 +453,18 @@ export default function Admin() {
                     </table>
                   </div>
                 </TooltipProvider>
-              </CardContent>
-            </Card>
+            </SectionCard>
           </TabsContent>
 
           <TabsContent value="categories" className="mt-6">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                <CardTitle>Categorias</CardTitle>
+            <SectionCard
+              eyebrow="Taxonomia"
+              title="Categorias"
+              description="Organize as categorias exibidas em toda a plataforma."
+              action={
                 <Button size="sm" variant="accent" onClick={openNewCategory}>
                   <Plus className="h-4 w-4" /> Nova categoria
+
                 </Button>
               </CardHeader>
               <CardContent>
