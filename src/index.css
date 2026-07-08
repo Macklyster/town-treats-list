@@ -23,12 +23,24 @@ html { scroll-padding-top: calc(var(--header-h) + 12px); }
     --popover: 0 0% 100%;
     --popover-foreground: 60 4% 6%;
 
-    /* Indigo as primary */
-    --primary: 244 58% 51%;
+    /* Violet as primary (OfertasFly Light) */
+    --primary: 262 76% 55%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 226 100% 96%;
-    --primary-mid: 239 84% 67%;
-    --primary-deep: 244 49% 42%;
+    --primary-light: 262 100% 97%;
+    --primary-mid: 262 90% 68%;
+    --primary-deep: 262 68% 45%;
+
+    /* Hero island (dark block inside light page) */
+    --hero-bg: 240 15% 8%;
+    --hero-surface: 240 14% 14%;
+    --hero-fg: 0 0% 100%;
+    --hero-muted: 240 8% 68%;
+
+    /* Open now / closing badges */
+    --open: 142 70% 40%;
+    --open-bg: 142 76% 94%;
+    --closing: 32 92% 50%;
+    --closing-bg: 40 96% 93%;
 
     /* Cream-dark surface */
     --secondary: 43 16% 91%;
