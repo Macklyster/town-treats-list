@@ -52,6 +52,7 @@ export default function LojaForm() {
     cover_url: "",
     latitude: null as number | null,
     longitude: null as number | null,
+    opening_hours: defaultOpeningHours() as OpeningHours,
   });
   const [pinManuallySet, setPinManuallySet] = useState(false);
 
