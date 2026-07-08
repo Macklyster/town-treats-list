@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
-import { Header } from "@/components/site/Header";
-import { Footer } from "@/components/site/Footer";
-import { HeroSearch } from "@/components/site/HeroSearch";
-import { FeaturedCarousel } from "@/components/site/FeaturedCarousel";
-import { CategoryGrid } from "@/components/site/CategoryGrid";
-import { HowItWorks } from "@/components/site/HowItWorks";
-import { MerchantCTA } from "@/components/site/MerchantCTA";
-import { OffersSection } from "@/components/site/OffersSection";
+import { HomeHeader } from "@/components/home/HomeHeader";
+import { HomeHero } from "@/components/home/HomeHero";
+import { FeaturedCompanies } from "@/components/home/FeaturedCompanies";
+import { OffersOfTheDay } from "@/components/home/OffersOfTheDay";
+import { HappeningNow } from "@/components/home/HappeningNow";
+import { NearbyMap } from "@/components/home/NearbyMap";
+import { Recommended } from "@/components/home/Recommended";
+import { FlyScoreSection } from "@/components/home/FlyScoreSection";
+import { ReviewsCarousel } from "@/components/home/ReviewsCarousel";
+import { GalleryGrid } from "@/components/home/GalleryGrid";
+import { CTABanner } from "@/components/home/CTABanner";
+import { HomeFooter } from "@/components/home/HomeFooter";
 import { SEO } from "@/components/seo/SEO";
 import { fetchOffers, UIOffer } from "@/lib/offers-api";
 import { useCity } from "@/hooks/useCity";
@@ -18,26 +22,19 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!city) {
-      setOffers([]);
-      setLoading(false);
-      return;
-    }
     setLoading(true);
-    fetchOffers(city).then((o) => {
+    fetchOffers(city ?? undefined).then((o) => {
       setOffers(o);
       setLoading(false);
     });
   }, [city?.city, city?.state]);
 
-  const featured = offers.filter((o) => o.featured).slice(0, 4);
-
   const title = city
-    ? `Ofertas em ${cityLabel(city)} — Cupons e Descontos | OfertasFly`
-    : "OfertasFly — Ofertas, cupons e descontos do comércio local";
+    ? `OfertasFly em ${cityLabel(city)} — Descubra o melhor da sua cidade`
+    : "OfertasFly — Descubra o melhor da sua cidade";
   const description = city
-    ? `Encontre cupons, descontos e brindes do comércio local em ${cityLabel(city)}. Economize apoiando lojas da sua cidade.`
-    : "OfertasFly reúne as melhores ofertas, cupons e descontos das lojas da sua cidade. Economize e apoie o comércio local.";
+    ? `Ofertas, eventos e empresas verificadas em ${cityLabel(city)}. Recomendações personalizadas e FlyScore em tempo real.`
+    : "Plataforma de descoberta local: ofertas, eventos e empresas verificadas da sua cidade, com recomendações personalizadas.";
 
   const websiteLd = {
     "@context": "https://schema.org",
@@ -50,29 +47,31 @@ const Index = () => {
       "query-input": "required name=search_term_string",
     },
   };
-
-  const organizationLd = {
+  const orgLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "OfertasFly",
     url: absoluteUrl("/"),
     logo: absoluteUrl("/icons/icon-512.png"),
-    sameAs: [],
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <SEO title={title} description={description} path="/" jsonLd={[websiteLd, organizationLd]} />
-      <Header />
+    <div className="theme-aurora min-h-screen">
+      <SEO title={title} description={description} path="/" jsonLd={[websiteLd, orgLd]} />
+      <HomeHeader />
       <main>
-        <HeroSearch />
-        <FeaturedCarousel offers={featured} />
-        <OffersSection offers={offers} loading={loading} />
-        <CategoryGrid />
-        <HowItWorks />
-        <MerchantCTA />
+        <HomeHero />
+        <FeaturedCompanies />
+        <OffersOfTheDay offers={offers} loading={loading} />
+        <HappeningNow />
+        <NearbyMap />
+        <Recommended />
+        <FlyScoreSection />
+        <ReviewsCarousel />
+        <GalleryGrid />
+        <CTABanner />
       </main>
-      <Footer />
+      <HomeFooter />
     </div>
   );
 };

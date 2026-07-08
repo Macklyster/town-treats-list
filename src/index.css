@@ -186,3 +186,117 @@ html { scroll-padding-top: calc(var(--header-h) + 12px); }
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.5; transform: scale(1.2); }
 }
+
+/* ============================================================
+   Aurora Tech — scoped theme for the new Home (.theme-aurora)
+   ============================================================ */
+.theme-aurora {
+  --aurora-bg: 240 60% 6%;
+  --aurora-surface: 240 45% 14%;
+  --aurora-surface-2: 240 40% 20%;
+  --aurora-fg: 225 100% 98%;
+  --aurora-muted: 232 22% 68%;
+  --aurora-border: 240 30% 30%;
+  --aurora-indigo: 244 76% 59%;
+  --aurora-cyan: 187 92% 55%;
+  --aurora-violet: 265 84% 66%;
+  --aurora-hot: 12 100% 62%;
+  --aurora-success: 156 80% 50%;
+  background: hsl(var(--aurora-bg));
+  color: hsl(var(--aurora-fg));
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color-scheme: dark;
+}
+.theme-aurora h1, .theme-aurora h2, .theme-aurora h3, .theme-aurora h4 {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: hsl(var(--aurora-fg));
+}
+.theme-aurora .aurora-glass {
+  background: linear-gradient(135deg, hsl(var(--aurora-surface) / 0.7), hsl(var(--aurora-surface-2) / 0.4));
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid hsl(var(--aurora-fg) / 0.08);
+  box-shadow: 0 8px 32px 0 hsl(240 60% 3% / 0.5);
+}
+.theme-aurora .aurora-glass-strong {
+  background: hsl(var(--aurora-surface) / 0.85);
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  border: 1px solid hsl(var(--aurora-fg) / 0.1);
+}
+.theme-aurora .aurora-gradient-text {
+  background: linear-gradient(120deg, hsl(var(--aurora-indigo)) 0%, hsl(var(--aurora-cyan)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.theme-aurora .aurora-gradient-bg {
+  background: linear-gradient(135deg, hsl(var(--aurora-indigo)) 0%, hsl(var(--aurora-cyan)) 100%);
+}
+.theme-aurora .aurora-gradient-violet {
+  background: linear-gradient(135deg, hsl(var(--aurora-violet)) 0%, hsl(var(--aurora-indigo)) 100%);
+}
+.theme-aurora .aurora-glow {
+  box-shadow: 0 20px 60px -20px hsl(var(--aurora-indigo) / 0.5), 0 0 0 1px hsl(var(--aurora-fg) / 0.05);
+}
+.theme-aurora .aurora-glow-cyan {
+  box-shadow: 0 20px 60px -20px hsl(var(--aurora-cyan) / 0.6);
+}
+.theme-aurora .aurora-ring {
+  transition: box-shadow 220ms ease, transform 220ms ease, border-color 220ms ease;
+}
+.theme-aurora .aurora-ring:hover {
+  box-shadow: 0 24px 60px -18px hsl(var(--aurora-indigo) / 0.55), 0 0 0 1px hsl(var(--aurora-cyan) / 0.3);
+  transform: translateY(-2px);
+}
+.theme-aurora .aurora-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: hsl(var(--aurora-fg));
+  background: hsl(var(--aurora-fg) / 0.06);
+  border: 1px solid hsl(var(--aurora-fg) / 0.1);
+}
+@keyframes aurora-blob {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(30px,-40px) scale(1.1); }
+  66% { transform: translate(-25px,25px) scale(0.95); }
+}
+.theme-aurora .aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  opacity: 0.55;
+  animation: aurora-blob 18s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes aurora-shine {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.theme-aurora .aurora-shine {
+  background: linear-gradient(120deg, hsl(var(--aurora-indigo)), hsl(var(--aurora-cyan)), hsl(var(--aurora-violet)), hsl(var(--aurora-indigo)));
+  background-size: 300% 300%;
+  animation: aurora-shine 8s ease infinite;
+}
+.theme-aurora .aurora-grid-bg {
+  background-image:
+    linear-gradient(hsl(var(--aurora-fg) / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--aurora-fg) / 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+}
+.theme-aurora .aurora-scroll-x { scrollbar-width: none; }
+.theme-aurora .aurora-scroll-x::-webkit-scrollbar { display: none; }
+.theme-aurora *:focus-visible {
+  outline: 2px solid hsl(var(--aurora-cyan));
+  outline-offset: 2px;
+  border-radius: 6px;
+}
