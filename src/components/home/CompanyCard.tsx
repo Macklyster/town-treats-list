@@ -35,12 +35,12 @@ export const CompanyCard = ({ company }: { company: UICompany }) => {
       </div>
 
       <div className="p-4">
-        <div className="flex items-start gap-3">
-          <div className="-mt-9 h-12 w-12 shrink-0 rounded-full bg-card border-2 border-card shadow-soft grid place-items-center overflow-hidden">
+        <div className="relative z-10 flex items-start gap-3">
+          <div className="-mt-9 h-12 w-12 shrink-0 rounded-full bg-card border-2 border-card shadow-soft grid place-items-center overflow-hidden relative z-10">
             {company.logo_url ? (
-              <img src={company.logo_url} alt="" className="h-full w-full object-cover" />
+              <img src={company.logo_url} alt="" className="h-full w-full object-cover relative z-10" />
             ) : (
-              <span className="text-sm font-bold text-primary">
+              <span className="text-sm font-bold text-primary relative z-10">
                 {company.name.slice(0, 2).toUpperCase()}
               </span>
             )}
