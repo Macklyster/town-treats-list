@@ -122,7 +122,7 @@ const Anuncie = () => {
           })),
         }}
       />
-      <Header />
+      <HomeHeader />
       <main>
         {/* Hero */}
         <section className="gradient-hero text-primary-foreground">
