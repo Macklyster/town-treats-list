@@ -37,7 +37,7 @@ export const HomeHeader = () => {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full bg-background/95 backdrop-blur transition-shadow ${
+      className={`sticky top-0 z-[100] w-full bg-background/95 backdrop-blur transition-shadow ${
         scrolled ? "shadow-soft border-b border-border" : "border-b border-transparent"
       }`}
     >
