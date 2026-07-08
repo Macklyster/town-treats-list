@@ -80,6 +80,7 @@ export default function LojaForm() {
           cover_url: data.cover_url ?? "",
           latitude: data.latitude ?? null,
           longitude: data.longitude ?? null,
+          opening_hours: normalizeOpeningHours((data as any).opening_hours),
         });
         if (data.latitude != null && data.longitude != null) setPinManuallySet(true);
       }
