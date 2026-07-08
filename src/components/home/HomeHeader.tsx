@@ -100,9 +100,39 @@ export const HomeHeader = () => {
         </button>
       </div>
 
-      <div className="container hidden md:flex pb-3">
+      <nav className="hidden md:block border-t border-border/60 bg-background/95">
+        <div className="container flex h-11 items-center gap-1 overflow-x-auto">
+          {[
+            { to: "/", label: "Ofertas", icon: Tag, end: true },
+            { to: "/coletivas", label: "Coletivas", icon: Users },
+            { to: "/leiloes", label: "Leilões", icon: Gavel },
+            { to: "/ofertas-invisiveis", label: "Invisíveis", icon: Sparkles },
+            { to: "/perfil/cupons", label: "Meus Cupons", icon: Ticket },
+            { to: "/anuncie", label: "Anuncie", icon: Sparkles },
+          ].map(({ to, label, icon: Icon, end }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={end}
+              className={({ isActive }) =>
+                `inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition ${
+                  isActive
+                    ? "bg-primary text-primary-foreground shadow-soft"
+                    : "text-foreground/70 hover:bg-primary-light hover:text-primary"
+                }`
+              }
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {label}
+            </NavLink>
+          ))}
+        </div>
+      </nav>
+
+      <div className="container hidden md:flex pb-3 pt-3">
         <CategoryChips />
       </div>
+
 
       {open && (
         <div className="md:hidden border-t border-border bg-card">
