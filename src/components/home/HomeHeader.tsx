@@ -1,5 +1,5 @@
-import { Link, useNavigate } from "react-router-dom";
-import { Heart, MapPin, Menu, Search, User as UserIcon, X } from "lucide-react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Gavel, Heart, MapPin, Menu, Search, Sparkles, Tag, Ticket, User as UserIcon, Users, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCity } from "@/hooks/useCity";
@@ -100,9 +100,39 @@ export const HomeHeader = () => {
         </button>
       </div>
 
-      <div className="container hidden md:flex pb-3">
+      <nav className="hidden md:block border-t border-border/60 bg-background/95">
+        <div className="container flex h-11 items-center gap-1 overflow-x-auto">
+          {[
+            { to: "/", label: "Ofertas", icon: Tag, end: true },
+            { to: "/coletivas", label: "Coletivas", icon: Users },
+            { to: "/leiloes", label: "Leilões", icon: Gavel },
+            { to: "/ofertas-invisiveis", label: "Invisíveis", icon: Sparkles },
+            { to: "/perfil/cupons", label: "Meus Cupons", icon: Ticket },
+            { to: "/anuncie", label: "Anuncie", icon: Sparkles },
+          ].map(({ to, label, icon: Icon, end }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={end}
+              className={({ isActive }) =>
+                `inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition ${
+                  isActive
+                    ? "bg-primary text-primary-foreground shadow-soft"
+                    : "text-foreground/70 hover:bg-primary-light hover:text-primary"
+                }`
+              }
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {label}
+            </NavLink>
+          ))}
+        </div>
+      </nav>
+
+      <div className="container hidden md:flex pb-3 pt-3">
         <CategoryChips />
       </div>
+
 
       {open && (
         <div className="md:hidden border-t border-border bg-card">
@@ -123,7 +153,28 @@ export const HomeHeader = () => {
               <MapPin className="h-3.5 w-3.5 text-primary" />
               {city ? `${city.city} - ${city.state}` : "Selecionar cidade"}
             </button>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { to: "/", label: "Ofertas", icon: Tag },
+                { to: "/coletivas", label: "Coletivas", icon: Users },
+                { to: "/leiloes", label: "Leilões", icon: Gavel },
+                { to: "/ofertas-invisiveis", label: "Invisíveis", icon: Sparkles },
+                { to: "/perfil/cupons", label: "Meus Cupons", icon: Ticket },
+                { to: "/anuncie", label: "Anuncie", icon: Sparkles },
+              ].map(({ to, label, icon: Icon }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  onClick={() => setOpen(false)}
+                  className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+                >
+                  <Icon className="h-4 w-4 text-primary" />
+                  {label}
+                </Link>
+              ))}
+            </div>
             <CategoryChips />
+
             {!user ? (
               <Link to="/auth" onClick={() => setOpen(false)} className="rounded-full bg-primary py-2.5 text-center text-sm font-semibold text-primary-foreground">
                 Entrar
