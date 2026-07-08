@@ -225,6 +225,35 @@ export type Database = {
         }
         Relationships: []
       }
+      company_flyscore: {
+        Row: {
+          overall: number
+          pilares: Json
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          overall?: number
+          pilares?: Json
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          overall?: number
+          pilares?: Json
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_flyscore_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coupon_redemptions: {
         Row: {
           coupon_id: string
@@ -322,6 +351,56 @@ export type Database = {
           },
           {
             foreignKeyName: "coupons_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          city: string
+          created_at: string
+          description: string | null
+          ends_at: string
+          id: string
+          image_url: string | null
+          kind: Database["public"]["Enums"]["event_kind"]
+          starts_at: string
+          state: string
+          store_id: string | null
+          title: string
+        }
+        Insert: {
+          city: string
+          created_at?: string
+          description?: string | null
+          ends_at: string
+          id?: string
+          image_url?: string | null
+          kind?: Database["public"]["Enums"]["event_kind"]
+          starts_at: string
+          state: string
+          store_id?: string | null
+          title: string
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          description?: string | null
+          ends_at?: string
+          id?: string
+          image_url?: string | null
+          kind?: Database["public"]["Enums"]["event_kind"]
+          starts_at?: string
+          state?: string
+          store_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
@@ -1249,6 +1328,27 @@ export type Database = {
           },
         ]
       }
+      user_interests: {
+        Row: {
+          category_slug: string
+          created_at: string
+          user_id: string
+          weight: number
+        }
+        Insert: {
+          category_slug: string
+          created_at?: string
+          user_id: string
+          weight?: number
+        }
+        Update: {
+          category_slug?: string
+          created_at?: string
+          user_id?: string
+          weight?: number
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1267,6 +1367,33 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_view_history: {
+        Row: {
+          city: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          user_id: string
+          viewed_at: string
+        }
+        Insert: {
+          city?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          user_id: string
+          viewed_at?: string
+        }
+        Update: {
+          city?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          user_id?: string
+          viewed_at?: string
         }
         Relationships: []
       }
@@ -1413,6 +1540,7 @@ export type Database = {
         | "rejected"
       coupon_kind: "fixed" | "unique"
       discount_type: "percent" | "amount"
+      event_kind: "happy_hour" | "show" | "feira" | "evento" | "promocao"
       geo_offer_status: "pending" | "approved" | "expired" | "rejected"
       group_offer_status: "pending" | "approved" | "rejected" | "expired"
       offer_status: "pending" | "approved" | "rejected" | "paused"
@@ -1564,6 +1692,7 @@ export const Constants = {
       ],
       coupon_kind: ["fixed", "unique"],
       discount_type: ["percent", "amount"],
+      event_kind: ["happy_hour", "show", "feira", "evento", "promocao"],
       geo_offer_status: ["pending", "approved", "expired", "rejected"],
       group_offer_status: ["pending", "approved", "rejected", "expired"],
       offer_status: ["pending", "approved", "rejected", "paused"],
