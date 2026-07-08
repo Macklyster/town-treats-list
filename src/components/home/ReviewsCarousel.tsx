@@ -16,9 +16,10 @@ export const ReviewsCarousel = () => {
     });
   }, []);
 
-  const visible = items.slice(idx, idx + 2);
+  const pageSize = items.length === 1 ? 1 : 2;
+  const visible = items.slice(idx, idx + pageSize);
   const canPrev = idx > 0;
-  const canNext = idx + 2 < items.length;
+  const canNext = idx + pageSize < items.length;
 
   return (
     <div>
