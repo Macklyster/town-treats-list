@@ -34,6 +34,13 @@ export const HomeHeader = () => {
         scrolled ? "shadow-soft border-b border-border" : "border-b border-transparent"
       }`}
     >
+      <div className="hidden md:block border-b border-border/60 bg-secondary/50">
+        <div className="container flex py-2">
+          <CategoryChips />
+        </div>
+      </div>
+
+
       <div className="container flex h-16 items-center gap-4 md:h-20">
         <Link to="/" className="flex items-center gap-2 shrink-0" aria-label="OfertasFly">
           <img src={logo} alt="OfertasFly — Descubra. Conecte. Valorize." className="h-8 w-auto md:h-9" />
@@ -101,7 +108,7 @@ export const HomeHeader = () => {
       </div>
 
       <nav className="hidden md:block border-t border-border/60 bg-background/95">
-        <div className="container flex h-11 items-center gap-1 overflow-x-auto">
+        <div className="container flex h-11 items-center justify-center gap-1 overflow-x-auto">
           {[
             { to: "/", label: "Ofertas", icon: Tag, end: true },
             { to: "/coletivas", label: "Coletivas", icon: Users },
@@ -129,9 +136,7 @@ export const HomeHeader = () => {
         </div>
       </nav>
 
-      <div className="container hidden md:flex pb-3 pt-3">
-        <CategoryChips />
-      </div>
+
 
 
       {open && (
