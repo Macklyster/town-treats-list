@@ -248,8 +248,8 @@ export type UIReviewCard = {
 export async function fetchRecentReviews(limit = 8): Promise<UIReviewCard[]> {
   const { data } = await supabase
     .from("offer_reviews")
-    .select("id,rating,comment,created_at,user_id,offer:offers(title,store:stores(name,slug))")
-    .not("comment", "is", null)
+    .select("id,rating,comment,created_at,user_id,status,offer:offers(title,store:stores(name,slug))")
+    .eq("status", "approved")
     .order("created_at", { ascending: false })
     .limit(limit);
   const rows = (data ?? []) as any[];
@@ -269,6 +269,7 @@ export async function fetchRecentReviews(limit = 8): Promise<UIReviewCard[]> {
     author_avatar: pmap.get(r.user_id)?.avatar_url ?? null,
   }));
 }
+
 
 export function greeting(name?: string | null): string {
   const h = new Date().getHours();
