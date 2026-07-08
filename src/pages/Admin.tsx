@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { PageHero } from "@/components/site/PageHero";
+import { SectionCard } from "@/components/site/SectionCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -278,10 +279,9 @@ export default function Admin() {
           </TabsList>
 
           <TabsContent value="offers" className="mt-6">
-            <Card>
-              <CardHeader><CardTitle>Ofertas</CardTitle></CardHeader>
-              <CardContent>
-                {loading ? <p>Carregando…</p> : (
+            <SectionCard eyebrow="Moderação" title="Ofertas" description="Aprove, rejeite, destaque ou dispare relâmpagos das ofertas enviadas.">
+              {loading ? <p>Carregando…</p> : (
+
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead className="text-left text-muted-foreground">
@@ -363,8 +363,8 @@ export default function Admin() {
                     </table>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+            </SectionCard>
+
             <div className="mt-4">
               <OfferBulkBar
                 ids={selectedOffers}
@@ -379,9 +379,8 @@ export default function Admin() {
           </TabsContent>
 
           <TabsContent value="stores" className="mt-6">
-            <Card>
-              <CardHeader><CardTitle>Lojas</CardTitle></CardHeader>
-              <CardContent>
+            <SectionCard eyebrow="Lojistas" title="Lojas" description="Aprove lojas, gerencie planos e ative o selo de destaque.">
+
                 <TooltipProvider>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
@@ -454,20 +453,22 @@ export default function Admin() {
                     </table>
                   </div>
                 </TooltipProvider>
-              </CardContent>
-            </Card>
+            </SectionCard>
           </TabsContent>
 
           <TabsContent value="categories" className="mt-6">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                <CardTitle>Categorias</CardTitle>
+            <SectionCard
+              eyebrow="Taxonomia"
+              title="Categorias"
+              description="Organize as categorias exibidas em toda a plataforma."
+              action={
                 <Button size="sm" variant="accent" onClick={openNewCategory}>
                   <Plus className="h-4 w-4" /> Nova categoria
                 </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
+              }
+            >
+              <div className="overflow-x-auto">
+
                   <table className="w-full text-sm">
                     <thead className="text-left text-muted-foreground">
                       <tr>
@@ -535,9 +536,10 @@ export default function Admin() {
                       )}
                     </tbody>
                   </table>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </SectionCard>
+
+
           </TabsContent>
 
           <TabsContent value="notifications" className="mt-6">
