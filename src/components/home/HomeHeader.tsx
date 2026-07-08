@@ -200,7 +200,7 @@ export const HomeHeader = () => {
                 { to: "/coletivas", label: "Coletivas", icon: Users },
                 { to: "/leiloes", label: "Leilões", icon: Gavel },
                 { to: "/ofertas-invisiveis", label: "Invisíveis", icon: Sparkles },
-                { to: "/perfil/cupons", label: "Meus Cupons", icon: Ticket },
+                { to: "/meus-cupons", label: "Meus Cupons", icon: Ticket },
                 { to: "/anuncie", label: "Anuncie", icon: Sparkles },
               ].map(({ to, label, icon: Icon }) => (
                 <Link
