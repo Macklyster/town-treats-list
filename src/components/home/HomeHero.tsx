@@ -4,12 +4,12 @@ import { BadgeCheck, Building2, MapPin, Star, Tag, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useCity } from "@/hooks/useCity";
 import { fetchFeaturedCompanies, fetchHomeStats, HomeStats, UICompany } from "@/lib/home-api";
-import heroBanner from "@/assets/hero-banner.svg";
 
 export const HomeHero = () => {
   const { city } = useCity();
   const [stats, setStats] = useState<HomeStats>({ activeCompanies: 0, publishedOffers: 0, connectedUsers: 0, cities: 0 });
   const [featured, setFeatured] = useState<UICompany | null>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     fetchHomeStats().then(setStats);
