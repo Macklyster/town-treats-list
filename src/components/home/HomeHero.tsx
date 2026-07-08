@@ -3,15 +3,21 @@ import { motion } from "framer-motion";
 import { BadgeCheck, Building2, MapPin, Star, Tag, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useCity } from "@/hooks/useCity";
-import { fetchHomeStats, HomeStats } from "@/lib/home-api";
+import { fetchFeaturedCompanies, fetchHomeStats, HomeStats, UICompany } from "@/lib/home-api";
 
 export const HomeHero = () => {
   const { city } = useCity();
   const [stats, setStats] = useState<HomeStats>({ activeCompanies: 0, publishedOffers: 0, connectedUsers: 0, cities: 0 });
+  const [featured, setFeatured] = useState<UICompany | null>(null);
 
   useEffect(() => {
     fetchHomeStats().then(setStats);
   }, []);
+
+  useEffect(() => {
+    fetchFeaturedCompanies(city ?? undefined).then((list) => setFeatured(list[0] ?? null));
+  }, [city?.city, city?.state]);
+
 
   const cityLabel = city ? `${city.city} - ${city.state}` : "Selecione sua cidade";
   const metrics = [
