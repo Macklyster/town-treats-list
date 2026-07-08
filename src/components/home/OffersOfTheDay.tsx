@@ -56,7 +56,14 @@ export const OffersOfTheDay = ({ offers, loading }: { offers: UIOffer[]; loading
                 : o.isAuction && o.auctionToken
                   ? `/leilao/${o.auctionToken}`
                   : `/oferta/${o.id}`;
-              const badge = o.isGroup ? "Coletiva" : o.isAuction ? "Leilão" : null;
+              const badge = o.isGroup
+                ? { label: "Coletiva", cls: "bg-primary text-primary-foreground" }
+                : o.isAuction
+                  ? { label: "Leilão", cls: "bg-primary text-primary-foreground" }
+                  : o.isFlash
+                    ? { label: "⚡ Relâmpago", cls: "bg-accent text-accent-foreground" }
+                    : null;
+
               return (
                 <Link
                   key={o.id}
@@ -71,10 +78,11 @@ export const OffersOfTheDay = ({ offers, loading }: { offers: UIOffer[]; loading
                       loading="lazy"
                     />
                     {badge && (
-                      <span className="absolute top-3 right-3 rounded-md bg-primary px-2 py-1 text-[11px] font-bold text-primary-foreground shadow-soft">
-                        {badge}
+                      <span className={`absolute top-3 right-3 rounded-md px-2 py-1 text-[11px] font-bold shadow-soft ${badge.cls}`}>
+                        {badge.label}
                       </span>
                     )}
+
                     {off > 0 && (
                       <span className="absolute top-3 left-3 rounded-md bg-destructive px-2 py-1 text-[11px] font-bold text-destructive-foreground shadow-soft">
                         {off}% OFF
