@@ -3,12 +3,9 @@ import { HomeHeader } from "@/components/home/HomeHeader";
 import { HomeHero } from "@/components/home/HomeHero";
 import { FeaturedCompanies } from "@/components/home/FeaturedCompanies";
 import { OffersOfTheDay } from "@/components/home/OffersOfTheDay";
-import { HappeningNow } from "@/components/home/HappeningNow";
-import { NearbyMap } from "@/components/home/NearbyMap";
-import { Recommended } from "@/components/home/Recommended";
-import { FlyScoreSection } from "@/components/home/FlyScoreSection";
-import { ReviewsCarousel } from "@/components/home/ReviewsCarousel";
-import { GalleryGrid } from "@/components/home/GalleryGrid";
+import { DiscoverRow } from "@/components/home/DiscoverRow";
+import { FlyScoreBar } from "@/components/home/FlyScoreSection";
+import { ReviewsAndGallery } from "@/components/home/ReviewsAndGallery";
 import { CTABanner } from "@/components/home/CTABanner";
 import { HomeFooter } from "@/components/home/HomeFooter";
 import { SEO } from "@/components/seo/SEO";
@@ -56,19 +53,16 @@ const Index = () => {
   };
 
   return (
-    <div className="theme-aurora min-h-screen">
+    <div className="min-h-screen bg-background">
       <SEO title={title} description={description} path="/" jsonLd={[websiteLd, orgLd]} />
       <HomeHeader />
       <main>
         <HomeHero />
         <FeaturedCompanies />
         <OffersOfTheDay offers={offers} loading={loading} />
-        <HappeningNow />
-        <NearbyMap />
-        <Recommended />
-        <FlyScoreSection />
-        <ReviewsCarousel />
-        <GalleryGrid />
+        <DiscoverRow />
+        <FlyScoreBar />
+        <ReviewsAndGallery />
         <CTABanner />
       </main>
       <HomeFooter />

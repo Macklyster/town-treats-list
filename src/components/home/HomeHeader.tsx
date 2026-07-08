@@ -1,11 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Heart, MapPin, Menu, Search, Sparkles, User as UserIcon, X } from "lucide-react";
+import { Heart, MapPin, Menu, Search, User as UserIcon, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useCity } from "@/hooks/useCity";
 import logo from "@/assets/ofertasfly-logo-transparente.svg";
-import { categories } from "@/data/categories";
+import { CategoryChips } from "./CategoryChips";
 
 export const HomeHeader = () => {
   const { user, isAdmin, isLojista } = useAuth();
@@ -30,90 +29,74 @@ export const HomeHeader = () => {
   };
 
   return (
-    <motion.header
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.4 }}
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        scrolled ? "aurora-glass-strong border-b border-white/10" : "bg-transparent"
+    <header
+      className={`sticky top-0 z-50 w-full bg-background/95 backdrop-blur transition-shadow ${
+        scrolled ? "shadow-soft border-b border-border" : "border-b border-transparent"
       }`}
     >
-      <div className="container flex h-20 items-center gap-4">
+      <div className="container flex h-16 items-center gap-4 md:h-20">
         <Link to="/" className="flex items-center gap-2 shrink-0">
-          <img src={logo} alt="OfertasFly" className="h-10 w-auto" />
+          <img src={logo} alt="OfertasFly" className="h-9 w-auto md:h-10" />
+          <div className="hidden md:block leading-tight">
+            <div className="text-[15px] font-bold tracking-tight text-foreground">OfertasFly</div>
+            <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Descubra. Conecte. Valorize.</div>
+          </div>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-1 ml-4">
-          {categories.slice(0, 4).map((c) => (
-            <Link
-              key={c.id}
-              to={`/?categoria=${c.slug}#ofertas`}
-              className="rounded-full px-3 py-1.5 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors"
-            >
-              {c.name}
-            </Link>
-          ))}
-        </nav>
-
-        <form onSubmit={submit} className="hidden md:flex flex-1 max-w-md mx-auto">
-          <div className="flex items-center gap-2 w-full rounded-full aurora-glass px-4 py-2">
-            <Search className="h-4 w-4 text-white/50" />
+        <form onSubmit={submit} className="hidden md:flex flex-1 max-w-xl mx-auto">
+          <div className="flex items-center gap-2 w-full rounded-full border border-border bg-card pl-4 pr-1 py-1 shadow-soft focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition">
+            <Search className="h-4 w-4 text-muted-foreground" />
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Buscar lojas, ofertas, categorias…"
-              className="flex-1 bg-transparent text-sm outline-none placeholder:text-white/40"
+              placeholder="O que você procura hoje?"
+              className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
             />
-            <kbd className="hidden sm:inline text-[10px] text-white/40 border border-white/10 rounded px-1.5 py-0.5">
-              ⌘K
-            </kbd>
+            <button
+              type="submit"
+              className="h-9 w-10 rounded-full bg-primary text-primary-foreground grid place-items-center hover:bg-primary-deep transition"
+              aria-label="Buscar"
+            >
+              <Search className="h-4 w-4" />
+            </button>
           </div>
         </form>
 
         <div className="hidden md:flex items-center gap-2">
           <button
             onClick={openSelector}
-            className="aurora-chip aurora-ring hover:border-[hsl(var(--aurora-cyan)/0.4)]"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-sm text-foreground/80 hover:border-primary hover:text-primary transition"
           >
-            <MapPin className="h-3.5 w-3.5 text-[hsl(var(--aurora-cyan))]" />
-            {city ? `${city.city} · ${city.state}` : "Cidade"}
+            <MapPin className="h-3.5 w-3.5 text-primary" />
+            {city ? `${city.city} - ${city.state}` : "Cidade"}
           </button>
           <Link
             to={user ? "/perfil/notificacoes" : "/auth"}
             aria-label="Favoritos"
-            className="grid h-9 w-9 place-items-center rounded-full aurora-glass hover:bg-white/10 transition-colors"
+            className="grid h-9 w-9 place-items-center rounded-full border border-border text-foreground/70 hover:border-primary hover:text-primary transition"
           >
             <Heart className="h-4 w-4" />
           </Link>
           {user ? (
             <Link
               to={isAdmin ? "/admin" : isLojista ? "/painel-lojista" : "/perfil/notificacoes"}
-              className="inline-flex items-center gap-2 rounded-full aurora-gradient-bg px-4 py-2 text-sm font-medium text-white aurora-glow hover:brightness-110 transition"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep transition"
             >
               <UserIcon className="h-4 w-4" />
               Minha conta
             </Link>
           ) : (
-            <>
-              <Link
-                to="/auth"
-                className="rounded-full px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors"
-              >
-                Entrar
-              </Link>
-              <Link
-                to="/anuncie"
-                className="inline-flex items-center gap-2 rounded-full aurora-gradient-bg px-4 py-2 text-sm font-medium text-white aurora-glow hover:brightness-110 transition"
-              >
-                <Sparkles className="h-4 w-4" />
-                Cadastrar empresa
-              </Link>
-            </>
+            <Link
+              to="/auth"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep transition"
+            >
+              Entrar
+            </Link>
           )}
         </div>
 
         <button
-          className="md:hidden ml-auto grid h-10 w-10 place-items-center rounded-full aurora-glass"
+          className="md:hidden ml-auto grid h-10 w-10 place-items-center rounded-full border border-border"
           onClick={() => setOpen((v) => !v)}
           aria-label="Menu"
         >
@@ -121,48 +104,39 @@ export const HomeHeader = () => {
         </button>
       </div>
 
+      <div className="container hidden md:flex pb-3">
+        <CategoryChips />
+      </div>
+
       {open && (
-        <div className="md:hidden aurora-glass-strong border-t border-white/10">
+        <div className="md:hidden border-t border-border bg-card">
           <div className="container flex flex-col gap-3 py-4">
-            <form onSubmit={submit} className="flex items-center gap-2 rounded-full aurora-glass px-4 py-2">
-              <Search className="h-4 w-4 text-white/50" />
+            <form onSubmit={submit} className="flex items-center gap-2 rounded-full border border-border bg-background pl-4 pr-1 py-1">
+              <Search className="h-4 w-4 text-muted-foreground" />
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Buscar…"
-                className="flex-1 bg-transparent text-sm outline-none placeholder:text-white/40"
+                className="flex-1 bg-transparent text-sm outline-none"
               />
+              <button className="h-9 w-10 rounded-full bg-primary text-primary-foreground grid place-items-center" aria-label="Buscar">
+                <Search className="h-4 w-4" />
+              </button>
             </form>
-            <button onClick={openSelector} className="aurora-chip self-start">
-              <MapPin className="h-3.5 w-3.5" />
-              {city ? `${city.city} · ${city.state}` : "Selecionar cidade"}
+            <button onClick={openSelector} className="inline-flex items-center gap-1.5 self-start rounded-full border border-border px-3 py-1.5 text-sm">
+              <MapPin className="h-3.5 w-3.5 text-primary" />
+              {city ? `${city.city} - ${city.state}` : "Selecionar cidade"}
             </button>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((c) => (
-                <Link
-                  key={c.id}
-                  to={`/?categoria=${c.slug}#ofertas`}
-                  onClick={() => setOpen(false)}
-                  className="aurora-chip"
-                >
-                  {c.name}
-                </Link>
-              ))}
-            </div>
+            <CategoryChips />
             {!user ? (
-              <div className="flex gap-2">
-                <Link to="/auth" onClick={() => setOpen(false)} className="flex-1 rounded-full aurora-glass py-2.5 text-center text-sm">
-                  Entrar
-                </Link>
-                <Link to="/anuncie" onClick={() => setOpen(false)} className="flex-1 rounded-full aurora-gradient-bg py-2.5 text-center text-sm font-medium">
-                  Cadastrar
-                </Link>
-              </div>
+              <Link to="/auth" onClick={() => setOpen(false)} className="rounded-full bg-primary py-2.5 text-center text-sm font-semibold text-primary-foreground">
+                Entrar
+              </Link>
             ) : (
               <Link
                 to={isAdmin ? "/admin" : isLojista ? "/painel-lojista" : "/perfil/notificacoes"}
                 onClick={() => setOpen(false)}
-                className="rounded-full aurora-gradient-bg py-2.5 text-center text-sm font-medium"
+                className="rounded-full bg-primary py-2.5 text-center text-sm font-semibold text-primary-foreground"
               >
                 Minha conta
               </Link>
@@ -170,6 +144,6 @@ export const HomeHeader = () => {
           </div>
         </div>
       )}
-    </motion.header>
+    </header>
   );
 };

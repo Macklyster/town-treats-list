@@ -1,104 +1,106 @@
+import { useRef } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ArrowRight, Clock, Tag } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { UIOffer } from "@/lib/offers-api";
 import { discountPct, formatBRL } from "@/lib/offers-api";
 import { SectionHeading } from "./SectionHeading";
 
 export const OffersOfTheDay = ({ offers, loading }: { offers: UIOffer[]; loading: boolean }) => {
-  const list = offers.slice(0, 8);
+  const list = offers.slice(0, 10);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const scroll = (dir: 1 | -1) =>
+    scrollRef.current?.scrollBy({ left: dir * (scrollRef.current.clientWidth * 0.8), behavior: "smooth" });
 
   return (
-    <section id="ofertas" className="container py-16 md:py-20">
+    <section id="ofertas" className="container py-10 md:py-14">
       <SectionHeading
-        eyebrow="Ofertas do dia"
-        title={<>Descontos <span className="aurora-gradient-text">imperdíveis</span> hoje</>}
-        description="Selecionadas por relevância, popularidade e prazo. Aproveite antes que voem."
+        title="Ofertas do dia"
+        description="Aproveite as melhores ofertas e descontos da sua cidade."
         action={
-          <Link
-            to="/#ofertas"
-            className="hidden md:inline-flex items-center gap-1.5 text-sm text-[hsl(var(--aurora-cyan))] hover:underline"
-          >
-            Ver todas <ArrowRight className="h-4 w-4" />
+          <Link to="/#ofertas" className="hidden md:inline-flex text-sm font-medium text-primary hover:underline">
+            Ver todas as ofertas →
           </Link>
         }
       />
+      <div className="relative">
+        <button
+          onClick={() => scroll(-1)}
+          className="hidden md:grid absolute -left-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 rounded-full bg-card border border-border shadow-card place-items-center hover:bg-primary hover:text-primary-foreground hover:border-primary transition"
+          aria-label="Anterior"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+        <button
+          onClick={() => scroll(1)}
+          className="hidden md:grid absolute -right-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 rounded-full bg-card border border-border shadow-card place-items-center hover:bg-primary hover:text-primary-foreground hover:border-primary transition"
+          aria-label="Próximo"
+        >
+          <ChevronRight className="h-5 w-5" />
+        </button>
 
-      {loading ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="aspect-[4/5] rounded-2xl aurora-glass animate-pulse" />
-          ))}
-        </div>
-      ) : list.length ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-          {list.map((o, i) => {
-            const off = discountPct(o);
-            return (
-              <motion.div
-                key={o.id}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.4, delay: i * 0.04 }}
-              >
+        {loading ? (
+          <div className="flex gap-4 -mx-4 px-4 overflow-hidden">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="shrink-0 w-[240px] aspect-[3/4] rounded-2xl bg-muted animate-pulse" />
+            ))}
+          </div>
+        ) : list.length ? (
+          <div
+            ref={scrollRef}
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {list.map((o) => {
+              const off = discountPct(o);
+              return (
                 <Link
+                  key={o.id}
                   to={`/oferta/${o.id}`}
-                  className="group block rounded-2xl overflow-hidden aurora-glass aurora-ring"
+                  className="group shrink-0 w-[240px] snap-start rounded-2xl overflow-hidden bg-card border border-border shadow-soft hover:shadow-card hover:-translate-y-0.5 transition-all"
                 >
-                  <div className="relative aspect-square overflow-hidden">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                     <img
                       src={o.image}
                       alt={o.title}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                     {off > 0 && (
-                      <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full aurora-gradient-bg px-2.5 py-1 text-[11px] font-bold">
-                        <Tag className="h-3 w-3" />
+                      <span className="absolute top-3 left-3 rounded-md bg-destructive px-2 py-1 text-[11px] font-bold text-destructive-foreground shadow-soft">
                         {off}% OFF
-                      </span>
-                    )}
-                    {o.isFlash && (
-                      <span className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-[hsl(var(--aurora-hot))] px-2.5 py-1 text-[11px] font-bold text-white">
-                        <Clock className="h-3 w-3" /> Flash
                       </span>
                     )}
                   </div>
                   <div className="p-4">
-                    <div className="text-[11px] uppercase tracking-wider text-[hsl(var(--aurora-muted))]">
+                    <div className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">
                       {o.storeName}
                     </div>
-                    <h3 className="mt-1 text-sm font-semibold leading-snug line-clamp-2 min-h-[2.5rem]">
+                    <h3 className="mt-1 text-sm font-semibold leading-snug line-clamp-2 min-h-[2.5rem] text-foreground">
                       {o.title}
                     </h3>
-                    <div className="mt-3 flex items-end justify-between gap-2">
-                      <div>
-                        {o.originalPrice > 0 && o.promoPrice < o.originalPrice && (
-                          <div className="text-xs line-through text-[hsl(var(--aurora-muted))]">
-                            {formatBRL(o.originalPrice)}
-                          </div>
-                        )}
-                        <div className="text-lg font-bold aurora-gradient-text">
-                          {o.promoPrice > 0 ? formatBRL(o.promoPrice) : "Grátis"}
-                        </div>
-                      </div>
-                      <span className="rounded-full aurora-glass px-2.5 py-1.5 text-[11px] font-medium group-hover:aurora-gradient-bg transition-colors">
-                        Ver oferta
+                    <div className="mt-2 flex items-baseline gap-2">
+                      <span className="text-lg font-bold text-primary">
+                        {o.promoPrice > 0 ? formatBRL(o.promoPrice) : "Grátis"}
                       </span>
+                      {o.originalPrice > 0 && o.promoPrice < o.originalPrice && (
+                        <span className="text-xs line-through text-muted-foreground">
+                          {formatBRL(o.originalPrice)}
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-3 rounded-full bg-primary py-2 text-center text-xs font-semibold text-primary-foreground group-hover:bg-primary-deep transition-colors">
+                      Ver oferta
                     </div>
                   </div>
                 </Link>
-              </motion.div>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="rounded-2xl aurora-glass p-10 text-center text-[hsl(var(--aurora-muted))]">
-          Nenhuma oferta ativa na sua cidade ainda. Volte em breve!
-        </div>
-      )}
+              );
+            })}
+          </div>
+        ) : (
+          <div className="rounded-2xl bg-card border border-border p-10 text-center text-muted-foreground">
+            Nenhuma oferta ativa na sua cidade ainda. Volte em breve!
+          </div>
+        )}
+      </div>
     </section>
   );
 };
