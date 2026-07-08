@@ -8,13 +8,16 @@ import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { FollowStoreButton } from "@/components/site/FollowStoreButton";
 import { CouponRedeemList } from "@/components/site/CouponRedeemList";
+import { PageHero } from "@/components/site/PageHero";
+import { SectionCard } from "@/components/site/SectionCard";
+import { EmptyState } from "@/components/site/EmptyState";
 import {
   fetchStoreBySlug,
   fetchOffersByStoreId,
   UIOffer,
 } from "@/lib/offers-api";
 import { absoluteUrl, citySlug, cityLabel } from "@/lib/slug";
-import { Instagram, MapPin, Phone, ChevronRight } from "lucide-react";
+import { Instagram, MapPin, Phone, Tag } from "lucide-react";
 
 const StorePage = () => {
   const { storeSlug = "" } = useParams();
