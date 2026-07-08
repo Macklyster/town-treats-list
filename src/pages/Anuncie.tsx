@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { SEO } from "@/components/seo/SEO";
 import { HomeHeader } from "@/components/home/HomeHeader";
 import { HomeFooter } from "@/components/home/HomeFooter";
-
+import { SectionHeading } from "@/components/home/SectionHeading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +14,18 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Check, Send, Sparkles, Gift, Shield, XCircle } from "lucide-react";
+import {
+  Check,
+  Send,
+  Sparkles,
+  Gift,
+  Shield,
+  XCircle,
+  Rocket,
+  ClipboardList,
+  MessagesSquare,
+  TrendingUp,
+} from "lucide-react";
 import { toast } from "sonner";
 import { PLAN_CATALOG } from "@/data/plans";
 import { formatBRL } from "@/lib/format";
@@ -28,6 +40,13 @@ const plans = PLAN_CATALOG.map((p) => ({
   highlight: p.highlight,
   features: p.features,
 }));
+
+const steps = [
+  { icon: ClipboardList, t: "Cadastre", d: "Preencha o formulário com os dados da empresa." },
+  { icon: MessagesSquare, t: "Conversamos", d: "Um consultor monta seu plano de divulgação." },
+  { icon: Rocket, t: "Publicamos", d: "Sua oferta entra no ar com fotos e texto profissionais." },
+  { icon: TrendingUp, t: "Vende mais", d: "Clientes te contatam direto pelo WhatsApp ou loja." },
+];
 
 const faq = [
   {
@@ -105,7 +124,6 @@ const Anuncie = () => {
     }, 400);
   };
 
-
   return (
     <div className="min-h-screen bg-background">
       <SEO
@@ -125,110 +143,142 @@ const Anuncie = () => {
       <HomeHeader />
       <main>
         {/* Hero */}
-        <section className="gradient-hero text-primary-foreground">
-          <div className="container py-20 md:py-28">
-            <div className="mx-auto max-w-3xl text-center">
-              <span className="inline-block rounded-full bg-primary-foreground/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider">
-                Para Lojistas
+        <section className="container pt-4 md:pt-6">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="relative overflow-hidden rounded-3xl bg-[hsl(var(--hero-bg))] text-[hsl(var(--hero-fg))] p-6 md:p-12"
+          >
+            <div className="absolute -right-24 -top-24 h-[380px] w-[380px] rounded-full bg-primary/25 blur-3xl" aria-hidden />
+            <div className="absolute -left-24 bottom-0 h-[300px] w-[300px] rounded-full bg-primary-mid/20 blur-3xl" aria-hidden />
+            <div className="relative mx-auto max-w-3xl text-center">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] backdrop-blur">
+                <Sparkles className="h-3.5 w-3.5" /> Para lojistas
               </span>
-              <h1 className="mt-6 text-hero font-medium leading-[1.05] md:text-[48px]">
-                Anuncie sua empresa e <span className="inline-block rounded-xl bg-background px-3 py-0.5 text-[#0F0F0E] shadow-soft">aumente suas vendas</span>
+              <h1 className="mt-5 text-3xl font-semibold leading-[1.1] md:text-5xl">
+                Anuncie sua empresa e{" "}
+                <span className="inline-block rounded-2xl bg-background px-3 py-0.5 text-foreground shadow-soft">
+                  aumente suas vendas
+                </span>
               </h1>
-              <p className="mt-5 text-lg opacity-85">
-                Coloque sua marca diante de milhares de consumidores locais buscando exatamente o que você oferece.
-                Marketing simples, resultado rápido.
+              <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed opacity-85 md:text-base">
+                Coloque sua marca diante de milhares de consumidores locais buscando exatamente o
+                que você oferece. Marketing simples, resultado rápido.
               </p>
-              <div className="mt-8 flex justify-center gap-3">
-                <Button asChild variant="accent" size="lg">
-                  <a href="#contato">Falar com um Consultor</a>
+              <div className="mt-7 flex flex-wrap justify-center gap-3">
+                <Button asChild size="lg" className="rounded-full">
+                  <a href="#contato">Falar com um consultor</a>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-primary">
-                  <a href="#planos">Ver Planos</a>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full border-white/30 bg-transparent text-[hsl(var(--hero-fg))] hover:bg-white/10 hover:text-[hsl(var(--hero-fg))]"
+                >
+                  <a href="#planos">Ver planos</a>
                 </Button>
               </div>
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* Como funciona */}
-        <section className="container py-20">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-display text-foreground md:text-[40px]">Como funciona</h2>
-            <p className="mt-3 text-muted-foreground">
-              Em poucos passos sua oferta já está atraindo clientes.
-            </p>
-          </div>
-          <div className="mt-12 grid gap-6 md:grid-cols-4">
-            {[
-              { t: "1. Cadastre", d: "Preencha o formulário com os dados da empresa." },
-              { t: "2. Conversamos", d: "Um consultor monta seu plano de divulgação." },
-              { t: "3. Publicamos", d: "Sua oferta entra no ar com fotos e texto profissionais." },
-              { t: "4. Vende mais", d: "Clientes te contatam direto pelo WhatsApp ou loja." },
-            ].map((s, i) => (
-              <div key={i} className="rounded-2xl border border-border bg-card p-6 shadow-soft">
-                <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full gradient-accent text-primary-foreground">
-                  <Sparkles className="h-5 w-5" />
-                </div>
-                <h3 className="font-medium text-foreground">{s.t}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{s.d}</p>
-              </div>
-            ))}
+        <section className="container py-10 md:py-14">
+          <SectionHeading
+            align="center"
+            eyebrow={<>Passo a passo</>}
+            title="Como funciona"
+            description="Em poucos passos sua oferta já está atraindo clientes."
+          />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {steps.map((s, i) => {
+              const Icon = s.icon;
+              return (
+                <motion.div
+                  key={s.t}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.35, delay: i * 0.05 }}
+                  className="relative rounded-2xl border border-border bg-card p-5 shadow-soft"
+                >
+                  <div className="absolute right-4 top-4 text-xs font-semibold text-muted-foreground/60">
+                    0{i + 1}
+                  </div>
+                  <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-base font-semibold text-foreground">{s.t}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{s.d}</p>
+                </motion.div>
+              );
+            })}
           </div>
         </section>
 
         {/* Planos */}
-        <section id="planos" className="bg-secondary">
-          <div className="container py-20">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-display text-foreground md:text-[40px]">Planos para todo tipo de negócio</h2>
-              <p className="mt-3 text-muted-foreground">Escolha o plano ideal e ajuste quando quiser.</p>
-            </div>
+        <section id="planos" className="container py-6 md:py-10">
+          <div className="rounded-3xl bg-secondary/60 p-6 md:p-10">
+            <SectionHeading
+              align="center"
+              eyebrow={<>Planos</>}
+              title="Planos para todo tipo de negócio"
+              description="Escolha o plano ideal e ajuste quando quiser."
+            />
 
-            {/* Banner Trial 14 dias grátis — exclusivo do ciclo mensal */}
+            {/* Banner Trial */}
             {cycle === "monthly" && (
-            <div className="relative mx-auto mt-10 max-w-4xl overflow-hidden rounded-2xl gradient-hero p-6 text-primary-foreground md:p-8">
-              <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent/30 blur-3xl" aria-hidden />
-              <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-accent/20 blur-3xl" aria-hidden />
-              <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div className="flex items-start gap-4">
-                  <div className="rounded-xl bg-accent/20 p-3 text-accent">
-                    <Gift className="h-7 w-7" />
-                  </div>
-                  <div>
-                    <div className="mb-1 inline-flex items-center gap-1 rounded-full bg-accent px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-accent-foreground">
-                      <Sparkles className="h-3 w-3" /> Oferta de boas-vindas
+              <div className="relative mx-auto mb-8 max-w-4xl overflow-hidden rounded-2xl bg-gradient-to-r from-primary to-primary-deep p-5 text-primary-foreground md:p-7">
+                <div
+                  className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/15 blur-3xl"
+                  aria-hidden
+                />
+                <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                  <div className="flex items-start gap-4">
+                    <div className="rounded-xl bg-white/15 p-3">
+                      <Gift className="h-6 w-6" />
                     </div>
-                    <h3 className="text-2xl font-bold leading-tight md:text-3xl">
-                      Teste qualquer plano mensal por <span className="inline-block rounded-xl bg-background px-3 py-0.5 text-[#0F0F0E] shadow-soft">14 dias grátis</span>.
-                    </h3>
-                    <p className="mt-1 max-w-xl text-sm opacity-90 md:text-base">
-                      Sem cobrança hoje. Cancele a qualquer momento dentro dos 14 dias e não pague nada.
-                    </p>
+                    <div>
+                      <div className="mb-1 inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider backdrop-blur">
+                        <Sparkles className="h-3 w-3" /> Boas-vindas
+                      </div>
+                      <h3 className="text-xl font-semibold leading-tight md:text-2xl">
+                        Teste qualquer plano mensal por{" "}
+                        <span className="inline-block rounded-xl bg-background px-2.5 py-0.5 text-foreground shadow-soft">
+                          14 dias grátis
+                        </span>
+                      </h3>
+                      <p className="mt-1 max-w-xl text-xs opacity-90 md:text-sm">
+                        Sem cobrança hoje. Cancele antes do fim do trial e não pague nada.
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex flex-wrap gap-2 text-xs md:flex-col md:text-sm">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/10 px-3 py-1.5 backdrop-blur">
-                    <Shield className="h-3.5 w-3.5 text-accent" /> Sem fidelidade
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/10 px-3 py-1.5 backdrop-blur">
-                    <XCircle className="h-3.5 w-3.5 text-accent" /> Cancele em 1 clique
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/10 px-3 py-1.5 backdrop-blur">
-                    <Check className="h-3.5 w-3.5 text-accent" /> Acesso total
-                  </span>
+                  <div className="flex flex-wrap gap-2 text-[11px] md:flex-col md:text-xs">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 backdrop-blur">
+                      <Shield className="h-3.5 w-3.5" /> Sem fidelidade
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 backdrop-blur">
+                      <XCircle className="h-3.5 w-3.5" /> Cancele em 1 clique
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 backdrop-blur">
+                      <Check className="h-3.5 w-3.5" /> Acesso total
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
             )}
 
-            {/* Toggle Mensal / Anual */}
-            <div className="mt-10 flex justify-center">
+            {/* Toggle */}
+            <div className="flex flex-col items-center gap-2">
               <div className="inline-flex items-center rounded-full border border-border bg-background p-1 shadow-soft">
                 <button
                   type="button"
                   onClick={() => setCycle("monthly")}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                    cycle === "monthly" ? "bg-accent text-accent-foreground shadow" : "text-muted-foreground hover:text-foreground"
+                  className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                    cycle === "monthly"
+                      ? "bg-primary text-primary-foreground shadow"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   Mensal
@@ -236,22 +286,24 @@ const Anuncie = () => {
                 <button
                   type="button"
                   onClick={() => setCycle("yearly")}
-                  className={`relative rounded-full px-4 py-2 text-sm font-semibold transition ${
-                    cycle === "yearly" ? "bg-accent text-accent-foreground shadow" : "text-muted-foreground hover:text-foreground"
+                  className={`relative rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                    cycle === "yearly"
+                      ? "bg-primary text-primary-foreground shadow"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   Anual
-                  <span className="ml-2 inline-flex items-center rounded-full bg-accent-strong px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
+                  <span className="ml-2 inline-flex items-center rounded-full bg-primary-deep px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
                     -17%
                   </span>
                 </button>
               </div>
+              <p className="text-center text-xs text-muted-foreground">
+                No anual você paga o equivalente a <strong>10 meses</strong> — 2 meses grátis.
+              </p>
             </div>
-            <p className="mt-2 text-center text-xs text-muted-foreground">
-              No plano anual você paga o equivalente a <strong>10 meses</strong> — 2 meses grátis.
-            </p>
 
-            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
               {plans.map((p) => {
                 const Icon = p.icon;
                 const isFree = p.slug === "gratis";
@@ -273,64 +325,71 @@ const Anuncie = () => {
                 return (
                   <div
                     key={p.name}
-                    className={`relative flex flex-col rounded-2xl bg-card p-8 shadow-card ${
-                      !isFree ? "ring-2 ring-accent shadow-pop" : p.highlight ? "ring-2 ring-accent shadow-pop" : ""
+                    className={`relative flex flex-col rounded-2xl border border-border bg-card p-6 shadow-soft transition hover:shadow-card ${
+                      p.highlight ? "ring-2 ring-primary" : ""
                     }`}
                   >
                     {showTrial ? (
-                      <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground shadow-md">
+                      <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-primary px-3 py-1 text-[11px] font-bold text-primary-foreground shadow-md">
                         <Gift className="h-3 w-3" /> 14 DIAS GRÁTIS
                       </span>
                     ) : isYearly ? (
-                      <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-accent-strong px-3 py-1 text-xs font-bold text-primary-foreground shadow-md">
-                        <Sparkles className="h-3 w-3" /> 2 MESES GRÁTIS NO ANUAL
+                      <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-primary-deep px-3 py-1 text-[11px] font-bold text-primary-foreground shadow-md">
+                        <Sparkles className="h-3 w-3" /> 2 MESES GRÁTIS
                       </span>
                     ) : (
                       isFree && (
-                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-strong px-3 py-1 text-xs font-bold text-primary-foreground">
+                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary-deep px-3 py-1 text-[11px] font-bold text-primary-foreground">
                           Comece sem pagar
                         </span>
                       )
                     )}
-                    <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-accent/15 text-accent-strong">
-                      <Icon className="h-6 w-6" />
+                    <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                      <Icon className="h-5 w-5" />
                     </div>
-                    <h3 className="text-xl font-medium text-foreground">{p.name}</h3>
+                    <h3 className="text-lg font-semibold text-foreground">{p.name}</h3>
                     {showTrial ? (
                       <div className="mt-3">
-                        <div className="text-4xl font-bold text-foreground">
+                        <div className="text-3xl font-bold text-foreground">
                           R$ 0
-                          <span className="text-sm font-normal text-muted-foreground"> /14 dias</span>
+                          <span className="text-sm font-normal text-muted-foreground">
+                            {" "}
+                            /14 dias
+                          </span>
                         </div>
                         <p className="mt-1 text-xs text-muted-foreground">
-                          Depois, {formatBRL(p.priceCents)}{p.period} · cancele antes e não pague nada
+                          Depois, {formatBRL(p.priceCents)}
+                          {p.period}
                         </p>
                       </div>
                     ) : (
                       <div className="mt-3">
-                        <span className="text-4xl font-bold text-foreground">{displayPrice}</span>
-                        <span className="text-muted-foreground"> {displayPeriod}</span>
+                        <span className="text-3xl font-bold text-foreground">{displayPrice}</span>
+                        <span className="text-sm text-muted-foreground"> {displayPeriod}</span>
                         {isYearly && (
                           <p className="mt-1 text-xs text-muted-foreground">
-                            <s className="opacity-60">{formatBRL(p.priceCents * 12)}/ano</s> · Economize {formatBRL(p.priceCents * 2)}
+                            <s className="opacity-60">{formatBRL(p.priceCents * 12)}/ano</s> ·
+                            Economize {formatBRL(p.priceCents * 2)}
                           </p>
                         )}
                       </div>
                     )}
-                    <ul className="mt-6 space-y-3 text-sm">
+                    <ul className="mt-5 space-y-2.5 text-sm">
                       {p.features.map((f) => (
                         <li key={f} className="flex items-start gap-2">
-                          <Check className="mt-0.5 h-4 w-4 text-accent-strong" />
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                           <span className="text-muted-foreground">{f}</span>
                         </li>
                       ))}
                     </ul>
-                    <Button asChild variant="accent" className="mt-8 w-full">
+                    <Button asChild className="mt-6 w-full rounded-full">
                       <a href={ctaHref}>{ctaLabel}</a>
                     </Button>
                     {!isFree && (
                       <p className="mt-2 text-center text-[11px] text-muted-foreground">
-                        {isYearly ? "Cobrança única anual · Cancele quando quiser" : "Sem cobrança hoje · Cancele quando quiser"}
+                        {isYearly
+                          ? "Cobrança única anual · Cancele quando quiser"
+                          : "Sem cobrança hoje · Cancele quando quiser"}
                       </p>
                     )}
                   </div>
@@ -341,29 +400,32 @@ const Anuncie = () => {
         </section>
 
         {/* Formulário */}
-        <section id="contato" className="container py-20">
-          <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
+        <section id="contato" className="container py-10 md:py-14">
+          <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
             <div>
-              <h2 className="text-display text-foreground md:text-[40px]">Fale com um consultor</h2>
-              <p className="mt-3 text-muted-foreground">
-                Preencha o formulário e nossa equipe entra em contato em até 1 dia útil com a melhor proposta para o seu negócio.
-              </p>
-              <ul className="mt-8 space-y-3 text-sm text-foreground">
+              <SectionHeading
+                eyebrow={<>Contato</>}
+                title="Fale com um consultor"
+                description="Preencha o formulário e nossa equipe entra em contato em até 1 dia útil com a melhor proposta para o seu negócio."
+              />
+              <ul className="space-y-2.5 text-sm text-foreground">
                 {[
                   "Sem fidelidade — cancele quando quiser",
                   "Consultoria gratuita de divulgação",
                   "Atendimento humano via WhatsApp",
                 ].map((b) => (
                   <li key={b} className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-accent-strong" />
-                    {b}
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <Check className="h-3 w-3" />
+                    </span>
+                    <span className="text-muted-foreground">{b}</span>
                   </li>
                 ))}
               </ul>
             </div>
             <form
               onSubmit={onSubmit}
-              className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-card md:p-8"
+              className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-soft md:p-7"
             >
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
@@ -387,9 +449,20 @@ const Anuncie = () => {
               </div>
               <div>
                 <Label htmlFor="message">Mensagem</Label>
-                <Textarea id="message" name="message" rows={5} className="mt-2" placeholder="Conte um pouco sobre o seu negócio..." />
+                <Textarea
+                  id="message"
+                  name="message"
+                  rows={5}
+                  className="mt-2"
+                  placeholder="Conte um pouco sobre o seu negócio..."
+                />
               </div>
-              <Button type="submit" variant="accent" size="lg" className="w-full" disabled={submitting}>
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full rounded-full"
+                disabled={submitting}
+              >
                 <Send className="h-4 w-4" />
                 {submitting ? "Enviando..." : "Enviar mensagem"}
               </Button>
@@ -398,17 +471,27 @@ const Anuncie = () => {
         </section>
 
         {/* FAQ */}
-        <section className="bg-secondary">
-          <div className="container py-20">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-display text-foreground md:text-[40px]">Perguntas frequentes</h2>
-              <p className="mt-3 text-muted-foreground">Dúvidas comuns dos lojistas.</p>
-            </div>
-            <Accordion type="single" collapsible className="mx-auto mt-10 max-w-3xl">
+        <section className="container py-10 md:py-14">
+          <div className="rounded-3xl bg-secondary/60 p-6 md:p-10">
+            <SectionHeading
+              align="center"
+              eyebrow={<>FAQ</>}
+              title="Perguntas frequentes"
+              description="Dúvidas comuns dos lojistas."
+            />
+            <Accordion type="single" collapsible className="mx-auto max-w-3xl">
               {faq.map((f, i) => (
-                <AccordionItem key={i} value={`item-${i}`} className="rounded-xl border border-border bg-card px-5 mb-3">
-                  <AccordionTrigger className="text-left text-foreground">{f.q}</AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
+                <AccordionItem
+                  key={i}
+                  value={`item-${i}`}
+                  className="mb-3 rounded-xl border border-border bg-card px-5 shadow-soft"
+                >
+                  <AccordionTrigger className="text-left text-sm font-semibold text-foreground">
+                    {f.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                    {f.a}
+                  </AccordionContent>
                 </AccordionItem>
               ))}
             </Accordion>
