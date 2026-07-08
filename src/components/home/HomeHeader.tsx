@@ -153,7 +153,28 @@ export const HomeHeader = () => {
               <MapPin className="h-3.5 w-3.5 text-primary" />
               {city ? `${city.city} - ${city.state}` : "Selecionar cidade"}
             </button>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { to: "/", label: "Ofertas", icon: Tag },
+                { to: "/coletivas", label: "Coletivas", icon: Users },
+                { to: "/leiloes", label: "Leilões", icon: Gavel },
+                { to: "/ofertas-invisiveis", label: "Invisíveis", icon: Sparkles },
+                { to: "/perfil/cupons", label: "Meus Cupons", icon: Ticket },
+                { to: "/anuncie", label: "Anuncie", icon: Sparkles },
+              ].map(({ to, label, icon: Icon }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  onClick={() => setOpen(false)}
+                  className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+                >
+                  <Icon className="h-4 w-4 text-primary" />
+                  {label}
+                </Link>
+              ))}
+            </div>
             <CategoryChips />
+
             {!user ? (
               <Link to="/auth" onClick={() => setOpen(false)} className="rounded-full bg-primary py-2.5 text-center text-sm font-semibold text-primary-foreground">
                 Entrar
