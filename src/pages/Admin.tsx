@@ -464,11 +464,11 @@ export default function Admin() {
               action={
                 <Button size="sm" variant="accent" onClick={openNewCategory}>
                   <Plus className="h-4 w-4" /> Nova categoria
-
                 </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
+              }
+            >
+              <div className="overflow-x-auto">
+
                   <table className="w-full text-sm">
                     <thead className="text-left text-muted-foreground">
                       <tr>
