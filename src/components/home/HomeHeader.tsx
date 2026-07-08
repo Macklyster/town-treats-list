@@ -108,7 +108,7 @@ export const HomeHeader = () => {
       </div>
 
       <nav className="hidden md:block border-t border-border/60 bg-background/95">
-        <div className="container flex h-11 items-center gap-1 overflow-x-auto">
+        <div className="container flex h-11 items-center justify-center gap-1 overflow-x-auto">
           {[
             { to: "/", label: "Ofertas", icon: Tag, end: true },
             { to: "/coletivas", label: "Coletivas", icon: Users },
@@ -136,9 +136,7 @@ export const HomeHeader = () => {
         </div>
       </nav>
 
-      <div className="container hidden md:flex pb-3 pt-3">
-        <CategoryChips />
-      </div>
+
 
 
       {open && (
