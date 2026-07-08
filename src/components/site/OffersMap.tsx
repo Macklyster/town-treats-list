@@ -1,24 +1,24 @@
 import { useEffect, useMemo, useRef } from "react";
 import L from "leaflet";
-import iconUrl from "leaflet/dist/images/marker-icon.png";
-import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
-import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 import { Link } from "react-router-dom";
 import { UIOffer, formatBRL } from "@/lib/offers-api";
 import type { LatLng } from "@/lib/geo";
 import { formatDistance } from "@/lib/geo";
 
-// Fix default marker icons for Vite bundling
-const DefaultIcon = L.icon({
-  iconUrl,
-  iconRetinaUrl,
-  shadowUrl,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
+// Primary-colored pin (uses design token --primary)
+const primaryPinIcon = L.divIcon({
+  className: "offer-pin",
+  html: `
+    <div style="position:relative;width:28px;height:38px;">
+      <svg viewBox="0 0 28 38" width="28" height="38" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));">
+        <path d="M14 0C6.27 0 0 6.05 0 13.5 0 23.5 14 38 14 38s14-14.5 14-24.5C28 6.05 21.73 0 14 0z" fill="hsl(var(--primary))"/>
+        <circle cx="14" cy="13.5" r="5" fill="white"/>
+      </svg>
+    </div>`,
+  iconSize: [28, 38],
+  iconAnchor: [14, 38],
+  popupAnchor: [0, -32],
 });
-L.Marker.prototype.options.icon = DefaultIcon;
 
 const userIcon = L.divIcon({
   className: "user-marker",
@@ -26,6 +26,7 @@ const userIcon = L.divIcon({
   iconSize: [18, 18],
   iconAnchor: [9, 9],
 });
+
 
 type Props = {
   offers: UIOffer[];
