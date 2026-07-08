@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { HomeHeader } from "@/components/home/HomeHeader";
+import { CategoryChips } from "@/components/home/CategoryChips";
 import { HomeHero } from "@/components/home/HomeHero";
 import { FeaturedCompanies } from "@/components/home/FeaturedCompanies";
 import { OffersOfTheDay } from "@/components/home/OffersOfTheDay";
