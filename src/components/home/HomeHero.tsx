@@ -72,37 +72,49 @@ export const HomeHero = () => {
             className="relative rounded-2xl overflow-hidden aspect-[16/10] md:aspect-[5/3]"
           >
             <img
-              src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80"
-              alt="Ambiente urbano"
+              src={featured?.cover_url ?? "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80"}
+              alt={featured?.name ?? "Ambiente urbano"}
               className="absolute inset-0 h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            <div className="absolute bottom-4 left-4 right-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 p-3 flex items-center gap-3">
-              <div className="h-11 w-11 shrink-0 rounded-full bg-gradient-to-br from-primary to-primary-deep grid place-items-center text-white font-bold">
-                B
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1 text-white">
-                  <span className="text-sm font-semibold truncate">Bella Café</span>
-                  <BadgeCheck className="h-4 w-4 text-primary-mid" />
-                </div>
-                <div className="flex items-center gap-1 text-xs text-white/80">
-                  <div className="flex items-center gap-0.5">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                    ))}
+            {featured && (
+              <Link
+                to={featured.slug ? `/loja/${featured.slug}` : "#"}
+                className="absolute bottom-4 left-4 right-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 p-3 flex items-center gap-3 hover:bg-white/15 transition"
+              >
+                {featured.logo_url ? (
+                  <img src={featured.logo_url} alt={featured.name} className="h-11 w-11 shrink-0 rounded-full object-cover" />
+                ) : (
+                  <div className="h-11 w-11 shrink-0 rounded-full bg-gradient-to-br from-primary to-primary-deep grid place-items-center text-white font-bold">
+                    {featured.name.charAt(0).toUpperCase()}
                   </div>
-                  <span className="font-medium">4,8</span>
-                  <span>·</span>
-                  <span>FlyScore 96</span>
+                )}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1 text-white">
+                    <span className="text-sm font-semibold truncate">{featured.name}</span>
+                    {featured.featured_badge && <BadgeCheck className="h-4 w-4 text-primary-mid" />}
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-white/80">
+                    {featured.flyscore != null ? (
+                      <>
+                        <div className="flex items-center gap-0.5">
+                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                        </div>
+                        <span className="font-medium">FlyScore {Math.round(featured.flyscore)}</span>
+                      </>
+                    ) : (
+                      <span>{featured.city}{featured.state ? ` · ${featured.state}` : ""}</span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </div>
+              </Link>
+            )}
           </motion.div>
 
           {/* Right — metrics card */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
+
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/10 p-5"
