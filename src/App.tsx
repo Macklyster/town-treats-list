@@ -63,6 +63,7 @@ const Cupons = lazyWithReload(() => import("./pages/Cupons.tsx"));
 const Historico = lazyWithReload(() => import("./pages/Historico.tsx"));
 const MeusCupons = lazyWithReload(() => import("./pages/MeusCupons.tsx"));
 const MeuCupomDetalhe = lazyWithReload(() => import("./pages/MeuCupomDetalhe.tsx"));
+const Favoritos = lazyWithReload(() => import("./pages/Favoritos.tsx"));
 const Biblioteca = lazyWithReload(() => import("./pages/Biblioteca.tsx"));
 
 const OfertasRedirect = () => {
