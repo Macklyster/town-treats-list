@@ -78,20 +78,52 @@ export const HomeHeader = () => {
             {city ? `${city.city} - ${city.state}` : "Cidade"}
           </button>
           <Link
-            to={user ? "/perfil/notificacoes" : "/auth"}
+            to={user ? "/favoritos" : "/auth"}
             aria-label="Favoritos"
             className="grid h-9 w-9 place-items-center rounded-full border border-border text-foreground/70 hover:border-primary hover:text-primary transition"
           >
             <Heart className="h-4 w-4" />
           </Link>
           {user ? (
-            <Link
-              to={isAdmin ? "/admin" : isLojista ? "/painel-lojista" : "/perfil/notificacoes"}
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep transition"
-            >
-              <UserIcon className="h-4 w-4" />
-              Minha conta
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep transition">
+                  <UserIcon className="h-4 w-4" />
+                  Minha conta
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="z-[110] w-56">
+                <DropdownMenuItem asChild>
+                  <Link to="/perfil/notificacoes" className="cursor-pointer">
+                    <UserIcon className="mr-2 h-4 w-4" /> Notificações
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/favoritos" className="cursor-pointer">
+                    <Heart className="mr-2 h-4 w-4" /> Favoritos
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/meus-cupons" className="cursor-pointer">
+                    <Ticket className="mr-2 h-4 w-4" /> Meus cupons
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {isLojista && (
+                  <DropdownMenuItem asChild>
+                    <Link to={isAdmin ? "/admin" : "/painel-lojista"} className="cursor-pointer">
+                      <Sparkles className="mr-2 h-4 w-4" /> Painel
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem
+                  onClick={() => signOut()}
+                  className="cursor-pointer text-destructive focus:text-destructive"
+                >
+                  <LogOut className="mr-2 h-4 w-4" /> Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <Link
               to="/auth"
