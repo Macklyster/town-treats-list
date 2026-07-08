@@ -17,6 +17,7 @@ import {
   UIOffer,
 } from "@/lib/offers-api";
 import { absoluteUrl, citySlug, cityLabel } from "@/lib/slug";
+import { OpeningHoursDisplay, hasOpeningHours } from "@/components/site/OpeningHoursDisplay";
 import { Instagram, MapPin, Phone, Tag } from "lucide-react";
 
 const StorePage = () => {
