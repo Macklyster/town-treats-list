@@ -105,6 +105,7 @@ const StorePage = () => {
         )}
       </div>
       <FollowStoreButton storeId={store.id} className="w-full" />
+      <FavoriteButton type="store" id={store.id} className="w-full" />
     </div>
   );
 
