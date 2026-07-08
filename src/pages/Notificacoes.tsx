@@ -192,6 +192,7 @@ export default function Notificacoes() {
             )}
           </CardContent>
         </Card>
+        </div>
       </main>
       <Footer />
     </div>
