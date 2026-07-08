@@ -23,7 +23,7 @@ export const NearbyMap = () => {
         title="Descubra perto de você"
         description="Explore empresas incríveis próximas de você."
       />
-      <div className="relative rounded-2xl overflow-hidden bg-card border border-border shadow-soft h-[320px]">
+      <div className="relative isolate z-0 rounded-2xl overflow-hidden bg-card border border-border shadow-soft h-[320px]">
         {offers.length ? (
           <Suspense fallback={<div className="h-full w-full grid place-items-center text-muted-foreground text-sm">Carregando mapa…</div>}>
             <OffersMap offers={offers} userLoc={loc} />
