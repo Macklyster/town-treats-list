@@ -85,6 +85,27 @@ const StorePage = () => {
     ],
   };
 
+  const crumbs = [
+    { label: "Início", to: "/" },
+    ...(cSlug ? [{ label: cityLabel(cityObj), to: `/ofertas/${cSlug}` }] : []),
+    { label: store.name },
+  ];
+
+  const heroAside = (
+    <div className="flex flex-col items-start gap-4 rounded-2xl bg-white/5 p-5 backdrop-blur md:min-w-[280px]">
+      <StoreAvatar name={store.name} logoUrl={store.logo_url} size={72} />
+      <div className="flex flex-wrap gap-2">
+        {store.featured_badge && <StoreFeaturedBadge />}
+        {cityObj.city && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1 text-xs">
+            <MapPin className="h-3 w-3" /> {cityLabel(cityObj)}
+          </span>
+        )}
+      </div>
+      <FollowStoreButton storeId={store.id} className="w-full" />
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <SEO
@@ -95,54 +116,61 @@ const StorePage = () => {
         jsonLd={[localBusiness, breadcrumb]}
       />
       <Header />
-      <main className="container py-10">
-        <nav className="mb-4 flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
-          <Link to="/" className="hover:text-accent-strong">Início</Link>
-          {cSlug && (
-            <>
-              <ChevronRight className="h-3.5 w-3.5" />
-              <Link to={`/ofertas/${cSlug}`} className="hover:text-accent-strong">{cityLabel(cityObj)}</Link>
-            </>
-          )}
-          <ChevronRight className="h-3.5 w-3.5" />
-          <span className="text-foreground">{store.name}</span>
-        </nav>
+      <main className="container space-y-10 py-8 md:py-10">
+        <PageHero
+          eyebrow="Loja parceira"
+          title={store.name}
+          subtitle={store.description || `Descubra as ofertas de ${store.name} no OfertasFly.`}
+          crumbs={crumbs}
+          aside={heroAside}
+        />
 
-        <header className="mb-10 flex flex-wrap items-start gap-5 rounded-2xl bg-card p-6 shadow-card">
-          <StoreAvatar name={store.name} logoUrl={store.logo_url} size={80} />
-          <div className="flex-1 min-w-[240px]">
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-2xl font-semibold text-foreground md:text-3xl">{store.name}</h1>
-              {store.featured_badge && <StoreFeaturedBadge />}
-            </div>
-            {store.description && (
-              <p className="mt-2 text-muted-foreground">{store.description}</p>
-            )}
-            <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
-              {store.address && <li className="flex items-center gap-1.5"><MapPin className="h-4 w-4" />{store.address}</li>}
-              {store.phone && <li className="flex items-center gap-1.5"><Phone className="h-4 w-4" />{store.phone}</li>}
-              {store.instagram && <li className="flex items-center gap-1.5"><Instagram className="h-4 w-4" />{store.instagram}</li>}
+        {(store.address || store.phone || store.instagram) && (
+          <SectionCard eyebrow="Contato" title="Como chegar e falar com a loja">
+            <ul className="grid gap-3 text-sm text-foreground md:grid-cols-3">
+              {store.address && (
+                <li className="flex items-start gap-2">
+                  <MapPin className="mt-0.5 h-4 w-4 text-primary" />
+                  <span>{store.address}</span>
+                </li>
+              )}
+              {store.phone && (
+                <li className="flex items-start gap-2">
+                  <Phone className="mt-0.5 h-4 w-4 text-primary" />
+                  <span>{store.phone}</span>
+                </li>
+              )}
+              {store.instagram && (
+                <li className="flex items-start gap-2">
+                  <Instagram className="mt-0.5 h-4 w-4 text-primary" />
+                  <span>{store.instagram}</span>
+                </li>
+              )}
             </ul>
-          </div>
-          <FollowStoreButton storeId={store.id} />
-        </header>
-
-        <div className="mb-8">
-          <CouponRedeemList storeId={store.id} />
-        </div>
-
-        <h2 className="mb-5 text-xl font-semibold text-foreground">
-          Ofertas de {store.name} {cityObj.city && `em ${cityLabel(cityObj)}`}
-        </h2>
-        {offers.length === 0 ? (
-          <p className="text-muted-foreground">Esta loja ainda não tem ofertas ativas.</p>
-        ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {offers.map((o) => (
-              <OfferCard key={o.id} offer={o} />
-            ))}
-          </div>
+          </SectionCard>
         )}
+
+        <CouponRedeemList storeId={store.id} />
+
+        <SectionCard
+          eyebrow="Ofertas ativas"
+          title={`${offers.length} ${offers.length === 1 ? "oferta" : "ofertas"} de ${store.name}`}
+          description={cityObj.city ? `Em ${cityLabel(cityObj)}` : undefined}
+        >
+          {offers.length === 0 ? (
+            <EmptyState
+              icon={Tag}
+              title="Sem ofertas ativas"
+              description="Esta loja ainda não publicou ofertas. Siga para receber avisos assim que sair a próxima."
+            />
+          ) : (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {offers.map((o) => (
+                <OfferCard key={o.id} offer={o} />
+              ))}
+            </div>
+          )}
+        </SectionCard>
       </main>
       <Footer />
     </div>
