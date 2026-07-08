@@ -563,93 +563,94 @@ export default function PainelLojista() {
               </Card>
             )}
 
-            <Card className="md:col-span-3">
-              <CardHeader>
-                <CardTitle>Suas ofertas</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {offers.length === 0 ? (
-                  <p className="text-muted-foreground">Nenhuma oferta cadastrada ainda.</p>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead className="text-left text-muted-foreground">
-                        <tr>
-                          <th className="py-2 w-8">
+            <SectionCard
+              className="md:col-span-3"
+              eyebrow="Catálogo"
+              title="Suas ofertas"
+              description="Gerencie, edite e acompanhe o desempenho de cada oferta publicada."
+            >
+              {offers.length === 0 ? (
+                <p className="text-muted-foreground">Nenhuma oferta cadastrada ainda.</p>
+              ) : (
+                <div className="overflow-x-auto rounded-2xl border border-border/60">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                      <tr>
+                        <th className="px-3 py-2 w-8">
+                          <Checkbox
+                            checked={offers.length > 0 && selectedOffers.length === offers.length}
+                            onCheckedChange={toggleSelectAll}
+                            aria-label="Selecionar todas"
+                          />
+                        </th>
+                        <th className="px-3 py-2">Título</th>
+                        <th className="px-3 py-2">Categoria</th>
+                        <th className="px-3 py-2">Preço</th>
+                        <th className="px-3 py-2">Validade</th>
+                        <th className="px-3 py-2">Status</th>
+                        <th className="px-3 py-2 text-center">Cliques WA</th>
+                        <th className="px-3 py-2 text-center">Scans QR</th>
+                        <th className="px-3 py-2 text-right">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/60">
+                      {offers.map((o) => (
+                        <tr key={o.id} className={selectedOffers.includes(o.id) ? "bg-primary-light/40" : "hover:bg-muted/30"}>
+                          <td className="px-3 py-3">
                             <Checkbox
-                              checked={offers.length > 0 && selectedOffers.length === offers.length}
-                              onCheckedChange={toggleSelectAll}
-                              aria-label="Selecionar todas"
+                              checked={selectedOffers.includes(o.id)}
+                              onCheckedChange={() => toggleSelect(o.id)}
+                              aria-label={`Selecionar ${o.title}`}
                             />
-                          </th>
-                          <th className="py-2">Título</th>
-                          <th>Categoria</th>
-                          <th>Preço</th>
-                          <th>Validade</th>
-                          <th>Status</th>
-                          <th className="text-center">Cliques WA</th>
-                          <th className="text-center">Scans QR</th>
-                          <th className="text-right">Ações</th>
+                          </td>
+                          <td className="px-3 py-3 font-medium text-foreground">{o.title}</td>
+                          <td className="px-3 py-3">{o.category_slug}</td>
+                          <td className="px-3 py-3">{formatBRLNumber(Number(o.promo_price))}</td>
+                          <td className="px-3 py-3">
+                            <div className="flex items-center gap-1">
+                              <span>{o.valid_until ?? "—"}</span>
+                              {o.auto_renew && (
+                                <Badge variant="outline" className="text-[10px]" title={`${o.auto_renew_count ?? 0}/6 renovações`}>
+                                  🔄 Auto
+                                </Badge>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-3 py-3"><Badge variant={o.status === "approved" ? "default" : "secondary"}>{o.status}</Badge></td>
+                          <td className="px-3 py-3 text-center font-medium">{clicks[o.id] ?? 0}</td>
+                          <td className="px-3 py-3 text-center font-medium">{qrScans[o.id] ?? 0}</td>
+                          <td className="px-3 py-3 text-right">
+                            <div className="inline-flex gap-1">
+                              <Button size="sm" variant="ghost" title="QR Code para vitrine" onClick={() => setQrFor(o)}>
+                                <QrCode className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button size="sm" variant="ghost" title="Editar" onClick={() => navigate(`/painel-lojista/oferta/${o.id}`)}>
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button size="sm" variant="ghost" title="Duplicar" onClick={() => handleDuplicate(o.id)}>
+                                <Copy className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button size="sm" variant="ghost" onClick={() => handleDelete(o.id)}>
+                                Excluir
+                              </Button>
+                            </div>
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody className="divide-y">
-                        {offers.map((o) => (
-                          <tr key={o.id} className={selectedOffers.includes(o.id) ? "bg-muted/40" : ""}>
-                            <td className="py-3">
-                              <Checkbox
-                                checked={selectedOffers.includes(o.id)}
-                                onCheckedChange={() => toggleSelect(o.id)}
-                                aria-label={`Selecionar ${o.title}`}
-                              />
-                            </td>
-                            <td className="py-3 font-medium text-foreground">{o.title}</td>
-                            <td>{o.category_slug}</td>
-                            <td>{formatBRLNumber(Number(o.promo_price))}</td>
-                            <td>
-                              <div className="flex items-center gap-1">
-                                <span>{o.valid_until ?? "—"}</span>
-                                {o.auto_renew && (
-                                  <Badge variant="outline" className="text-[10px]" title={`${o.auto_renew_count ?? 0}/6 renovações`}>
-                                    🔄 Auto
-                                  </Badge>
-                                )}
-                              </div>
-                            </td>
-                            <td><Badge variant={o.status === "approved" ? "default" : "secondary"}>{o.status}</Badge></td>
-                            <td className="text-center font-medium">{clicks[o.id] ?? 0}</td>
-                            <td className="text-center font-medium">{qrScans[o.id] ?? 0}</td>
-                            <td className="text-right">
-                              <div className="inline-flex gap-1">
-                                <Button size="sm" variant="ghost" title="QR Code para vitrine" onClick={() => setQrFor(o)}>
-                                  <QrCode className="h-3.5 w-3.5" />
-                                </Button>
-                                <Button size="sm" variant="ghost" title="Editar" onClick={() => navigate(`/painel-lojista/oferta/${o.id}`)}>
-                                  <Pencil className="h-3.5 w-3.5" />
-                                </Button>
-                                <Button size="sm" variant="ghost" title="Duplicar" onClick={() => handleDuplicate(o.id)}>
-                                  <Copy className="h-3.5 w-3.5" />
-                                </Button>
-                                <Button size="sm" variant="ghost" onClick={() => handleDelete(o.id)}>
-                                  Excluir
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-                <div className="mt-4">
-                  <OfferBulkBar
-                    ids={selectedOffers}
-                    categories={categoriesList}
-                    onCleared={() => setSelectedOffers([])}
-                    onDone={() => { setSelectedOffers([]); load(); }}
-                  />
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              </CardContent>
-            </Card>
+              )}
+              <div className="mt-4">
+                <OfferBulkBar
+                  ids={selectedOffers}
+                  categories={categoriesList}
+                  onCleared={() => setSelectedOffers([])}
+                  onDone={() => { setSelectedOffers([]); load(); }}
+                />
+              </div>
+            </SectionCard>
+
           </div>
           </>
         )}
