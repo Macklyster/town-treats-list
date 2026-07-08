@@ -22,6 +22,7 @@ import { NewOfferDropdown } from "@/components/site/NewOfferDropdown";
 import { fetchActiveGroupOfferForStore, type GroupOffer } from "@/lib/group-offers-api";
 import { fetchActiveAuctionForStore, type AuctionOffer, formatBRL as formatBRLAuc } from "@/lib/auction-api";
 import { fetchActiveGeoOfferForStore, formatTime as formatGeoTime, type GeoOffer } from "@/lib/geo-offer-api";
+import { FlyScoreCard } from "@/components/painel/FlyScoreCard";
 import { Gavel, Package, EyeOff, MapPin, Clock } from "lucide-react";
 
 type StoreRow = {
