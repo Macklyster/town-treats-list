@@ -82,7 +82,8 @@ export const OffersMap = ({ offers, userLoc }: Props) => {
     const points: L.LatLngExpression[] = [];
 
     for (const g of groups) {
-      const marker = L.marker([g.lat, g.lng]);
+      const marker = L.marker([g.lat, g.lng], { icon: primaryPinIcon });
+
       const items = g.offers
         .slice(0, 5)
         .map(
