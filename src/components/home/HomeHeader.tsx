@@ -111,11 +111,19 @@ export const HomeHeader = () => {
                 <DropdownMenuSeparator />
                 {isLojista && (
                   <DropdownMenuItem asChild>
-                    <Link to={isAdmin ? "/admin" : "/painel-lojista"} className="cursor-pointer">
-                      <Sparkles className="mr-2 h-4 w-4" /> Painel
+                    <Link to="/painel-lojista" className="cursor-pointer">
+                      <Store className="mr-2 h-4 w-4" /> Painel do Lojista
                     </Link>
                   </DropdownMenuItem>
                 )}
+                {isAdmin && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin" className="cursor-pointer">
+                      <Shield className="mr-2 h-4 w-4" /> Painel Admin
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                {(isLojista || isAdmin) && <DropdownMenuSeparator />}
                 <DropdownMenuItem
                   onClick={() => signOut()}
                   className="cursor-pointer text-destructive focus:text-destructive"
