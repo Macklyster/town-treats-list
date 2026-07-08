@@ -164,6 +164,14 @@ const App = () => (
                   }
                 />
                 <Route
+                  path="/favoritos"
+                  element={
+                    <ProtectedRoute>
+                      <Favoritos />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/painel-lojista"
                   element={
                     <ProtectedRoute requireRole="lojista">
