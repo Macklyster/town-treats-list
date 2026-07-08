@@ -278,10 +278,9 @@ export default function Admin() {
           </TabsList>
 
           <TabsContent value="offers" className="mt-6">
-            <Card>
-              <CardHeader><CardTitle>Ofertas</CardTitle></CardHeader>
-              <CardContent>
-                {loading ? <p>Carregando…</p> : (
+            <SectionCard eyebrow="Moderação" title="Ofertas" description="Aprove, rejeite, destaque ou dispare relâmpagos das ofertas enviadas.">
+              {loading ? <p>Carregando…</p> : (
+
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead className="text-left text-muted-foreground">
