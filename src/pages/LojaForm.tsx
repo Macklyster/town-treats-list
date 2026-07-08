@@ -13,6 +13,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 import { ImageUploader } from "@/components/site/ImageUploader";
 import { LocationPicker } from "@/components/site/LocationPicker";
+import { OpeningHoursEditor, defaultOpeningHours, normalizeOpeningHours, type OpeningHours } from "@/components/site/OpeningHoursEditor";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { slugify } from "@/lib/format";
@@ -51,6 +52,7 @@ export default function LojaForm() {
     cover_url: "",
     latitude: null as number | null,
     longitude: null as number | null,
+    opening_hours: defaultOpeningHours() as OpeningHours,
   });
   const [pinManuallySet, setPinManuallySet] = useState(false);
 
@@ -78,6 +80,7 @@ export default function LojaForm() {
           cover_url: data.cover_url ?? "",
           latitude: data.latitude ?? null,
           longitude: data.longitude ?? null,
+          opening_hours: normalizeOpeningHours((data as any).opening_hours),
         });
         if (data.latitude != null && data.longitude != null) setPinManuallySet(true);
       }
@@ -186,6 +189,13 @@ export default function LojaForm() {
                 <Label>Instagram</Label>
                 <Input value={form.instagram} onChange={(e) => setForm({ ...form, instagram: e.target.value })} placeholder="@minhaloja" />
               </div>
+
+              <OpeningHoursEditor
+                value={form.opening_hours}
+                onChange={(oh) => setForm({ ...form, opening_hours: oh })}
+              />
+
+
 
               <ImageUploader
                 value={form.logo_url}
