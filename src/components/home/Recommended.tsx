@@ -29,7 +29,7 @@ export const Recommended = () => {
         eyebrow={
           <span className="inline-flex items-center gap-1.5">
             <Sparkles className="h-3 w-3" /> Personalizadas para você
-          </span> as any
+          </span>
         }
         title={<>Recomendadas <span className="aurora-gradient-text">com base em você</span></>}
         description="Combinação de suas categorias favoritas, localização e histórico recente."
