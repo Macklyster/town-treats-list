@@ -78,10 +78,11 @@ export const OffersOfTheDay = ({ offers, loading }: { offers: UIOffer[]; loading
                       loading="lazy"
                     />
                     {badge && (
-                      <span className="absolute top-3 right-3 rounded-md bg-primary px-2 py-1 text-[11px] font-bold text-primary-foreground shadow-soft">
-                        {badge}
+                      <span className={`absolute top-3 right-3 rounded-md px-2 py-1 text-[11px] font-bold shadow-soft ${badge.cls}`}>
+                        {badge.label}
                       </span>
                     )}
+
                     {off > 0 && (
                       <span className="absolute top-3 left-3 rounded-md bg-destructive px-2 py-1 text-[11px] font-bold text-destructive-foreground shadow-soft">
                         {off}% OFF
