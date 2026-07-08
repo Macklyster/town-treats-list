@@ -151,6 +151,14 @@ const StorePage = () => {
           </SectionCard>
         )}
 
+        {hasOpeningHours(store.opening_hours) && (
+          <SectionCard eyebrow="Atendimento" title="Horário de funcionamento">
+            <OpeningHoursDisplay value={store.opening_hours} />
+          </SectionCard>
+        )}
+
+
+
         <CouponRedeemList storeId={store.id} />
 
         <SectionCard
