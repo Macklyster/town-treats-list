@@ -5,6 +5,7 @@ import { formatDistance } from "@/lib/geo";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { CountdownBadge } from "@/components/site/CountdownBadge";
+import { FavoriteButton } from "@/components/site/FavoriteButton";
 import { MapPin } from "lucide-react";
 import { SocialProofBadge } from "@/components/site/SocialProofBadge";
 import type { SocialProof } from "@/lib/social-proof";
@@ -36,6 +37,9 @@ export const OfferCard = ({ offer, socialProof }: { offer: UIOffer; socialProof?
             {offer.type === "cupom" ? "Cupom" : "Brinde"}
           </span>
         )}
+        <div className="absolute right-3 bottom-3 z-10">
+          <FavoriteButton type="offer" id={offer.id} variant="icon" />
+        </div>
         {offer.isFlash && offer.flashEndsAt && (
           <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2">
             <CountdownBadge endsAt={offer.flashEndsAt} />

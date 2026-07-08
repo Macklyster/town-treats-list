@@ -7,6 +7,7 @@ import { SEO } from "@/components/seo/SEO";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { FollowStoreButton } from "@/components/site/FollowStoreButton";
+import { FavoriteButton } from "@/components/site/FavoriteButton";
 import { CouponRedeemList } from "@/components/site/CouponRedeemList";
 import { PageHero } from "@/components/site/PageHero";
 import { SectionCard } from "@/components/site/SectionCard";
@@ -104,6 +105,7 @@ const StorePage = () => {
         )}
       </div>
       <FollowStoreButton storeId={store.id} className="w-full" />
+      <FavoriteButton type="store" id={store.id} className="w-full" />
     </div>
   );
 
