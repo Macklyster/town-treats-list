@@ -257,11 +257,20 @@ export const HomeHeader = () => {
                   </Link>
                   {isLojista && (
                     <Link
-                      to={isAdmin ? "/admin" : "/painel-lojista"}
+                      to="/painel-lojista"
                       onClick={() => setOpen(false)}
                       className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
                     >
-                      <Sparkles className="h-4 w-4 text-primary" /> Painel
+                      <Store className="h-4 w-4 text-primary" /> Painel do Lojista
+                    </Link>
+                  )}
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setOpen(false)}
+                      className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+                    >
+                      <Shield className="h-4 w-4 text-primary" /> Painel Admin
                     </Link>
                   )}
                 </div>
