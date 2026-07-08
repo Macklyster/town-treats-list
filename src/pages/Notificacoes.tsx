@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Header } from "@/components/site/Header";
+import { PageHero } from "@/components/site/PageHero";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -87,13 +88,18 @@ export default function Notificacoes() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/20">
+    <div className="flex min-h-screen flex-col bg-background">
       <Header />
-      <main className="container max-w-2xl flex-1 py-10">
-        <h1 className="text-display text-foreground">Notificações</h1>
-        <p className="mt-2 text-muted-foreground">
-          Receba avisos das suas lojas favoritas e ofertas relâmpago direto no celular.
-        </p>
+      <main className="container flex-1 space-y-8 py-8 md:py-10">
+        <PageHero
+          eyebrow="Sua conta"
+          title="Notificações"
+          subtitle="Receba avisos das suas lojas favoritas e ofertas relâmpago direto no celular."
+          crumbs={[{ label: "Início", to: "/" }, { label: "Notificações" }]}
+          compact
+        />
+        <div className="mx-auto max-w-2xl">
+
 
         <Card className="mt-8">
           <CardHeader>
@@ -187,6 +193,7 @@ export default function Notificacoes() {
             )}
           </CardContent>
         </Card>
+        </div>
       </main>
       <Footer />
     </div>

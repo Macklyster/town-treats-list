@@ -83,7 +83,7 @@ export default function OfertaInvisivelPublic() {
 
   if (!state || !state.found) {
     return (
-      <div className="flex min-h-screen flex-col bg-muted/20">
+      <div className="flex min-h-screen flex-col bg-background">
         <Header />
         <main className="container flex-1 py-10">
           <Card className="mx-auto max-w-xl"><CardHeader><CardTitle>Oferta não encontrada</CardTitle></CardHeader>
@@ -104,7 +104,7 @@ export default function OfertaInvisivelPublic() {
     : null;
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/20">
+    <div className="flex min-h-screen flex-col bg-background">
       <SEO
         title={`${offer.title} — Oferta Invisível`}
         description="Esta oferta só aparece quando você está perto da loja."

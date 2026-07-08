@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Ticket, CheckCircle2 } from "lucide-react";
 import { Header } from "@/components/site/Header";
+import { PageHero } from "@/components/site/PageHero";
 import { Footer } from "@/components/site/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -55,19 +56,17 @@ export default function MeusCupons() {
   }, [user?.id]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/20">
+    <div className="flex min-h-screen flex-col bg-background">
       <Header />
-      <main className="container flex-1 py-10">
-        <Button asChild variant="ghost" size="sm" className="mb-2 -ml-2">
-          <Link to="/">
-            <ArrowLeft className="h-4 w-4" /> Voltar
-          </Link>
-        </Button>
-        <h1 className="text-display text-foreground">Meus cupons</h1>
-        <p className="mb-6 text-muted-foreground">
-          Todos os cupons que você resgatou. Apresente o código no estabelecimento para
-          usar o desconto.
-        </p>
+      <main className="container flex-1 space-y-8 py-8 md:py-10">
+        <PageHero
+          eyebrow="Sua conta"
+          title="Meus cupons"
+          subtitle="Todos os cupons que você resgatou. Apresente o código no estabelecimento para usar o desconto."
+          crumbs={[{ label: "Início", to: "/" }, { label: "Meus cupons" }]}
+          compact
+        />
+
 
         {loading ? (
           <p className="text-muted-foreground">Carregando…</p>

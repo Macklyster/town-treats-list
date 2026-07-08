@@ -77,7 +77,7 @@ export default function MeuCupomDetalhe() {
     c?.valid_until && new Date(c.valid_until) < new Date(new Date().toDateString());
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/20">
+    <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="container flex-1 py-10">
         <Button asChild variant="ghost" size="sm" className="mb-2 -ml-2">

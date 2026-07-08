@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/site/Header";
+import { PageHero } from "@/components/site/PageHero";
 import { Footer } from "@/components/site/Footer";
 import { SEO } from "@/components/seo/SEO";
 import { FaqSection, faqToJsonLd } from "@/components/site/FaqSection";
@@ -94,20 +95,20 @@ export default function OfertasInvisiveis() {
   const faqLd = faqToJsonLd(faqItems);
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/20">
+    <div className="flex min-h-screen flex-col bg-background">
       <SEO title="Ofertas Invisíveis — OfertasFly" description="Promoções que só aparecem quando você está perto da loja." path="/ofertas-invisiveis" jsonLd={[faqLd]} />
       <Header />
-      <main className="container flex-1 py-8">
+      <main className="container flex-1 space-y-8 py-8">
+        <PageHero
+          eyebrow="Novo · Geolocalizado"
+          title="Ofertas Invisíveis"
+          subtitle="A promoção te encontra. Você não precisa procurar. Descontos que só aparecem quando você está perto da loja."
+          crumbs={[{ label: "Início", to: "/" }, { label: "Ofertas Invisíveis" }]}
+          compact
+        />
         <div className="mx-auto max-w-5xl space-y-6">
-          <header className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-display text-foreground">Ofertas Invisíveis</h1>
-              <Badge variant="secondary">Novo</Badge>
-            </div>
-            <p className="text-muted-foreground">A promoção te encontra. Você não precisa procurar.</p>
-          </header>
-
           <HowItWorks />
+
 
           {authLoading ? (
             <p className="text-muted-foreground">Carregando…</p>

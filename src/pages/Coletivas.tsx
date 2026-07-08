@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/site/Header";
+import { PageHero } from "@/components/site/PageHero";
 import { Footer } from "@/components/site/Footer";
 import { SEO } from "@/components/seo/SEO";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -117,7 +118,7 @@ export default function Coletivas() {
   }, [user?.id]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/20">
+    <div className="flex min-h-screen flex-col bg-background">
       <SEO
         title="Ofertas Coletivas — OfertasFly"
         description="Compra coletiva: quanto mais amigos entram, menor o preço. Veja as ofertas coletivas das lojas que você segue."
@@ -125,19 +126,17 @@ export default function Coletivas() {
         jsonLd={faqToJsonLd(COLETIVAS_FAQ)}
       />
       <Header />
-      <main className="container flex-1 py-8">
+      <main className="container flex-1 space-y-8 py-8">
+        <PageHero
+          eyebrow="Novo · Compra em grupo"
+          title="Ofertas Coletivas"
+          subtitle="Compre junto, pague menos. Quanto mais pessoas entram, menor o preço para todo o grupo."
+          crumbs={[{ label: "Início", to: "/" }, { label: "Coletivas" }]}
+          compact
+        />
         <div className="mx-auto max-w-5xl space-y-6">
-          <header className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-display text-foreground">Ofertas Coletivas</h1>
-              <Badge variant="secondary">Novo</Badge>
-            </div>
-            <p className="text-muted-foreground">
-              Compre junto, pague menos. Quanto mais pessoas entram, menor o preço para todo o grupo.
-            </p>
-          </header>
-
           <HowItWorks />
+
 
           {authLoading ? (
             <p className="text-muted-foreground">Carregando…</p>

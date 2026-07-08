@@ -165,7 +165,7 @@ export default function LeilaoPublic() {
   const stockPct = (offer.reserved_quantity / Math.max(1, offer.total_quantity)) * 100;
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/20">
+    <div className="flex min-h-screen flex-col bg-background">
       <SEO
         title={`${offer.title} — Leilão ${state.store_name ?? "OfertasFly"}`}
         description={offer.description ?? `Leilão reverso de oferta no OfertasFly. O preço cai com o tempo.`}

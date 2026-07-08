@@ -121,7 +121,7 @@ export default function LojaForm() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/20">
+    <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="container flex-1 py-10">
         <Card className="mx-auto max-w-2xl">
