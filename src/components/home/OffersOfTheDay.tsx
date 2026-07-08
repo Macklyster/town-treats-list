@@ -51,10 +51,11 @@ export const OffersOfTheDay = ({ offers, loading }: { offers: UIOffer[]; loading
           >
             {list.map((o) => {
               const off = discountPct(o);
+              const href = o.isGroup && o.groupToken ? `/coletiva/${o.groupToken}` : `/oferta/${o.id}`;
               return (
                 <Link
                   key={o.id}
-                  to={`/oferta/${o.id}`}
+                  to={href}
                   className="group shrink-0 w-[240px] snap-start rounded-2xl overflow-hidden bg-card border border-border shadow-soft hover:shadow-card hover:-translate-y-0.5 transition-all"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden bg-muted">
@@ -64,12 +65,18 @@ export const OffersOfTheDay = ({ offers, loading }: { offers: UIOffer[]; loading
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
                     />
+                    {o.isGroup && (
+                      <span className="absolute top-3 right-3 rounded-md bg-primary px-2 py-1 text-[11px] font-bold text-primary-foreground shadow-soft">
+                        Coletiva
+                      </span>
+                    )}
                     {off > 0 && (
                       <span className="absolute top-3 left-3 rounded-md bg-destructive px-2 py-1 text-[11px] font-bold text-destructive-foreground shadow-soft">
                         {off}% OFF
                       </span>
                     )}
                   </div>
+
                   <div className="p-4">
                     <div className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">
                       {o.storeName}
