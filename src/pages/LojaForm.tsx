@@ -29,6 +29,7 @@ const schema = z.object({
   whatsapp: z.string().trim().max(30).optional().or(z.literal("")),
   instagram: z.string().trim().max(60).optional().or(z.literal("")),
   logo_url: z.string().trim().url().max(500).optional().or(z.literal("")),
+  cover_url: z.string().trim().url().max(500).optional().or(z.literal("")),
 });
 
 export default function LojaForm() {
