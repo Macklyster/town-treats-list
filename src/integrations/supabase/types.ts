@@ -1220,6 +1220,7 @@ export type Database = {
           logo_url: string | null
           longitude: number | null
           name: string
+          opening_hours: Json | null
           owner_id: string
           phone: string | null
           slug: string
@@ -1241,6 +1242,7 @@ export type Database = {
           logo_url?: string | null
           longitude?: number | null
           name: string
+          opening_hours?: Json | null
           owner_id: string
           phone?: string | null
           slug: string
@@ -1262,6 +1264,7 @@ export type Database = {
           logo_url?: string | null
           longitude?: number | null
           name?: string
+          opening_hours?: Json | null
           owner_id?: string
           phone?: string | null
           slug?: string
