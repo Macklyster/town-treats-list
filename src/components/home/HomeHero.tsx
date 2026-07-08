@@ -73,10 +73,11 @@ export const HomeHero = () => {
             className="relative rounded-2xl overflow-hidden aspect-[16/10] md:aspect-[5/3]"
           >
             <img
-              src={featured?.cover_url ?? "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80"}
-              alt={featured?.name ?? "Ambiente urbano"}
+              src={featured?.cover_url ?? heroLocalCity}
+              alt={featured?.name ?? "Comércio local com ofertas perto de você"}
               className="absolute inset-0 h-full w-full object-cover"
             />
+
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             {featured && (
               <Link
