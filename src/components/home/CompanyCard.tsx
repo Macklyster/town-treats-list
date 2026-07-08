@@ -3,7 +3,7 @@ import { BadgeCheck, MapPin, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import type { UICompany } from "@/lib/home-api";
 import { useUserLocation } from "@/hooks/useUserLocation";
-import { haversine, formatDistance } from "@/lib/geo";
+import { haversineKm, formatDistance } from "@/lib/geo";
 import { categories } from "@/data/categories";
 
 const catName = (slug?: string | null) => categories.find((c) => c.slug === slug)?.name ?? slug ?? "";
@@ -12,7 +12,7 @@ export const CompanyCard = ({ company }: { company: UICompany }) => {
   const { loc } = useUserLocation();
   const dist =
     loc && company.latitude && company.longitude
-      ? haversine(loc, { lat: company.latitude, lng: company.longitude })
+      ? haversineKm(loc, { lat: company.latitude, lng: company.longitude })
       : null;
   const score = company.flyscore ?? 4.6 + ((company.name.length % 4) * 0.1);
 
