@@ -221,13 +221,52 @@ export const HomeHeader = () => {
                 Entrar
               </Link>
             ) : (
-              <Link
-                to={isAdmin ? "/admin" : isLojista ? "/painel-lojista" : "/perfil/notificacoes"}
-                onClick={() => setOpen(false)}
-                className="rounded-full bg-primary py-2.5 text-center text-sm font-semibold text-primary-foreground"
-              >
-                Minha conta
-              </Link>
+              <div className="space-y-2">
+                <p className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Minha conta
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    to="/perfil/notificacoes"
+                    onClick={() => setOpen(false)}
+                    className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  >
+                    <UserIcon className="h-4 w-4 text-primary" /> Notificações
+                  </Link>
+                  <Link
+                    to="/favoritos"
+                    onClick={() => setOpen(false)}
+                    className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  >
+                    <Heart className="h-4 w-4 text-primary" /> Favoritos
+                  </Link>
+                  <Link
+                    to="/meus-cupons"
+                    onClick={() => setOpen(false)}
+                    className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  >
+                    <Ticket className="h-4 w-4 text-primary" /> Meus cupons
+                  </Link>
+                  {isLojista && (
+                    <Link
+                      to={isAdmin ? "/admin" : "/painel-lojista"}
+                      onClick={() => setOpen(false)}
+                      className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+                    >
+                      <Sparkles className="h-4 w-4 text-primary" /> Painel
+                    </Link>
+                  )}
+                </div>
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    signOut();
+                  }}
+                  className="w-full rounded-xl border border-destructive/30 bg-destructive/5 py-2.5 text-center text-sm font-semibold text-destructive"
+                >
+                  Sair
+                </button>
+              </div>
             )}
           </div>
         </div>
