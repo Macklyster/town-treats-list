@@ -5,6 +5,8 @@ import { SectionHeading } from "./SectionHeading";
 import { useCity } from "@/hooks/useCity";
 import { useUserLocation } from "@/hooks/useUserLocation";
 import { fetchOffers, UIOffer } from "@/lib/offers-api";
+import { fetchActiveGroupOffersAsUIOffers } from "@/lib/group-offers-api";
+import { fetchActiveAuctionsAsUIOffers } from "@/lib/auction-api";
 
 const OffersMap = lazy(() => import("@/components/site/OffersMap").then((m) => ({ default: m.OffersMap })));
 
@@ -14,8 +16,16 @@ export const NearbyMap = () => {
   const [offers, setOffers] = useState<UIOffer[]>([]);
 
   useEffect(() => {
-    fetchOffers(city ?? undefined).then((o) => setOffers(o.filter((x) => x.storeLat && x.storeLng).slice(0, 40)));
-  }, [city?.city]);
+    Promise.all([
+      fetchOffers(city ?? undefined),
+      fetchActiveGroupOffersAsUIOffers(city ?? undefined),
+      fetchActiveAuctionsAsUIOffers(city ?? undefined),
+    ]).then(([base, group, auctions]) => {
+      const all = [...base, ...group, ...auctions].filter((x) => x.storeLat && x.storeLng);
+      setOffers(all.slice(0, 80));
+    });
+  }, [city?.city, city?.state]);
+
 
   return (
     <div>
