@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { SEO } from "@/components/seo/SEO";
-import { Header } from "@/components/site/Header";
-import { Footer } from "@/components/site/Footer";
+import { HomeHeader } from "@/components/home/HomeHeader";
+import { HomeFooter } from "@/components/home/HomeFooter";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
