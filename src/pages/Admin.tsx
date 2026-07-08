@@ -362,8 +362,8 @@ export default function Admin() {
                     </table>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+            </SectionCard>
+
             <div className="mt-4">
               <OfferBulkBar
                 ids={selectedOffers}
