@@ -1,17 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Award, BadgeCheck, MessageSquare, Sparkles, Star, Timer, TrendingUp, X, Zap } from "lucide-react";
+import { fetchFlyScoreAggregate, type FlyScoreAggregate } from "@/lib/home-api";
 
-const PILARES = [
-  { icon: Star, label: "Avaliações", value: "4,8", desc: "Média e volume real de reviews da comunidade." },
-  { icon: Zap, label: "Atualização", value: "98%", desc: "Frequência com que a empresa atualiza suas ofertas." },
-  { icon: Timer, label: "Resposta", value: "95%", desc: "Velocidade em responder mensagens e reservas." },
-  { icon: BadgeCheck, label: "Informações", value: "100%", desc: "Documento, endereço e responsável confirmados." },
-  { icon: TrendingUp, label: "Engajamento", value: "92%", desc: "Cupons resgatados, visitas e interações." },
-  { icon: Sparkles, label: "Presença Digital", value: "94%", desc: "Fotos, cardápio, redes sociais e presença online." },
+type Pilar = {
+  key: "avaliacoes" | "informacoes" | "atualizacao" | "resposta" | "engajamento" | "presenca";
+  icon: any;
+  label: string;
+  desc: string;
+  active: boolean;
+};
+
+const PILARES: Pilar[] = [
+  { key: "avaliacoes",  icon: Star,        label: "Avaliações",       desc: "Média e volume real de reviews da comunidade.",     active: true  },
+  { key: "atualizacao", icon: Zap,         label: "Atualização",      desc: "Frequência com que a empresa atualiza suas ofertas.", active: true  },
+  { key: "informacoes", icon: BadgeCheck,  label: "Informações",      desc: "Endereço, contato e dados de cadastro completos.",    active: true  },
+  { key: "resposta",    icon: Timer,       label: "Resposta",         desc: "Velocidade em responder mensagens e reservas.",       active: false },
+  { key: "engajamento", icon: TrendingUp,  label: "Engajamento",      desc: "Cupons resgatados, visitas e interações.",            active: false },
+  { key: "presenca",    icon: Sparkles,    label: "Presença Digital", desc: "Fotos, cardápio, redes sociais e presença online.",   active: false },
 ];
 
 export const FlyScoreBar = () => {
   const [open, setOpen] = useState(false);
+  const [agg, setAgg] = useState<FlyScoreAggregate | null>(null);
+
+  useEffect(() => {
+    fetchFlyScoreAggregate().then(setAgg);
+  }, []);
+
+  const values: Record<string, string> = {
+    avaliacoes: agg?.pilaresMedios.avaliacoes != null ? `${agg.pilaresMedios.avaliacoes}%` : "—",
+    atualizacao: agg?.pilaresMedios.atualizacao != null ? `${agg.pilaresMedios.atualizacao}%` : "—",
+    informacoes: agg?.pilaresMedios.informacoes != null ? `${agg.pilaresMedios.informacoes}%` : "—",
+    resposta: "—",
+    engajamento: "—",
+    presenca: "—",
+  };
+
+  const overall = agg?.overallMedio ?? 0;
+  const dash = Math.max(0, Math.min(276, (overall / 100) * 276));
 
   return (
     <section className="container py-6 md:py-10">
@@ -41,13 +67,21 @@ export const FlyScoreBar = () => {
               const I = p.icon;
               return (
                 <button
-                  key={p.label}
+                  key={p.key}
                   onClick={() => setOpen(true)}
-                  className="text-center rounded-xl border border-border bg-background p-3 hover:border-primary hover:bg-primary-light transition"
+                  className={`text-center rounded-xl border p-3 transition ${
+                    p.active
+                      ? "border-border bg-background hover:border-primary hover:bg-primary-light"
+                      : "border-dashed border-border/60 bg-muted/30 opacity-70 hover:opacity-100"
+                  }`}
+                  title={p.active ? p.desc : "Em breve"}
                 >
-                  <I className="h-4 w-4 text-primary mx-auto mb-1" />
-                  <div className="text-sm font-bold text-foreground">{p.value}</div>
-                  <div className="text-[10px] text-muted-foreground leading-tight mt-0.5">{p.label}</div>
+                  <I className={`h-4 w-4 mx-auto mb-1 ${p.active ? "text-primary" : "text-muted-foreground"}`} />
+                  <div className="text-sm font-bold text-foreground">{values[p.key]}</div>
+                  <div className="text-[10px] text-muted-foreground leading-tight mt-0.5">
+                    {p.label}
+                    {!p.active && <span className="block text-[9px] italic">em breve</span>}
+                  </div>
                 </button>
               );
             })}
@@ -60,16 +94,22 @@ export const FlyScoreBar = () => {
             <circle
               cx="50" cy="50" r="44" fill="none" strokeWidth="8"
               stroke="hsl(var(--primary))" strokeLinecap="round"
-              strokeDasharray="265 276"
+              strokeDasharray={`${dash} 276`}
             />
           </svg>
           <div className="text-center">
             <div className="text-3xl font-bold text-foreground leading-none">
-              96<span className="text-sm text-muted-foreground font-medium">/100</span>
+              {overall}
+              <span className="text-sm text-muted-foreground font-medium">/100</span>
             </div>
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">
               FlyScore Médio
             </div>
+            {agg && agg.totalLojas > 0 && (
+              <div className="text-[9px] text-muted-foreground mt-0.5">
+                {agg.totalLojas} loja{agg.totalLojas === 1 ? "" : "s"}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -86,18 +126,25 @@ export const FlyScoreBar = () => {
             </button>
             <h3 className="text-xl font-semibold text-foreground">Como o FlyScore™ é calculado</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              Combinamos 6 pilares em tempo real para revelar quais empresas realmente merecem sua atenção:
+              Combinamos os pilares em tempo real para revelar quais empresas realmente merecem sua atenção. Nesta versão inicial, 3 pilares já estão ativos e os demais serão liberados em breve.
             </p>
             <ul className="mt-4 space-y-3">
               {PILARES.map((p) => {
                 const I = p.icon;
                 return (
-                  <li key={p.label} className="flex items-start gap-3">
-                    <div className="h-8 w-8 shrink-0 rounded-lg bg-primary/10 grid place-items-center">
-                      <I className="h-4 w-4 text-primary" />
+                  <li key={p.key} className="flex items-start gap-3">
+                    <div className={`h-8 w-8 shrink-0 rounded-lg grid place-items-center ${p.active ? "bg-primary/10" : "bg-muted"}`}>
+                      <I className={`h-4 w-4 ${p.active ? "text-primary" : "text-muted-foreground"}`} />
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-foreground">{p.label}</div>
+                      <div className="text-sm font-semibold text-foreground flex items-center gap-2">
+                        {p.label}
+                        {!p.active && (
+                          <span className="text-[10px] uppercase tracking-wide rounded-full bg-muted px-2 py-0.5 text-muted-foreground">
+                            em breve
+                          </span>
+                        )}
+                      </div>
                       <div className="text-xs text-muted-foreground">{p.desc}</div>
                     </div>
                   </li>

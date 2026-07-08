@@ -276,3 +276,74 @@ export function greeting(name?: string | null): string {
   const g = h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite";
   return name ? `${g}, ${name.split(" ")[0]}` : g;
 }
+
+// ============================================================
+// FlyScore
+// ============================================================
+
+export type FlyScorePilares = {
+  avaliacoes: number;
+  informacoes: number;
+  atualizacao: number;
+  overall: number;
+  review_count?: number;
+  avg_rating?: number;
+};
+
+export type FlyScoreAggregate = {
+  overallMedio: number;
+  pilaresMedios: { avaliacoes: number; informacoes: number; atualizacao: number };
+  totalLojas: number;
+};
+
+export async function fetchFlyScore(storeId: string): Promise<FlyScorePilares | null> {
+  const { data } = await supabase
+    .from("company_flyscore")
+    .select("overall,pilares")
+    .eq("store_id", storeId)
+    .maybeSingle();
+  if (!data) return null;
+  const p = (data.pilares as any) ?? {};
+  return {
+    overall: Number(data.overall ?? p.overall ?? 0),
+    avaliacoes: Number(p.avaliacoes ?? 0),
+    informacoes: Number(p.informacoes ?? 0),
+    atualizacao: Number(p.atualizacao ?? 0),
+    review_count: Number(p.review_count ?? 0),
+    avg_rating: Number(p.avg_rating ?? 0),
+  };
+}
+
+export async function fetchFlyScoreAggregate(): Promise<FlyScoreAggregate> {
+  const { data } = await supabase
+    .from("company_flyscore")
+    .select("overall,pilares")
+    .gt("overall", 0);
+  const rows = (data ?? []) as any[];
+  if (!rows.length) {
+    return { overallMedio: 0, pilaresMedios: { avaliacoes: 0, informacoes: 0, atualizacao: 0 }, totalLojas: 0 };
+  }
+  const sum = { o: 0, a: 0, i: 0, u: 0 };
+  for (const r of rows) {
+    const p = r.pilares ?? {};
+    sum.o += Number(r.overall ?? 0);
+    sum.a += Number(p.avaliacoes ?? 0);
+    sum.i += Number(p.informacoes ?? 0);
+    sum.u += Number(p.atualizacao ?? 0);
+  }
+  const n = rows.length;
+  return {
+    overallMedio: Math.round(sum.o / n),
+    pilaresMedios: {
+      avaliacoes: Math.round(sum.a / n),
+      informacoes: Math.round(sum.i / n),
+      atualizacao: Math.round(sum.u / n),
+    },
+    totalLojas: n,
+  };
+}
+
+export async function recomputeFlyScore(storeId: string): Promise<void> {
+  await supabase.rpc("recompute_flyscore" as any, { _store_id: storeId });
+}
+

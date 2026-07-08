@@ -1456,6 +1456,7 @@ export type Database = {
       }
       auction_social_proof: { Args: { p_auction_id: string }; Returns: Json }
       auction_state: { Args: { p_token: string }; Returns: Json }
+      calc_flyscore_pilares: { Args: { _store_id: string }; Returns: Json }
       category_benchmark: {
         Args: { p_days?: number; p_store_id: string }
         Returns: Json
@@ -1502,6 +1503,8 @@ export type Database = {
           store_name: string
         }[]
       }
+      recompute_all_flyscores: { Args: never; Returns: number }
+      recompute_flyscore: { Args: { _store_id: string }; Returns: undefined }
       redeem_coupon: { Args: { p_coupon_id: string }; Returns: Json }
       reserve_auction: { Args: { p_token: string }; Returns: Json }
       store_intelligence: {
