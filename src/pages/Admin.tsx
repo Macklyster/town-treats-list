@@ -379,9 +379,8 @@ export default function Admin() {
           </TabsContent>
 
           <TabsContent value="stores" className="mt-6">
-            <Card>
-              <CardHeader><CardTitle>Lojas</CardTitle></CardHeader>
-              <CardContent>
+            <SectionCard eyebrow="Lojistas" title="Lojas" description="Aprove lojas, gerencie planos e ative o selo de destaque.">
+
                 <TooltipProvider>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
