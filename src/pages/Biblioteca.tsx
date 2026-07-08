@@ -24,7 +24,7 @@ export default function Biblioteca() {
   }, [user?.id]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/20">
+    <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="container flex-1 py-8">
         <Button variant="ghost" size="sm" asChild className="mb-4">

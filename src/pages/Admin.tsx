@@ -250,7 +250,7 @@ export default function Admin() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/20">
+    <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="container flex-1 py-10">
         <h1 className="mb-2 text-display text-foreground">Painel Admin</h1>

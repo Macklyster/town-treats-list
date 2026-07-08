@@ -245,7 +245,7 @@ export default function OfertaInvisivelForm() {
 
   if (!isPlus) {
     return (
-      <div className="flex min-h-screen flex-col bg-muted/20">
+      <div className="flex min-h-screen flex-col bg-background">
         <Header />
         <main className="container flex-1 py-10">
           <Card className="mx-auto max-w-xl">
@@ -272,7 +272,7 @@ export default function OfertaInvisivelForm() {
 
   if (!isEdit && activeOther) {
     return (
-      <div className="flex min-h-screen flex-col bg-muted/20">
+      <div className="flex min-h-screen flex-col bg-background">
         <Header />
         <main className="container flex-1 py-10">
           <Card className="mx-auto max-w-xl">
@@ -295,7 +295,7 @@ export default function OfertaInvisivelForm() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/20">
+    <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="container flex-1 py-10">
         <div className="mx-auto max-w-3xl space-y-6">

@@ -139,7 +139,7 @@ export default function ColetivaPublic() {
   const notLiveYet = offer.status !== "approved";
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/20">
+    <div className="flex min-h-screen flex-col bg-background">
       <SEO
         title={`${offer.title} — Coletiva ${storeName || "OfertasFly"}`}
         description={offer.description ?? `Participe da oferta coletiva no OfertasFly.`}
