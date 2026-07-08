@@ -277,26 +277,33 @@ export default function Assinatura() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
-      <main className="container flex-1 py-10">
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-display text-foreground">Assinatura</h1>
-            <p className="text-muted-foreground">Escolha o plano ideal para sua loja.</p>
-          </div>
-          {sub && (
-            <div className="flex flex-wrap gap-2">
-              <Button variant="outline" onClick={manage} disabled={busy === "portal"}>
-                {busy === "portal" && <Loader2 className="h-4 w-4 animate-spin" />}
-                Gerenciar ou cancelar assinatura
-              </Button>
-              {isActive && !willCancel && (
-                <Button variant="destructive" onClick={() => setCancelOpen(true)}>
-                  Cancelar plano
+      <main className="container flex-1 space-y-8 py-8 md:py-10">
+        <PageHero
+          eyebrow="Painel do lojista"
+          title="Assinatura"
+          subtitle="Escolha o plano ideal para sua loja e gerencie sua assinatura."
+          crumbs={[
+            { label: "Painel", to: "/painel-lojista" },
+            { label: "Assinatura" },
+          ]}
+          compact
+          actions={
+            sub ? (
+              <>
+                <Button variant="outline" onClick={manage} disabled={busy === "portal"}>
+                  {busy === "portal" && <Loader2 className="h-4 w-4 animate-spin" />}
+                  Gerenciar ou cancelar assinatura
                 </Button>
-              )}
-            </div>
-          )}
-        </div>
+                {isActive && !willCancel && (
+                  <Button variant="destructive" onClick={() => setCancelOpen(true)}>
+                    Cancelar plano
+                  </Button>
+                )}
+              </>
+            ) : undefined
+          }
+        />
+
 
         {willCancel && (
           <Alert className="mb-6 border-warning-border/50 bg-warning-bg text-warning-foreground">
