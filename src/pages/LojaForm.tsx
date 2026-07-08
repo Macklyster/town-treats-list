@@ -75,6 +75,7 @@ export default function LojaForm() {
           whatsapp: data.whatsapp ?? "",
           instagram: data.instagram ?? "",
           logo_url: data.logo_url ?? "",
+          cover_url: data.cover_url ?? "",
           latitude: data.latitude ?? null,
           longitude: data.longitude ?? null,
         });
