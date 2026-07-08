@@ -16,9 +16,10 @@ export const ReviewsCarousel = () => {
     });
   }, []);
 
-  const visible = items.slice(idx, idx + 2);
+  const pageSize = items.length === 1 ? 1 : 2;
+  const visible = items.slice(idx, idx + pageSize);
   const canPrev = idx > 0;
-  const canNext = idx + 2 < items.length;
+  const canNext = idx + pageSize < items.length;
 
   return (
     <div>
@@ -65,7 +66,7 @@ export const ReviewsCarousel = () => {
                   </div>
                 </header>
                 <p className="mt-3 text-sm text-foreground/90 leading-relaxed line-clamp-3">
-                  {r.comment}
+                  {r.comment?.trim() ? r.comment : `Avaliou com ${Math.round(r.rating)} estrela${Math.round(r.rating) === 1 ? "" : "s"}.`}
                 </p>
                 <div className="mt-3 text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">
                   sobre {r.store_name}
@@ -89,7 +90,7 @@ export const ReviewsCarousel = () => {
                 ))}
               </div>
               <button
-                onClick={() => setIdx((i) => Math.min(items.length - 2, i + 2))}
+                onClick={() => setIdx((i) => Math.min(Math.max(0, items.length - 2), i + 2))}
                 disabled={!canNext}
                 className="h-8 w-8 rounded-full border border-border bg-card grid place-items-center disabled:opacity-40 hover:bg-primary hover:text-primary-foreground hover:border-primary transition"
                 aria-label="Próximo"
