@@ -27,7 +27,10 @@ export type UIOffer = {
   storeCity?: string;
   storeState?: string;
   distanceKm?: number;
+  isGroup?: boolean;
+  groupToken?: string;
 };
+
 
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80";
