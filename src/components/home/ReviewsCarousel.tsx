@@ -66,7 +66,7 @@ export const ReviewsCarousel = () => {
                   </div>
                 </header>
                 <p className="mt-3 text-sm text-foreground/90 leading-relaxed line-clamp-3">
-                  {r.comment}
+                  {r.comment?.trim() ? r.comment : `Avaliou com ${Math.round(r.rating)} estrela${Math.round(r.rating) === 1 ? "" : "s"}.`}
                 </p>
                 <div className="mt-3 text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">
                   sobre {r.store_name}
