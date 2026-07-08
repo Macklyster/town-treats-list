@@ -5,6 +5,7 @@ import { formatDistance } from "@/lib/geo";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
 import { CountdownBadge } from "@/components/site/CountdownBadge";
+import { FavoriteButton } from "@/components/site/FavoriteButton";
 import { MapPin } from "lucide-react";
 import { SocialProofBadge } from "@/components/site/SocialProofBadge";
 import type { SocialProof } from "@/lib/social-proof";
