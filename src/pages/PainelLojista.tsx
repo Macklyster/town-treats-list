@@ -6,6 +6,7 @@ import { OfferBulkBar } from "@/components/cms/OfferBulkBar";
 import { duplicateOffer } from "@/lib/media-api";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { PageHero } from "@/components/site/PageHero";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -154,38 +155,42 @@ export default function PainelLojista() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
-      <main className="container flex-1 py-10">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-display text-foreground">Painel do Lojista</h1>
-            <p className="text-muted-foreground">Gerencie sua loja, ofertas e plano.</p>
-          </div>
-          {store && (
-            <div className="flex flex-wrap gap-2">
-              <Button asChild variant="outline">
-                <Link to="/painel-lojista/cupons">
-                  <Ticket className="h-4 w-4" /> Cupons
-                </Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link to="/painel-lojista/historico">
-                  <History className="h-4 w-4" /> Histórico
-                </Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link to="/painel-lojista/midia">
-                  <Sparkles className="h-4 w-4" /> Mídia
-                </Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link to="/painel-lojista/inteligencia">
-                  <BarChart3 className="h-4 w-4" /> Inteligência
-                </Link>
-              </Button>
-              <NewOfferDropdown isPlus={isPlus} hasActiveColetiva={!!activeColetiva} hasActiveLeilao={!!activeLeilao} hasActiveInvisivel={!!activeInvisivel} />
-            </div>
-          )}
-        </div>
+      <main className="container flex-1 space-y-8 py-8 md:py-10">
+        <PageHero
+          eyebrow="Área do lojista"
+          title="Painel do Lojista"
+          subtitle="Gerencie sua loja, ofertas e plano em um só lugar."
+          crumbs={[{ label: "Painel" }]}
+          compact
+          actions={
+            store ? (
+              <>
+                <Button asChild variant="outline">
+                  <Link to="/painel-lojista/cupons">
+                    <Ticket className="h-4 w-4" /> Cupons
+                  </Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to="/painel-lojista/historico">
+                    <History className="h-4 w-4" /> Histórico
+                  </Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to="/painel-lojista/midia">
+                    <Sparkles className="h-4 w-4" /> Mídia
+                  </Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to="/painel-lojista/inteligencia">
+                    <BarChart3 className="h-4 w-4" /> Inteligência
+                  </Link>
+                </Button>
+                <NewOfferDropdown isPlus={isPlus} hasActiveColetiva={!!activeColetiva} hasActiveLeilao={!!activeLeilao} hasActiveInvisivel={!!activeInvisivel} />
+              </>
+            ) : undefined
+          }
+        />
+
 
         {loading ? (
           <p className="text-muted-foreground">Carregando…</p>

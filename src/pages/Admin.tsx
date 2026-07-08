@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { PageHero } from "@/components/site/PageHero";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -252,9 +253,15 @@ export default function Admin() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
-      <main className="container flex-1 py-10">
-        <h1 className="mb-2 text-display text-foreground">Painel Admin</h1>
-        <p className="mb-6 text-muted-foreground">Aprove ofertas, gerencie lojistas e destaques.</p>
+      <main className="container flex-1 space-y-8 py-8 md:py-10">
+        <PageHero
+          eyebrow="Administração"
+          title="Painel Admin"
+          subtitle="Aprove ofertas, gerencie lojistas e destaques da plataforma."
+          crumbs={[{ label: "Admin" }]}
+          compact
+        />
+
 
         <Tabs defaultValue="offers">
           <TabsList>

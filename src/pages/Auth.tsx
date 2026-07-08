@@ -92,7 +92,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/30">
+    <div className="flex min-h-screen flex-col bg-background">
       <SEO
         title="Entrar ou criar conta — Lojistas | OfertasFly"
         description="Acesse o painel do lojista da OfertasFly para gerenciar sua loja, publicar ofertas e acompanhar resultados."
@@ -100,12 +100,14 @@ export default function Auth() {
         noindex
       />
       <Header />
-      <main className="flex flex-1 items-center justify-center px-4 py-10">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-2xl">Acesse o OfertasFly</CardTitle>
-            <p className="text-sm text-muted-foreground">Área para lojistas e administradores.</p>
+      <main className="flex flex-1 items-center justify-center px-4 py-12">
+        <Card className="w-full max-w-md rounded-3xl border-border bg-card shadow-card">
+          <CardHeader className="space-y-2 pb-2">
+            <span className="label-eyebrow text-primary">Área do lojista</span>
+            <CardTitle className="font-display text-2xl font-medium">Acesse o OfertasFly</CardTitle>
+            <p className="text-sm text-muted-foreground">Entre ou crie sua conta para gerenciar sua loja.</p>
           </CardHeader>
+
           <CardContent>
             <Tabs defaultValue="login">
               <TabsList className="grid w-full grid-cols-2">
