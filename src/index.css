@@ -49,8 +49,8 @@ html { scroll-padding-top: calc(var(--header-h) + 12px); }
     --muted: 43 16% 91%;
     --muted-foreground: 48 4% 51%;
 
-    /* Accent = brand indigo (CTAs share primary) */
-    --accent: 244 58% 51%;
+    /* Accent = brand violet (CTAs share primary) */
+    --accent: 262 76% 55%;
     --accent-foreground: 0 0% 100%;
     --accent-strong: 60 4% 6%;
 
