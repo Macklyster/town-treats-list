@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { HomeHeader } from "@/components/home/HomeHeader";
+import { CategoryChips } from "@/components/home/CategoryChips";
 import { HomeHero } from "@/components/home/HomeHero";
 import { FeaturedCompanies } from "@/components/home/FeaturedCompanies";
 import { OffersOfTheDay } from "@/components/home/OffersOfTheDay";
@@ -59,7 +60,11 @@ const Index = () => {
       <main>
         <HomeHero />
         <FeaturedCompanies />
+        <div className="container pt-6 md:pt-8">
+          <CategoryChips />
+        </div>
         <OffersOfTheDay offers={offers} loading={loading} />
+
         <DiscoverRow />
         <FlyScoreBar />
         <ReviewsAndGallery />

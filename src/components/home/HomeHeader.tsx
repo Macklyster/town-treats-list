@@ -34,11 +34,8 @@ export const HomeHeader = () => {
         scrolled ? "shadow-soft border-b border-border" : "border-b border-transparent"
       }`}
     >
-      <div className="hidden md:block border-b border-border/60 bg-secondary/50">
-        <div className="container flex py-2">
-          <CategoryChips />
-        </div>
-      </div>
+
+
 
 
       <div className="container flex h-16 items-center gap-4 md:h-20">
