@@ -201,6 +201,21 @@ export default function LojaForm() {
                 disabled={!storeId}
               />
 
+              <ImageUploader
+                value={form.cover_url}
+                onChange={(url) => setForm({ ...form, cover_url: url })}
+                storeId={storeId}
+                bucket="offer-images"
+                label="Imagem de capa da empresa"
+                helperText="Imagem exibida no topo da loja e nos destaques. JPG, PNG ou WebP até 5 MB. Recomendado: 1600×900."
+                aspect="video"
+                maxWidth={1600}
+                accept={["image/jpeg", "image/png", "image/webp"]}
+                maxBytes={5 * 1024 * 1024}
+                disabled={!storeId}
+              />
+
+
               {!storeId && (
                 <Alert>
                   <Info className="h-4 w-4" />
