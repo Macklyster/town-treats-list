@@ -35,12 +35,8 @@ export const HomeHeader = () => {
       }`}
     >
       <div className="container flex h-16 items-center gap-4 md:h-20">
-        <Link to="/" className="flex items-center gap-2 shrink-0">
-          <img src={logo} alt="OfertasFly" className="h-9 w-auto md:h-10" />
-          <div className="hidden md:block leading-tight">
-            <div className="text-[15px] font-bold tracking-tight text-foreground">OfertasFly</div>
-            <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Descubra. Conecte. Valorize.</div>
-          </div>
+        <Link to="/" className="flex items-center gap-2 shrink-0" aria-label="OfertasFly">
+          <img src={logo} alt="OfertasFly — Descubra. Conecte. Valorize." className="h-8 w-auto md:h-9" />
         </Link>
 
         <form onSubmit={submit} className="hidden md:flex flex-1 max-w-xl mx-auto">
