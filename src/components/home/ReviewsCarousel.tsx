@@ -90,7 +90,7 @@ export const ReviewsCarousel = () => {
                 ))}
               </div>
               <button
-                onClick={() => setIdx((i) => Math.min(items.length - 2, i + 2))}
+                onClick={() => setIdx((i) => Math.min(Math.max(0, items.length - 2), i + 2))}
                 disabled={!canNext}
                 className="h-8 w-8 rounded-full border border-border bg-card grid place-items-center disabled:opacity-40 hover:bg-primary hover:text-primary-foreground hover:border-primary transition"
                 aria-label="Próximo"
