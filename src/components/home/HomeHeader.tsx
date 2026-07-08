@@ -1,10 +1,17 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Gavel, Heart, MapPin, Menu, Search, Sparkles, Tag, Ticket, User as UserIcon, Users, X } from "lucide-react";
+import { Gavel, Heart, LogOut, MapPin, Menu, Search, Sparkles, Tag, Ticket, User as UserIcon, Users, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCity } from "@/hooks/useCity";
 import logo from "@/assets/ofertasfly-logo-transparente.svg";
 import { CategoryChips } from "./CategoryChips";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const HomeHeader = () => {
   const { user, isAdmin, isLojista } = useAuth();
