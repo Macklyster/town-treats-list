@@ -12,7 +12,8 @@ import {
   UIOffer,
 } from "@/lib/offers-api";
 import { Button } from "@/components/ui/button";
-import { Clock, MapPin, Phone, Instagram, MessageCircle, ArrowLeft } from "lucide-react";
+import { Clock, MapPin, Phone, Instagram, MessageCircle, ChevronRight } from "lucide-react";
+import { SectionCard } from "@/components/site/SectionCard";
 import { parseConditions, getMethod } from "@/lib/payment-methods";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { trackOfferEvent } from "@/lib/offer-events";
@@ -170,12 +171,20 @@ const OfferDetail = () => {
       />
       <Header />
       <main className="container py-10">
-        <Link
-          to="/#ofertas"
-          className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-accent-strong"
-        >
-          <ArrowLeft className="h-4 w-4" /> Voltar para ofertas
-        </Link>
+        <nav className="mb-6 flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+          <Link to="/" className="hover:text-primary">Início</Link>
+          {cSlug && (
+            <>
+              <ChevronRight className="h-3 w-3 opacity-60" />
+              <Link to={`/ofertas/${cSlug}`} className="hover:text-primary">{cLabel}</Link>
+            </>
+          )}
+          <ChevronRight className="h-3 w-3 opacity-60" />
+          <Link to={`/loja/${store?.slug ?? ""}`} className="hover:text-primary">{offer.storeName}</Link>
+          <ChevronRight className="h-3 w-3 opacity-60" />
+          <span className="text-foreground">{offer.title}</span>
+        </nav>
+
 
         <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr]">
           <div>
