@@ -32,7 +32,7 @@ export type UIOffer = {
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80";
 
-const mapRow = (row: any): UIOffer => ({
+export const mapRow = (row: any): UIOffer => ({
   id: row.id,
   title: row.title,
   storeId: row.store_id,
