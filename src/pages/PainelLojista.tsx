@@ -295,6 +295,9 @@ export default function PainelLojista() {
               </CardContent>
             </Card>
 
+            <FlyScoreCard storeId={store.id} />
+
+
             {activeColetiva && (
               <Card className="md:col-span-3">
                 <CardHeader>
