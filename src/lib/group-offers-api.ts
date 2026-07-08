@@ -1,4 +1,68 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { UIOffer, CityFilter } from "@/lib/offers-api";
+
+const FALLBACK_IMG =
+  "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80";
+
+const lowestTierPrice = (tiers: any): number => {
+  if (!Array.isArray(tiers) || tiers.length === 0) return 0;
+  const prices = tiers.map((t: any) => Number(t.price)).filter((n) => Number.isFinite(n));
+  return prices.length ? Math.min(...prices) : 0;
+};
+
+export const fetchActiveGroupOffersAsUIOffers = async (
+  filter?: CityFilter,
+): Promise<UIOffer[]> => {
+  const nowIso = new Date().toISOString();
+  let q = supabase
+    .from("group_offers" as any)
+    .select(
+      "id,title,description,image_url,category_slug,original_price,tiers,ends_at,status,share_token,created_at,store_id, store:stores!inner(name,slug,city,state,logo_url,featured_badge,latitude,longitude)",
+    )
+    .eq("status", "approved")
+    .or(`ends_at.is.null,ends_at.gt.${nowIso}`)
+    .order("created_at", { ascending: false });
+  if (filter?.city) {
+    q = q.eq("store.city", filter.city);
+    if (filter.state) q = q.eq("store.state", filter.state);
+  }
+  const { data, error } = await q;
+  if (error) {
+    console.error(error);
+    return [];
+  }
+  return ((data ?? []) as any[]).map((r) => ({
+    id: r.id,
+    title: r.title,
+    storeId: r.store_id,
+    storeName: r.store?.name ?? "Loja",
+    storeSlug: r.store?.slug,
+    storeLogo: r.store?.logo_url ?? undefined,
+    storeFeaturedBadge: !!r.store?.featured_badge,
+    category: r.category_slug,
+    type: "desconto" as const,
+    image: r.image_url || FALLBACK_IMG,
+    originalPrice: Number(r.original_price) || 0,
+    promoPrice: lowestTierPrice(r.tiers),
+    description: r.description ?? "",
+    conditions: "",
+    validUntil: r.ends_at ? new Date(r.ends_at).toLocaleDateString("pt-BR") : "",
+    featured: false,
+    popularity: 0,
+    createdAt: r.created_at,
+    isFlash: false,
+    flashEndsAt: null,
+    flashDurationHours: null,
+    storeLat: r.store?.latitude ?? null,
+    storeLng: r.store?.longitude ?? null,
+    storeCity: r.store?.city ?? "",
+    storeState: r.store?.state ?? "",
+    isGroup: true,
+    groupToken: r.share_token,
+  }));
+};
+
+
 
 export type Tier = { min_people: number; price: number };
 
