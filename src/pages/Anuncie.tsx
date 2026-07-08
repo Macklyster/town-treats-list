@@ -415,7 +415,7 @@ const Anuncie = () => {
           </div>
         </section>
       </main>
-      <Footer />
+      <HomeFooter />
     </div>
   );
 };
