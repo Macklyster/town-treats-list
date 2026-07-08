@@ -37,6 +37,9 @@ export const OfferCard = ({ offer, socialProof }: { offer: UIOffer; socialProof?
             {offer.type === "cupom" ? "Cupom" : "Brinde"}
           </span>
         )}
+        <div className="absolute right-3 bottom-3 z-10">
+          <FavoriteButton type="offer" id={offer.id} variant="icon" />
+        </div>
         {offer.isFlash && offer.flashEndsAt && (
           <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2">
             <CountdownBadge endsAt={offer.flashEndsAt} />
