@@ -59,7 +59,7 @@ export async function fetchHomeStats(): Promise<HomeStats> {
 export async function fetchFeaturedCompanies(city?: { city: string; state: string } | null): Promise<UICompany[]> {
   let q = supabase
     .from("stores")
-    .select("id,name,slug,logo_url,category_slug,city,state,latitude,longitude,featured_badge,approved")
+    .select("id,name,slug,logo_url,city,state,latitude,longitude,featured_badge,approved,cover_url")
     .eq("approved", true)
     .order("featured_badge", { ascending: false })
     .limit(12);
@@ -70,12 +70,124 @@ export async function fetchFeaturedCompanies(city?: { city: string; state: strin
   const ids = list.map((s) => s.id);
   const { data: scores } = await supabase.from("company_flyscore").select("store_id,overall").in("store_id", ids);
   const scoreMap = new Map<string, number>((scores ?? []).map((s: any) => [s.store_id, Number(s.overall)]));
+  const { data: catRows } = await supabase.from("offers").select("store_id,category_slug").in("store_id", ids);
+  const catMap = new Map<string, string>();
+  for (const r of (catRows ?? []) as any[]) {
+    if (!catMap.has(r.store_id) && r.category_slug) catMap.set(r.store_id, r.category_slug);
+  }
   return list.map((s) => ({
     ...s,
-    cover_url: FALLBACK_COVER,
+    category_slug: catMap.get(s.id) ?? null,
+    cover_url: s.cover_url ?? FALLBACK_COVER,
     flyscore: scoreMap.get(s.id) ?? null,
     is_open: true,
   }));
+}
+
+export type UIRecommendedCompany = UICompany & {
+  avg_rating: number;
+  review_count: number;
+  match_score: number;
+};
+
+export async function fetchRecommendedCompanies(
+  city?: { city: string; state: string } | null,
+  userId?: string | null,
+  limit = 6,
+): Promise<UIRecommendedCompany[]> {
+  let q = supabase
+    .from("stores")
+    .select("id,name,slug,logo_url,city,state,latitude,longitude,featured_badge,approved,cover_url")
+    .eq("approved", true)
+    .limit(50);
+  if (city?.city) q = q.eq("city", city.city);
+  let { data } = await q;
+  let list = (data ?? []) as any[];
+  if (!list.length && city?.city) {
+    const fb = await supabase
+      .from("stores")
+      .select("id,name,slug,logo_url,city,state,latitude,longitude,featured_badge,approved,cover_url")
+      .eq("approved", true)
+      .limit(50);
+    list = (fb.data ?? []) as any[];
+  }
+  if (!list.length) return [];
+  const ids = list.map((s) => s.id);
+
+  const { data: scores } = await supabase.from("company_flyscore").select("store_id,overall").in("store_id", ids);
+  const scoreMap = new Map<string, number>((scores ?? []).map((s: any) => [s.store_id, Number(s.overall)]));
+
+  const { data: offerRows } = await supabase
+    .from("offers")
+    .select("id,store_id,category_slug")
+    .in("store_id", ids);
+  const storeCatCounts = new Map<string, Map<string, number>>();
+  const offerToStore = new Map<string, string>();
+  for (const r of (offerRows ?? []) as any[]) {
+    offerToStore.set(r.id, r.store_id);
+    if (!r.category_slug) continue;
+    const m = storeCatCounts.get(r.store_id) ?? new Map<string, number>();
+    m.set(r.category_slug, (m.get(r.category_slug) ?? 0) + 1);
+    storeCatCounts.set(r.store_id, m);
+  }
+  const primaryCat = new Map<string, string>();
+  const storeCats = new Map<string, string[]>();
+  for (const [sid, m] of storeCatCounts) {
+    const sorted = [...m.entries()].sort((a, b) => b[1] - a[1]);
+    primaryCat.set(sid, sorted[0][0]);
+    storeCats.set(sid, sorted.map((s) => s[0]));
+  }
+
+  const ratingSum = new Map<string, number>();
+  const ratingCount = new Map<string, number>();
+  const allOfferIds = [...offerToStore.keys()];
+  if (allOfferIds.length) {
+    const { data: reviews } = await supabase
+      .from("offer_reviews")
+      .select("offer_id,rating")
+      .in("offer_id", allOfferIds);
+    for (const r of (reviews ?? []) as any[]) {
+      const sid = offerToStore.get(r.offer_id);
+      if (!sid) continue;
+      ratingSum.set(sid, (ratingSum.get(sid) ?? 0) + Number(r.rating));
+      ratingCount.set(sid, (ratingCount.get(sid) ?? 0) + 1);
+    }
+  }
+
+  let weights = new Map<string, number>();
+  if (userId) {
+    const { data: interests } = await supabase
+      .from("user_interests")
+      .select("category_slug,weight")
+      .eq("user_id", userId);
+    weights = new Map<string, number>((interests ?? []).map((i: any) => [i.category_slug, Number(i.weight)]));
+  }
+
+  const enriched: UIRecommendedCompany[] = list.map((s) => {
+    const cats = storeCats.get(s.id) ?? [];
+    const interestBoost = cats.reduce((acc, c) => acc + (weights.get(c) ?? 0), 0);
+    const count = ratingCount.get(s.id) ?? 0;
+    const avg = count ? (ratingSum.get(s.id) ?? 0) / count : 0;
+    const fly = scoreMap.get(s.id) ?? 0;
+    const match =
+      interestBoost * 3 +
+      (s.featured_badge ? 1.5 : 0) +
+      avg * 0.6 +
+      Math.min(count, 20) * 0.05 +
+      fly * 0.01;
+    return {
+      ...s,
+      category_slug: primaryCat.get(s.id) ?? null,
+      cover_url: s.cover_url ?? FALLBACK_COVER,
+      flyscore: scoreMap.get(s.id) ?? null,
+      is_open: true,
+      avg_rating: Number(avg.toFixed(1)),
+      review_count: count,
+      match_score: match,
+    };
+  });
+  enriched.sort((a, b) => b.match_score - a.match_score);
+  return enriched.slice(0, limit);
 }
 
 export async function fetchHappeningNow(city?: { city: string; state: string } | null): Promise<UIEvent[]> {
