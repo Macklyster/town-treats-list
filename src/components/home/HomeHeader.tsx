@@ -1,13 +1,20 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Gavel, Heart, MapPin, Menu, Search, Sparkles, Tag, Ticket, User as UserIcon, Users, X } from "lucide-react";
+import { Gavel, Heart, LogOut, MapPin, Menu, Search, Sparkles, Tag, Ticket, User as UserIcon, Users, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCity } from "@/hooks/useCity";
 import logo from "@/assets/ofertasfly-logo-transparente.svg";
 import { CategoryChips } from "./CategoryChips";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const HomeHeader = () => {
-  const { user, isAdmin, isLojista } = useAuth();
+  const { user, isAdmin, isLojista, signOut } = useAuth();
   const { city, openSelector } = useCity();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -30,7 +37,7 @@ export const HomeHeader = () => {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full bg-background/95 backdrop-blur transition-shadow ${
+      className={`sticky top-0 z-[100] w-full bg-background/95 backdrop-blur transition-shadow ${
         scrolled ? "shadow-soft border-b border-border" : "border-b border-transparent"
       }`}
     >
@@ -71,20 +78,52 @@ export const HomeHeader = () => {
             {city ? `${city.city} - ${city.state}` : "Cidade"}
           </button>
           <Link
-            to={user ? "/perfil/notificacoes" : "/auth"}
+            to={user ? "/favoritos" : "/auth"}
             aria-label="Favoritos"
             className="grid h-9 w-9 place-items-center rounded-full border border-border text-foreground/70 hover:border-primary hover:text-primary transition"
           >
             <Heart className="h-4 w-4" />
           </Link>
           {user ? (
-            <Link
-              to={isAdmin ? "/admin" : isLojista ? "/painel-lojista" : "/perfil/notificacoes"}
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep transition"
-            >
-              <UserIcon className="h-4 w-4" />
-              Minha conta
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep transition">
+                  <UserIcon className="h-4 w-4" />
+                  Minha conta
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="z-[110] w-56">
+                <DropdownMenuItem asChild>
+                  <Link to="/perfil/notificacoes" className="cursor-pointer">
+                    <UserIcon className="mr-2 h-4 w-4" /> Notificações
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/favoritos" className="cursor-pointer">
+                    <Heart className="mr-2 h-4 w-4" /> Favoritos
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/meus-cupons" className="cursor-pointer">
+                    <Ticket className="mr-2 h-4 w-4" /> Meus cupons
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {isLojista && (
+                  <DropdownMenuItem asChild>
+                    <Link to={isAdmin ? "/admin" : "/painel-lojista"} className="cursor-pointer">
+                      <Sparkles className="mr-2 h-4 w-4" /> Painel
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem
+                  onClick={() => signOut()}
+                  className="cursor-pointer text-destructive focus:text-destructive"
+                >
+                  <LogOut className="mr-2 h-4 w-4" /> Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <Link
               to="/auth"
@@ -111,7 +150,7 @@ export const HomeHeader = () => {
             { to: "/coletivas", label: "Coletivas", icon: Users },
             { to: "/leiloes", label: "Leilões", icon: Gavel },
             { to: "/ofertas-invisiveis", label: "Invisíveis", icon: Sparkles },
-            { to: "/perfil/cupons", label: "Meus Cupons", icon: Ticket },
+            { to: "/meus-cupons", label: "Meus Cupons", icon: Ticket },
             { to: "/anuncie", label: "Anuncie", icon: Sparkles },
           ].map(({ to, label, icon: Icon, end }) => (
             <NavLink
@@ -161,7 +200,7 @@ export const HomeHeader = () => {
                 { to: "/coletivas", label: "Coletivas", icon: Users },
                 { to: "/leiloes", label: "Leilões", icon: Gavel },
                 { to: "/ofertas-invisiveis", label: "Invisíveis", icon: Sparkles },
-                { to: "/perfil/cupons", label: "Meus Cupons", icon: Ticket },
+                { to: "/meus-cupons", label: "Meus Cupons", icon: Ticket },
                 { to: "/anuncie", label: "Anuncie", icon: Sparkles },
               ].map(({ to, label, icon: Icon }) => (
                 <Link
@@ -182,13 +221,52 @@ export const HomeHeader = () => {
                 Entrar
               </Link>
             ) : (
-              <Link
-                to={isAdmin ? "/admin" : isLojista ? "/painel-lojista" : "/perfil/notificacoes"}
-                onClick={() => setOpen(false)}
-                className="rounded-full bg-primary py-2.5 text-center text-sm font-semibold text-primary-foreground"
-              >
-                Minha conta
-              </Link>
+              <div className="space-y-2">
+                <p className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Minha conta
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    to="/perfil/notificacoes"
+                    onClick={() => setOpen(false)}
+                    className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  >
+                    <UserIcon className="h-4 w-4 text-primary" /> Notificações
+                  </Link>
+                  <Link
+                    to="/favoritos"
+                    onClick={() => setOpen(false)}
+                    className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  >
+                    <Heart className="h-4 w-4 text-primary" /> Favoritos
+                  </Link>
+                  <Link
+                    to="/meus-cupons"
+                    onClick={() => setOpen(false)}
+                    className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  >
+                    <Ticket className="h-4 w-4 text-primary" /> Meus cupons
+                  </Link>
+                  {isLojista && (
+                    <Link
+                      to={isAdmin ? "/admin" : "/painel-lojista"}
+                      onClick={() => setOpen(false)}
+                      className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+                    >
+                      <Sparkles className="h-4 w-4 text-primary" /> Painel
+                    </Link>
+                  )}
+                </div>
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    signOut();
+                  }}
+                  className="w-full rounded-xl border border-destructive/30 bg-destructive/5 py-2.5 text-center text-sm font-semibold text-destructive"
+                >
+                  Sair
+                </button>
+              </div>
             )}
           </div>
         </div>

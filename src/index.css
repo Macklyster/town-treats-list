@@ -312,3 +312,11 @@ html { scroll-padding-top: calc(var(--header-h) + 12px); }
   outline-offset: 2px;
   border-radius: 6px;
 }
+
+/* Contain Leaflet z-index so map tiles/controls never overlap the sticky header */
+.offers-map-container .leaflet-pane,
+.offers-map-container .leaflet-top,
+.offers-map-container .leaflet-bottom,
+.offers-map-container .leaflet-control {
+  z-index: 1 !important;
+}
