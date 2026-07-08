@@ -1,55 +1,92 @@
-# Redesign OfertasFly Light — todas as páginas
+# Plano — FlyScore 100% funcional
 
-Aplicar o mesmo padrão visual da nova Home (fundo cream claro, acento violeta `--primary 262`, hero-islands escuros pontuais, cards arredondados 20px, sombras suaves, tipografia Syne + DM Sans) em todas as páginas do produto.
+Hoje o FlyScore existe apenas como **visual** na home (`FlyScoreSection.tsx`) com valores fixos (`4,8`, `98%`, `96/100`). A tabela `company_flyscore` (colunas: `overall`, `pilares jsonb`, `updated_at`) já existe e é lida por `home-api.ts`, mas **nunca é preenchida** e não há UI para o lojista/usuário alimentá-la.
 
-Os tokens já são globais em `src/index.css`, então não há refactor de design system — o trabalho é substituir chrome (Header/Footer), reescrever hero de cada página, padronizar cards, botões, badges e vazio-estados.
+Este plano cobre: (1) modelo de cálculo, (2) coleta de dados do lojista, (3) avaliação pelo usuário, (4) recomputo automático, (5) exibição real na home e na página da loja.
 
-## Fundações compartilhadas (feito 1x, antes das ondas)
+---
 
-1. **Header/Footer globais**: substituir `src/components/site/Header.tsx` e `Footer.tsx` pelo visual do `HomeHeader`/`HomeFooter` (logo + tagline, busca grande com botão violeta sólido, city selector, chips de categoria opcionais por rota, footer 5 colunas). Mantém todas as rotas e handlers atuais.
-2. **Componentes de página reutilizáveis** em `src/components/site/`:
-   - `PageHero` — hero-island escuro arredondado com título display, subtítulo, breadcrumb opcional, slot de métricas/CTA.
-   - `PageShell` — wrapper `container py-10` + skip-link + padding responsivo consistente.
-   - `EmptyState` — ícone violeta em círculo claro, título Syne, CTA violeta.
-   - `SectionCard` — card branco `rounded-3xl shadow-card` com header/eyebrow padronizado.
-   - `StatPill`, `FilterBar`, `SortMenu` — controles claros com foco violeta.
-3. **Botões**: converter usos de `variant="accent"` que ainda apontam pro velho amarelo para `variant="default"` (violeta), mantendo `outline` claro. Não mexer no sistema de variantes.
+## 1. Modelo dos 6 pilares (0–100 cada, média = FlyScore)
 
-## Ondas de entrega (uma iteração por onda)
+| Pilar | Fonte de dados | Regra |
+|---|---|---|
+| **Avaliações** | `offer_reviews` aprovados da loja | `min(100, media_estrelas*20 * fator_volume)` onde `fator_volume = min(1, count/20)` |
+| **Atualização** | `offers.updated_at` / `offers.created_at` | 100 se houve oferta nova/editada nos últimos 30d; decai linearmente até 0 aos 120d |
+| **Resposta** | novo campo `store_response_stats` (avg_response_minutes de mensagens/reservas) | 100 ≤ 60min, 0 ≥ 24h; interpolação log |
+| **Informações** | preenchimento de `stores` (nome, endereço, cidade/UF, telefone, whatsapp, logo, cover, horário, categorias) | % de campos obrigatórios + opcionais preenchidos |
+| **Engajamento** | `coupons_redeemed` + `offer_views` + `favorites` últimos 30d | normalizado por percentil dentro da cidade |
+| **Presença Digital** | `stores.instagram`, `stores.website`, nº de fotos em `offers` (>=3), `cover_url` presente | soma ponderada de checks |
 
-### Onda 1 — Descoberta pública
-- `CityOffers.tsx`: hero-island com nome da cidade + métricas (lojas, ofertas ativas), `CategoryChips` sticky abaixo, grid de `OfferCard` no novo estilo (imagem 4:3, badge OFF vermelho, preço promo grande, CTA violeta), mapa em card claro à direita no desktop.
-- `StorePage.tsx`: capa com overlay escuro, avatar circular grande, badges (verificado, aberto agora verde, FlyScore chip), tabs Sobre/Ofertas/Avaliações/Galeria em pílulas violetas, seções em `SectionCard`.
-- `OfferDetail.tsx`: galeria à esquerda, painel de compra à direita em `SectionCard` sticky, contador (`CountdownBadge`) integrado, prova social, seção de loja + ofertas relacionadas.
+Score final: `overall = round(avg(pilares))`. Persistido em `company_flyscore.pilares` como `{avaliacoes:88, atualizacao:95, resposta:72, informacoes:100, engajamento:64, presenca:90}`.
 
-### Onda 2 — Conversão do usuário final
-- `Cupons.tsx` + `MeusCupons.tsx` + `MeuCupomDetalhe.tsx`: header claro com eyebrow, cards de cupom com faixa violeta lateral, código em mono grande, estado "Usado" com badge verde `--open`.
-- `Historico.tsx`, `Notificacoes.tsx`: lista em `SectionCard` com item denso, timestamps em `text-muted-foreground`, ações inline.
-- `OfertasInvisiveis.tsx` + `OfertaInvisivelPublic.tsx`: hero escuro com selo "Oferta Invisível", reveal card violeta.
-- `Coletivas.tsx` + `ColetivaPublic.tsx` + `Leiloes.tsx` + `LeilaoPublic.tsx`: mesmo padrão hero-island + `SectionCard` + progress/bid em violeta.
+---
 
-### Onda 3 — Entrada e monetização
-- `Auth.tsx`: split-screen — esquerda hero-island escuro com claim + prova social, direita card branco com form Syne, botão Google outline, botão principal violeta.
-- `Anuncie.tsx`: hero-island longo, seção de planos em 3 cards claros (Starter/Destaque/Plus) com plano do meio destacado em violeta, FAQ em accordion claro, CTA final banner violeta.
-- `Assinatura.tsx`: cabeçalho com status do plano em `StatPill`, cards de plano lado a lado, seção de faturamento em `SectionCard`, avisos usando `warning` tokens.
+## 2. Painel do Lojista — o que precisa ganhar UI
 
-### Onda 4 — Áreas internas
-- `PainelLojista.tsx`: sidebar clara sticky esquerda com navegação em pílulas violetas, dashboard cards (ofertas ativas, views, cupons, FlyScore) em grid, gráfico simples, tabela de ofertas com row hover violeta claro.
-- `LojaForm.tsx`, `OfertaForm.tsx`, `OfertaInvisivelForm.tsx`, `ColetivaForm.tsx`, `LeilaoForm.tsx`, `Biblioteca.tsx`: formulários em `SectionCard` de coluna única max-w-3xl, labels DM Sans 14, inputs `rounded-xl border-input` com foco violeta, botões primários violeta, botão secundário outline.
-- `Admin.tsx` + subcomponentes (`AdminBroadcast`, `AdminColetivas`, `AdminLeiloes`, `AdminMedia`, `AdminOfertasInvisiveis`, `AdminReviews`, `AdminSettings`): header escuro compacto, tabs em pílulas, tabelas com header cinza claro, ações em ícones violeta.
-- `Inteligencia.tsx`: dashboard em grid bento, KPIs em `SectionCard`, gráficos com stroke violeta.
-- `NotFound.tsx`, `PoliticaDePrivacidade.tsx`, `TermosDeUso.tsx`: hero-island curto + conteúdo em `SectionCard` prose.
+**Página nova `/painel-lojista/flyscore`** (aba dentro do painel) mostrando:
 
-## Detalhes técnicos
+- Gauge do overall + barra por pilar com **status atual, meta e ações sugeridas** ("Adicione foto de capa +8 pts", "Responda mensagens em <1h", "Peça avaliação a clientes").
+- Link direto para a ação que aumenta cada pilar (ex.: pilar "Informações" → botão "Completar dados" que abre `LojaForm` já rolado para o campo faltante).
 
-- **Sem novas dependências**. Fontes Syne/DM Sans já carregadas em `main.tsx`. Framer Motion já disponível.
-- **Sem alterações de dados, RLS, edge functions ou rotas**. Apenas apresentação.
-- **Tokens**: usar exclusivamente `bg-background`, `bg-card`, `text-foreground`, `text-primary`, `bg-primary text-primary-foreground`, `bg-[hsl(var(--hero-bg))]`, `bg-[hsl(var(--open-bg))] text-[hsl(var(--open))]`, etc. Zero cores hex/rgb hardcoded, zero `text-white`/`bg-black` fora do hero-island (onde uso `text-[hsl(var(--hero-fg))]`).
-- **Responsivo**: mobile-first, breakpoints `md` (768) e `lg` (1024). Hero-islands viram coluna única no mobile; sidebars viram bottom sheet ou top bar.
-- **Acessibilidade**: manter labels ARIA existentes, foco visível violeta (`focus-visible:ring-2 ring-ring`), contraste AA no cream + violeta.
-- **Componentes que NÃO mudam**: `OffersMap`, `RatingStars`, `RatingSummary`, `StoreAvatar`, `CountdownBadge`, `SocialProofBadge`, `MediaLibrary`, `MediaPicker`, `ImageUploader`, hooks, libs, integrações Supabase, tipos.
-- **`src/components/home/*`**: já no padrão novo, não mexer.
+**Campos novos em `stores`** (migração):
 
-## Ordem de execução proposta
+- `opening_hours jsonb` (semana + horários)
+- `website text`
+- `categories text[]` (múltiplas categorias para melhor match)
+- `response_time_target_minutes int` (compromisso do lojista, opcional)
 
-Entrego **uma onda por mensagem** para você validar visualmente antes de seguir. Começo pelas Fundações + Onda 1 (Descoberta pública) na próxima iteração. Confirma?
+**Editar Dados** ganha seção "Sobre a empresa" com os campos acima e uploader de **galeria de fotos** (bucket `offer-images` sob `{store_id}/gallery/*`).
+
+---
+
+## 3. Avaliação pelo usuário — deixar clara e sempre acessível
+
+Já existem `ReviewForm`, `ReviewList`, `ReviewPromptDialog`, mas:
+
+- O prompt só aparece após ações específicas — **adicionar CTA "Avaliar esta loja" visível em `StorePage`** e em `OfferDetail` para qualquer usuário autenticado que já viu/resgatou cupom.
+- Permitir **avaliação por loja** (não só por oferta): criar tabela `store_reviews` (rating 1-5, comment, user_id, store_id, status). Manter `offer_reviews` para experiência de compra específica; agregar as duas no pilar Avaliações.
+- E-mail/notificação automática 48h após resgate de cupom: "Como foi sua experiência na {loja}?".
+- Moderação: reviews entram como `pending`, admin aprova em `/admin/reviews` (já existe `AdminReviews.tsx`, revisar fluxo).
+
+---
+
+## 4. Recomputo do FlyScore
+
+**Edge function `recompute-flyscore`** (Deno):
+
+- Input: `store_id` (recomputa 1) ou vazio (batch — todas as lojas aprovadas).
+- Executa consultas SQL para cada pilar, calcula, faz `upsert` em `company_flyscore`.
+
+**Gatilhos:**
+
+1. **Trigger SQL** em `offer_reviews`, `store_reviews`, `offers`, `coupons_redeemed`, `favorites` → enfileira `store_id` para recomputo (tabela `flyscore_recompute_queue` + `pg_notify`).
+2. **Cron pg** (`pg_cron`) roda `recompute-flyscore` de hora em hora processando a fila.
+3. **Trigger em `stores` update** → recomputo imediato do pilar Informações/Presença.
+4. Botão manual no painel do lojista "Atualizar meu FlyScore agora" (rate-limited: 1x/hora).
+
+---
+
+## 5. Exibir dados reais em vez de mock
+
+- `FlyScoreSection` da home passa a receber `overallMedio` e `pilaresMedios` agregados de `company_flyscore` (média das lojas aprovadas). Criar RPC `get_flyscore_aggregate(city?)` para retornar em 1 chamada.
+- `CompanyCard` já tem `flyscore` — remover o `Math.round(90 + name.length % 10)` de fallback quando existe valor real; mostrar "—" ou "Novo" quando ainda não há score.
+- Nova página pública `/loja/{slug}/flyscore` com detalhamento por pilar (transparência para o usuário final).
+
+---
+
+## Ordem de execução sugerida
+
+1. **Migração**: campos novos em `stores`, tabela `store_reviews`, `flyscore_recompute_queue`, `store_response_stats`.
+2. **Edge function** `recompute-flyscore` + triggers + cron.
+3. **UI Painel do Lojista**: aba FlyScore + edição dos campos novos em `LojaForm`.
+4. **UI Avaliação**: CTA visível, formulário de `store_reviews`, notificação pós-cupom.
+5. **Home/CompanyCard**: consumir dados reais, remover mocks do `FlyScoreSection`.
+6. **Página pública `/loja/{slug}/flyscore`** com detalhamento.
+
+---
+
+## Escopo mínimo (MVP) se quiser dividir em etapas
+
+- Etapa 1: pilares **Avaliações + Informações + Atualização** (3 dos 6) já dão score útil sem precisar de stats de resposta/engajamento.
+- Etapa 2: adicionar **Presença Digital** (fácil, só checar campos).
+- Etapa 3: **Engajamento + Resposta** (dependem de coleta de eventos e mensagens — mais complexo).
