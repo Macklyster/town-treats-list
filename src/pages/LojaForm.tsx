@@ -29,6 +29,7 @@ const schema = z.object({
   whatsapp: z.string().trim().max(30).optional().or(z.literal("")),
   instagram: z.string().trim().max(60).optional().or(z.literal("")),
   logo_url: z.string().trim().url().max(500).optional().or(z.literal("")),
+  cover_url: z.string().trim().url().max(500).optional().or(z.literal("")),
 });
 
 export default function LojaForm() {
@@ -47,6 +48,7 @@ export default function LojaForm() {
     whatsapp: "",
     instagram: "",
     logo_url: "",
+    cover_url: "",
     latitude: null as number | null,
     longitude: null as number | null,
   });
@@ -73,6 +75,7 @@ export default function LojaForm() {
           whatsapp: data.whatsapp ?? "",
           instagram: data.instagram ?? "",
           logo_url: data.logo_url ?? "",
+          cover_url: data.cover_url ?? "",
           latitude: data.latitude ?? null,
           longitude: data.longitude ?? null,
         });
@@ -197,6 +200,21 @@ export default function LojaForm() {
                 maxBytes={2 * 1024 * 1024}
                 disabled={!storeId}
               />
+
+              <ImageUploader
+                value={form.cover_url}
+                onChange={(url) => setForm({ ...form, cover_url: url })}
+                storeId={storeId}
+                bucket="offer-images"
+                label="Imagem de capa da empresa"
+                helperText="Imagem exibida no topo da loja e nos destaques. JPG, PNG ou WebP até 5 MB. Recomendado: 1600×900."
+                aspect="video"
+                maxWidth={1600}
+                accept={["image/jpeg", "image/png", "image/webp"]}
+                maxBytes={5 * 1024 * 1024}
+                disabled={!storeId}
+              />
+
 
               {!storeId && (
                 <Alert>

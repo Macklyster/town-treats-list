@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Gavel, Heart, LogOut, MapPin, Menu, Search, Sparkles, Tag, Ticket, User as UserIcon, Users, X } from "lucide-react";
+import { Gavel, Heart, LogOut, MapPin, Menu, Search, Shield, Sparkles, Store, Tag, Ticket, User as UserIcon, Users, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCity } from "@/hooks/useCity";
@@ -111,11 +111,19 @@ export const HomeHeader = () => {
                 <DropdownMenuSeparator />
                 {isLojista && (
                   <DropdownMenuItem asChild>
-                    <Link to={isAdmin ? "/admin" : "/painel-lojista"} className="cursor-pointer">
-                      <Sparkles className="mr-2 h-4 w-4" /> Painel
+                    <Link to="/painel-lojista" className="cursor-pointer">
+                      <Store className="mr-2 h-4 w-4" /> Painel do Lojista
                     </Link>
                   </DropdownMenuItem>
                 )}
+                {isAdmin && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin" className="cursor-pointer">
+                      <Shield className="mr-2 h-4 w-4" /> Painel Admin
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                {(isLojista || isAdmin) && <DropdownMenuSeparator />}
                 <DropdownMenuItem
                   onClick={() => signOut()}
                   className="cursor-pointer text-destructive focus:text-destructive"
@@ -249,11 +257,20 @@ export const HomeHeader = () => {
                   </Link>
                   {isLojista && (
                     <Link
-                      to={isAdmin ? "/admin" : "/painel-lojista"}
+                      to="/painel-lojista"
                       onClick={() => setOpen(false)}
                       className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
                     >
-                      <Sparkles className="h-4 w-4 text-primary" /> Painel
+                      <Store className="h-4 w-4 text-primary" /> Painel do Lojista
+                    </Link>
+                  )}
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setOpen(false)}
+                      className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+                    >
+                      <Shield className="h-4 w-4 text-primary" /> Painel Admin
                     </Link>
                   )}
                 </div>
