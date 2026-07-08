@@ -12,6 +12,7 @@ import { HomeFooter } from "@/components/home/HomeFooter";
 import { SEO } from "@/components/seo/SEO";
 import { fetchOffers, UIOffer } from "@/lib/offers-api";
 import { fetchActiveGroupOffersAsUIOffers } from "@/lib/group-offers-api";
+import { fetchActiveAuctionsAsUIOffers } from "@/lib/auction-api";
 import { useCity } from "@/hooks/useCity";
 import { absoluteUrl, cityLabel } from "@/lib/slug";
 
@@ -25,14 +26,16 @@ const Index = () => {
     Promise.all([
       fetchOffers(city ?? undefined),
       fetchActiveGroupOffersAsUIOffers(city ?? undefined),
-    ]).then(([base, group]) => {
-      const merged = [...base, ...group].sort(
+      fetchActiveAuctionsAsUIOffers(city ?? undefined),
+    ]).then(([base, group, auctions]) => {
+      const merged = [...base, ...group, ...auctions].sort(
         (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
       setOffers(merged);
       setLoading(false);
     });
   }, [city?.city, city?.state]);
+
 
 
   const title = city

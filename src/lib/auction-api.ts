@@ -1,4 +1,71 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { UIOffer, CityFilter } from "@/lib/offers-api";
+
+const FALLBACK_IMG =
+  "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80";
+
+export const fetchActiveAuctionsAsUIOffers = async (
+  filter?: CityFilter,
+): Promise<UIOffer[]> => {
+  const nowIso = new Date().toISOString();
+  let q = supabase
+    .from("auction_offers" as any)
+    .select(
+      "id,title,description,image_url,category_slug,starting_price,min_price,decrement_amount,decrement_interval_minutes,starts_at,ends_at,status,share_token,created_at,store_id, store:stores!inner(name,slug,city,state,logo_url,featured_badge,latitude,longitude)",
+    )
+    .eq("status", "approved")
+    .or(`ends_at.is.null,ends_at.gt.${nowIso}`)
+    .order("created_at", { ascending: false });
+  if (filter?.city) {
+    q = q.eq("store.city", filter.city);
+    if (filter.state) q = q.eq("store.state", filter.state);
+  }
+  const { data, error } = await q;
+  if (error) {
+    console.error(error);
+    return [];
+  }
+  return ((data ?? []) as any[]).map((r) => {
+    const current = computeCurrentPrice({
+      starting_price: r.starting_price,
+      min_price: r.min_price,
+      decrement_amount: r.decrement_amount,
+      decrement_interval_minutes: r.decrement_interval_minutes,
+      starts_at: r.starts_at,
+    });
+    return {
+      id: r.id,
+      title: r.title,
+      storeId: r.store_id,
+      storeName: r.store?.name ?? "Loja",
+      storeSlug: r.store?.slug,
+      storeLogo: r.store?.logo_url ?? undefined,
+      storeFeaturedBadge: !!r.store?.featured_badge,
+      category: r.category_slug,
+      type: "desconto" as const,
+      image: r.image_url || FALLBACK_IMG,
+      originalPrice: Number(r.starting_price) || 0,
+      promoPrice: current,
+      description: r.description ?? "",
+      conditions: "",
+      validUntil: r.ends_at ? new Date(r.ends_at).toLocaleDateString("pt-BR") : "",
+      featured: false,
+      popularity: 0,
+      createdAt: r.created_at,
+      isFlash: false,
+      flashEndsAt: null,
+      flashDurationHours: null,
+      storeLat: r.store?.latitude ?? null,
+      storeLng: r.store?.longitude ?? null,
+      storeCity: r.store?.city ?? "",
+      storeState: r.store?.state ?? "",
+      isAuction: true,
+      auctionToken: r.share_token,
+    };
+  });
+};
+
+
 
 export type AuctionStatus = "pending" | "approved" | "sold_out" | "expired" | "rejected";
 
