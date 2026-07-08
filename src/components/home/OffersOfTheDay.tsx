@@ -51,7 +51,12 @@ export const OffersOfTheDay = ({ offers, loading }: { offers: UIOffer[]; loading
           >
             {list.map((o) => {
               const off = discountPct(o);
-              const href = o.isGroup && o.groupToken ? `/coletiva/${o.groupToken}` : `/oferta/${o.id}`;
+              const href = o.isGroup && o.groupToken
+                ? `/coletiva/${o.groupToken}`
+                : o.isAuction && o.auctionToken
+                  ? `/leilao/${o.auctionToken}`
+                  : `/oferta/${o.id}`;
+              const badge = o.isGroup ? "Coletiva" : o.isAuction ? "Leilão" : null;
               return (
                 <Link
                   key={o.id}
@@ -65,9 +70,9 @@ export const OffersOfTheDay = ({ offers, loading }: { offers: UIOffer[]; loading
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
                     />
-                    {o.isGroup && (
+                    {badge && (
                       <span className="absolute top-3 right-3 rounded-md bg-primary px-2 py-1 text-[11px] font-bold text-primary-foreground shadow-soft">
-                        Coletiva
+                        {badge}
                       </span>
                     )}
                     {off > 0 && (
@@ -76,6 +81,7 @@ export const OffersOfTheDay = ({ offers, loading }: { offers: UIOffer[]; loading
                       </span>
                     )}
                   </div>
+
 
                   <div className="p-4">
                     <div className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">
