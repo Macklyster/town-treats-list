@@ -154,21 +154,17 @@ export default function Historico() {
   }, [events]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/20">
+    <div className="flex min-h-screen flex-col bg-background">
       <Header />
-      <main className="container flex-1 py-10">
-        <div className="mb-6">
-          <Button asChild variant="ghost" size="sm" className="mb-2 -ml-2">
-            <Link to="/painel-lojista">
-              <ArrowLeft className="h-4 w-4" /> Voltar
-            </Link>
-          </Button>
-          <h1 className="text-display text-foreground">Histórico de cliques e visitas</h1>
-          <p className="text-muted-foreground">
-            Últimos 30 dias — visualizações, cliques no WhatsApp, telefone e scans de QR
-            Code.
-          </p>
-        </div>
+      <main className="container flex-1 space-y-8 py-8 md:py-10">
+        <PageHero
+          eyebrow="Painel do lojista"
+          title="Histórico de cliques e visitas"
+          subtitle="Últimos 30 dias — visualizações, cliques no WhatsApp, telefone e scans de QR Code."
+          crumbs={[{ label: "Painel", to: "/painel-lojista" }, { label: "Histórico" }]}
+          compact
+        />
+
 
         {loading ? (
           <p className="text-muted-foreground">Carregando…</p>

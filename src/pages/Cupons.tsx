@@ -201,21 +201,20 @@ export default function Cupons() {
       : `R$ ${Number(c.discount_value).toFixed(2)}`;
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/20">
+    <div className="flex min-h-screen flex-col bg-background">
       <Header />
-      <main className="container flex-1 py-10">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <Button asChild variant="ghost" size="sm" className="mb-2 -ml-2">
-              <Link to="/painel-lojista">
-                <ArrowLeft className="h-4 w-4" /> Voltar
-              </Link>
-            </Button>
-            <h1 className="text-display text-foreground">Cupons</h1>
-            <p className="text-muted-foreground">
-              Crie códigos promocionais fixos ou cupons únicos rastreáveis por cliente.
-            </p>
-          </div>
+      <main className="container flex-1 space-y-8 py-8 md:py-10">
+        <PageHero
+          eyebrow="Painel do lojista"
+          title="Cupons"
+          subtitle="Crie códigos promocionais fixos ou cupons únicos rastreáveis por cliente."
+          crumbs={[{ label: "Painel", to: "/painel-lojista" }, { label: "Cupons" }]}
+          compact
+          actions={<span />}
+        />
+        <div className="flex flex-wrap items-end justify-end gap-3">
+          <div className="hidden" />
+
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button variant="accent" disabled={!storeId}>
