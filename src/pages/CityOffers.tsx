@@ -132,7 +132,7 @@ const CityOffers = () => {
           eyebrow={
             <span className="inline-flex items-center gap-1.5">
               <MapPin className="h-3 w-3" /> {cityName}
-            </span> as unknown as string
+            </span>
           }
           title={category ? `${category.name} em ${cityName}` : `Ofertas em ${cityName}`}
           subtitle={

@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react";
 export type Crumb = { label: string; to?: string };
 
 type Props = {
-  eyebrow?: string;
+  eyebrow?: ReactNode;
   title: ReactNode;
   subtitle?: ReactNode;
   crumbs?: Crumb[];
