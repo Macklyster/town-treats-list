@@ -60,7 +60,11 @@ const Index = () => {
       <main>
         <HomeHero />
         <FeaturedCompanies />
+        <div className="container pt-6 md:pt-8">
+          <CategoryChips />
+        </div>
         <OffersOfTheDay offers={offers} loading={loading} />
+
         <DiscoverRow />
         <FlyScoreBar />
         <ReviewsAndGallery />
