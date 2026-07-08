@@ -29,7 +29,10 @@ export type UIOffer = {
   distanceKm?: number;
   isGroup?: boolean;
   groupToken?: string;
+  isAuction?: boolean;
+  auctionToken?: string;
 };
+
 
 
 const FALLBACK_IMG =
