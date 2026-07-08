@@ -98,12 +98,12 @@ html { scroll-padding-top: calc(var(--header-h) + 12px); }
 
     --border: 43 14% 81%;
     --input: 43 14% 81%;
-    --ring: 244 58% 51%;
+    --ring: 262 76% 55%;
 
     --radius: 0.75rem;
 
-    --gradient-hero: linear-gradient(135deg, hsl(244 58% 51%) 0%, hsl(244 49% 42%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(244 58% 51%) 0%, hsl(239 84% 67%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(262 76% 55%) 0%, hsl(262 68% 45%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(262 76% 55%) 0%, hsl(262 90% 68%) 100%);
     --shadow-card: 0 4px 20px -8px hsl(60 4% 6% / 0.08);
     --shadow-soft: 0 2px 10px -4px hsl(60 4% 6% / 0.06);
     --shadow-pop: 0 16px 40px -12px hsl(60 4% 6% / 0.12);
