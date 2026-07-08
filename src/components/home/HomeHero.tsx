@@ -70,13 +70,21 @@ export const HomeHero = () => {
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="relative rounded-2xl overflow-hidden aspect-[16/10] md:aspect-[5/3]"
+            className="relative rounded-2xl overflow-hidden aspect-[16/10] md:aspect-[5/3] bg-[hsl(var(--hero-surface))]"
           >
-            <img
-              src={heroBanner}
-              alt="OfertasFly"
-              className="absolute inset-0 h-full w-full object-contain p-6 md:p-10"
+            {/* Soft placeholder shown until the featured cover loads */}
+            <div
+              className={`absolute inset-0 bg-gradient-to-br from-[hsl(var(--hero-surface))] via-[hsl(var(--primary-deep)/0.35)] to-[hsl(var(--hero-bg))] transition-opacity duration-700 ${imageLoaded ? "opacity-0" : "opacity-100"}`}
+              aria-hidden
             />
+            {featured?.cover_url && (
+              <img
+                src={featured.cover_url}
+                alt={featured.name}
+                onLoad={() => setImageLoaded(true)}
+                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+              />
+            )}
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             {featured && (
