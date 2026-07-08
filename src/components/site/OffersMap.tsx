@@ -124,7 +124,7 @@ export const OffersMap = ({ offers, userLoc }: Props) => {
   }, [groups, userLoc?.lat, userLoc?.lng]);
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border shadow-soft">
+    <div className="offers-map-container isolate z-0 overflow-hidden rounded-2xl border border-border shadow-soft">
       <div ref={containerRef} style={{ height: 360, width: "100%" }} />
     </div>
   );
