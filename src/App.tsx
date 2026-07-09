@@ -12,7 +12,6 @@ import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { ScrollToHash } from "./components/ScrollToHash";
 import { BackToTopButton } from "./components/site/BackToTopButton";
-import { InstallAppBanner } from "./components/site/InstallAppBanner";
 import { ReviewPromptDialog } from "./components/site/ReviewPromptDialog";
 import { PageSkeleton } from "./components/site/PageSkeleton";
 
@@ -272,7 +271,6 @@ const App = () => (
               </Routes>
             </Suspense>
             <BackToTopButton />
-            <InstallAppBanner />
             <ReviewPromptDialog />
           </CityProvider>
         </AuthProvider>

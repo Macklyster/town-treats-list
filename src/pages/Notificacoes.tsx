@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Bell, BellOff, Smartphone, Info } from "lucide-react";
+import { Bell, BellOff, Info } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -34,11 +34,6 @@ export default function Notificacoes() {
   const [prefs, setPrefs] = useState<Prefs>(defaultPrefs);
   const [stores, setStores] = useState<Array<{ id: string; name: string; slug: string }>>([]);
   const [loading, setLoading] = useState(true);
-
-  const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  const isStandalone =
-    window.matchMedia?.("(display-mode: standalone)").matches ||
-    (window.navigator as any).standalone === true;
 
   useEffect(() => {
     if (!user) return;
@@ -114,15 +109,6 @@ export default function Notificacoes() {
                 <AlertTitle>Não suportado</AlertTitle>
                 <AlertDescription>
                   Este navegador não suporta notificações push. Tente Chrome no Android ou Safari no iOS 16.4+.
-                </AlertDescription>
-              </Alert>
-            )}
-            {push.supported && isIos && !isStandalone && (
-              <Alert>
-                <Smartphone className="h-4 w-4" />
-                <AlertTitle>iPhone / iPad</AlertTitle>
-                <AlertDescription>
-                  Para receber notificações no iOS, instale o OfertasFly na tela inicial: toque em <strong>Compartilhar</strong> → <strong>Adicionar à Tela de Início</strong>, depois volte aqui.
                 </AlertDescription>
               </Alert>
             )}

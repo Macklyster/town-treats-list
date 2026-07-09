@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Download, Store } from "lucide-react";
+import { Store } from "lucide-react";
 import logo from "@/assets/ofertasfly-logo-transparente.svg";
 
 export const CTABanner = () => (
@@ -28,13 +28,6 @@ export const CTABanner = () => (
             <Store className="h-4 w-4" />
             Cadastrar empresa
           </Link>
-          <a
-            href="#instalar"
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 text-primary-foreground px-5 py-2.5 text-sm font-semibold hover:bg-white/10 transition"
-          >
-            <Download className="h-4 w-4" />
-            Baixar o app
-          </a>
         </div>
       </div>
     </div>
