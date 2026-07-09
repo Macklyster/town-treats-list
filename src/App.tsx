@@ -13,7 +13,9 @@ import NotFound from "./pages/NotFound.tsx";
 import { ScrollToHash } from "./components/ScrollToHash";
 import { BackToTopButton } from "./components/site/BackToTopButton";
 import { ReviewPromptDialog } from "./components/site/ReviewPromptDialog";
+import { PwaInstallDialog } from "./components/site/PwaInstallDialog";
 import { PageSkeleton } from "./components/site/PageSkeleton";
+
 
 // Lazy-load all secondary/auth-only routes to keep the home bundle small.
 // Wrap dynamic imports so a stale chunk URL (after deploy/HMR) triggers a
@@ -272,6 +274,8 @@ const App = () => (
             </Suspense>
             <BackToTopButton />
             <ReviewPromptDialog />
+            <PwaInstallDialog />
+
           </CityProvider>
         </AuthProvider>
       </BrowserRouter>
