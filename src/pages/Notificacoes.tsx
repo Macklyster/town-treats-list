@@ -35,11 +35,6 @@ export default function Notificacoes() {
   const [stores, setStores] = useState<Array<{ id: string; name: string; slug: string }>>([]);
   const [loading, setLoading] = useState(true);
 
-  const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  const isStandalone =
-    window.matchMedia?.("(display-mode: standalone)").matches ||
-    (window.navigator as any).standalone === true;
-
   useEffect(() => {
     if (!user) return;
     (async () => {
