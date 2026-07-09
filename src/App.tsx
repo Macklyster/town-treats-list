@@ -272,7 +272,6 @@ const App = () => (
               </Routes>
             </Suspense>
             <BackToTopButton />
-            <InstallAppBanner />
             <ReviewPromptDialog />
           </CityProvider>
         </AuthProvider>
