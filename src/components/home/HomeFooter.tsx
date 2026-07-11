@@ -42,7 +42,7 @@ export const HomeFooter = () => (
     <div className="container py-12 md:py-16">
       <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-1">
-          <img src={logo} alt="OfertasFly" className="h-10 w-auto" />
+          <img src={logo} alt="OfertasFly" className="h-14 w-auto" />
           <div className="mt-2 text-xs uppercase tracking-[0.14em] text-white/60">Descubra. Conecte. Valorize.</div>
           <p className="mt-4 text-sm text-white/70 leading-relaxed max-w-xs">
             A plataforma que conecta você ao melhor do comércio local.
