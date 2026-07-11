@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Instagram, Facebook, MessageCircle, Youtube } from "lucide-react";
-import logo from "@/assets/ofertasfly-logo-transparente.svg";
+import logoAsset from "@/assets/logo-dark.png.asset.json";
+const logo = logoAsset.url;
 
 const COLS = [
   {
