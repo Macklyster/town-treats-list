@@ -48,7 +48,7 @@ export const HomeHeader = () => {
 
       <div className="container flex h-16 items-center gap-4 md:h-20">
         <Link to="/" className="flex items-center gap-2 shrink-0" aria-label="OfertasFly">
-          <img src={logo} alt="OfertasFly — Descubra. Conecte. Valorize." className="h-10 w-auto md:h-12" />
+          <img src={logo} alt="OfertasFly — Descubra. Conecte. Valorize." className="h-12 w-auto md:h-14" />
         </Link>
 
         <form onSubmit={submit} className="hidden md:flex flex-1 max-w-xl mx-auto">
