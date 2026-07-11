@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { Store } from "lucide-react";
-import logo from "@/assets/ofertasfly-logo-transparente.svg";
 
 export const CTABanner = () => (
   <section className="container py-8 md:py-12">
