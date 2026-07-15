@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { BadgeCheck, Building2, ChevronLeft, ChevronRight, MapPin, Star, Tag, Users } from "lucide-react";
+import { BadgeCheck, Building2, MapPin, Star, Tag, Users } from "lucide-react";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useCity } from "@/hooks/useCity";
 import { fetchFeaturedCompanies, fetchHomeStats, HomeStats, UICompany } from "@/lib/home-api";
@@ -8,6 +8,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
 
@@ -191,20 +193,8 @@ export const HomeHero = () => {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <button
-                  onClick={() => api?.scrollPrev()}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full border border-white/10 bg-white/5 text-white/80 grid place-items-center hover:bg-white/10 hover:text-white disabled:opacity-30 transition"
-                  aria-label="Anterior"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => api?.scrollNext()}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full border border-white/10 bg-white/5 text-white/80 grid place-items-center hover:bg-white/10 hover:text-white disabled:opacity-30 transition"
-                  aria-label="Próximo"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </button>
+                <CarouselPrevious className="left-3 border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white disabled:opacity-30" />
+                <CarouselNext className="right-3 border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white disabled:opacity-30" />
               </Carousel>
             )}
 
