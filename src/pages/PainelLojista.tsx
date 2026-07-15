@@ -23,7 +23,8 @@ import { fetchActiveGroupOfferForStore, type GroupOffer } from "@/lib/group-offe
 import { fetchActiveAuctionForStore, type AuctionOffer, formatBRL as formatBRLAuc } from "@/lib/auction-api";
 import { fetchActiveGeoOfferForStore, formatTime as formatGeoTime, type GeoOffer } from "@/lib/geo-offer-api";
 import { FlyScoreCard } from "@/components/painel/FlyScoreCard";
-import { Gavel, Package, EyeOff, MapPin, Clock } from "lucide-react";
+import { Gavel, Package, EyeOff, MapPin, Clock, CalendarClock, ExternalLink } from "lucide-react";
+import { fetchStoreEvents, EVENT_KINDS, type UIEventFull } from "@/lib/events-api";
 
 type StoreRow = {
   id: string;
@@ -58,6 +59,7 @@ export default function PainelLojista() {
   const [activeColetiva, setActiveColetiva] = useState<GroupOffer | null>(null);
   const [activeLeilao, setActiveLeilao] = useState<AuctionOffer | null>(null);
   const [activeInvisivel, setActiveInvisivel] = useState<GeoOffer | null>(null);
+  const [events, setEvents] = useState<UIEventFull[]>([]);
   const [loading, setLoading] = useState(true);
   const subInfo = useSubscription(store?.id ?? null);
   const isPlus = !!subInfo.subscription && ["active", "trialing"].includes(subInfo.subscription.status) && subInfo.plan?.slug === "plus";
@@ -138,6 +140,8 @@ export default function PainelLojista() {
       setActiveLeilao(al);
       const ai = await fetchActiveGeoOfferForStore(s.id);
       setActiveInvisivel(ai);
+      const evs = await fetchStoreEvents(s.id);
+      setEvents(evs);
     }
     setLoading(false);
   };
