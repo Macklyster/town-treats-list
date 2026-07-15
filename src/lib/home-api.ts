@@ -80,7 +80,7 @@ export async function fetchFeaturedCompanies(city?: { city: string; state: strin
     category_slug: catMap.get(s.id) ?? null,
     cover_url: s.cover_url ?? FALLBACK_COVER,
     flyscore: scoreMap.get(s.id) ?? null,
-    is_open: true,
+    opening_hours: s.opening_hours ?? null,
   }));
 }
 
