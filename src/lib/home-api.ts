@@ -15,7 +15,7 @@ export type UICompany = {
   approved: boolean;
   cover_url?: string | null;
   flyscore?: number | null;
-  is_open?: boolean;
+  opening_hours?: any;
 };
 
 export type UIEvent = {
@@ -59,7 +59,7 @@ export async function fetchHomeStats(): Promise<HomeStats> {
 export async function fetchFeaturedCompanies(city?: { city: string; state: string } | null): Promise<UICompany[]> {
   let q = supabase
     .from("stores")
-    .select("id,name,slug,logo_url,city,state,latitude,longitude,featured_badge,approved,cover_url")
+    .select("id,name,slug,logo_url,city,state,latitude,longitude,featured_badge,approved,cover_url,opening_hours")
     .eq("approved", true)
     .order("featured_badge", { ascending: false })
     .limit(12);
@@ -80,7 +80,7 @@ export async function fetchFeaturedCompanies(city?: { city: string; state: strin
     category_slug: catMap.get(s.id) ?? null,
     cover_url: s.cover_url ?? FALLBACK_COVER,
     flyscore: scoreMap.get(s.id) ?? null,
-    is_open: true,
+    opening_hours: s.opening_hours ?? null,
   }));
 }
 
@@ -97,7 +97,7 @@ export async function fetchRecommendedCompanies(
 ): Promise<UIRecommendedCompany[]> {
   let q = supabase
     .from("stores")
-    .select("id,name,slug,logo_url,city,state,latitude,longitude,featured_badge,approved,cover_url")
+    .select("id,name,slug,logo_url,city,state,latitude,longitude,featured_badge,approved,cover_url,opening_hours")
     .eq("approved", true)
     .limit(50);
   if (city?.city) q = q.eq("city", city.city);
@@ -106,7 +106,7 @@ export async function fetchRecommendedCompanies(
   if (!list.length && city?.city) {
     const fb = await supabase
       .from("stores")
-      .select("id,name,slug,logo_url,city,state,latitude,longitude,featured_badge,approved,cover_url")
+      .select("id,name,slug,logo_url,city,state,latitude,longitude,featured_badge,approved,cover_url,opening_hours")
       .eq("approved", true)
       .limit(50);
     list = (fb.data ?? []) as any[];
@@ -180,7 +180,7 @@ export async function fetchRecommendedCompanies(
       category_slug: primaryCat.get(s.id) ?? null,
       cover_url: s.cover_url ?? FALLBACK_COVER,
       flyscore: scoreMap.get(s.id) ?? null,
-      is_open: true,
+      opening_hours: s.opening_hours ?? null,
       avg_rating: Number(avg.toFixed(1)),
       review_count: count,
       match_score: match,
