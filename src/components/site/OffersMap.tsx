@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import L from "leaflet";
-import { Link } from "react-router-dom";
 import type { MapPinItem } from "@/lib/map-items";
 import type { LatLng } from "@/lib/geo";
-import { formatDistance } from "@/lib/geo";
 
 // Primary-colored pin (uses design token --primary)
 const primaryPinIcon = L.divIcon({
