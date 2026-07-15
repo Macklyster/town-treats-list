@@ -574,6 +574,102 @@ export default function PainelLojista() {
 
             <SectionCard
               className="md:col-span-3"
+              eyebrow="Agenda"
+              title="Eventos"
+              description="Shows, happy hours, feiras e experiências divulgadas pela sua loja."
+              action={
+                <Button
+                  variant="accent"
+                  size="sm"
+                  onClick={() => navigate("/painel-lojista/evento")}
+                >
+                  <Plus className="h-4 w-4" /> Novo evento
+                </Button>
+              }
+            >
+              {events.length === 0 ? (
+                <p className="text-muted-foreground">Nenhum evento criado ainda.</p>
+              ) : (
+                <div className="overflow-x-auto rounded-2xl border border-border/60">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                      <tr>
+                        <th className="px-3 py-2">Título</th>
+                        <th className="px-3 py-2">Tipo</th>
+                        <th className="px-3 py-2">Início</th>
+                        <th className="px-3 py-2">Status</th>
+                        <th className="px-3 py-2">Views</th>
+                        <th className="px-3 py-2 text-right">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/60">
+                      {events.map((ev) => (
+                        <tr key={ev.id} className="hover:bg-muted/30">
+                          <td className="px-3 py-3 font-medium text-foreground">
+                            <div className="flex items-center gap-2">
+                              <CalendarClock className="h-3.5 w-3.5 text-primary" />
+                              {ev.title}
+                            </div>
+                          </td>
+                          <td className="px-3 py-3 text-xs">
+                            {EVENT_KINDS.find((k) => k.value === ev.kind)?.label ?? ev.kind}
+                          </td>
+                          <td className="px-3 py-3 text-xs text-muted-foreground">
+                            {new Date(ev.starts_at).toLocaleString("pt-BR")}
+                          </td>
+                          <td className="px-3 py-3">
+                            <Badge variant={ev.status === "approved" ? "default" : "secondary"}>
+                              {ev.status}
+                            </Badge>
+                          </td>
+                          <td className="px-3 py-3 text-center">{ev.view_count}</td>
+                          <td className="px-3 py-3 text-right">
+                            <div className="inline-flex gap-1">
+                              {ev.status === "approved" && (
+                                <Button size="sm" variant="ghost" asChild title="Ver público">
+                                  <Link to={`/evento/${ev.slug}`} target="_blank">
+                                    <ExternalLink className="h-3.5 w-3.5" />
+                                  </Link>
+                                </Button>
+                              )}
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                title="Editar"
+                                onClick={() => navigate(`/painel-lojista/evento/${ev.id}`)}
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={async () => {
+                                  if (!confirm("Excluir este evento?")) return;
+                                  const { error } = await supabase
+                                    .from("events" as any)
+                                    .delete()
+                                    .eq("id", ev.id);
+                                  if (error) return toast.error(error.message);
+                                  toast.success("Evento excluído");
+                                  load();
+                                }}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </SectionCard>
+
+
+
+            <SectionCard
+              className="md:col-span-3"
               eyebrow="Catálogo"
               title="Suas ofertas"
               description="Gerencie, edite e acompanhe o desempenho de cada oferta publicada."
