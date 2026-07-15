@@ -191,8 +191,20 @@ export const HomeHero = () => {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="left-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full border border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white disabled:opacity-30" />
-                <CarouselNext className="right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full border border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white disabled:opacity-30" />
+                <button
+                  onClick={() => api?.scrollPrev()}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full border border-white/10 bg-white/5 text-white/80 grid place-items-center hover:bg-white/10 hover:text-white disabled:opacity-30 transition"
+                  aria-label="Anterior"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => api?.scrollNext()}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full border border-white/10 bg-white/5 text-white/80 grid place-items-center hover:bg-white/10 hover:text-white disabled:opacity-30 transition"
+                  aria-label="Próximo"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
               </Carousel>
             )}
 
