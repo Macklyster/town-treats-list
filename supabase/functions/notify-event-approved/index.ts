@@ -63,19 +63,13 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 1) Seguidores da loja
+    // Seguidores da loja (usuários com cidade preferencial não são rastreados server-side)
     const followerIds = new Set<string>();
     if (event.store_id) {
       const { data: followers } = await admin.from("store_followers")
         .select("user_id").eq("store_id", event.store_id);
       (followers ?? []).forEach((f) => followerIds.add(f.user_id));
     }
-
-    // 2) Usuários com cidade selecionada = cidade do evento
-    // Usamos profiles.city como referência
-    const { data: cityProfiles } = await admin.from("profiles")
-      .select("id").eq("city", event.city);
-    (cityProfiles ?? []).forEach((p) => followerIds.add(p.id));
 
     if (followerIds.size === 0) {
       return new Response(JSON.stringify({ ok: true, recipients: 0, success: 0 }), {
