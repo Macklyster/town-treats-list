@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { BadgeCheck, Building2, MapPin, Star, Tag, Users } from "lucide-react";
+import { BadgeCheck, Building2, ChevronLeft, ChevronRight, MapPin, Star, Tag, Users } from "lucide-react";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useCity } from "@/hooks/useCity";
 import { fetchFeaturedCompanies, fetchHomeStats, HomeStats, UICompany } from "@/lib/home-api";
@@ -8,8 +8,6 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
 
