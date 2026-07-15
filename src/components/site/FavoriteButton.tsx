@@ -94,11 +94,15 @@ export function FavoriteButton({ type, id, variant = "button", className, size =
     <Button
       size={size}
       variant={fav ? "outline" : "accentOutline"}
-      className={className}
+      className={cn(
+        fav &&
+          "border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/15 hover:text-destructive",
+        className,
+      )}
       onClick={toggle}
       disabled={busy || fav === null}
     >
-      <Heart className={cn("h-4 w-4", fav && "fill-current text-destructive")} />
+      <Heart className={cn("h-4 w-4", fav && "fill-current")} />
       {fav ? "Favoritada" : type === "offer" ? "Favoritar oferta" : "Favoritar loja"}
     </Button>
   );
