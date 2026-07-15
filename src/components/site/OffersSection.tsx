@@ -121,6 +121,11 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
     [allWithDistance],
   );
 
+  const mapItems = useMemo(
+    () => list.filter((o) => typeof o.storeLat === "number" && typeof o.storeLng === "number").map(offerToMapPin),
+    [list],
+  );
+
   const handleNearby = () => {
     if (userLoc) {
       setParam("ordem", "nearby");
