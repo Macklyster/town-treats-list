@@ -185,6 +185,11 @@ export default function Admin() {
     );
     setCategories((cats ?? []) as any);
     setEventCount(eventCountResult ?? 0);
+    setNotificationCount(notificationCountResult ?? 0);
+    setReviewCount(reviewCountResult ?? 0);
+    setColetivaCount(coletivaCountResult ?? 0);
+    setLeilaoCount(leilaoCountResult ?? 0);
+    setInvisivelCount(invisivelCountResult ?? 0);
     setLoading(false);
   };
 
