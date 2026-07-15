@@ -169,6 +169,7 @@ export default function Admin() {
       }),
     );
     setCategories((cats ?? []) as any);
+    setEventCount(eventCountResult ?? 0);
     setLoading(false);
   };
 
