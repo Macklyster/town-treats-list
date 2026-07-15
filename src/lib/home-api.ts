@@ -97,7 +97,7 @@ export async function fetchRecommendedCompanies(
 ): Promise<UIRecommendedCompany[]> {
   let q = supabase
     .from("stores")
-    .select("id,name,slug,logo_url,city,state,latitude,longitude,featured_badge,approved,cover_url")
+    .select("id,name,slug,logo_url,city,state,latitude,longitude,featured_badge,approved,cover_url,opening_hours")
     .eq("approved", true)
     .limit(50);
   if (city?.city) q = q.eq("city", city.city);
@@ -106,7 +106,7 @@ export async function fetchRecommendedCompanies(
   if (!list.length && city?.city) {
     const fb = await supabase
       .from("stores")
-      .select("id,name,slug,logo_url,city,state,latitude,longitude,featured_badge,approved,cover_url")
+      .select("id,name,slug,logo_url,city,state,latitude,longitude,featured_badge,approved,cover_url,opening_hours")
       .eq("approved", true)
       .limit(50);
     list = (fb.data ?? []) as any[];
