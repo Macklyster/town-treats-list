@@ -17,6 +17,7 @@ export type Database = {
       app_settings: {
         Row: {
           auction_max_active_per_store: number
+          event_max_active_per_store: number
           flash_default_hours: number
           geo_offer_max_active_per_store: number
           group_offer_max_active_per_store: number
@@ -33,6 +34,7 @@ export type Database = {
         }
         Insert: {
           auction_max_active_per_store?: number
+          event_max_active_per_store?: number
           flash_default_hours?: number
           geo_offer_max_active_per_store?: number
           group_offer_max_active_per_store?: number
@@ -49,6 +51,7 @@ export type Database = {
         }
         Update: {
           auction_max_active_per_store?: number
+          event_max_active_per_store?: number
           flash_default_hours?: number
           geo_offer_max_active_per_store?: number
           group_offer_max_active_per_store?: number
@@ -360,43 +363,97 @@ export type Database = {
       }
       events: {
         Row: {
+          address: string | null
+          approved_at: string | null
+          category_slug: string | null
           city: string
+          cover_url: string | null
           created_at: string
+          created_by: string | null
           description: string | null
           ends_at: string
+          featured: boolean
+          gallery: Json
           id: string
           image_url: string | null
           kind: Database["public"]["Enums"]["event_kind"]
+          latitude: number | null
+          link_url: string | null
+          longitude: number | null
+          price_info: string | null
+          rejection_reason: string | null
+          share_token: string
+          slug: string
           starts_at: string
           state: string
+          status: Database["public"]["Enums"]["event_status"]
           store_id: string | null
           title: string
+          updated_at: string
+          venue: string | null
+          view_count: number
         }
         Insert: {
+          address?: string | null
+          approved_at?: string | null
+          category_slug?: string | null
           city: string
+          cover_url?: string | null
           created_at?: string
+          created_by?: string | null
           description?: string | null
           ends_at: string
+          featured?: boolean
+          gallery?: Json
           id?: string
           image_url?: string | null
           kind?: Database["public"]["Enums"]["event_kind"]
+          latitude?: number | null
+          link_url?: string | null
+          longitude?: number | null
+          price_info?: string | null
+          rejection_reason?: string | null
+          share_token?: string
+          slug: string
           starts_at: string
           state: string
+          status?: Database["public"]["Enums"]["event_status"]
           store_id?: string | null
           title: string
+          updated_at?: string
+          venue?: string | null
+          view_count?: number
         }
         Update: {
+          address?: string | null
+          approved_at?: string | null
+          category_slug?: string | null
           city?: string
+          cover_url?: string | null
           created_at?: string
+          created_by?: string | null
           description?: string | null
           ends_at?: string
+          featured?: boolean
+          gallery?: Json
           id?: string
           image_url?: string | null
           kind?: Database["public"]["Enums"]["event_kind"]
+          latitude?: number | null
+          link_url?: string | null
+          longitude?: number | null
+          price_info?: string | null
+          rejection_reason?: string | null
+          share_token?: string
+          slug?: string
           starts_at?: string
           state?: string
+          status?: Database["public"]["Enums"]["event_status"]
           store_id?: string | null
           title?: string
+          updated_at?: string
+          venue?: string | null
+          view_count?: number
         }
         Relationships: [
           {
@@ -717,6 +774,7 @@ export type Database = {
       notification_preferences: {
         Row: {
           city_new_offers: boolean
+          events: boolean
           expiring_favorites: boolean
           marketing: boolean
           new_offers_followed_stores: boolean
@@ -726,6 +784,7 @@ export type Database = {
         }
         Insert: {
           city_new_offers?: boolean
+          events?: boolean
           expiring_favorites?: boolean
           marketing?: boolean
           new_offers_followed_stores?: boolean
@@ -735,6 +794,7 @@ export type Database = {
         }
         Update: {
           city_new_offers?: boolean
+          events?: boolean
           expiring_favorites?: boolean
           marketing?: boolean
           new_offers_followed_stores?: boolean
@@ -1482,6 +1542,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      approve_event: { Args: { p_id: string }; Returns: undefined }
       auction_current_price: {
         Args: { p_offer: Database["public"]["Tables"]["auction_offers"]["Row"] }
         Returns: number
@@ -1495,6 +1556,8 @@ export type Database = {
       }
       claim_unique_coupon: { Args: { p_coupon_id: string }; Returns: Json }
       duplicate_offer: { Args: { p_offer_id: string }; Returns: string }
+      event_by_slug: { Args: { p_slug: string }; Returns: Json }
+      event_track_view: { Args: { p_id: string }; Returns: undefined }
       geo_offer_register_visit: {
         Args: {
           p_lat: number
@@ -1538,6 +1601,10 @@ export type Database = {
       recompute_all_flyscores: { Args: never; Returns: number }
       recompute_flyscore: { Args: { _store_id: string }; Returns: undefined }
       redeem_coupon: { Args: { p_coupon_id: string }; Returns: Json }
+      reject_event: {
+        Args: { p_id: string; p_reason: string }
+        Returns: undefined
+      }
       reserve_auction: { Args: { p_token: string }; Returns: Json }
       store_intelligence: {
         Args: { p_days?: number; p_store_id: string }
@@ -1576,6 +1643,7 @@ export type Database = {
       coupon_kind: "fixed" | "unique"
       discount_type: "percent" | "amount"
       event_kind: "happy_hour" | "show" | "feira" | "evento" | "promocao"
+      event_status: "pending" | "approved" | "rejected" | "expired"
       geo_offer_status: "pending" | "approved" | "expired" | "rejected"
       group_offer_status: "pending" | "approved" | "rejected" | "expired"
       offer_status: "pending" | "approved" | "rejected" | "paused"
@@ -1728,6 +1796,7 @@ export const Constants = {
       coupon_kind: ["fixed", "unique"],
       discount_type: ["percent", "amount"],
       event_kind: ["happy_hour", "show", "feira", "evento", "promocao"],
+      event_status: ["pending", "approved", "rejected", "expired"],
       geo_offer_status: ["pending", "approved", "expired", "rejected"],
       group_offer_status: ["pending", "approved", "rejected", "expired"],
       offer_status: ["pending", "approved", "rejected", "paused"],
