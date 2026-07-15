@@ -1,24 +1,78 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { BadgeCheck, Building2, MapPin, Star, Tag, Users } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useCity } from "@/hooks/useCity";
 import { fetchFeaturedCompanies, fetchHomeStats, HomeStats, UICompany } from "@/lib/home-api";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel";
+
+const MAX_FEATURED = 5;
+const AUTOPLAY_INTERVAL = 5000;
 
 export const HomeHero = () => {
   const { city } = useCity();
   const [stats, setStats] = useState<HomeStats>({ activeCompanies: 0, publishedOffers: 0, connectedUsers: 0, cities: 0 });
-  const [featured, setFeatured] = useState<UICompany | null>(null);
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [featured, setFeatured] = useState<UICompany[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+  const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     fetchHomeStats().then(setStats);
   }, []);
 
   useEffect(() => {
-    fetchFeaturedCompanies(city ?? undefined).then((list) => setFeatured(list[0] ?? null));
+    setLoading(true);
+    fetchFeaturedCompanies(city ?? undefined).then((list) => {
+      const badgeFirst = list
+        .filter((c) => c.featured_badge && c.cover_url)
+        .slice(0, MAX_FEATURED);
+      setFeatured(badgeFirst.length >= 2 ? badgeFirst : list.slice(0, MAX_FEATURED));
+      setLoading(false);
+    });
   }, [city?.city, city?.state]);
 
+  useEffect(() => {
+    if (!api) return;
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap());
+    api.on("select", () => setCurrent(api.selectedScrollSnap()));
+  }, [api]);
+
+  const startAutoplay = useCallback(() => {
+    if (autoplayRef.current) clearInterval(autoplayRef.current);
+    autoplayRef.current = setInterval(() => {
+      api?.scrollNext();
+    }, AUTOPLAY_INTERVAL);
+  }, [api]);
+
+  const stopAutoplay = useCallback(() => {
+    if (autoplayRef.current) {
+      clearInterval(autoplayRef.current);
+      autoplayRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!api || count < 2) return;
+    if (!isPaused) startAutoplay();
+    return () => stopAutoplay();
+  }, [api, count, isPaused, startAutoplay, stopAutoplay]);
+
+  const handleImageLoad = (id: string) => {
+    setLoadedImages((prev) => new Set(prev).add(id));
+  };
 
   const cityLabel = city ? `${city.city} - ${city.state}` : "Selecione sua cidade";
   const metrics = [
@@ -27,6 +81,58 @@ export const HomeHero = () => {
     { icon: Users, value: `+${Math.max(stats.connectedUsers, 1).toLocaleString("pt-BR")}`, label: "Usuários conectados" },
     { icon: MapPin, value: `${stats.cities || 1} cidade${stats.cities === 1 ? "" : "s"}`, label: cityLabel },
   ];
+
+  const renderSlideContent = (company: UICompany) => {
+    const isLoaded = loadedImages.has(company.id);
+    return (
+      <div className="relative h-full w-full overflow-hidden rounded-2xl bg-[hsl(var(--hero-surface))]">
+        <div
+          className={`absolute inset-0 bg-gradient-to-br from-[hsl(var(--hero-surface))] via-[hsl(var(--primary-deep)/0.35)] to-[hsl(var(--hero-bg))] transition-opacity duration-700 ${isLoaded ? "opacity-0" : "opacity-100"}`}
+          aria-hidden
+        />
+        {company.cover_url && (
+          <img
+            src={company.cover_url}
+            alt={company.name}
+            onLoad={() => handleImageLoad(company.id)}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${isLoaded ? "opacity-100" : "opacity-0"}`}
+          />
+        )}
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        <Link
+          to={company.slug ? `/loja/${company.slug}` : "#"}
+          className="absolute bottom-4 left-4 right-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 p-3 flex items-center gap-3 hover:bg-white/15 transition"
+        >
+          {company.logo_url ? (
+            <img src={company.logo_url} alt={company.name} className="h-11 w-11 shrink-0 rounded-full object-cover" />
+          ) : (
+            <div className="h-11 w-11 shrink-0 rounded-full bg-gradient-to-br from-primary to-primary-deep grid place-items-center text-white font-bold">
+              {company.name.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1 text-white">
+              <span className="text-sm font-semibold truncate">{company.name}</span>
+              {company.featured_badge && <BadgeCheck className="h-4 w-4 text-primary-mid shrink-0" />}
+            </div>
+            <div className="flex items-center gap-1 text-xs text-white/80">
+              {company.flyscore != null ? (
+                <>
+                  <div className="flex items-center gap-0.5">
+                    <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                  </div>
+                  <span className="font-medium">FlyScore {Math.round(company.flyscore)}</span>
+                </>
+              ) : (
+                <span>{company.city}{company.state ? ` · ${company.state}` : ""}</span>
+              )}
+            </div>
+          </div>
+        </Link>
+      </div>
+    );
+  };
 
   return (
     <section className="container pt-4 md:pt-6">
@@ -65,66 +171,53 @@ export const HomeHero = () => {
             </div>
           </div>
 
-          {/* Center — showcase image + peek card */}
+          {/* Center — showcase carousel */}
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="relative rounded-2xl overflow-hidden aspect-[16/10] md:aspect-[5/3] bg-[hsl(var(--hero-surface))]"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
           >
-            {/* Soft placeholder shown until the featured cover loads */}
-            <div
-              className={`absolute inset-0 bg-gradient-to-br from-[hsl(var(--hero-surface))] via-[hsl(var(--primary-deep)/0.35)] to-[hsl(var(--hero-bg))] transition-opacity duration-700 ${imageLoaded ? "opacity-0" : "opacity-100"}`}
-              aria-hidden
-            />
-            {featured?.cover_url && (
-              <img
-                src={featured.cover_url}
-                alt={featured.name}
-                onLoad={() => setImageLoaded(true)}
-                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-              />
+            {loading || featured.length === 0 ? (
+              <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--hero-surface))] via-[hsl(var(--primary-deep)/0.35)] to-[hsl(var(--hero-bg))]" aria-hidden />
+            ) : featured.length === 1 ? (
+              renderSlideContent(featured[0])
+            ) : (
+              <Carousel setApi={setApi} opts={{ loop: true }} className="h-full w-full">
+                <CarouselContent className="h-full ml-0">
+                  {featured.map((company) => (
+                    <CarouselItem key={company.id} className="pl-0 h-full basis-full">
+                      {renderSlideContent(company)}
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-3 top-1/2 -translate-y-1/2 h-9 w-9 bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white disabled:opacity-30" />
+                <CarouselNext className="right-3 top-1/2 -translate-y-1/2 h-9 w-9 bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white disabled:opacity-30" />
+              </Carousel>
             )}
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            {featured && (
-              <Link
-                to={featured.slug ? `/loja/${featured.slug}` : "#"}
-                className="absolute bottom-4 left-4 right-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 p-3 flex items-center gap-3 hover:bg-white/15 transition"
-              >
-                {featured.logo_url ? (
-                  <img src={featured.logo_url} alt={featured.name} className="h-11 w-11 shrink-0 rounded-full object-cover" />
-                ) : (
-                  <div className="h-11 w-11 shrink-0 rounded-full bg-gradient-to-br from-primary to-primary-deep grid place-items-center text-white font-bold">
-                    {featured.name.charAt(0).toUpperCase()}
-                  </div>
-                )}
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1 text-white">
-                    <span className="text-sm font-semibold truncate">{featured.name}</span>
-                    {featured.featured_badge && <BadgeCheck className="h-4 w-4 text-primary-mid" />}
-                  </div>
-                  <div className="flex items-center gap-1 text-xs text-white/80">
-                    {featured.flyscore != null ? (
-                      <>
-                        <div className="flex items-center gap-0.5">
-                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                        </div>
-                        <span className="font-medium">FlyScore {Math.round(featured.flyscore)}</span>
-                      </>
-                    ) : (
-                      <span>{featured.city}{featured.state ? ` · ${featured.state}` : ""}</span>
-                    )}
-                  </div>
-                </div>
-              </Link>
+            {/* Dots */}
+            {!loading && featured.length > 1 && (
+              <div className="absolute bottom-20 left-0 right-0 z-10 flex justify-center gap-2">
+                {Array.from({ length: count }).map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => api?.scrollTo(i)}
+                    className={`h-2 rounded-full transition-all ${
+                      current === i ? "w-6 bg-white" : "w-2 bg-white/50 hover:bg-white/75"
+                    }`}
+                    aria-label={`Ir para slide ${i + 1}`}
+                  />
+                ))}
+              </div>
             )}
           </motion.div>
 
           {/* Right — metrics card */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
-
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/10 p-5"
