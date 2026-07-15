@@ -120,7 +120,13 @@ export default function Admin() {
 
   const load = async () => {
     setLoading(true);
-    const [{ data: offs }, { data: sts }, { data: cats }, { data: subs }] = await Promise.all([
+    const [
+      { data: offs },
+      { data: sts },
+      { data: cats },
+      { data: subs },
+      { count: eventCountResult },
+    ] = await Promise.all([
       supabase
         .from("offers")
         .select("id,title,status,featured,is_flash,flash_ends_at,flash_duration_hours, store:stores(name)")
@@ -134,6 +140,7 @@ export default function Admin() {
         .from("subscriptions")
         .select("store_id,status,plan:plans(slug,name,sort_order)")
         .order("created_at", { ascending: false }),
+      supabase.from("events" as any).select("*", { count: "exact", head: true }),
     ]);
     const subsByStore = new Map<string, { plan_slug: string | null; plan_name: string | null; status: string }>();
     (subs ?? []).forEach((row: any) => {
