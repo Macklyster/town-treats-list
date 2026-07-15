@@ -299,11 +299,11 @@ export default function Admin() {
             <TabsTrigger value="offers">Ofertas ({offers.length})</TabsTrigger>
             <TabsTrigger value="stores">Lojas ({stores.length})</TabsTrigger>
             <TabsTrigger value="categories">Categorias ({categories.length})</TabsTrigger>
-            <TabsTrigger value="notifications">Notificações</TabsTrigger>
-            <TabsTrigger value="reviews">Avaliações</TabsTrigger>
-            <TabsTrigger value="coletivas">Coletivas</TabsTrigger>
-            <TabsTrigger value="leiloes">Leilões</TabsTrigger>
-            <TabsTrigger value="invisiveis">Invisíveis</TabsTrigger>
+            <TabsTrigger value="notifications">Notificações ({notificationCount})</TabsTrigger>
+            <TabsTrigger value="reviews">Avaliações ({reviewCount})</TabsTrigger>
+            <TabsTrigger value="coletivas">Coletivas ({coletivaCount})</TabsTrigger>
+            <TabsTrigger value="leiloes">Leilões ({leilaoCount})</TabsTrigger>
+            <TabsTrigger value="invisiveis">Invisíveis ({invisivelCount})</TabsTrigger>
             <TabsTrigger value="eventos">Eventos ({eventCount})</TabsTrigger>
             <TabsTrigger value="media">Mídia</TabsTrigger>
             <TabsTrigger value="settings">Configurações</TabsTrigger>
