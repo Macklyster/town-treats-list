@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { OffersMap } from "@/components/site/OffersMap";
+import { offerToMapPin } from "@/lib/map-items";
 import { MapPin, X, Map as MapIcon } from "lucide-react";
 import { fetchOfferSocialProof, SocialProof } from "@/lib/social-proof";
 
