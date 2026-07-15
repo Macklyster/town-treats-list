@@ -20,7 +20,7 @@ function minutes(t: string): number {
   return (h || 0) * 60 + (m || 0);
 }
 
-function isOpenNow(hours: OpeningHours, now = new Date()): { open: boolean; nextRange?: { day: DayKey; open: string } } {
+export function isOpenNow(hours: OpeningHours, now = new Date()): { open: boolean; nextRange?: { day: DayKey; open: string } } {
   const today = JS_DAY_TO_KEY[now.getDay()];
   const nowMin = now.getHours() * 60 + now.getMinutes();
   const d = hours[today];
