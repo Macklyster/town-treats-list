@@ -439,6 +439,11 @@ export default function EventoForm() {
                   placeholder="Rua, número, bairro"
                 />
               </div>
+              <LocationPicker
+                value={coords}
+                onChange={setCoords}
+                addressQuery={form.address || form.venue}
+              />
               <div className="grid gap-2">
                 <Label htmlFor="link_url">Link (ingressos, Instagram, site)</Label>
                 <Input
