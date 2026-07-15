@@ -94,6 +94,7 @@ export default function Admin() {
   const [offers, setOffers] = useState<AdminOffer[]>([]);
   const [stores, setStores] = useState<AdminStore[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [eventCount, setEventCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedOffers, setSelectedOffers] = useState<string[]>([]);
 
