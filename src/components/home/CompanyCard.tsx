@@ -4,6 +4,8 @@ import type { UICompany } from "@/lib/home-api";
 import { useUserLocation } from "@/hooks/useUserLocation";
 import { haversineKm, formatDistance } from "@/lib/geo";
 import { categories } from "@/data/categories";
+import { hasOpeningHours, isOpenNow } from "@/components/site/OpeningHoursDisplay";
+import { normalizeOpeningHours } from "@/components/site/OpeningHoursEditor";
 
 const catName = (slug?: string | null) => categories.find((c) => c.slug === slug)?.name ?? slug ?? "";
 
@@ -15,6 +17,9 @@ export const CompanyCard = ({ company }: { company: UICompany }) => {
       : null;
   const score = company.flyscore ?? Math.round(90 + (company.name.length % 10));
   const rating = 4.5 + ((company.name.length % 5) * 0.1);
+
+  const hasHours = hasOpeningHours(company.opening_hours);
+  const openStatus = hasHours ? isOpenNow(normalizeOpeningHours(company.opening_hours)) : null;
 
   return (
     <Link
@@ -28,11 +33,24 @@ export const CompanyCard = ({ company }: { company: UICompany }) => {
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
-        <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-[hsl(var(--open-bg))] px-2.5 py-1 text-[11px] font-semibold text-[hsl(var(--open))]">
-          <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--open))]" />
-          Aberto agora
-        </span>
+        {openStatus && (
+          <span
+            className={`absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+              openStatus.open
+                ? "bg-[hsl(var(--open-bg))] text-[hsl(var(--open))]"
+                : "bg-muted text-muted-foreground"
+            }`}
+          >
+            <span
+              className={`h-1.5 w-1.5 rounded-full ${
+                openStatus.open ? "bg-[hsl(var(--open))]" : "bg-muted-foreground/60"
+              }`}
+            />
+            {openStatus.open ? "Aberto agora" : "Fechado agora"}
+          </span>
+        )}
       </div>
+
 
       <div className="p-4">
         <div className="relative z-10 flex items-start gap-3">
