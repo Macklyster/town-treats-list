@@ -79,7 +79,7 @@ export function FavoriteButton({ type, id, variant = "button", className, size =
         className={cn(
           "grid h-9 w-9 place-items-center rounded-full border shadow-soft transition backdrop-blur",
           fav
-            ? "border-destructive/40 bg-destructive/10 text-destructive"
+            ? "border-destructive bg-destructive text-white"
             : "border-border/60 bg-background/85 text-foreground hover:border-destructive/50 hover:text-destructive",
           className,
         )}
@@ -96,7 +96,7 @@ export function FavoriteButton({ type, id, variant = "button", className, size =
       variant={fav ? "outline" : "accentOutline"}
       className={cn(
         fav &&
-          "border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/15 hover:text-destructive",
+          "border-destructive bg-destructive text-white hover:bg-destructive/90 hover:text-white",
         className,
       )}
       onClick={toggle}
