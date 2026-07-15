@@ -96,7 +96,7 @@ export function FavoriteButton({ type, id, variant = "button", className, size =
       variant={fav ? "outline" : "accentOutline"}
       className={cn(
         fav &&
-          "border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/15 hover:text-destructive",
+          "border-destructive bg-destructive text-white hover:bg-destructive/90 hover:text-white",
         className,
       )}
       onClick={toggle}
