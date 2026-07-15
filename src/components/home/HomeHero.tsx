@@ -193,8 +193,8 @@ export const HomeHero = () => {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="left-3 border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white disabled:opacity-30" />
-                <CarouselNext className="right-3 border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white disabled:opacity-30" />
+                <CarouselPrevious className="left-3 border-transparent bg-transparent text-white/80 hover:bg-transparent hover:border-transparent hover:text-white disabled:opacity-30" />
+                <CarouselNext className="right-3 border-transparent bg-transparent text-white/80 hover:bg-transparent hover:border-transparent hover:text-white disabled:opacity-30" />
               </Carousel>
             )}
 
