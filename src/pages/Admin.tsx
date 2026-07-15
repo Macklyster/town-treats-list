@@ -131,6 +131,11 @@ export default function Admin() {
       { data: cats },
       { data: subs },
       { count: eventCountResult },
+      { count: notificationCountResult },
+      { count: reviewCountResult },
+      { count: coletivaCountResult },
+      { count: leilaoCountResult },
+      { count: invisivelCountResult },
     ] = await Promise.all([
       supabase
         .from("offers")
@@ -146,6 +151,11 @@ export default function Admin() {
         .select("store_id,status,plan:plans(slug,name,sort_order)")
         .order("created_at", { ascending: false }),
       supabase.from("events" as any).select("*", { count: "exact", head: true }),
+      supabase.from("notifications_log" as any).select("*", { count: "exact", head: true }),
+      supabase.from("offer_reviews" as any).select("*", { count: "exact", head: true }),
+      supabase.from("group_offers" as any).select("*", { count: "exact", head: true }),
+      supabase.from("auction_offers" as any).select("*", { count: "exact", head: true }),
+      supabase.from("geo_offers" as any).select("*", { count: "exact", head: true }),
     ]);
     const subsByStore = new Map<string, { plan_slug: string | null; plan_name: string | null; status: string }>();
     (subs ?? []).forEach((row: any) => {
