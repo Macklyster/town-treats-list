@@ -95,6 +95,11 @@ export default function Admin() {
   const [stores, setStores] = useState<AdminStore[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [eventCount, setEventCount] = useState(0);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
+  const [coletivaCount, setColetivaCount] = useState(0);
+  const [leilaoCount, setLeilaoCount] = useState(0);
+  const [invisivelCount, setInvisivelCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedOffers, setSelectedOffers] = useState<string[]>([]);
 
@@ -126,6 +131,11 @@ export default function Admin() {
       { data: cats },
       { data: subs },
       { count: eventCountResult },
+      { count: notificationCountResult },
+      { count: reviewCountResult },
+      { count: coletivaCountResult },
+      { count: leilaoCountResult },
+      { count: invisivelCountResult },
     ] = await Promise.all([
       supabase
         .from("offers")
@@ -141,6 +151,11 @@ export default function Admin() {
         .select("store_id,status,plan:plans(slug,name,sort_order)")
         .order("created_at", { ascending: false }),
       supabase.from("events" as any).select("*", { count: "exact", head: true }),
+      supabase.from("notifications_log" as any).select("*", { count: "exact", head: true }),
+      supabase.from("offer_reviews" as any).select("*", { count: "exact", head: true }),
+      supabase.from("group_offers" as any).select("*", { count: "exact", head: true }),
+      supabase.from("auction_offers" as any).select("*", { count: "exact", head: true }),
+      supabase.from("geo_offers" as any).select("*", { count: "exact", head: true }),
     ]);
     const subsByStore = new Map<string, { plan_slug: string | null; plan_name: string | null; status: string }>();
     (subs ?? []).forEach((row: any) => {
@@ -170,6 +185,11 @@ export default function Admin() {
     );
     setCategories((cats ?? []) as any);
     setEventCount(eventCountResult ?? 0);
+    setNotificationCount(notificationCountResult ?? 0);
+    setReviewCount(reviewCountResult ?? 0);
+    setColetivaCount(coletivaCountResult ?? 0);
+    setLeilaoCount(leilaoCountResult ?? 0);
+    setInvisivelCount(invisivelCountResult ?? 0);
     setLoading(false);
   };
 
@@ -279,11 +299,11 @@ export default function Admin() {
             <TabsTrigger value="offers">Ofertas ({offers.length})</TabsTrigger>
             <TabsTrigger value="stores">Lojas ({stores.length})</TabsTrigger>
             <TabsTrigger value="categories">Categorias ({categories.length})</TabsTrigger>
-            <TabsTrigger value="notifications">Notificações</TabsTrigger>
-            <TabsTrigger value="reviews">Avaliações</TabsTrigger>
-            <TabsTrigger value="coletivas">Coletivas</TabsTrigger>
-            <TabsTrigger value="leiloes">Leilões</TabsTrigger>
-            <TabsTrigger value="invisiveis">Invisíveis</TabsTrigger>
+            <TabsTrigger value="notifications">Notificações ({notificationCount})</TabsTrigger>
+            <TabsTrigger value="reviews">Avaliações ({reviewCount})</TabsTrigger>
+            <TabsTrigger value="coletivas">Coletivas ({coletivaCount})</TabsTrigger>
+            <TabsTrigger value="leiloes">Leilões ({leilaoCount})</TabsTrigger>
+            <TabsTrigger value="invisiveis">Invisíveis ({invisivelCount})</TabsTrigger>
             <TabsTrigger value="eventos">Eventos ({eventCount})</TabsTrigger>
             <TabsTrigger value="media">Mídia</TabsTrigger>
             <TabsTrigger value="settings">Configurações</TabsTrigger>
