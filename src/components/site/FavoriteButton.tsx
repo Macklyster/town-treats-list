@@ -79,7 +79,7 @@ export function FavoriteButton({ type, id, variant = "button", className, size =
         className={cn(
           "grid h-9 w-9 place-items-center rounded-full border shadow-soft transition backdrop-blur",
           fav
-            ? "border-destructive/40 bg-destructive/10 text-destructive"
+            ? "border-destructive bg-destructive text-white"
             : "border-border/60 bg-background/85 text-foreground hover:border-destructive/50 hover:text-destructive",
           className,
         )}
