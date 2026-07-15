@@ -180,7 +180,7 @@ export async function fetchRecommendedCompanies(
       category_slug: primaryCat.get(s.id) ?? null,
       cover_url: s.cover_url ?? FALLBACK_COVER,
       flyscore: scoreMap.get(s.id) ?? null,
-      is_open: true,
+      opening_hours: s.opening_hours ?? null,
       avg_rating: Number(avg.toFixed(1)),
       review_count: count,
       match_score: match,
