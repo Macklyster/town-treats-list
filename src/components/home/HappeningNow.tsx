@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Calendar, Flame, Music, PartyPopper, Store, Tag } from "lucide-react";
+import { ArrowRight, Calendar, Flame, Music, PartyPopper, Store, Tag } from "lucide-react";
 import { fetchHappeningNow, fetchUpcomingEvents, UIEvent } from "@/lib/home-api";
 import { useCity } from "@/hooks/useCity";
 import { SectionHeading } from "./SectionHeading";
