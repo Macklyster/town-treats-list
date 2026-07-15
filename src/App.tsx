@@ -66,6 +66,9 @@ const MeusCupons = lazyWithReload(() => import("./pages/MeusCupons.tsx"));
 const MeuCupomDetalhe = lazyWithReload(() => import("./pages/MeuCupomDetalhe.tsx"));
 const Favoritos = lazyWithReload(() => import("./pages/Favoritos.tsx"));
 const Biblioteca = lazyWithReload(() => import("./pages/Biblioteca.tsx"));
+const Eventos = lazyWithReload(() => import("./pages/Eventos.tsx"));
+const EventoPublic = lazyWithReload(() => import("./pages/EventoPublic.tsx"));
+const EventoForm = lazyWithReload(() => import("./pages/EventoForm.tsx"));
 
 const OfertasRedirect = () => {
   const { search } = useLocation();
@@ -138,6 +141,8 @@ const App = () => (
                 <Route path="/leiloes" element={<Leiloes />} />
                 <Route path="/oferta-invisivel/:token" element={<OfertaInvisivelPublic />} />
                 <Route path="/ofertas-invisiveis" element={<OfertasInvisiveis />} />
+                <Route path="/eventos" element={<Eventos />} />
+                <Route path="/evento/:slug" element={<EventoPublic />} />
                 <Route path="/anuncie" element={<Anuncie />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route
@@ -217,6 +222,14 @@ const App = () => (
                   element={
                     <ProtectedRoute requireRole="lojista">
                       <OfertaInvisivelForm />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/painel-lojista/evento/:id?"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <EventoForm />
                     </ProtectedRoute>
                   }
                 />
