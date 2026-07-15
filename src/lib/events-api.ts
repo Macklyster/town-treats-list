@@ -140,7 +140,11 @@ export async function fetchEventBySlug(slug: string): Promise<UIEventWithStore |
 }
 
 export async function trackEventView(id: string) {
-  await supabase.rpc("event_track_view" as any, { p_id: id }).catch(() => {});
+  try {
+    await supabase.rpc("event_track_view" as any, { p_id: id });
+  } catch {
+    // ignore
+  }
 }
 
 export async function fetchStoreEvents(storeId: string): Promise<UIEventFull[]> {
