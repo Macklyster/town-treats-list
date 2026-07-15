@@ -59,7 +59,7 @@ export async function fetchHomeStats(): Promise<HomeStats> {
 export async function fetchFeaturedCompanies(city?: { city: string; state: string } | null): Promise<UICompany[]> {
   let q = supabase
     .from("stores")
-    .select("id,name,slug,logo_url,city,state,latitude,longitude,featured_badge,approved,cover_url")
+    .select("id,name,slug,logo_url,city,state,latitude,longitude,featured_badge,approved,cover_url,opening_hours")
     .eq("approved", true)
     .order("featured_badge", { ascending: false })
     .limit(12);
