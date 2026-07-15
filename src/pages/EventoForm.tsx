@@ -84,6 +84,8 @@ export default function EventoForm() {
     starts_at: "",
     ends_at: "",
   });
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+
 
   useEffect(() => {
     (async () => {
