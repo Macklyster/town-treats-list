@@ -262,7 +262,7 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
 
           {showMap && hasMappable && (
             <div className="mb-6">
-              <OffersMap offers={list} userLoc={userLoc} />
+              <OffersMap items={mapItems} userLoc={userLoc} />
             </div>
           )}
 
