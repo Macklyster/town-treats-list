@@ -18,6 +18,7 @@ type Prefs = {
   new_offers_followed_stores: boolean;
   expiring_favorites: boolean;
   city_new_offers: boolean;
+  events: boolean;
   marketing: boolean;
 };
 
@@ -25,6 +26,7 @@ const defaultPrefs: Prefs = {
   new_offers_followed_stores: true,
   expiring_favorites: true,
   city_new_offers: false,
+  events: true,
   marketing: false,
 };
 
@@ -46,6 +48,7 @@ export default function Notificacoes() {
         new_offers_followed_stores: p.new_offers_followed_stores,
         expiring_favorites: p.expiring_favorites,
         city_new_offers: p.city_new_offers,
+        events: (p as any).events ?? true,
         marketing: p.marketing,
       });
       setStores(((f ?? []).map((x: any) => x.store).filter(Boolean)));
@@ -140,6 +143,7 @@ export default function Notificacoes() {
               ["new_offers_followed_stores", "Novas ofertas das lojas que sigo"],
               ["expiring_favorites", "Favoritos prestes a expirar"],
               ["city_new_offers", "Ofertas novas na minha cidade"],
+              ["events", "Eventos e experiências das lojas que sigo"],
               ["marketing", "Novidades e promoções do OfertasFly"],
             ].map(([key, label]) => (
               <div key={key} className="flex items-center justify-between">
