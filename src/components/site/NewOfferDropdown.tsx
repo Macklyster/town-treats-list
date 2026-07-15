@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Tag, Zap, Users, ChevronDown, Lock, Gavel, EyeOff } from "lucide-react";
+import { Plus, Tag, Zap, Users, ChevronDown, Lock, Gavel, EyeOff, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -125,6 +125,16 @@ export const NewOfferDropdown = ({ isPlus, hasActiveColetiva, hasActiveLeilao, h
             </span>
             <span className="text-xs text-muted-foreground">
               {hasActiveInvisivel ? "Você já tem uma ativa" : "Só aparece quando o cliente está perto"}
+            </span>
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => navigate("/painel-lojista/evento")}>
+          <CalendarClock className="mr-2 h-4 w-4 text-primary" />
+          <div className="flex flex-1 flex-col">
+            <span className="font-medium">Evento</span>
+            <span className="text-xs text-muted-foreground">
+              Show, happy hour, feira ou experiência (Destaque/Plus)
             </span>
           </div>
         </DropdownMenuItem>
