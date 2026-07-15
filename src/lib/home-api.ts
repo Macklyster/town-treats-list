@@ -15,7 +15,7 @@ export type UICompany = {
   approved: boolean;
   cover_url?: string | null;
   flyscore?: number | null;
-  is_open?: boolean;
+  opening_hours?: any;
 };
 
 export type UIEvent = {
