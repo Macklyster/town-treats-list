@@ -94,6 +94,7 @@ export default function Admin() {
   const [offers, setOffers] = useState<AdminOffer[]>([]);
   const [stores, setStores] = useState<AdminStore[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [eventCount, setEventCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedOffers, setSelectedOffers] = useState<string[]>([]);
 
@@ -119,7 +120,13 @@ export default function Admin() {
 
   const load = async () => {
     setLoading(true);
-    const [{ data: offs }, { data: sts }, { data: cats }, { data: subs }] = await Promise.all([
+    const [
+      { data: offs },
+      { data: sts },
+      { data: cats },
+      { data: subs },
+      { count: eventCountResult },
+    ] = await Promise.all([
       supabase
         .from("offers")
         .select("id,title,status,featured,is_flash,flash_ends_at,flash_duration_hours, store:stores(name)")
@@ -133,6 +140,7 @@ export default function Admin() {
         .from("subscriptions")
         .select("store_id,status,plan:plans(slug,name,sort_order)")
         .order("created_at", { ascending: false }),
+      supabase.from("events" as any).select("*", { count: "exact", head: true }),
     ]);
     const subsByStore = new Map<string, { plan_slug: string | null; plan_name: string | null; status: string }>();
     (subs ?? []).forEach((row: any) => {
@@ -161,6 +169,7 @@ export default function Admin() {
       }),
     );
     setCategories((cats ?? []) as any);
+    setEventCount(eventCountResult ?? 0);
     setLoading(false);
   };
 
@@ -275,7 +284,7 @@ export default function Admin() {
             <TabsTrigger value="coletivas">Coletivas</TabsTrigger>
             <TabsTrigger value="leiloes">Leilões</TabsTrigger>
             <TabsTrigger value="invisiveis">Invisíveis</TabsTrigger>
-            <TabsTrigger value="eventos">Eventos</TabsTrigger>
+            <TabsTrigger value="eventos">Eventos ({eventCount})</TabsTrigger>
             <TabsTrigger value="media">Mídia</TabsTrigger>
             <TabsTrigger value="settings">Configurações</TabsTrigger>
           </TabsList>
