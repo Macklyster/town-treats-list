@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { OffersMap } from "@/components/site/OffersMap";
+import { offerToMapPin } from "@/lib/map-items";
 import { MapPin, X, Map as MapIcon } from "lucide-react";
 import { fetchOfferSocialProof, SocialProof } from "@/lib/social-proof";
 
@@ -118,6 +119,11 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
   const hasMappable = useMemo(
     () => allWithDistance.some((o) => typeof o.storeLat === "number" && typeof o.storeLng === "number"),
     [allWithDistance],
+  );
+
+  const mapItems = useMemo(
+    () => list.filter((o) => typeof o.storeLat === "number" && typeof o.storeLng === "number").map(offerToMapPin),
+    [list],
   );
 
   const handleNearby = () => {
@@ -256,7 +262,7 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
 
           {showMap && hasMappable && (
             <div className="mb-6">
-              <OffersMap offers={list} userLoc={userLoc} />
+              <OffersMap items={mapItems} userLoc={userLoc} />
             </div>
           )}
 

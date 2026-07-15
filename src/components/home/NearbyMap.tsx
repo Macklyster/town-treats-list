@@ -4,25 +4,34 @@ import { MapPin } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { useCity } from "@/hooks/useCity";
 import { useUserLocation } from "@/hooks/useUserLocation";
-import { fetchOffers, UIOffer } from "@/lib/offers-api";
+import { fetchOffers } from "@/lib/offers-api";
 import { fetchActiveGroupOffersAsUIOffers } from "@/lib/group-offers-api";
 import { fetchActiveAuctionsAsUIOffers } from "@/lib/auction-api";
+import { fetchPublicEvents } from "@/lib/events-api";
+import { offerToMapPin, eventToMapPin, type MapPinItem } from "@/lib/map-items";
 
 const OffersMap = lazy(() => import("@/components/site/OffersMap").then((m) => ({ default: m.OffersMap })));
 
 export const NearbyMap = () => {
   const { city } = useCity();
   const { loc } = useUserLocation();
-  const [offers, setOffers] = useState<UIOffer[]>([]);
+  const [items, setItems] = useState<MapPinItem[]>([]);
 
   useEffect(() => {
     Promise.all([
       fetchOffers(city ?? undefined),
       fetchActiveGroupOffersAsUIOffers(city ?? undefined),
       fetchActiveAuctionsAsUIOffers(city ?? undefined),
-    ]).then(([base, group, auctions]) => {
-      const all = [...base, ...group, ...auctions].filter((x) => x.storeLat && x.storeLng);
-      setOffers(all.slice(0, 80));
+      fetchPublicEvents({ city: city?.city ?? null, state: city?.state ?? null, limit: 40 }),
+    ]).then(([base, group, auctions, events]) => {
+      const offerItems = [...base, ...group, ...auctions]
+        .filter((x) => x.storeLat && x.storeLng)
+        .map(offerToMapPin);
+      const eventItems = events
+        .filter((e) => e.latitude && e.longitude)
+        .map(eventToMapPin);
+      const all = [...offerItems, ...eventItems];
+      setItems(all.slice(0, 80));
     });
   }, [city?.city, city?.state]);
 
@@ -34,9 +43,9 @@ export const NearbyMap = () => {
         description="Explore empresas incríveis próximas de você."
       />
       <div className="relative isolate z-0 rounded-2xl overflow-hidden bg-card border border-border shadow-soft h-[320px]">
-        {offers.length ? (
+        {items.length ? (
           <Suspense fallback={<div className="h-full w-full grid place-items-center text-muted-foreground text-sm">Carregando mapa…</div>}>
-            <OffersMap offers={offers} userLoc={loc} />
+            <OffersMap items={items} userLoc={loc} />
           </Suspense>
         ) : (
           <div className="h-full w-full grid place-items-center text-muted-foreground text-sm">
