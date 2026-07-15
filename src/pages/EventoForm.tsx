@@ -118,6 +118,9 @@ export default function EventoForm() {
             starts_at: existing.starts_at.slice(0, 16),
             ends_at: existing.ends_at.slice(0, 16),
           });
+          if (existing.latitude != null && existing.longitude != null) {
+            setCoords({ lat: existing.latitude, lng: existing.longitude });
+          }
           setSavedSlug(existing.slug);
         }
       }
