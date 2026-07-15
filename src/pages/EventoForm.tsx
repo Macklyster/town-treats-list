@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ImageUploader } from "@/components/site/ImageUploader";
+import { LocationPicker } from "@/components/site/LocationPicker";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -83,6 +84,8 @@ export default function EventoForm() {
     starts_at: "",
     ends_at: "",
   });
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+
 
   useEffect(() => {
     (async () => {
@@ -115,6 +118,9 @@ export default function EventoForm() {
             starts_at: existing.starts_at.slice(0, 16),
             ends_at: existing.ends_at.slice(0, 16),
           });
+          if (existing.latitude != null && existing.longitude != null) {
+            setCoords({ lat: existing.latitude, lng: existing.longitude });
+          }
           setSavedSlug(existing.slug);
         }
       }
@@ -157,6 +163,8 @@ export default function EventoForm() {
       ends_at: ends.toISOString(),
       city: storeInfo.city,
       state: storeInfo.state,
+      latitude: coords?.lat ?? null,
+      longitude: coords?.lng ?? null,
       slug: slugifyTitle(parsed.data.title) + "-" + Math.random().toString(36).slice(2, 8),
     };
     if (isEdit && id) {
@@ -431,6 +439,11 @@ export default function EventoForm() {
                   placeholder="Rua, número, bairro"
                 />
               </div>
+              <LocationPicker
+                value={coords}
+                onChange={setCoords}
+                addressQuery={form.address || form.venue}
+              />
               <div className="grid gap-2">
                 <Label htmlFor="link_url">Link (ingressos, Instagram, site)</Label>
                 <Input
