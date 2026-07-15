@@ -163,6 +163,8 @@ export default function EventoForm() {
       ends_at: ends.toISOString(),
       city: storeInfo.city,
       state: storeInfo.state,
+      latitude: coords?.lat ?? null,
+      longitude: coords?.lng ?? null,
       slug: slugifyTitle(parsed.data.title) + "-" + Math.random().toString(36).slice(2, 8),
     };
     if (isEdit && id) {
