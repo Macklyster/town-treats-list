@@ -185,8 +185,8 @@ export const HomeHero = () => {
             ) : featured.length === 1 ? (
               renderSlideContent(featured[0])
             ) : (
-              <Carousel setApi={setApi} opts={{ loop: true }} className="h-full w-full">
-                <CarouselContent className="h-full ml-0">
+              <Carousel setApi={setApi} opts={{ loop: true }} className="h-full w-full [&>*]:h-full">
+                <CarouselContent className="h-full ml-0 [&>*]:h-full">
                   {featured.map((company) => (
                     <CarouselItem key={company.id} className="pl-0 h-full basis-full">
                       {renderSlideContent(company)}
