@@ -564,6 +564,10 @@ export default function Admin() {
             <AdminOfertasInvisiveis />
           </TabsContent>
 
+          <TabsContent value="eventos" className="mt-6">
+            <AdminEventos />
+          </TabsContent>
+
           <TabsContent value="media" className="mt-6">
             <AdminMedia />
           </TabsContent>
