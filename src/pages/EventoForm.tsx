@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ImageUploader } from "@/components/site/ImageUploader";
+import { LocationPicker } from "@/components/site/LocationPicker";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
