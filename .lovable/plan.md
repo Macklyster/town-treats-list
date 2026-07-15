@@ -1,92 +1,81 @@
-# Plano — FlyScore 100% funcional
+# Módulo de Eventos
 
-Hoje o FlyScore existe apenas como **visual** na home (`FlyScoreSection.tsx`) com valores fixos (`4,8`, `98%`, `96/100`). A tabela `company_flyscore` (colunas: `overall`, `pilares jsonb`, `updated_at`) já existe e é lida por `home-api.ts`, mas **nunca é preenchida** e não há UI para o lojista/usuário alimentá-la.
+Aproveitando a tabela `public.events` já existente (com RLS), vamos evoluí-la para um módulo completo com CRUD no painel, listagem/detalhe públicos, moderação admin e notificações.
 
-Este plano cobre: (1) modelo de cálculo, (2) coleta de dados do lojista, (3) avaliação pelo usuário, (4) recomputo automático, (5) exibição real na home e na página da loja.
+## 1. Backend (migração)
 
----
+Estender a tabela `events`:
+- `slug text unique`, `category_slug text`, `venue text`, `address text`, `latitude/longitude`, `price_info text`, `link_url text`, `cover_url text`, `gallery jsonb`
+- `status event_status` enum (`pending | approved | rejected | expired`), default `pending`
+- `featured boolean`, `view_count int`, `share_token text unique`
+- `created_by uuid`, `updated_at`, trigger `set_updated_at`
+- `app_settings.event_max_active_per_store int` (default 3)
 
-## 1. Modelo dos 6 pilares (0–100 cada, média = FlyScore)
+Trigger `validate_event`:
+- `ends_at > starts_at`, título 3–120 chars, descrição ≤ 2000
+- Restrito a planos `destaque` ou `plus` (admin ignora), replicando o padrão de `validate_offer_schedule`
+- Limita eventos ativos (`pending|approved`) por loja segundo `app_settings`
 
-| Pilar | Fonte de dados | Regra |
-|---|---|---|
-| **Avaliações** | `offer_reviews` aprovados da loja | `min(100, media_estrelas*20 * fator_volume)` onde `fator_volume = min(1, count/20)` |
-| **Atualização** | `offers.updated_at` / `offers.created_at` | 100 se houve oferta nova/editada nos últimos 30d; decai linearmente até 0 aos 120d |
-| **Resposta** | novo campo `store_response_stats` (avg_response_minutes de mensagens/reservas) | 100 ≤ 60min, 0 ≥ 24h; interpolação log |
-| **Informações** | preenchimento de `stores` (nome, endereço, cidade/UF, telefone, whatsapp, logo, cover, horário, categorias) | % de campos obrigatórios + opcionais preenchidos |
-| **Engajamento** | `coupons_redeemed` + `offer_views` + `favorites` últimos 30d | normalizado por percentil dentro da cidade |
-| **Presença Digital** | `stores.instagram`, `stores.website`, nº de fotos em `offers` (>=3), `cover_url` presente | soma ponderada de checks |
+RLS (recriar):
+- `SELECT` público apenas quando `status = 'approved'`; lojista vê os próprios; admin vê tudo
+- `INSERT/UPDATE/DELETE` para dono da loja (status volta para `pending` em edição de campos-chave) e admin
+- GRANTs para `anon` (leitura de aprovados), `authenticated`, `service_role`
 
-Score final: `overall = round(avg(pilares))`. Persistido em `company_flyscore.pilares` como `{avaliacoes:88, atualizacao:95, resposta:72, informacoes:100, engajamento:64, presenca:90}`.
+RPCs:
+- `event_public_list(city, state, kind, from, to, limit, offset)`
+- `event_by_slug(slug)` incrementa `view_count`
+- `approve_event(id)` / `reject_event(id, reason)` — admin only
 
----
+## 2. Frontend — Lojista (Painel)
 
-## 2. Painel do Lojista — o que precisa ganhar UI
+- Nova aba **Eventos** em `PainelLojista.tsx`
+- `src/pages/EventoForm.tsx` — criar/editar com upload de capa (bucket `offer-images`), datas (shadcn datepicker), categoria, local, mapa embutido, preço, link
+- Bloqueia acesso se plano da loja não for Destaque/Plus (mostra upsell reaproveitando `MerchantCTA`)
+- Lista de eventos da loja com badges de status, ações duplicar/pausar/excluir
 
-**Página nova `/painel-lojista/flyscore`** (aba dentro do painel) mostrando:
+## 3. Frontend — Público
 
-- Gauge do overall + barra por pilar com **status atual, meta e ações sugeridas** ("Adicione foto de capa +8 pts", "Responda mensagens em <1h", "Peça avaliação a clientes").
-- Link direto para a ação que aumenta cada pilar (ex.: pilar "Informações" → botão "Completar dados" que abre `LojaForm` já rolado para o campo faltante).
+- `src/pages/Eventos.tsx` em `/eventos` — filtros por cidade (via `useCity`), categoria (chips reaproveitando `KIND_META` de `HappeningNow`), data (hoje / fim de semana / próximos 30 dias), busca
+- Grid usando `SectionCard` + card novo `EventCard.tsx` no design system atual (aurora-glass, gradient, badges de tempo)
+- `src/pages/EventoPublic.tsx` em `/evento/:slug` — hero com capa, countdown, info da loja (`StoreAvatar`), galeria, mapa, CTA WhatsApp/link, compartilhar (`ShareOfferButton` genérico), FlyScore da loja
+- Reforçar seção `HappeningNow` na home puxando dos novos campos e linkando para `/evento/:slug` e `/eventos`
+- Adicionar link "Eventos" no `HomeHeader` (menu principal e mobile)
+- SEO: componente `<SEO>` com título/descrição por evento, JSON-LD `Event`
 
-**Campos novos em `stores`** (migração):
+## 4. Admin
 
-- `opening_hours jsonb` (semana + horários)
-- `website text`
-- `categories text[]` (múltiplas categorias para melhor match)
-- `response_time_target_minutes int` (compromisso do lojista, opcional)
+- Nova aba **Eventos** em `src/pages/Admin.tsx` (padrão dos outros módulos): fila de pendentes, aprovar/rejeitar com motivo, destacar, expirar
+- Novo `src/components/admin/AdminEventos.tsx`
 
-**Editar Dados** ganha seção "Sobre a empresa" com os campos acima e uploader de **galeria de fotos** (bucket `offer-images` sob `{store_id}/gallery/*`).
+## 5. Notificações
 
----
+- Edge function `notify-event-approved`: quando `status` passa a `approved`, dispara push para
+  1. Seguidores da loja (reaproveita lógica de `notify-store-followers`)
+  2. Usuários com cidade selecionada = cidade do evento (join `push_subscriptions` + `profiles`/preferências)
+- Respeita `notification_preferences` (novo flag `events` default `true`)
+- Trigger DB chama a função via `pg_net`/edge invoke pattern já usado no projeto (ou disparo pelo painel admin ao aprovar, como nos outros módulos)
 
-## 3. Avaliação pelo usuário — deixar clara e sempre acessível
+## 6. Arquivos criados/editados
 
-Já existem `ReviewForm`, `ReviewList`, `ReviewPromptDialog`, mas:
+**Criar**
+- `supabase/migrations/*_events_module.sql`
+- `supabase/functions/notify-event-approved/index.ts`
+- `src/lib/events-api.ts`
+- `src/pages/Eventos.tsx`, `src/pages/EventoPublic.tsx`, `src/pages/EventoForm.tsx`
+- `src/components/site/EventCard.tsx`
+- `src/components/admin/AdminEventos.tsx`
+- `src/components/painel/EventosLojista.tsx`
 
-- O prompt só aparece após ações específicas — **adicionar CTA "Avaliar esta loja" visível em `StorePage`** e em `OfferDetail` para qualquer usuário autenticado que já viu/resgatou cupom.
-- Permitir **avaliação por loja** (não só por oferta): criar tabela `store_reviews` (rating 1-5, comment, user_id, store_id, status). Manter `offer_reviews` para experiência de compra específica; agregar as duas no pilar Avaliações.
-- E-mail/notificação automática 48h após resgate de cupom: "Como foi sua experiência na {loja}?".
-- Moderação: reviews entram como `pending`, admin aprova em `/admin/reviews` (já existe `AdminReviews.tsx`, revisar fluxo).
+**Editar**
+- `src/App.tsx` (rotas `/eventos`, `/evento/:slug`, `/painel/evento/:id?`)
+- `src/pages/Admin.tsx`, `src/pages/PainelLojista.tsx`
+- `src/components/home/HomeHeader.tsx` (link Eventos), `src/components/home/HappeningNow.tsx` (usar novos campos e linkar)
+- `src/integrations/supabase/types.ts` (regenerado automaticamente)
 
----
+## Detalhes técnicos
 
-## 4. Recomputo do FlyScore
-
-**Edge function `recompute-flyscore`** (Deno):
-
-- Input: `store_id` (recomputa 1) ou vazio (batch — todas as lojas aprovadas).
-- Executa consultas SQL para cada pilar, calcula, faz `upsert` em `company_flyscore`.
-
-**Gatilhos:**
-
-1. **Trigger SQL** em `offer_reviews`, `store_reviews`, `offers`, `coupons_redeemed`, `favorites` → enfileira `store_id` para recomputo (tabela `flyscore_recompute_queue` + `pg_notify`).
-2. **Cron pg** (`pg_cron`) roda `recompute-flyscore` de hora em hora processando a fila.
-3. **Trigger em `stores` update** → recomputo imediato do pilar Informações/Presença.
-4. Botão manual no painel do lojista "Atualizar meu FlyScore agora" (rate-limited: 1x/hora).
-
----
-
-## 5. Exibir dados reais em vez de mock
-
-- `FlyScoreSection` da home passa a receber `overallMedio` e `pilaresMedios` agregados de `company_flyscore` (média das lojas aprovadas). Criar RPC `get_flyscore_aggregate(city?)` para retornar em 1 chamada.
-- `CompanyCard` já tem `flyscore` — remover o `Math.round(90 + name.length % 10)` de fallback quando existe valor real; mostrar "—" ou "Novo" quando ainda não há score.
-- Nova página pública `/loja/{slug}/flyscore` com detalhamento por pilar (transparência para o usuário final).
-
----
-
-## Ordem de execução sugerida
-
-1. **Migração**: campos novos em `stores`, tabela `store_reviews`, `flyscore_recompute_queue`, `store_response_stats`.
-2. **Edge function** `recompute-flyscore` + triggers + cron.
-3. **UI Painel do Lojista**: aba FlyScore + edição dos campos novos em `LojaForm`.
-4. **UI Avaliação**: CTA visível, formulário de `store_reviews`, notificação pós-cupom.
-5. **Home/CompanyCard**: consumir dados reais, remover mocks do `FlyScoreSection`.
-6. **Página pública `/loja/{slug}/flyscore`** com detalhamento.
-
----
-
-## Escopo mínimo (MVP) se quiser dividir em etapas
-
-- Etapa 1: pilares **Avaliações + Informações + Atualização** (3 dos 6) já dão score útil sem precisar de stats de resposta/engajamento.
-- Etapa 2: adicionar **Presença Digital** (fácil, só checar campos).
-- Etapa 3: **Engajamento + Resposta** (dependem de coleta de eventos e mensagens — mais complexo).
+- Design tokens semânticos do `index.css` (aurora-glass, primary, muted) — sem cores hardcoded
+- Framer-motion para transições dos cards (padrão do projeto)
+- Zod validando forms client-side; trigger valida server-side
+- `share_token` gerado com `gen_random_uuid()` para links compartilháveis
+- Slug único gerado a partir do título + shortid

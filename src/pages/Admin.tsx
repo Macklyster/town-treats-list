@@ -39,6 +39,7 @@ import { AdminColetivas } from "@/components/admin/AdminColetivas";
 import { AdminLeiloes } from "@/components/admin/AdminLeiloes";
 import { AdminOfertasInvisiveis } from "@/components/admin/AdminOfertasInvisiveis";
 import { AdminMedia } from "@/components/admin/AdminMedia";
+import { AdminEventos } from "@/components/admin/AdminEventos";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -274,6 +275,7 @@ export default function Admin() {
             <TabsTrigger value="coletivas">Coletivas</TabsTrigger>
             <TabsTrigger value="leiloes">Leilões</TabsTrigger>
             <TabsTrigger value="invisiveis">Invisíveis</TabsTrigger>
+            <TabsTrigger value="eventos">Eventos</TabsTrigger>
             <TabsTrigger value="media">Mídia</TabsTrigger>
             <TabsTrigger value="settings">Configurações</TabsTrigger>
           </TabsList>
@@ -560,6 +562,10 @@ export default function Admin() {
 
           <TabsContent value="invisiveis" className="mt-6">
             <AdminOfertasInvisiveis />
+          </TabsContent>
+
+          <TabsContent value="eventos" className="mt-6">
+            <AdminEventos />
           </TabsContent>
 
           <TabsContent value="media" className="mt-6">

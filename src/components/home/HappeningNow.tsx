@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Calendar, Flame, Music, PartyPopper, Store, Tag } from "lucide-react";
+import { ArrowRight, Calendar, Flame, Music, PartyPopper, Store, Tag } from "lucide-react";
 import { fetchHappeningNow, fetchUpcomingEvents, UIEvent } from "@/lib/home-api";
 import { useCity } from "@/hooks/useCity";
 import { SectionHeading } from "./SectionHeading";
@@ -50,6 +51,14 @@ export const HappeningNow = () => {
           city
             ? `Happy hours, shows, feiras e experiências em ${city.city} — atualizados em tempo real.`
             : "Selecione sua cidade para ver eventos em tempo real."
+        }
+        action={
+          <Link
+            to="/eventos"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-primary transition hover:bg-primary hover:text-primary-foreground"
+          >
+            Ver agenda completa <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
         }
       />
 

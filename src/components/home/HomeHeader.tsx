@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Gavel, Heart, LogOut, MapPin, Menu, Search, Shield, Sparkles, Store, Tag, Ticket, User as UserIcon, Users, X } from "lucide-react";
+import { CalendarDays, Gavel, Heart, LogOut, MapPin, Menu, Search, Shield, Sparkles, Store, Tag, Ticket, User as UserIcon, Users, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCity } from "@/hooks/useCity";
@@ -156,6 +156,7 @@ export const HomeHeader = () => {
         <div className="container flex h-11 items-center justify-center gap-1 overflow-x-auto">
           {[
             { to: "/", label: "Ofertas", icon: Tag, end: true },
+            { to: "/eventos", label: "Eventos", icon: CalendarDays },
             { to: "/coletivas", label: "Coletivas", icon: Users },
             { to: "/leiloes", label: "Leilões", icon: Gavel },
             { to: "/ofertas-invisiveis", label: "Invisíveis", icon: Sparkles },
@@ -206,6 +207,7 @@ export const HomeHeader = () => {
             <div className="grid grid-cols-2 gap-2">
               {[
                 { to: "/", label: "Ofertas", icon: Tag },
+                { to: "/eventos", label: "Eventos", icon: CalendarDays },
                 { to: "/coletivas", label: "Coletivas", icon: Users },
                 { to: "/leiloes", label: "Leilões", icon: Gavel },
                 { to: "/ofertas-invisiveis", label: "Invisíveis", icon: Sparkles },
