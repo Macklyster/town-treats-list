@@ -208,7 +208,11 @@ const OfferDetail = () => {
         <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr]">
           <div>
             <div className={`relative overflow-hidden rounded-3xl bg-muted shadow-card ${offer.isFlash ? "ring-2 ring-destructive/70" : ""}`}>
-              <img src={offer.image} alt={offer.title} className="aspect-[4/3] w-full object-cover" />
+              {media.length > 0 ? (
+                <OfferMediaCarousel items={media} title={offer.title} />
+              ) : (
+                <img src={offer.image} alt={offer.title} className="aspect-[4/3] w-full object-cover" />
+              )}
               {pct > 0 && (
                 <span className="absolute left-5 top-5 rounded-full bg-accent px-4 py-1.5 text-sm font-bold text-accent-foreground shadow-pop">
                   -{pct}% OFF
