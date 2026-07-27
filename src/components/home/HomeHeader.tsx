@@ -3,6 +3,7 @@ import { CalendarDays, Gavel, Heart, LogOut, MapPin, Menu, Search, Shield, Spark
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCity } from "@/hooks/useCity";
+import { greeting } from "@/lib/home-api";
 import logoAsset from "@/assets/logo-menu.png.asset.json";
 const logo = logoAsset.url;
 import { CategoryChips } from "./CategoryChips";
