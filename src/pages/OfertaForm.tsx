@@ -318,23 +318,20 @@ export default function OfertaForm() {
                 </div>
               </div>
 
-              <ImageUploader
-                value={form.image_url}
-                onChange={(url) => setForm({ ...form, image_url: url })}
-                storeId={storeId}
-                label="Imagem da oferta"
-              />
               {storeId && (
-                <MediaPicker
+                <OfferMediaEditor
                   storeId={storeId}
-                  selected={form.image_url ? [] : []}
-                  onChange={(_ids, _cover) => {
-                    // Picker returns asset ids; we need URL of cover
-                    import("@/integrations/supabase/client").then(({ supabase }) => {
-                      supabase.from("media_assets").select("url").eq("id", _cover).single().then(({ data }) => {
-                        if (data?.url) setForm((f) => ({ ...f, image_url: data.url }));
-                      });
-                    });
+                  value={mediaItems}
+                  coverId={coverMediaId}
+                  onChange={(items, cover) => {
+                    setMediaItems(items);
+                    setCoverMediaId(cover);
+                    const coverAsset = items.find((i) => i.id === cover);
+                    if (coverAsset?.media_type === "image") {
+                      setForm((f) => ({ ...f, image_url: coverAsset.url }));
+                    } else if (items.length === 0) {
+                      setForm((f) => ({ ...f, image_url: "" }));
+                    }
                   }}
                 />
               )}
