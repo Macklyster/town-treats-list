@@ -42,6 +42,7 @@ const OfferDetail = () => {
   const [notFound, setNotFound] = useState(false);
   const [rating, setRating] = useState<RatingSummaryData | null>(null);
   const [sp, setSp] = useState<SocialProof | undefined>(undefined);
+  const [media, setMedia] = useState<CarouselMedia[]>([]);
 
   useEffect(() => {
     if (!offer?.id) return;
