@@ -66,7 +66,7 @@ export function MediaLibrary({ storeId, selectable, selected = [], coverId, onTo
       }
     }
     setBusy(false);
-    if (ok) toast.success(`${ok} imagem(ns) enviada(s)`);
+    if (ok) toast.success(`${ok} mídia(s) enviada(s)`);
     load();
   };
 
