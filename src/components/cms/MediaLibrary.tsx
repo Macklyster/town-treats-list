@@ -156,9 +156,26 @@ export function MediaLibrary({ storeId, selectable, selected = [], coverId, onTo
                   <button
                     type="button"
                     onClick={() => (selectable ? onToggle?.(a.id) : null)}
-                    className="block aspect-square w-full bg-muted"
+                    className="relative block aspect-square w-full bg-muted"
                   >
-                    <img src={a.url} alt={a.alt_text ?? ""} className="h-full w-full object-cover" loading="lazy" />
+                    <img
+                      src={a.media_type === "video" ? (a.poster_url ?? a.url) : a.url}
+                      alt={a.alt_text ?? ""}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                    {a.media_type === "video" && (
+                      <>
+                        <span className="absolute inset-0 flex items-center justify-center bg-black/25">
+                          <Play className="h-8 w-8 fill-white text-white drop-shadow" />
+                        </span>
+                        {a.duration_seconds != null && (
+                          <span className="absolute bottom-1 right-1 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                            {a.duration_seconds}s
+                          </span>
+                        )}
+                      </>
+                    )}
                   </button>
                   {isCover && (
                     <Badge className="absolute left-1 top-1 gap-1">
