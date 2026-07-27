@@ -140,7 +140,11 @@ const OfferDetail = () => {
     "@type": "Product",
     name: offer.title,
     description: offer.description || `${offer.title} na ${offer.storeName}${cLabel ? ` em ${cLabel}` : ""}.`,
-    image: offer.image ? [offer.image] : undefined,
+    image: (() => {
+      const imgs = media.filter((m) => m.media_type === "image").map((m) => m.url);
+      const list = imgs.length ? imgs : offer.image ? [offer.image] : [];
+      return list.length ? list : undefined;
+    })(),
     sku: offer.id,
     brand: { "@type": "Brand", name: offer.storeName },
     offers: {
