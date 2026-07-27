@@ -223,7 +223,7 @@ const OfferDetail = () => {
                 </span>
               )}
               {offer.isFlash && offer.flashEndsAt && (
-                <div className="absolute bottom-5 left-5">
+                <div className="absolute right-5 top-5 z-10">
                   <CountdownBadge endsAt={offer.flashEndsAt} variant="detail" />
                 </div>
               )}
