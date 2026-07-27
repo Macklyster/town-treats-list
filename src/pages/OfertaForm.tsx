@@ -17,8 +17,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
 import { Link } from "react-router-dom";
 import { AlertCircle, Bell, RefreshCw, CalendarClock, Lock } from "lucide-react";
-import { ImageUploader } from "@/components/site/ImageUploader";
-import { MediaPicker } from "@/components/cms/MediaPicker";
+import { OfferMediaEditor, type OfferMediaItem } from "@/components/cms/OfferMediaEditor";
+import { listOfferMedia, setOfferMedia } from "@/lib/media-api";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PAYMENT_METHODS, type PaymentMethodId, parseConditions, buildConditions } from "@/lib/payment-methods";
 import { useFlashSettings } from "@/hooks/useFlashSettings";
@@ -63,6 +63,8 @@ export default function OfertaForm() {
   const sub = useSubscription(storeId);
   const { defaultHours: flashDefaultHours } = useFlashSettings();
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodId[]>([]);
+  const [mediaItems, setMediaItems] = useState<OfferMediaItem[]>([]);
+  const [coverMediaId, setCoverMediaId] = useState<string | undefined>(undefined);
   const [form, setForm] = useState({
     title: "",
     category_slug: "",
@@ -158,6 +160,22 @@ export default function OfertaForm() {
             scheduled_end_at: toLocal((data as any).scheduled_end_at),
           });
         }
+        // Load existing media for the offer
+        const existing = await listOfferMedia(id!).catch(() => []);
+        if (existing.length) {
+          const its: OfferMediaItem[] = existing.map((r) => ({
+            id: r.asset.id,
+            url: r.asset.url,
+            media_type: r.asset.media_type,
+            poster_url: r.asset.poster_url,
+            alt_text: r.asset.alt_text,
+            duration_seconds: r.asset.duration_seconds,
+          }));
+          setMediaItems(its);
+          const cover = existing.find((r) => r.is_cover)?.media_id
+            ?? its.find((i) => i.media_type === "image")?.id;
+          setCoverMediaId(cover);
+        }
       }
     })();
   }, [user?.id, id]);
@@ -238,11 +256,23 @@ export default function OfertaForm() {
       scheduled_start_at: form.is_scheduled && form.scheduled_start_at ? new Date(form.scheduled_start_at).toISOString() : null,
       scheduled_end_at: form.is_scheduled && form.scheduled_end_at ? new Date(form.scheduled_end_at).toISOString() : null,
     };
-    const { error } = isEdit
-      ? await supabase.from("offers").update(payload).eq("id", id!)
-      : await supabase.from("offers").insert(payload);
+    let savedId = id as string | undefined;
+    if (isEdit) {
+      const { error } = await supabase.from("offers").update(payload).eq("id", id!);
+      if (error) { setLoading(false); return toast.error(error.message); }
+    } else {
+      const { data: inserted, error } = await supabase.from("offers").insert(payload).select("id").single();
+      if (error) { setLoading(false); return toast.error(error.message); }
+      savedId = inserted?.id;
+    }
+    if (savedId && mediaItems.length > 0) {
+      try {
+        await setOfferMedia(savedId, mediaItems.map((m) => m.id), coverMediaId);
+      } catch (e: any) {
+        console.warn("setOfferMedia failed", e);
+      }
+    }
     setLoading(false);
-    if (error) return toast.error(error.message);
     toast.success(isEdit ? "Oferta atualizada" : "Oferta enviada para aprovação");
     navigate("/painel-lojista");
   };
@@ -318,23 +348,20 @@ export default function OfertaForm() {
                 </div>
               </div>
 
-              <ImageUploader
-                value={form.image_url}
-                onChange={(url) => setForm({ ...form, image_url: url })}
-                storeId={storeId}
-                label="Imagem da oferta"
-              />
               {storeId && (
-                <MediaPicker
+                <OfferMediaEditor
                   storeId={storeId}
-                  selected={form.image_url ? [] : []}
-                  onChange={(_ids, _cover) => {
-                    // Picker returns asset ids; we need URL of cover
-                    import("@/integrations/supabase/client").then(({ supabase }) => {
-                      supabase.from("media_assets").select("url").eq("id", _cover).single().then(({ data }) => {
-                        if (data?.url) setForm((f) => ({ ...f, image_url: data.url }));
-                      });
-                    });
+                  value={mediaItems}
+                  coverId={coverMediaId}
+                  onChange={(items, cover) => {
+                    setMediaItems(items);
+                    setCoverMediaId(cover);
+                    const coverAsset = items.find((i) => i.id === cover);
+                    if (coverAsset?.media_type === "image") {
+                      setForm((f) => ({ ...f, image_url: coverAsset.url }));
+                    } else if (items.length === 0) {
+                      setForm((f) => ({ ...f, image_url: "" }));
+                    }
                   }}
                 />
               )}

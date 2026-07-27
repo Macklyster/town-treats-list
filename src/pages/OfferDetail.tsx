@@ -29,6 +29,8 @@ import { RatingSummary, fetchOfferRatingSummary, RatingSummaryData } from "@/com
 import { ReviewList } from "@/components/site/ReviewList";
 import { SocialProofBadge } from "@/components/site/SocialProofBadge";
 import { fetchOfferSocialProof, subscribeOfferEvents, SocialProof } from "@/lib/social-proof";
+import { listOfferMedia } from "@/lib/media-api";
+import { OfferMediaCarousel, type CarouselMedia } from "@/components/site/OfferMediaCarousel";
 
 const OfferDetail = () => {
   const { id } = useParams();
@@ -40,6 +42,7 @@ const OfferDetail = () => {
   const [notFound, setNotFound] = useState(false);
   const [rating, setRating] = useState<RatingSummaryData | null>(null);
   const [sp, setSp] = useState<SocialProof | undefined>(undefined);
+  const [media, setMedia] = useState<CarouselMedia[]>([]);
 
   useEffect(() => {
     if (!offer?.id) return;
@@ -73,13 +76,30 @@ const OfferDetail = () => {
       if (searchParams.get("src") === "qr") {
         trackOfferEvent(o.id, "qr_scan");
       }
-      const [s, all, r] = await Promise.all([
+      const [s, all, r, mm] = await Promise.all([
         fetchStoreById(o.storeId),
         fetchOffers(),
         fetchOfferRatingSummary(o.id),
+        listOfferMedia(o.id).catch(() => []),
       ]);
       setStore(s);
       setRating(r);
+      const mapped: CarouselMedia[] = mm.map((r) => ({
+        id: r.asset.id,
+        url: r.asset.url,
+        media_type: r.asset.media_type,
+        poster_url: r.asset.poster_url,
+        alt_text: r.asset.alt_text,
+      }));
+      // Ensure cover-first ordering
+      mapped.sort((a, b) => {
+        const ai = mm.find((x) => x.media_id === a.id);
+        const bi = mm.find((x) => x.media_id === b.id);
+        if (ai?.is_cover) return -1;
+        if (bi?.is_cover) return 1;
+        return (ai?.position ?? 0) - (bi?.position ?? 0);
+      });
+      setMedia(mapped);
       setRelated(
         all
           .filter((x) => x.id !== o.id && (x.storeId === o.storeId || x.category === o.category))
@@ -120,7 +140,11 @@ const OfferDetail = () => {
     "@type": "Product",
     name: offer.title,
     description: offer.description || `${offer.title} na ${offer.storeName}${cLabel ? ` em ${cLabel}` : ""}.`,
-    image: offer.image ? [offer.image] : undefined,
+    image: (() => {
+      const imgs = media.filter((m) => m.media_type === "image").map((m) => m.url);
+      const list = imgs.length ? imgs : offer.image ? [offer.image] : [];
+      return list.length ? list : undefined;
+    })(),
     sku: offer.id,
     brand: { "@type": "Brand", name: offer.storeName },
     offers: {
@@ -188,7 +212,11 @@ const OfferDetail = () => {
         <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr]">
           <div>
             <div className={`relative overflow-hidden rounded-3xl bg-muted shadow-card ${offer.isFlash ? "ring-2 ring-destructive/70" : ""}`}>
-              <img src={offer.image} alt={offer.title} className="aspect-[4/3] w-full object-cover" />
+              {media.length > 0 ? (
+                <OfferMediaCarousel items={media} title={offer.title} />
+              ) : (
+                <img src={offer.image} alt={offer.title} className="aspect-[4/3] w-full object-cover" />
+              )}
               {pct > 0 && (
                 <span className="absolute left-5 top-5 rounded-full bg-accent px-4 py-1.5 text-sm font-bold text-accent-foreground shadow-pop">
                   -{pct}% OFF

@@ -12,6 +12,9 @@ export type MediaAsset = {
   bytes: number | null;
   tags: string[];
   created_at: string;
+  media_type: "image" | "video";
+  duration_seconds: number | null;
+  poster_url: string | null;
 };
 
 export type OfferMediaLink = {
@@ -22,6 +25,10 @@ export type OfferMediaLink = {
 };
 
 const BUCKET = "offer-images";
+
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+const MAX_VIDEO_BYTES = 20 * 1024 * 1024;
+const MAX_VIDEO_SECONDS = 30;
 
 function pathFromUrl(url: string) {
   const marker = `/object/public/${BUCKET}/`;
@@ -45,33 +52,132 @@ async function compress(file: File, maxWidth = 1600): Promise<{ blob: Blob; w: n
   return { blob, w, h };
 }
 
-export async function uploadMediaFile(file: File, storeId: string): Promise<MediaAsset> {
-  if (!file.type.startsWith("image/")) throw new Error("Apenas imagens são suportadas.");
-  if (file.size > 8 * 1024 * 1024) throw new Error("Arquivo muito grande (máx. 8 MB).");
+async function extractVideoPoster(file: File): Promise<{ blob: Blob; w: number; h: number; duration: number }> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const video = document.createElement("video");
+    video.preload = "metadata";
+    video.muted = true;
+    video.playsInline = true;
+    video.src = url;
+    const cleanup = () => URL.revokeObjectURL(url);
+    video.onloadedmetadata = () => {
+      const target = Math.min(0.5, Math.max(0, (video.duration || 1) / 2));
+      const seek = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          cleanup();
+          return reject(new Error("canvas indisponível"));
+        }
+        ctx.drawImage(video, 0, 0);
+        canvas.toBlob(
+          (b) => {
+            cleanup();
+            if (!b) return reject(new Error("poster falhou"));
+            resolve({ blob: b, w: video.videoWidth, h: video.videoHeight, duration: video.duration });
+          },
+          "image/jpeg",
+          0.82,
+        );
+      };
+      video.onseeked = seek;
+      try {
+        video.currentTime = target;
+      } catch {
+        seek();
+      }
+    };
+    video.onerror = () => {
+      cleanup();
+      reject(new Error("Não foi possível ler o vídeo."));
+    };
+  });
+}
 
-  const { blob, w, h } = await compress(file);
-  const path = `${storeId}/${crypto.randomUUID()}.webp`;
-  const { error: upErr } = await supabase.storage
+export async function uploadMediaFile(file: File, storeId: string): Promise<MediaAsset> {
+  const isVideo = file.type.startsWith("video/");
+  const isImage = file.type.startsWith("image/");
+  if (!isVideo && !isImage) throw new Error("Formato não suportado.");
+
+  if (isImage) {
+    if (file.size > MAX_IMAGE_BYTES) throw new Error("Imagem muito grande (máx. 8 MB).");
+    const { blob, w, h } = await compress(file);
+    const path = `${storeId}/${crypto.randomUUID()}.webp`;
+    const { error: upErr } = await supabase.storage
+      .from(BUCKET)
+      .upload(path, blob, { contentType: "image/webp", upsert: false });
+    if (upErr) throw upErr;
+    const { data: pub } = supabase.storage.from(BUCKET).getPublicUrl(path);
+
+    const { data, error } = await supabase
+      .from("media_assets")
+      .insert({
+        store_id: storeId,
+        url: pub.publicUrl,
+        storage_path: path,
+        filename: file.name,
+        width: w,
+        height: h,
+        bytes: blob.size,
+        media_type: "image",
+      })
+      .select("*")
+      .single();
+    if (error) {
+      await supabase.storage.from(BUCKET).remove([path]).catch(() => {});
+      throw error;
+    }
+    return data as MediaAsset;
+  }
+
+  // Video
+  if (!["video/mp4", "video/webm", "video/quicktime"].includes(file.type)) {
+    throw new Error("Use vídeos MP4 ou WebM.");
+  }
+  if (file.size > MAX_VIDEO_BYTES) throw new Error("Vídeo muito grande (máx. 20 MB).");
+  const poster = await extractVideoPoster(file);
+  if (poster.duration > MAX_VIDEO_SECONDS + 0.5) {
+    throw new Error(`Vídeo muito longo (máx. ${MAX_VIDEO_SECONDS}s).`);
+  }
+  const ext = file.name.split(".").pop()?.toLowerCase() || "mp4";
+  const videoPath = `${storeId}/${crypto.randomUUID()}.${ext}`;
+  const posterPath = `${storeId}/${crypto.randomUUID()}.jpg`;
+
+  const { error: upVidErr } = await supabase.storage
     .from(BUCKET)
-    .upload(path, blob, { contentType: "image/webp", upsert: false });
-  if (upErr) throw upErr;
-  const { data: pub } = supabase.storage.from(BUCKET).getPublicUrl(path);
+    .upload(videoPath, file, { contentType: file.type, upsert: false });
+  if (upVidErr) throw upVidErr;
+  const { error: upPosterErr } = await supabase.storage
+    .from(BUCKET)
+    .upload(posterPath, poster.blob, { contentType: "image/jpeg", upsert: false });
+  if (upPosterErr) {
+    await supabase.storage.from(BUCKET).remove([videoPath]).catch(() => {});
+    throw upPosterErr;
+  }
+  const { data: pubVid } = supabase.storage.from(BUCKET).getPublicUrl(videoPath);
+  const { data: pubPoster } = supabase.storage.from(BUCKET).getPublicUrl(posterPath);
 
   const { data, error } = await supabase
     .from("media_assets")
     .insert({
       store_id: storeId,
-      url: pub.publicUrl,
-      storage_path: path,
+      url: pubVid.publicUrl,
+      storage_path: videoPath,
       filename: file.name,
-      width: w,
-      height: h,
-      bytes: blob.size,
+      width: poster.w,
+      height: poster.h,
+      bytes: file.size,
+      media_type: "video",
+      duration_seconds: Math.round(poster.duration),
+      poster_url: pubPoster.publicUrl,
     })
     .select("*")
     .single();
   if (error) {
-    await supabase.storage.from(BUCKET).remove([path]).catch(() => {});
+    await supabase.storage.from(BUCKET).remove([videoPath, posterPath]).catch(() => {});
     throw error;
   }
   return data as MediaAsset;
@@ -93,11 +199,11 @@ export async function updateMediaAsset(id: string, patch: Partial<Pick<MediaAsse
 }
 
 export async function deleteMediaAsset(asset: MediaAsset) {
-  // Will fail if referenced; caller can warn
   const { error } = await supabase.from("media_assets").delete().eq("id", asset.id);
   if (error) throw error;
   const path = asset.storage_path ?? pathFromUrl(asset.url);
-  if (path) await supabase.storage.from(BUCKET).remove([path]).catch(() => {});
+  const toRemove = [path, asset.poster_url ? pathFromUrl(asset.poster_url) : null].filter(Boolean) as string[];
+  if (toRemove.length) await supabase.storage.from(BUCKET).remove(toRemove).catch(() => {});
 }
 
 export async function listOfferMedia(offerId: string): Promise<(OfferMediaLink & { asset: MediaAsset })[]> {
@@ -113,7 +219,16 @@ export async function listOfferMedia(offerId: string): Promise<(OfferMediaLink &
 export async function setOfferMedia(offerId: string, mediaIds: string[], coverId?: string) {
   await supabase.from("offer_media").delete().eq("offer_id", offerId);
   if (mediaIds.length === 0) return;
-  const cover = coverId ?? mediaIds[0];
+  // Cover must be an image; fall back to first image, then first item
+  const { data: assets } = await supabase
+    .from("media_assets")
+    .select("id, url, media_type")
+    .in("id", mediaIds);
+  const byId = new Map((assets ?? []).map((a: any) => [a.id, a]));
+  let cover = coverId && byId.get(coverId)?.media_type === "image" ? coverId : undefined;
+  if (!cover) {
+    cover = mediaIds.find((id) => byId.get(id)?.media_type === "image") ?? mediaIds[0];
+  }
   const rows = mediaIds.map((media_id, i) => ({
     offer_id: offerId,
     media_id,
@@ -122,8 +237,7 @@ export async function setOfferMedia(offerId: string, mediaIds: string[], coverId
   }));
   const { error } = await supabase.from("offer_media").insert(rows);
   if (error) throw error;
-  // Sync offers.image_url with cover (compat)
-  const { data: coverAsset } = await supabase.from("media_assets").select("url").eq("id", cover).single();
+  const coverAsset: any = byId.get(cover);
   if (coverAsset?.url) {
     await supabase.from("offers").update({ image_url: coverAsset.url }).eq("id", offerId);
   }
