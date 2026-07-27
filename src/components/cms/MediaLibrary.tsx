@@ -80,13 +80,15 @@ export function MediaLibrary({ storeId, selectable, selected = [], coverId, onTo
     }
   };
 
-  const filtered = items.filter(
+  const [typeFilter, setTypeFilter] = useState<"all" | "image" | "video">("all");
+  const filtered = useMemo(() => items.filter(
     (i) =>
-      !q ||
-      i.filename?.toLowerCase().includes(q.toLowerCase()) ||
-      i.alt_text?.toLowerCase().includes(q.toLowerCase()) ||
-      i.tags.some((t) => t.toLowerCase().includes(q.toLowerCase())),
-  );
+      (typeFilter === "all" || i.media_type === typeFilter) &&
+      (!q ||
+        i.filename?.toLowerCase().includes(q.toLowerCase()) ||
+        i.alt_text?.toLowerCase().includes(q.toLowerCase()) ||
+        i.tags.some((t) => t.toLowerCase().includes(q.toLowerCase())))
+  ), [items, q, typeFilter]);
 
   return (
     <div className="space-y-4">
@@ -95,11 +97,23 @@ export function MediaLibrary({ storeId, selectable, selected = [], coverId, onTo
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input className="pl-8" placeholder="Buscar por nome, alt-text ou tag…" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
+        <div className="flex rounded-md border p-0.5 text-xs">
+          {(["all", "image", "video"] as const).map((k) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => setTypeFilter(k)}
+              className={`px-2 py-1 rounded ${typeFilter === k ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+            >
+              {k === "all" ? "Todas" : k === "image" ? "Imagens" : "Vídeos"}
+            </button>
+          ))}
+        </div>
         <input
           ref={inputRef}
           type="file"
           multiple
-          accept="image/*"
+          accept="image/*,video/mp4,video/webm,video/quicktime"
           className="hidden"
           onChange={(e) => {
             upload(e.target.files);
@@ -108,7 +122,7 @@ export function MediaLibrary({ storeId, selectable, selected = [], coverId, onTo
         />
         <Button onClick={() => inputRef.current?.click()} disabled={busy}>
           {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-          Enviar imagens
+          Enviar mídias
         </Button>
       </div>
 
