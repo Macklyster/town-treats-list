@@ -265,11 +265,13 @@ export default function OfertaForm() {
       if (error) { setLoading(false); return toast.error(error.message); }
       savedId = inserted?.id;
     }
-    if (savedId && mediaItems.length > 0) {
+    if (savedId) {
       try {
         await setOfferMedia(savedId, mediaItems.map((m) => m.id), coverMediaId);
       } catch (e: any) {
-        console.warn("setOfferMedia failed", e);
+        setLoading(false);
+        toast.error(`A oferta foi salva, mas as mídias não: ${e.message}`);
+        return;
       }
     }
     setLoading(false);

@@ -8,6 +8,7 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { Play } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export type CarouselMedia = {
   id: string;
@@ -100,9 +101,11 @@ export function OfferMediaCarousel({ items, title, className }: Props) {
       </Carousel>
       <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
         {items.map((it, i) => (
-          <button
+          <Button
             key={it.id}
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => api?.scrollTo(i)}
             className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-md border-2 transition ${
               i === current ? "border-primary" : "border-transparent opacity-70 hover:opacity-100"
@@ -120,7 +123,7 @@ export function OfferMediaCarousel({ items, title, className }: Props) {
                 <Play className="h-4 w-4 fill-white text-white" />
               </span>
             )}
-          </button>
+          </Button>
         ))}
       </div>
     </div>
