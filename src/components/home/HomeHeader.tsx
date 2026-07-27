@@ -92,7 +92,7 @@ export const HomeHeader = () => {
               <DropdownMenuTrigger asChild>
                 <button className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep transition">
                   <UserIcon className="h-4 w-4" />
-                  Minha conta
+                  {greetingText || "Minha conta"}
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="z-[110] w-56">
