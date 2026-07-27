@@ -236,7 +236,7 @@ export const HomeHeader = () => {
             ) : (
               <div className="space-y-2">
                 <p className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Minha conta
+                  {greetingText || "Minha conta"}
                 </p>
                 <div className="grid grid-cols-2 gap-2">
                   <Link
