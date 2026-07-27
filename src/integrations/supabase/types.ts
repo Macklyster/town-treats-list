@@ -720,9 +720,12 @@ export type Database = {
           alt_text: string | null
           bytes: number | null
           created_at: string
+          duration_seconds: number | null
           filename: string | null
           height: number | null
           id: string
+          media_type: string
+          poster_url: string | null
           storage_path: string | null
           store_id: string
           tags: string[]
@@ -735,9 +738,12 @@ export type Database = {
           alt_text?: string | null
           bytes?: number | null
           created_at?: string
+          duration_seconds?: number | null
           filename?: string | null
           height?: number | null
           id?: string
+          media_type?: string
+          poster_url?: string | null
           storage_path?: string | null
           store_id: string
           tags?: string[]
@@ -750,9 +756,12 @@ export type Database = {
           alt_text?: string | null
           bytes?: number | null
           created_at?: string
+          duration_seconds?: number | null
           filename?: string | null
           height?: number | null
           id?: string
+          media_type?: string
+          poster_url?: string | null
           storage_path?: string | null
           store_id?: string
           tags?: string[]
