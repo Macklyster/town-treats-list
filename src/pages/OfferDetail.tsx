@@ -29,6 +29,8 @@ import { RatingSummary, fetchOfferRatingSummary, RatingSummaryData } from "@/com
 import { ReviewList } from "@/components/site/ReviewList";
 import { SocialProofBadge } from "@/components/site/SocialProofBadge";
 import { fetchOfferSocialProof, subscribeOfferEvents, SocialProof } from "@/lib/social-proof";
+import { listOfferMedia } from "@/lib/media-api";
+import { OfferMediaCarousel, type CarouselMedia } from "@/components/site/OfferMediaCarousel";
 
 const OfferDetail = () => {
   const { id } = useParams();
