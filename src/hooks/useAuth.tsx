@@ -8,6 +8,7 @@ type AuthContextValue = {
   user: User | null;
   session: Session | null;
   roles: AppRole[];
+  displayName: string | null;
   loading: boolean;
   isAdmin: boolean;
   isLojista: boolean;
