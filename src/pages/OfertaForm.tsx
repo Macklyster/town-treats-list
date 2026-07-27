@@ -256,11 +256,23 @@ export default function OfertaForm() {
       scheduled_start_at: form.is_scheduled && form.scheduled_start_at ? new Date(form.scheduled_start_at).toISOString() : null,
       scheduled_end_at: form.is_scheduled && form.scheduled_end_at ? new Date(form.scheduled_end_at).toISOString() : null,
     };
-    const { error } = isEdit
-      ? await supabase.from("offers").update(payload).eq("id", id!)
-      : await supabase.from("offers").insert(payload);
+    let savedId = id as string | undefined;
+    if (isEdit) {
+      const { error } = await supabase.from("offers").update(payload).eq("id", id!);
+      if (error) { setLoading(false); return toast.error(error.message); }
+    } else {
+      const { data: inserted, error } = await supabase.from("offers").insert(payload).select("id").single();
+      if (error) { setLoading(false); return toast.error(error.message); }
+      savedId = inserted?.id;
+    }
+    if (savedId && mediaItems.length > 0) {
+      try {
+        await setOfferMedia(savedId, mediaItems.map((m) => m.id), coverMediaId);
+      } catch (e: any) {
+        console.warn("setOfferMedia failed", e);
+      }
+    }
     setLoading(false);
-    if (error) return toast.error(error.message);
     toast.success(isEdit ? "Oferta atualizada" : "Oferta enviada para aprovação");
     navigate("/painel-lojista");
   };
