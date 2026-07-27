@@ -16,8 +16,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export const HomeHeader = () => {
-  const { user, isAdmin, isLojista, signOut } = useAuth();
+  const { user, displayName, isAdmin, isLojista, signOut } = useAuth();
   const { city, openSelector } = useCity();
+  const greetingText = user ? greeting(displayName) : null;
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
