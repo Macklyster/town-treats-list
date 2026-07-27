@@ -213,33 +213,60 @@ export async function listOfferMedia(offerId: string): Promise<(OfferMediaLink &
     .eq("offer_id", offerId)
     .order("position", { ascending: true });
   if (error) throw error;
-  return (data ?? []) as any;
+  return (data ?? []).filter((row: any) => row.asset) as any;
 }
 
 export async function setOfferMedia(offerId: string, mediaIds: string[], coverId?: string) {
-  await supabase.from("offer_media").delete().eq("offer_id", offerId);
-  if (mediaIds.length === 0) return;
+  const uniqueMediaIds = [...new Set(mediaIds)];
+  if (uniqueMediaIds.length === 0) {
+    const { error } = await supabase.from("offer_media").delete().eq("offer_id", offerId);
+    if (error) throw error;
+    return;
+  }
   // Cover must be an image; fall back to first image, then first item
-  const { data: assets } = await supabase
+  const { data: assets, error: assetsError } = await supabase
     .from("media_assets")
     .select("id, url, media_type")
-    .in("id", mediaIds);
+    .in("id", uniqueMediaIds);
+  if (assetsError) throw assetsError;
+  if ((assets ?? []).length !== uniqueMediaIds.length) {
+    throw new Error("Uma ou mais mídias selecionadas não estão disponíveis.");
+  }
   const byId = new Map((assets ?? []).map((a: any) => [a.id, a]));
   let cover = coverId && byId.get(coverId)?.media_type === "image" ? coverId : undefined;
   if (!cover) {
-    cover = mediaIds.find((id) => byId.get(id)?.media_type === "image") ?? mediaIds[0];
+    cover = uniqueMediaIds.find((id) => byId.get(id)?.media_type === "image") ?? uniqueMediaIds[0];
   }
-  const rows = mediaIds.map((media_id, i) => ({
+  const rows = uniqueMediaIds.map((media_id, i) => ({
     offer_id: offerId,
     media_id,
     position: i,
     is_cover: media_id === cover,
   }));
-  const { error } = await supabase.from("offer_media").insert(rows);
-  if (error) throw error;
+  const { error: upsertError } = await supabase
+    .from("offer_media")
+    .upsert(rows, { onConflict: "offer_id,media_id" });
+  if (upsertError) throw upsertError;
+
+  const { error: removeError } = await supabase
+    .from("offer_media")
+    .delete()
+    .eq("offer_id", offerId)
+    .not("media_id", "in", `(${uniqueMediaIds.join(",")})`);
+  if (removeError) throw removeError;
+
+  const { data: persisted, error: verifyError } = await supabase
+    .from("offer_media")
+    .select("media_id")
+    .eq("offer_id", offerId);
+  if (verifyError) throw verifyError;
+  if ((persisted ?? []).length !== rows.length) {
+    throw new Error("Não foi possível salvar todas as mídias da oferta.");
+  }
   const coverAsset: any = byId.get(cover);
   if (coverAsset?.url) {
-    await supabase.from("offers").update({ image_url: coverAsset.url }).eq("id", offerId);
+    const { error: coverError } = await supabase.from("offers").update({ image_url: coverAsset.url }).eq("id", offerId);
+    if (coverError) throw coverError;
   }
 }
 

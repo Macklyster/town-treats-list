@@ -57,15 +57,22 @@ export function MediaLibrary({ storeId, selectable, selected = [], coverId, onTo
     if (!files || !files.length) return;
     setBusy(true);
     let ok = 0;
+    const uploadedIds: string[] = [];
     for (const f of Array.from(files)) {
       try {
-        await uploadMediaFile(f, storeId);
+        const uploaded = await uploadMediaFile(f, storeId);
+        uploadedIds.push(uploaded.id);
         ok++;
       } catch (e: any) {
         toast.error(`${f.name}: ${e.message}`);
       }
     }
     setBusy(false);
+    if (selectable) {
+      uploadedIds.forEach((id) => {
+        if (!selected.includes(id)) onToggle?.(id);
+      });
+    }
     if (ok) toast.success(`${ok} mídia(s) enviada(s)`);
     load();
   };
