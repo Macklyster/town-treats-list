@@ -22,6 +22,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadRoles = async (uid: string | undefined) => {
@@ -31,6 +32,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
     setRoles((data ?? []).map((r) => r.role as AppRole));
+  };
+
+  const loadDisplayName = async (u: User | null | undefined) => {
+    if (!u) {
+      setDisplayName(null);
+      return;
+    }
+    const fallback =
+      u.user_metadata?.full_name ||
+      u.user_metadata?.name ||
+      u.email?.split("@")[0] ||
+      null;
+    const { data } = await supabase.from("profiles").select("full_name").eq("id", u.id).maybeSingle();
+    setDisplayName(data?.full_name?.trim() || fallback);
   };
 
   useEffect(() => {
