@@ -53,12 +53,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(s);
       setUser(s?.user ?? null);
       // defer to avoid deadlocks
-      setTimeout(() => loadRoles(s?.user?.id), 0);
+      setTimeout(() => {
+        loadRoles(s?.user?.id);
+        loadDisplayName(s?.user);
+      }, 0);
     });
     supabase.auth.getSession().then(({ data: { session: s } }) => {
       setSession(s);
       setUser(s?.user ?? null);
-      loadRoles(s?.user?.id).finally(() => setLoading(false));
+      Promise.all([loadRoles(s?.user?.id), loadDisplayName(s?.user)]).finally(() =>
+        setLoading(false),
+      );
     });
     return () => sub.subscription.unsubscribe();
   }, []);
@@ -67,6 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     user,
     session,
     roles,
+    displayName,
     loading,
     isAdmin: roles.includes("admin"),
     isLojista: roles.includes("lojista") || roles.includes("admin"),
