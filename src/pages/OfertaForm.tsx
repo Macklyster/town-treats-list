@@ -63,6 +63,8 @@ export default function OfertaForm() {
   const sub = useSubscription(storeId);
   const { defaultHours: flashDefaultHours } = useFlashSettings();
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodId[]>([]);
+  const [mediaItems, setMediaItems] = useState<OfferMediaItem[]>([]);
+  const [coverMediaId, setCoverMediaId] = useState<string | undefined>(undefined);
   const [form, setForm] = useState({
     title: "",
     category_slug: "",
