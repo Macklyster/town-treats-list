@@ -1,0 +1,2 @@
+CREATE POLICY "Public reads media assets used by offers" ON public.media_assets FOR SELECT USING (EXISTS (SELECT 1 FROM public.offer_media om WHERE om.media_id = media_assets.id));
+GRANT SELECT ON public.media_assets TO anon;
