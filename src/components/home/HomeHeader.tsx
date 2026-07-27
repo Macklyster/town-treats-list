@@ -3,6 +3,7 @@ import { CalendarDays, Gavel, Heart, LogOut, MapPin, Menu, Search, Shield, Spark
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCity } from "@/hooks/useCity";
+import { greeting } from "@/lib/home-api";
 import logoAsset from "@/assets/logo-menu.png.asset.json";
 const logo = logoAsset.url;
 import { CategoryChips } from "./CategoryChips";
@@ -15,8 +16,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export const HomeHeader = () => {
-  const { user, isAdmin, isLojista, signOut } = useAuth();
+  const { user, displayName, isAdmin, isLojista, signOut } = useAuth();
   const { city, openSelector } = useCity();
+  const greetingText = user ? greeting(displayName) : null;
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -90,7 +92,7 @@ export const HomeHeader = () => {
               <DropdownMenuTrigger asChild>
                 <button className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep transition">
                   <UserIcon className="h-4 w-4" />
-                  Minha conta
+                  {greetingText || "Minha conta"}
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="z-[110] w-56">
@@ -234,7 +236,7 @@ export const HomeHeader = () => {
             ) : (
               <div className="space-y-2">
                 <p className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Minha conta
+                  {greetingText || "Minha conta"}
                 </p>
                 <div className="grid grid-cols-2 gap-2">
                   <Link
