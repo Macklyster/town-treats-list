@@ -160,6 +160,22 @@ export default function OfertaForm() {
             scheduled_end_at: toLocal((data as any).scheduled_end_at),
           });
         }
+        // Load existing media for the offer
+        const existing = await listOfferMedia(id!).catch(() => []);
+        if (existing.length) {
+          const its: OfferMediaItem[] = existing.map((r) => ({
+            id: r.asset.id,
+            url: r.asset.url,
+            media_type: r.asset.media_type,
+            poster_url: r.asset.poster_url,
+            alt_text: r.asset.alt_text,
+            duration_seconds: r.asset.duration_seconds,
+          }));
+          setMediaItems(its);
+          const cover = existing.find((r) => r.is_cover)?.media_id
+            ?? its.find((i) => i.media_type === "image")?.id;
+          setCoverMediaId(cover);
+        }
       }
     })();
   }, [user?.id, id]);
