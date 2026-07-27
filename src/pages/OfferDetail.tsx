@@ -76,13 +76,30 @@ const OfferDetail = () => {
       if (searchParams.get("src") === "qr") {
         trackOfferEvent(o.id, "qr_scan");
       }
-      const [s, all, r] = await Promise.all([
+      const [s, all, r, mm] = await Promise.all([
         fetchStoreById(o.storeId),
         fetchOffers(),
         fetchOfferRatingSummary(o.id),
+        listOfferMedia(o.id).catch(() => []),
       ]);
       setStore(s);
       setRating(r);
+      const mapped: CarouselMedia[] = mm.map((r) => ({
+        id: r.asset.id,
+        url: r.asset.url,
+        media_type: r.asset.media_type,
+        poster_url: r.asset.poster_url,
+        alt_text: r.asset.alt_text,
+      }));
+      // Ensure cover-first ordering
+      mapped.sort((a, b) => {
+        const ai = mm.find((x) => x.media_id === a.id);
+        const bi = mm.find((x) => x.media_id === b.id);
+        if (ai?.is_cover) return -1;
+        if (bi?.is_cover) return 1;
+        return (ai?.position ?? 0) - (bi?.position ?? 0);
+      });
+      setMedia(mapped);
       setRelated(
         all
           .filter((x) => x.id !== o.id && (x.storeId === o.storeId || x.category === o.category))
