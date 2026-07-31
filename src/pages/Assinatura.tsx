@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { useTrialSettings } from "@/hooks/useTrialSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
@@ -63,6 +64,7 @@ const CANCEL_REASONS = [
 
 export default function Assinatura() {
   const { user } = useAuth();
+  const { trialDays } = useTrialSettings();
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const [plans, setPlans] = useState<Plan[]>([]);
