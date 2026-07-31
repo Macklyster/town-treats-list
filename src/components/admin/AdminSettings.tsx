@@ -18,6 +18,7 @@ const schema = z.object({
   scheduled_offer_max_lead_days: z.number().int().min(1).max(180),
   offer_approval_sla_hours: z.number().int().min(1).max(168),
   offer_min_validity_hours: z.number().int().min(1).max(168),
+  trial_default_days: z.number().int().min(1).max(365),
 });
 
 type Initial = {
@@ -31,6 +32,7 @@ type Initial = {
   schedMaxLead: number;
   slaHours: number;
   minValidity: number;
+  trialDays: number;
 };
 
 export const AdminSettings = () => {
@@ -44,6 +46,7 @@ export const AdminSettings = () => {
   const [schedMaxLead, setSchedMaxLead] = useState<string>("30");
   const [slaHours, setSlaHours] = useState<string>("24");
   const [minValidity, setMinValidity] = useState<string>("6");
+  const [trialDays, setTrialDays] = useState<string>("14");
   const [initial, setInitial] = useState<Initial>({
     flash: 2,
     review: 3,
@@ -55,6 +58,7 @@ export const AdminSettings = () => {
     schedMaxLead: 30,
     slaHours: 24,
     minValidity: 6,
+    trialDays: 14,
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -64,7 +68,7 @@ export const AdminSettings = () => {
     supabase
       .from("app_settings")
       .select(
-        "flash_default_hours, review_prompt_hours, group_offer_max_active_per_store, social_proof_min_views_today, social_proof_min_viewers_now, social_proof_now_window_minutes, scheduled_offer_min_lead_hours, scheduled_offer_max_lead_days, offer_approval_sla_hours, offer_min_validity_hours",
+        "flash_default_hours, review_prompt_hours, group_offer_max_active_per_store, social_proof_min_views_today, social_proof_min_viewers_now, social_proof_now_window_minutes, scheduled_offer_min_lead_hours, scheduled_offer_max_lead_days, offer_approval_sla_hours, offer_min_validity_hours, trial_default_days",
       )
       .eq("id", true)
       .maybeSingle()
@@ -80,6 +84,7 @@ export const AdminSettings = () => {
         const sxl = (data as any)?.scheduled_offer_max_lead_days ?? 30;
         const sla = (data as any)?.offer_approval_sla_hours ?? 24;
         const mv = (data as any)?.offer_min_validity_hours ?? 6;
+        const td = (data as any)?.trial_default_days ?? 14;
         setFlashHours(String(f));
         setReviewHours(String(r));
         setGroupMax(String(g));
@@ -90,7 +95,8 @@ export const AdminSettings = () => {
         setSchedMaxLead(String(sxl));
         setSlaHours(String(sla));
         setMinValidity(String(mv));
-        setInitial({ flash: f, review: r, groupMax: g, spMinViews: sv, spMinNow: sn, spWindow: sw, schedMinLead: sml, schedMaxLead: sxl, slaHours: sla, minValidity: mv });
+        setTrialDays(String(td));
+        setInitial({ flash: f, review: r, groupMax: g, spMinViews: sv, spMinNow: sn, spWindow: sw, schedMinLead: sml, schedMaxLead: sxl, slaHours: sla, minValidity: mv, trialDays: td });
         setLoading(false);
       });
   }, []);
@@ -105,7 +111,8 @@ export const AdminSettings = () => {
     Number(schedMinLead) !== initial.schedMinLead ||
     Number(schedMaxLead) !== initial.schedMaxLead ||
     Number(slaHours) !== initial.slaHours ||
-    Number(minValidity) !== initial.minValidity;
+    Number(minValidity) !== initial.minValidity ||
+    Number(trialDays) !== initial.trialDays;
 
   const handleSave = async () => {
     setError(null);
@@ -120,6 +127,7 @@ export const AdminSettings = () => {
       scheduled_offer_max_lead_days: Number(schedMaxLead),
       offer_approval_sla_hours: Number(slaHours),
       offer_min_validity_hours: Number(minValidity),
+      trial_default_days: Number(trialDays),
     });
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Valor inválido");
@@ -153,6 +161,7 @@ export const AdminSettings = () => {
       schedMaxLead: parsed.data.scheduled_offer_max_lead_days,
       slaHours: parsed.data.offer_approval_sla_hours,
       minValidity: parsed.data.offer_min_validity_hours,
+      trialDays: parsed.data.trial_default_days,
     });
     toast.success("Configurações salvas");
   };
@@ -369,6 +378,32 @@ export const AdminSettings = () => {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle>Período de teste grátis</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 max-w-md">
+          <div className="space-y-2">
+            <Label htmlFor="trial_default_days">Dias grátis padrão</Label>
+            <Input
+              id="trial_default_days"
+              type="number"
+              min={1}
+              max={365}
+              step={1}
+              value={trialDays}
+              disabled={loading || saving}
+              onChange={(e) => { setTrialDays(e.target.value); setError(null); }}
+            />
+            <p className="text-sm text-muted-foreground">
+              Vale para a primeira assinatura mensal paga de cada loja no checkout e é o valor sugerido
+              ao aprovar um lojista. Na aba <strong>Lojas</strong> é possível definir um período
+              diferente por loja (negócios fechados pelo comercial). De 1 a 365 dias.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
       {error && <p className="text-sm font-medium text-destructive">{error}</p>}
 
       <div className="flex gap-2">
@@ -389,6 +424,7 @@ export const AdminSettings = () => {
               setSchedMaxLead(String(initial.schedMaxLead));
               setSlaHours(String(initial.slaHours));
               setMinValidity(String(initial.minValidity));
+              setTrialDays(String(initial.trialDays));
               setError(null);
             }}
             disabled={saving}
