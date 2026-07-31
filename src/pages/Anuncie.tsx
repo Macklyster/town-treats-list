@@ -93,6 +93,8 @@ const CONSULTANT_WHATSAPP = "5544991630747";
 const Anuncie = () => {
   const [submitting, setSubmitting] = useState(false);
   const [cycle, setCycle] = useState<"monthly" | "yearly">("monthly");
+  const { trialDays } = useTrialSettings();
+  const faq = useMemo(() => buildFaq(trialDays), [trialDays]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
