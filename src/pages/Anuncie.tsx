@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useTrialSettings } from "@/hooks/useTrialSettings";
 import { motion } from "framer-motion";
 import { SEO } from "@/components/seo/SEO";
 import { HomeHeader } from "@/components/home/HomeHeader";
@@ -48,7 +49,7 @@ const steps = [
   { icon: TrendingUp, t: "Vende mais", d: "Clientes te contatam direto pelo WhatsApp ou loja." },
 ];
 
-const faq = [
+const buildFaq = (trialDays: number) => [
   {
     q: "Como cadastro minha empresa?",
     a: "Crie sua conta na plataforma. Após a assinatura e aprovação, você cadastra sua loja e, uma vez aprovada, já pode publicar anúncios.",
@@ -128,7 +129,7 @@ const Anuncie = () => {
     <div className="min-h-screen bg-background">
       <SEO
         title="Anuncie sua loja — Planos a partir de R$ 0 | OfertasFly"
-        description="Cadastre sua loja na OfertasFly, publique ofertas e cupons para a sua cidade. Planos com 14 dias grátis, sem fidelidade. Comece a vender mais hoje."
+        description={`Cadastre sua loja na OfertasFly, publique ofertas e cupons para a sua cidade. Planos com ${trialDays} dias grátis, sem fidelidade. Comece a vender mais hoje.`}
         path="/anuncie"
         jsonLd={{
           "@context": "https://schema.org",
