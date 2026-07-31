@@ -45,6 +45,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { OfferBulkBar } from "@/components/cms/OfferBulkBar";
 import { duplicateOffer } from "@/lib/media-api";
+import { StoreApproveDialog } from "@/components/admin/StoreApproveDialog";
 
 type Category = {
   slug: string;
@@ -85,6 +86,9 @@ type AdminStore = {
   plan_slug?: string | null;
   plan_name?: string | null;
   subscription_status?: string | null;
+  trial_days_override?: number | null;
+  trial_granted_at?: string | null;
+  trial_ends_at?: string | null;
 };
 
 const ELIGIBLE_PLANS = new Set(["destaque", "plus"]);
@@ -102,6 +106,7 @@ export default function Admin() {
   const [invisivelCount, setInvisivelCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedOffers, setSelectedOffers] = useState<string[]>([]);
+  const [approveStore, setApproveStore] = useState<AdminStore | null>(null);
 
   const toggleSelect = (id: string) =>
     setSelectedOffers((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -143,12 +148,12 @@ export default function Admin() {
         .order("created_at", { ascending: false }),
       supabase
         .from("stores")
-        .select("id,name,approved,owner_id,featured_badge")
+        .select("id,name,approved,owner_id,featured_badge,trial_days_override,trial_granted_at")
         .order("created_at", { ascending: false }),
       supabase.from("categories").select("slug,name,icon,sort_order").order("sort_order", { ascending: true }),
       supabase
         .from("subscriptions")
-        .select("store_id,status,plan:plans(slug,name,sort_order)")
+        .select("store_id,status,current_period_end,plan:plans(slug,name,sort_order)")
         .order("created_at", { ascending: false }),
       supabase.from("events" as any).select("*", { count: "exact", head: true }),
       supabase.from("notifications_log" as any).select("*", { count: "exact", head: true }),
@@ -157,7 +162,10 @@ export default function Admin() {
       supabase.from("auction_offers" as any).select("*", { count: "exact", head: true }),
       supabase.from("geo_offers" as any).select("*", { count: "exact", head: true }),
     ]);
-    const subsByStore = new Map<string, { plan_slug: string | null; plan_name: string | null; status: string }>();
+    const subsByStore = new Map<
+      string,
+      { plan_slug: string | null; plan_name: string | null; status: string; current_period_end: string | null }
+    >();
     (subs ?? []).forEach((row: any) => {
       if (!row.store_id) return;
       const existing = subsByStore.get(row.store_id);
@@ -168,6 +176,7 @@ export default function Admin() {
           plan_slug: row.plan?.slug ?? null,
           plan_name: row.plan?.name ?? null,
           status: row.status,
+          current_period_end: row.current_period_end ?? null,
         });
       }
     });
@@ -180,6 +189,7 @@ export default function Admin() {
           plan_slug: sub?.plan_slug ?? null,
           plan_name: sub?.plan_name ?? null,
           subscription_status: sub?.status ?? null,
+          trial_ends_at: sub?.status === "trialing" ? sub?.current_period_end ?? null : null,
         } as AdminStore;
       }),
     );
@@ -420,6 +430,7 @@ export default function Admin() {
                           <th className="py-2">Nome</th>
                           <th>Status</th>
                           <th>Plano</th>
+                          <th>Teste grátis</th>
                           <th>Selo Destaque</th>
                           <th className="text-right">Ações</th>
                         </tr>
@@ -454,6 +465,18 @@ export default function Admin() {
                                   <span className="text-muted-foreground">—</span>
                                 )}
                               </td>
+                              <td className="text-muted-foreground">
+                                {s.trial_ends_at ? (
+                                  <Badge variant="default">
+                                    Trial {s.trial_days_override ?? "—"}d até{" "}
+                                    {new Date(s.trial_ends_at).toLocaleDateString("pt-BR")}
+                                  </Badge>
+                                ) : s.trial_days_override ? (
+                                  <span className="text-xs">{s.trial_days_override} dias no checkout</span>
+                                ) : (
+                                  <span className="text-xs">Padrão</span>
+                                )}
+                              </td>
                               <td>
                                 {eligible || checked ? (
                                   switchEl
@@ -472,7 +495,11 @@ export default function Admin() {
                                 <Button
                                   size="sm"
                                   variant={s.approved ? "outline" : "accent"}
-                                  onClick={() => updateStore(s.id, { approved: !s.approved })}
+                                  onClick={() =>
+                                    s.approved
+                                      ? updateStore(s.id, { approved: false })
+                                      : setApproveStore(s)
+                                  }
                                 >
                                   {s.approved ? "Suspender" : "Aprovar"}
                                 </Button>
@@ -484,6 +511,12 @@ export default function Admin() {
                     </table>
                   </div>
                 </TooltipProvider>
+                <StoreApproveDialog
+                  open={!!approveStore}
+                  onOpenChange={(v) => !v && setApproveStore(null)}
+                  store={approveStore}
+                  onDone={load}
+                />
             </SectionCard>
           </TabsContent>
 
