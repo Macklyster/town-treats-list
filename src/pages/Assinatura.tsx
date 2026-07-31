@@ -127,7 +127,7 @@ export default function Assinatura() {
     load();
     if (params.get("success")) {
       if (params.get("trial")) {
-        toast.success("Seus 14 dias grátis começaram! Aproveite todos os recursos do plano.");
+        toast.success(`Seus ${trialDays} dias grátis começaram! Aproveite todos os recursos do plano.`);
       } else {
         toast.success("Pagamento concluído! Aguardando confirmação...");
       }
@@ -342,10 +342,10 @@ export default function Assinatura() {
                     <Sparkles className="h-3 w-3" /> Oferta de boas-vindas
                   </div>
                   <h2 className="text-2xl font-bold leading-tight md:text-3xl">
-                    Teste qualquer plano pago por <span className="text-accent">14 dias grátis</span>.
+                    Teste qualquer plano pago por <span className="text-accent">{trialDays} dias grátis</span>.
                   </h2>
                   <p className="mt-1 max-w-xl text-sm opacity-90 md:text-base">
-                    Sem cobrança hoje. Cancele a qualquer momento dentro dos 14 dias e não pague nada.
+                    Sem cobrança hoje. Cancele a qualquer momento dentro dos {trialDays} dias e não pague nada.
                   </p>
                 </div>
               </div>
@@ -407,7 +407,7 @@ export default function Assinatura() {
               const Icon = catalog.icon;
               const yearlyAvailable = !isFreePlan && !!catalog.priceCentsYearly;
               const isYearly = cycle === "yearly" && yearlyAvailable;
-              // Yearly subscriptions don't get the 14-day trial (2 free months already baked into the yearly price).
+              // Yearly subscriptions don't get the trial (2 free months already baked into the yearly price).
               const showTrial = !isFreePlan && !isYearly && trialEligible && !paidActive;
               return (
                 <Card
@@ -416,7 +416,7 @@ export default function Assinatura() {
                 >
                   {showTrial && !isCurrent ? (
                     <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground shadow-md">
-                      <Gift className="h-3 w-3" /> 14 DIAS GRÁTIS
+                      <Gift className="h-3 w-3" /> {trialDays} DIAS GRÁTIS
                     </span>
                   ) : (
                     catalog.highlight && !isCurrent && (
@@ -439,7 +439,7 @@ export default function Assinatura() {
                       <div className="mt-2">
                         <div className="text-display text-foreground">
                           R$ 0
-                          <span className="text-sm font-normal text-muted-foreground"> nos 14 primeiros dias</span>
+                          <span className="text-sm font-normal text-muted-foreground"> nos {trialDays} primeiros dias</span>
                         </div>
                         <p className="mt-1 text-xs text-muted-foreground">
                           Depois, {formatBRL(catalog.priceCents)}{catalog.period} · cancele antes e não pague nada
@@ -501,14 +501,14 @@ export default function Assinatura() {
                             : paidActive
                             ? "Mudar para este plano"
                             : showTrial
-                            ? "Começar 14 dias grátis"
+                            ? `Começar ${trialDays} dias grátis`
                             : isYearly
                             ? "Assinar plano anual"
                             : "Assinar"}
                         </Button>
                         {showTrial && (
                           <p className="mt-2 text-center text-[11px] leading-snug text-muted-foreground">
-                            Sem cobrança nos primeiros 14 dias · Cancele quando quiser · Sem multa
+                            Sem cobrança nos primeiros {trialDays} dias · Cancele quando quiser · Sem multa
                           </p>
                         )}
                         {isYearly && !showTrial && (

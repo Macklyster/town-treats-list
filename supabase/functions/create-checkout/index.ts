@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
     if (!plan_id || !store_id) return new Response(JSON.stringify({ error: "missing fields" }), { status: 400, headers: corsHeaders });
 
     const { data: plan } = await supabase.from("plans").select("*").eq("id", plan_id).single();
-    const { data: store } = await supabase.from("stores").select("id,owner_id,name").eq("id", store_id).single();
+    const { data: store } = await supabase.from("stores").select("id,owner_id,name,trial_days_override").eq("id", store_id).single();
     if (!plan || !store || store.owner_id !== user.id) {
       return new Response(JSON.stringify({ error: "invalid" }), { status: 403, headers: corsHeaders });
     }
@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Trial eligibility: 14 days free for first-ever paid subscription on this store.
+    // Trial eligibility: free days (admin-configurable)  for first-ever paid subscription on this store.
     // Disqualifies any prior subscription on a paid plan (price_cents > 0), regardless of status.
     let trialEligible = true;
     if (existing && existing.length > 0) {
@@ -63,8 +63,19 @@ Deno.serve(async (req) => {
         }
       }
     }
-    // Yearly subscriptions don't get the 14-day trial (the 2 free months are already baked into the yearly price).
+    // Yearly subscriptions don't get the trial (the 2 free months are already baked into the yearly price).
     const trialApplied = cycle === "monthly" && trialEligible && (plan.price_cents ?? 0) > 0;
+
+    // Trial length: per-store override defined by admin, else global default from app_settings.
+    const { data: settings } = await supabase
+      .from("app_settings")
+      .select("trial_default_days")
+      .eq("id", true)
+      .maybeSingle();
+    const trialDays = Math.min(
+      365,
+      Math.max(1, Number((store as any).trial_days_override ?? settings?.trial_default_days ?? 14)),
+    );
 
     // Resolve price for chosen cycle.
     const yearlyAmount = plan.price_cents_yearly ?? (plan.price_cents ? plan.price_cents * 10 : null);
@@ -126,7 +137,7 @@ Deno.serve(async (req) => {
         metadata: { user_id: user.id, store_id, plan_id, cycle, trial_applied: String(trialApplied) },
         ...(trialApplied
           ? {
-              trial_period_days: 14,
+              trial_period_days: trialDays,
               trial_settings: { end_behavior: { missing_payment_method: "cancel" } },
             }
           : {}),
@@ -135,7 +146,7 @@ Deno.serve(async (req) => {
       cancel_url: `${origin}/assinatura?canceled=1`,
     });
 
-    return new Response(JSON.stringify({ url: session.url, trial_applied: trialApplied }), {
+    return new Response(JSON.stringify({ url: session.url, trial_applied: trialApplied, trial_days: trialDays }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
