@@ -30,6 +30,7 @@ export type Database = {
           social_proof_min_viewers_now: number
           social_proof_min_views_today: number
           social_proof_now_window_minutes: number
+          trial_default_days: number
           updated_at: string
         }
         Insert: {
@@ -47,6 +48,7 @@ export type Database = {
           social_proof_min_viewers_now?: number
           social_proof_min_views_today?: number
           social_proof_now_window_minutes?: number
+          trial_default_days?: number
           updated_at?: string
         }
         Update: {
@@ -64,6 +66,7 @@ export type Database = {
           social_proof_min_viewers_now?: number
           social_proof_min_views_today?: number
           social_proof_now_window_minutes?: number
+          trial_default_days?: number
           updated_at?: string
         }
         Relationships: []
@@ -1323,6 +1326,8 @@ export type Database = {
           phone: string | null
           slug: string
           state: string
+          trial_days_override: number | null
+          trial_granted_at: string | null
           updated_at: string
           whatsapp: string | null
         }
@@ -1345,6 +1350,8 @@ export type Database = {
           phone?: string | null
           slug: string
           state?: string
+          trial_days_override?: number | null
+          trial_granted_at?: string | null
           updated_at?: string
           whatsapp?: string | null
         }
@@ -1367,6 +1374,8 @@ export type Database = {
           phone?: string | null
           slug?: string
           state?: string
+          trial_days_override?: number | null
+          trial_granted_at?: string | null
           updated_at?: string
           whatsapp?: string | null
         }
@@ -1580,6 +1589,10 @@ export type Database = {
         Args: { p_lat?: number; p_lng?: number; p_token: string }
         Returns: Json
       }
+      grant_store_trial: {
+        Args: { p_days: number; p_plan_slug: string; p_store_id: string }
+        Returns: Json
+      }
       group_offer_state: { Args: { p_token: string }; Returns: Json }
       has_role: {
         Args: {
@@ -1615,6 +1628,10 @@ export type Database = {
         Returns: undefined
       }
       reserve_auction: { Args: { p_token: string }; Returns: Json }
+      set_store_trial_override: {
+        Args: { p_days: number; p_store_id: string }
+        Returns: undefined
+      }
       store_intelligence: {
         Args: { p_days?: number; p_store_id: string }
         Returns: Json
@@ -1640,6 +1657,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      trial_default_days: { Args: never; Returns: number }
     }
     Enums: {
       app_role: "admin" | "lojista" | "consumer"

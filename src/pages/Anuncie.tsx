@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useTrialSettings } from "@/hooks/useTrialSettings";
 import { motion } from "framer-motion";
 import { SEO } from "@/components/seo/SEO";
 import { HomeHeader } from "@/components/home/HomeHeader";
@@ -48,7 +49,7 @@ const steps = [
   { icon: TrendingUp, t: "Vende mais", d: "Clientes te contatam direto pelo WhatsApp ou loja." },
 ];
 
-const faq = [
+const buildFaq = (trialDays: number) => [
   {
     q: "Como cadastro minha empresa?",
     a: "Crie sua conta na plataforma. Após a assinatura e aprovação, você cadastra sua loja e, uma vez aprovada, já pode publicar anúncios.",
@@ -66,8 +67,8 @@ const faq = [
     a: "Não. Os planos são mensais e você pode cancelar quando quiser.",
   },
   {
-    q: "Como funcionam os 14 dias grátis?",
-    a: "Em qualquer plano pago, sua primeira assinatura ganha 14 dias grátis. Você informa o cartão para garantir a continuidade após o período, mas nada é cobrado nos 14 primeiros dias. Cancele antes do fim do trial e não paga nada.",
+    q: `Como funcionam os ${trialDays} dias grátis?`,
+    a: `Em qualquer plano pago, sua primeira assinatura ganha ${trialDays} dias grátis. Você informa o cartão para garantir a continuidade após o período, mas nada é cobrado nos ${trialDays} primeiros dias. Cancele antes do fim do trial e não paga nada.`,
   },
   {
     q: "Posso agendar minha oferta para publicar em outra data?",
@@ -92,6 +93,8 @@ const CONSULTANT_WHATSAPP = "5544991630747";
 const Anuncie = () => {
   const [submitting, setSubmitting] = useState(false);
   const [cycle, setCycle] = useState<"monthly" | "yearly">("monthly");
+  const { trialDays } = useTrialSettings();
+  const faq = useMemo(() => buildFaq(trialDays), [trialDays]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -128,7 +131,7 @@ const Anuncie = () => {
     <div className="min-h-screen bg-background">
       <SEO
         title="Anuncie sua loja — Planos a partir de R$ 0 | OfertasFly"
-        description="Cadastre sua loja na OfertasFly, publique ofertas e cupons para a sua cidade. Planos com 14 dias grátis, sem fidelidade. Comece a vender mais hoje."
+        description={`Cadastre sua loja na OfertasFly, publique ofertas e cupons para a sua cidade. Planos com ${trialDays} dias grátis, sem fidelidade. Comece a vender mais hoje.`}
         path="/anuncie"
         jsonLd={{
           "@context": "https://schema.org",
@@ -246,7 +249,7 @@ const Anuncie = () => {
                       <h3 className="text-xl font-semibold leading-tight md:text-2xl">
                         Teste qualquer plano mensal por{" "}
                         <span className="inline-block rounded-xl bg-background px-2.5 py-0.5 text-foreground shadow-soft">
-                          14 dias grátis
+                          {trialDays} dias grátis
                         </span>
                       </h3>
                       <p className="mt-1 max-w-xl text-xs opacity-90 md:text-sm">
@@ -321,7 +324,7 @@ const Anuncie = () => {
                   ? "Começar grátis"
                   : isYearly
                   ? "Assinar plano anual"
-                  : "Começar 14 dias grátis";
+                  : `Começar ${trialDays} dias grátis`;
                 return (
                   <div
                     key={p.name}
@@ -331,7 +334,7 @@ const Anuncie = () => {
                   >
                     {showTrial ? (
                       <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-primary px-3 py-1 text-[11px] font-bold text-primary-foreground shadow-md">
-                        <Gift className="h-3 w-3" /> 14 DIAS GRÁTIS
+                        <Gift className="h-3 w-3" /> {trialDays} DIAS GRÁTIS
                       </span>
                     ) : isYearly ? (
                       <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-primary-deep px-3 py-1 text-[11px] font-bold text-primary-foreground shadow-md">
@@ -354,7 +357,7 @@ const Anuncie = () => {
                           R$ 0
                           <span className="text-sm font-normal text-muted-foreground">
                             {" "}
-                            /14 dias
+                            /{trialDays} dias
                           </span>
                         </div>
                         <p className="mt-1 text-xs text-muted-foreground">
