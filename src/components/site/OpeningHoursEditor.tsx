@@ -17,7 +17,7 @@ const DAY_LABELS: Record<DayKey, string> = {
   thu: "Quinta",
   fri: "Sexta",
   sat: "Sábado",
-  sun: "Domingo",
+  sun: "Domingo e Feriado",
 };
 
 export function defaultOpeningHours(): OpeningHours {
