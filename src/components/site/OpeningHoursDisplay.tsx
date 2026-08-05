@@ -8,7 +8,7 @@ const DAY_LABELS: Record<DayKey, string> = {
   thu: "Quinta",
   fri: "Sexta",
   sat: "Sábado",
-  sun: "Domingo",
+  sun: "Domingo e Feriado",
 };
 
 const JS_DAY_TO_KEY: Record<number, DayKey> = {

@@ -10,8 +10,7 @@ type SEOProps = {
   jsonLd?: Record<string, any> | Record<string, any>[];
 };
 
-const DEFAULT_IMAGE =
-  "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/65f44c74-abe4-46f6-a8d9-13c46531593e/id-preview-3b8fa968--934a5999-9206-4081-8a15-19b03ff711c8.lovable.app-1777863985812.png";
+const DEFAULT_IMAGE = "https://ofertasfly.com.br/og-image.jpg";
 
 export const SEO = ({
   title,
