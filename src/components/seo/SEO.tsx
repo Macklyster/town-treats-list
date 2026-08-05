@@ -10,7 +10,7 @@ type SEOProps = {
   jsonLd?: Record<string, any> | Record<string, any>[];
 };
 
-const DEFAULT_IMAGE = "https://ofertasfly.com.br/og-image.jpg";
+const DEFAULT_IMAGE = "https://ofertasfly.com.br/og-image.jpg?v=2";
 
 export const SEO = ({
   title,
