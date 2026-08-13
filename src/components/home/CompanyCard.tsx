@@ -15,8 +15,9 @@ export const CompanyCard = ({ company }: { company: UICompany }) => {
     loc && company.latitude && company.longitude
       ? haversineKm(loc, { lat: company.latitude, lng: company.longitude })
       : null;
-  const score = company.flyscore ?? Math.round(90 + (company.name.length % 10));
-  const rating = 4.5 + ((company.name.length % 5) * 0.1);
+  const score = company.flyscore ?? 0;
+  const rating = company.avg_rating ?? 0;
+  const reviewCount = company.review_count ?? 0;
 
   const hasHours = hasOpeningHours(company.opening_hours);
   const openStatus = hasHours ? isOpenNow(normalizeOpeningHours(company.opening_hours)) : null;
