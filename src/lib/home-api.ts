@@ -181,8 +181,8 @@ export async function fetchRecommendedCompanies(
   const enriched: UIRecommendedCompany[] = list.map((s) => {
     const cats = storeCats.get(s.id) ?? [];
     const interestBoost = cats.reduce((acc, c) => acc + (weights.get(c) ?? 0), 0);
-    const count = ratingCount.get(s.id) ?? 0;
-    const avg = count ? (ratingSum.get(s.id) ?? 0) / count : 0;
+    const count = ratings.get(s.id)?.count ?? 0;
+    const avg = ratings.get(s.id)?.avg ?? 0;
     const fly = scoreMap.get(s.id) ?? 0;
     const match =
       interestBoost * 3 +
