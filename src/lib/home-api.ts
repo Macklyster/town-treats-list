@@ -101,12 +101,15 @@ export async function fetchFeaturedCompanies(city?: { city: string; state: strin
   for (const r of (catRows ?? []) as any[]) {
     if (!catMap.has(r.store_id) && r.category_slug) catMap.set(r.store_id, r.category_slug);
   }
+  const ratings = await fetchStoreRatings(ids);
   return list.map((s) => ({
     ...s,
     category_slug: catMap.get(s.id) ?? null,
     cover_url: s.cover_url ?? FALLBACK_COVER,
     flyscore: scoreMap.get(s.id) ?? null,
     opening_hours: s.opening_hours ?? null,
+    avg_rating: ratings.get(s.id)?.avg ?? 0,
+    review_count: ratings.get(s.id)?.count ?? 0,
   }));
 }
 
