@@ -16,7 +16,33 @@ export type UICompany = {
   cover_url?: string | null;
   flyscore?: number | null;
   opening_hours?: any;
+  avg_rating?: number;
+  review_count?: number;
 };
+
+/** Contagem/média reais de avaliações aprovadas por loja. */
+export async function fetchStoreRatings(
+  storeIds: string[],
+): Promise<Map<string, { avg: number; count: number }>> {
+  const map = new Map<string, { avg: number; count: number }>();
+  if (!storeIds.length) return map;
+  const { data } = await supabase
+    .from("offer_reviews")
+    .select("store_id,rating")
+    .eq("status", "approved")
+    .in("store_id", storeIds);
+  const sums = new Map<string, { sum: number; count: number }>();
+  for (const r of (data ?? []) as any[]) {
+    const cur = sums.get(r.store_id) ?? { sum: 0, count: 0 };
+    cur.sum += Number(r.rating);
+    cur.count += 1;
+    sums.set(r.store_id, cur);
+  }
+  for (const [sid, v] of sums) {
+    map.set(sid, { avg: Number((v.sum / v.count).toFixed(1)), count: v.count });
+  }
+  return map;
+}
 
 export type UIEvent = {
   id: string;
