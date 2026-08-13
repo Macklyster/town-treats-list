@@ -15,8 +15,9 @@ export const CompanyCard = ({ company }: { company: UICompany }) => {
     loc && company.latitude && company.longitude
       ? haversineKm(loc, { lat: company.latitude, lng: company.longitude })
       : null;
-  const score = company.flyscore ?? Math.round(90 + (company.name.length % 10));
-  const rating = 4.5 + ((company.name.length % 5) * 0.1);
+  const score = company.flyscore ?? 0;
+  const rating = company.avg_rating ?? 0;
+  const reviewCount = company.review_count ?? 0;
 
   const hasHours = hasOpeningHours(company.opening_hours);
   const openStatus = hasHours ? isOpenNow(normalizeOpeningHours(company.opening_hours)) : null;
@@ -75,13 +76,23 @@ export const CompanyCard = ({ company }: { company: UICompany }) => {
         </div>
 
         <div className="mt-3 flex items-center gap-2 text-xs">
-          <div className="inline-flex items-center gap-1">
-            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-            <span className="font-semibold text-foreground">{rating.toFixed(1)}</span>
-            <span className="text-muted-foreground">({Math.round(150 + (score % 300))})</span>
-          </div>
-          <span className="text-muted-foreground">·</span>
-          <span className="font-semibold text-primary">FlyScore {score}</span>
+          {reviewCount > 0 ? (
+            <div className="inline-flex items-center gap-1">
+              <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+              <span className="font-semibold text-foreground">{rating.toFixed(1)}</span>
+              <span className="text-muted-foreground">
+                ({reviewCount} avaliaç{reviewCount === 1 ? "ão" : "ões"})
+              </span>
+            </div>
+          ) : (
+            <span className="text-muted-foreground">Sem avaliações</span>
+          )}
+          {score > 0 && (
+            <>
+              <span className="text-muted-foreground">·</span>
+              <span className="font-semibold text-primary">FlyScore {score}</span>
+            </>
+          )}
         </div>
 
         <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">

@@ -16,7 +16,33 @@ export type UICompany = {
   cover_url?: string | null;
   flyscore?: number | null;
   opening_hours?: any;
+  avg_rating?: number;
+  review_count?: number;
 };
+
+/** Contagem/média reais de avaliações aprovadas por loja. */
+export async function fetchStoreRatings(
+  storeIds: string[],
+): Promise<Map<string, { avg: number; count: number }>> {
+  const map = new Map<string, { avg: number; count: number }>();
+  if (!storeIds.length) return map;
+  const { data } = await supabase
+    .from("offer_reviews")
+    .select("store_id,rating")
+    .eq("status", "approved")
+    .in("store_id", storeIds);
+  const sums = new Map<string, { sum: number; count: number }>();
+  for (const r of (data ?? []) as any[]) {
+    const cur = sums.get(r.store_id) ?? { sum: 0, count: 0 };
+    cur.sum += Number(r.rating);
+    cur.count += 1;
+    sums.set(r.store_id, cur);
+  }
+  for (const [sid, v] of sums) {
+    map.set(sid, { avg: Number((v.sum / v.count).toFixed(1)), count: v.count });
+  }
+  return map;
+}
 
 export type UIEvent = {
   id: string;
@@ -75,12 +101,15 @@ export async function fetchFeaturedCompanies(city?: { city: string; state: strin
   for (const r of (catRows ?? []) as any[]) {
     if (!catMap.has(r.store_id) && r.category_slug) catMap.set(r.store_id, r.category_slug);
   }
+  const ratings = await fetchStoreRatings(ids);
   return list.map((s) => ({
     ...s,
     category_slug: catMap.get(s.id) ?? null,
     cover_url: s.cover_url ?? FALLBACK_COVER,
     flyscore: scoreMap.get(s.id) ?? null,
     opening_hours: s.opening_hours ?? null,
+    avg_rating: ratings.get(s.id)?.avg ?? 0,
+    review_count: ratings.get(s.id)?.count ?? 0,
   }));
 }
 
@@ -138,21 +167,7 @@ export async function fetchRecommendedCompanies(
     storeCats.set(sid, sorted.map((s) => s[0]));
   }
 
-  const ratingSum = new Map<string, number>();
-  const ratingCount = new Map<string, number>();
-  const allOfferIds = [...offerToStore.keys()];
-  if (allOfferIds.length) {
-    const { data: reviews } = await supabase
-      .from("offer_reviews")
-      .select("offer_id,rating")
-      .in("offer_id", allOfferIds);
-    for (const r of (reviews ?? []) as any[]) {
-      const sid = offerToStore.get(r.offer_id);
-      if (!sid) continue;
-      ratingSum.set(sid, (ratingSum.get(sid) ?? 0) + Number(r.rating));
-      ratingCount.set(sid, (ratingCount.get(sid) ?? 0) + 1);
-    }
-  }
+  const ratings = await fetchStoreRatings(ids);
 
   let weights = new Map<string, number>();
   if (userId) {
@@ -166,8 +181,8 @@ export async function fetchRecommendedCompanies(
   const enriched: UIRecommendedCompany[] = list.map((s) => {
     const cats = storeCats.get(s.id) ?? [];
     const interestBoost = cats.reduce((acc, c) => acc + (weights.get(c) ?? 0), 0);
-    const count = ratingCount.get(s.id) ?? 0;
-    const avg = count ? (ratingSum.get(s.id) ?? 0) / count : 0;
+    const count = ratings.get(s.id)?.count ?? 0;
+    const avg = ratings.get(s.id)?.avg ?? 0;
     const fly = scoreMap.get(s.id) ?? 0;
     const match =
       interestBoost * 3 +
