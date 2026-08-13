@@ -167,21 +167,7 @@ export async function fetchRecommendedCompanies(
     storeCats.set(sid, sorted.map((s) => s[0]));
   }
 
-  const ratingSum = new Map<string, number>();
-  const ratingCount = new Map<string, number>();
-  const allOfferIds = [...offerToStore.keys()];
-  if (allOfferIds.length) {
-    const { data: reviews } = await supabase
-      .from("offer_reviews")
-      .select("offer_id,rating")
-      .in("offer_id", allOfferIds);
-    for (const r of (reviews ?? []) as any[]) {
-      const sid = offerToStore.get(r.offer_id);
-      if (!sid) continue;
-      ratingSum.set(sid, (ratingSum.get(sid) ?? 0) + Number(r.rating));
-      ratingCount.set(sid, (ratingCount.get(sid) ?? 0) + 1);
-    }
-  }
+  const ratings = await fetchStoreRatings(ids);
 
   let weights = new Map<string, number>();
   if (userId) {
