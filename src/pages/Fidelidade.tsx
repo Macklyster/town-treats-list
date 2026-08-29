@@ -76,6 +76,7 @@ export default function Fidelidade() {
       <SEO
         title="FlyPontos — programa de fidelidade das lojas parceiras"
         description="Acumule pontos nas lojas parceiras da OfertasFly, evolua de nível, cumpra missões e troque por cupons, brindes e cashback."
+        path="/fidelidade"
       />
       <Header />
       <main className="container flex-1 space-y-8 py-8 md:py-10">
@@ -165,7 +166,7 @@ export default function Fidelidade() {
                     <Card key={c.store_id}>
                       <CardContent className="space-y-4 p-5">
                         <div className="flex items-center gap-3">
-                          <StoreAvatar name={c.store_name} logoUrl={c.logo_url} size="md" />
+                          <StoreAvatar name={c.store_name} logoUrl={c.logo_url} size={48} />
                           <div className="min-w-0 flex-1">
                             <Link
                               to={`/fidelidade/${c.store_slug}`}
@@ -268,7 +269,7 @@ export default function Fidelidade() {
                     <span className="w-6 text-center font-bold text-muted-foreground">
                       {i + 1}
                     </span>
-                    <StoreAvatar name={r.name} logoUrl={r.avatar_url} size="sm" />
+                    <StoreAvatar name={r.name} logoUrl={r.avatar_url} size={32} />
                     <span className="flex-1 truncate font-medium">{r.name}</span>
                     {r.badges > 0 && (
                       <Badge variant="outline" className="gap-1">
