@@ -64,6 +64,8 @@ const Cupons = lazyWithReload(() => import("./pages/Cupons.tsx"));
 const Historico = lazyWithReload(() => import("./pages/Historico.tsx"));
 const MeusCupons = lazyWithReload(() => import("./pages/MeusCupons.tsx"));
 const Fidelidade = lazyWithReload(() => import("./pages/Fidelidade.tsx"));
+const FidelidadeLoja = lazyWithReload(() => import("./pages/FidelidadeLoja.tsx"));
+const PainelFidelidadePage = lazyWithReload(() => import("./pages/PainelFidelidadePage.tsx"));
 
 const MeuCupomDetalhe = lazyWithReload(() => import("./pages/MeuCupomDetalhe.tsx"));
 const Favoritos = lazyWithReload(() => import("./pages/Favoritos.tsx"));
@@ -148,6 +150,7 @@ const App = () => (
                 <Route path="/anuncie" element={<Anuncie />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/fidelidade" element={<Fidelidade />} />
+                <Route path="/fidelidade/:slug" element={<FidelidadeLoja />} />
 
                 <Route
                   path="/meus-cupons"
@@ -250,6 +253,14 @@ const App = () => (
                   element={
                     <ProtectedRoute requireRole="lojista">
                       <Inteligencia />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/painel-lojista/fidelidade"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <PainelFidelidadePage />
                     </ProtectedRoute>
                   }
                 />

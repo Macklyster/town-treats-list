@@ -18,6 +18,8 @@ import {
   UIOffer,
 } from "@/lib/offers-api";
 import { absoluteUrl, citySlug, cityLabel } from "@/lib/slug";
+import { StoreLoyaltyTeaser } from "@/components/loyalty/StoreLoyaltyTeaser";
+
 import { OpeningHoursDisplay, hasOpeningHours } from "@/components/site/OpeningHoursDisplay";
 import { Instagram, MapPin, Phone, Tag } from "lucide-react";
 
@@ -127,6 +129,9 @@ const StorePage = () => {
           crumbs={crumbs}
           aside={heroAside}
         />
+
+        <StoreLoyaltyTeaser storeId={store.id} storeSlug={storeSlug} />
+
 
         {(store.address || store.phone || store.instagram) && (
           <SectionCard eyebrow="Contato" title="Como chegar e falar com a loja">
