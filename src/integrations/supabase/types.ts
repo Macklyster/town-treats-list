@@ -1112,6 +1112,41 @@ export type Database = {
           },
         ]
       }
+      loyalty_referrals: {
+        Row: {
+          created_at: string
+          credited_at: string | null
+          id: string
+          invited_user_id: string
+          referrer_user_id: string
+          store_id: string
+        }
+        Insert: {
+          created_at?: string
+          credited_at?: string | null
+          id?: string
+          invited_user_id: string
+          referrer_user_id: string
+          store_id: string
+        }
+        Update: {
+          created_at?: string
+          credited_at?: string | null
+          id?: string
+          invited_user_id?: string
+          referrer_user_id?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_referrals_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       loyalty_rewards: {
         Row: {
           active: boolean
@@ -2191,6 +2226,17 @@ export type Database = {
         Args: { p_city: string; p_limit?: number }
         Returns: Json
       }
+      loyalty_expire_points: { Args: never; Returns: Json }
+      loyalty_expiring_soon: {
+        Args: { p_days?: number }
+        Returns: {
+          expires_at: string
+          points: number
+          store_id: string
+          store_name: string
+          user_id: string
+        }[]
+      }
       loyalty_fulfill_redemption: { Args: { p_code: string }; Returns: Json }
       loyalty_issue_qr: { Args: never; Returns: Json }
       loyalty_join: { Args: { p_store_id: string }; Returns: Json }
@@ -2207,6 +2253,10 @@ export type Database = {
         Returns: undefined
       }
       loyalty_redeem_reward: { Args: { p_reward_id: string }; Returns: Json }
+      loyalty_register_referral: {
+        Args: { p_referrer_id: string; p_store_id: string }
+        Returns: Json
+      }
       loyalty_rules: { Args: { _store_id: string }; Returns: Json }
       loyalty_state: { Args: { p_store_id: string }; Returns: Json }
       loyalty_store_report: {
