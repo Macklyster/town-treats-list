@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1787962481355,
+      "tag": "0000_create_loyalty_program",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1787963019007,
+      "tag": "0001_loyalty_functions",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1787963065559,
+      "tag": "0002_loyalty_referrals_and_expiry",
+      "breakpoints": true
+    }
+  ]
+}
