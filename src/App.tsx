@@ -145,6 +145,8 @@ const App = () => (
                 <Route path="/evento/:slug" element={<EventoPublic />} />
                 <Route path="/anuncie" element={<Anuncie />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/fidelidade" element={<Fidelidade />} />
+
                 <Route
                   path="/meus-cupons"
                   element={
