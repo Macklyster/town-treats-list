@@ -128,6 +128,9 @@ const StorePage = () => {
           aside={heroAside}
         />
 
+        <StoreLoyaltyTeaser storeId={store.id} storeSlug={storeSlug} />
+
+
         {(store.address || store.phone || store.instagram) && (
           <SectionCard eyebrow="Contato" title="Como chegar e falar com a loja">
             <ul className="grid gap-3 text-sm text-foreground md:grid-cols-3">
