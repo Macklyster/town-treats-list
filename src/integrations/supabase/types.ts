@@ -718,6 +718,562 @@ export type Database = {
           },
         ]
       }
+      loyalty_badges: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string | null
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      loyalty_checkin_tokens: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string
+          id: string
+          used_at: string | null
+          used_by_store: string | null
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          used_at?: string | null
+          used_by_store?: string | null
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          used_at?: string | null
+          used_by_store?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_checkin_tokens_used_by_store_fkey"
+            columns: ["used_by_store"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_ledger: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          credit_cents: number
+          expired_at: string | null
+          expires_at: string | null
+          id: string
+          idempotency_key: string | null
+          kind: Database["public"]["Enums"]["loyalty_ledger_kind"]
+          membership_id: string | null
+          points: number
+          reason: string
+          ref_id: string | null
+          ref_type: string | null
+          store_id: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents?: number
+          created_at?: string
+          credit_cents?: number
+          expired_at?: string | null
+          expires_at?: string | null
+          id?: string
+          idempotency_key?: string | null
+          kind?: Database["public"]["Enums"]["loyalty_ledger_kind"]
+          membership_id?: string | null
+          points?: number
+          reason: string
+          ref_id?: string | null
+          ref_type?: string | null
+          store_id: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          credit_cents?: number
+          expired_at?: string | null
+          expires_at?: string | null
+          id?: string
+          idempotency_key?: string | null
+          kind?: Database["public"]["Enums"]["loyalty_ledger_kind"]
+          membership_id?: string | null
+          points?: number
+          reason?: string
+          ref_id?: string | null
+          ref_type?: string | null
+          store_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_ledger_membership_id_fkey"
+            columns: ["membership_id"]
+            isOneToOne: false
+            referencedRelation: "loyalty_memberships"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loyalty_ledger_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_memberships: {
+        Row: {
+          credit_cents: number
+          id: string
+          joined_at: string
+          last_visit_at: string | null
+          points_balance: number
+          points_lifetime: number
+          store_id: string
+          tier_id: string | null
+          updated_at: string
+          user_id: string
+          visits_count: number
+        }
+        Insert: {
+          credit_cents?: number
+          id?: string
+          joined_at?: string
+          last_visit_at?: string | null
+          points_balance?: number
+          points_lifetime?: number
+          store_id: string
+          tier_id?: string | null
+          updated_at?: string
+          user_id: string
+          visits_count?: number
+        }
+        Update: {
+          credit_cents?: number
+          id?: string
+          joined_at?: string
+          last_visit_at?: string | null
+          points_balance?: number
+          points_lifetime?: number
+          store_id?: string
+          tier_id?: string | null
+          updated_at?: string
+          user_id?: string
+          visits_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_memberships_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loyalty_memberships_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "loyalty_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_mission_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          mission_id: string
+          period_start: string
+          progress: number
+          store_id: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          mission_id: string
+          period_start?: string
+          progress?: number
+          store_id?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          mission_id?: string
+          period_start?: string
+          progress?: number
+          store_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_mission_progress_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "loyalty_missions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loyalty_mission_progress_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_missions: {
+        Row: {
+          active: boolean
+          badge_slug: string | null
+          created_at: string
+          description: string | null
+          goal_count: number
+          goal_type: string
+          id: string
+          period: string
+          reward_points: number
+          store_id: string | null
+          title: string
+        }
+        Insert: {
+          active?: boolean
+          badge_slug?: string | null
+          created_at?: string
+          description?: string | null
+          goal_count?: number
+          goal_type: string
+          id?: string
+          period?: string
+          reward_points?: number
+          store_id?: string | null
+          title: string
+        }
+        Update: {
+          active?: boolean
+          badge_slug?: string | null
+          created_at?: string
+          description?: string | null
+          goal_count?: number
+          goal_type?: string
+          id?: string
+          period?: string
+          reward_points?: number
+          store_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_missions_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_programs: {
+        Row: {
+          active: boolean
+          cashback_percent: number
+          checkin_radius_meters: number
+          created_at: string
+          id: string
+          points_expire_months: number
+          rules: Json
+          store_id: string
+          terms: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          cashback_percent?: number
+          checkin_radius_meters?: number
+          created_at?: string
+          id?: string
+          points_expire_months?: number
+          rules?: Json
+          store_id: string
+          terms?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          cashback_percent?: number
+          checkin_radius_meters?: number
+          created_at?: string
+          id?: string
+          points_expire_months?: number
+          rules?: Json
+          store_id?: string
+          terms?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_programs_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_redemptions: {
+        Row: {
+          code: string
+          coupon_redemption_id: string | null
+          created_at: string
+          fulfilled_at: string | null
+          id: string
+          points_spent: number
+          reward_id: string
+          status: Database["public"]["Enums"]["loyalty_redemption_status"]
+          store_id: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          coupon_redemption_id?: string | null
+          created_at?: string
+          fulfilled_at?: string | null
+          id?: string
+          points_spent?: number
+          reward_id: string
+          status?: Database["public"]["Enums"]["loyalty_redemption_status"]
+          store_id: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          coupon_redemption_id?: string | null
+          created_at?: string
+          fulfilled_at?: string | null
+          id?: string
+          points_spent?: number
+          reward_id?: string
+          status?: Database["public"]["Enums"]["loyalty_redemption_status"]
+          store_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_redemptions_coupon_redemption_id_fkey"
+            columns: ["coupon_redemption_id"]
+            isOneToOne: false
+            referencedRelation: "coupon_redemptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loyalty_redemptions_reward_id_fkey"
+            columns: ["reward_id"]
+            isOneToOne: false
+            referencedRelation: "loyalty_rewards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loyalty_redemptions_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_rewards: {
+        Row: {
+          active: boolean
+          coupon_id: string | null
+          created_at: string
+          credit_cents: number
+          description: string | null
+          id: string
+          image_url: string | null
+          kind: Database["public"]["Enums"]["loyalty_reward_kind"]
+          min_tier_id: string | null
+          points_cost: number
+          stock: number | null
+          store_id: string
+          title: string
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          active?: boolean
+          coupon_id?: string | null
+          created_at?: string
+          credit_cents?: number
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          kind?: Database["public"]["Enums"]["loyalty_reward_kind"]
+          min_tier_id?: string | null
+          points_cost?: number
+          stock?: number | null
+          store_id: string
+          title: string
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          active?: boolean
+          coupon_id?: string | null
+          created_at?: string
+          credit_cents?: number
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          kind?: Database["public"]["Enums"]["loyalty_reward_kind"]
+          min_tier_id?: string | null
+          points_cost?: number
+          stock?: number | null
+          store_id?: string
+          title?: string
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_rewards_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loyalty_rewards_min_tier_id_fkey"
+            columns: ["min_tier_id"]
+            isOneToOne: false
+            referencedRelation: "loyalty_tiers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loyalty_rewards_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_tiers: {
+        Row: {
+          created_at: string
+          early_access: boolean
+          extra_discount_percent: number
+          id: string
+          min_points: number
+          multiplier: number
+          name: string
+          perks: Json
+          sort_order: number
+          store_id: string
+        }
+        Insert: {
+          created_at?: string
+          early_access?: boolean
+          extra_discount_percent?: number
+          id?: string
+          min_points?: number
+          multiplier?: number
+          name: string
+          perks?: Json
+          sort_order?: number
+          store_id: string
+        }
+        Update: {
+          created_at?: string
+          early_access?: boolean
+          extra_discount_percent?: number
+          id?: string
+          min_points?: number
+          multiplier?: number
+          name?: string
+          perks?: Json
+          sort_order?: number
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_tiers_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_user_badges: {
+        Row: {
+          badge_slug: string
+          created_at: string
+          id: string
+          store_id: string | null
+          user_id: string
+        }
+        Insert: {
+          badge_slug: string
+          created_at?: string
+          id?: string
+          store_id?: string | null
+          user_id: string
+        }
+        Update: {
+          badge_slug?: string
+          created_at?: string
+          id?: string
+          store_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_user_badges_badge_slug_fkey"
+            columns: ["badge_slug"]
+            isOneToOne: false
+            referencedRelation: "loyalty_badges"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "loyalty_user_badges_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       media_assets: {
         Row: {
           alt_text: string | null
@@ -1163,6 +1719,8 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          loyalty_ranking_opt_in: boolean
+          nickname: string | null
           phone: string | null
           updated_at: string
         }
@@ -1171,6 +1729,8 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id: string
+          loyalty_ranking_opt_in?: boolean
+          nickname?: string | null
           phone?: string | null
           updated_at?: string
         }
@@ -1179,6 +1739,8 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          loyalty_ranking_opt_in?: boolean
+          nickname?: string | null
           phone?: string | null
           updated_at?: string
         }
@@ -1673,6 +2235,9 @@ export type Database = {
       event_status: "pending" | "approved" | "rejected" | "expired"
       geo_offer_status: "pending" | "approved" | "expired" | "rejected"
       group_offer_status: "pending" | "approved" | "rejected" | "expired"
+      loyalty_ledger_kind: "credit" | "debit" | "expire"
+      loyalty_redemption_status: "pending" | "fulfilled" | "canceled"
+      loyalty_reward_kind: "coupon" | "credit" | "gift" | "tier_benefit"
       offer_status: "pending" | "approved" | "rejected" | "paused"
       offer_type: "desconto" | "cupom" | "brinde"
       review_status: "pending" | "approved" | "rejected"
@@ -1826,6 +2391,9 @@ export const Constants = {
       event_status: ["pending", "approved", "rejected", "expired"],
       geo_offer_status: ["pending", "approved", "expired", "rejected"],
       group_offer_status: ["pending", "approved", "rejected", "expired"],
+      loyalty_ledger_kind: ["credit", "debit", "expire"],
+      loyalty_redemption_status: ["pending", "fulfilled", "canceled"],
+      loyalty_reward_kind: ["coupon", "credit", "gift", "tier_benefit"],
       offer_status: ["pending", "approved", "rejected", "paused"],
       offer_type: ["desconto", "cupom", "brinde"],
       review_status: ["pending", "approved", "rejected"],
