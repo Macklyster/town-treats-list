@@ -18,6 +18,8 @@ import {
   UIOffer,
 } from "@/lib/offers-api";
 import { absoluteUrl, citySlug, cityLabel } from "@/lib/slug";
+import { StoreLoyaltyTeaser } from "@/components/loyalty/StoreLoyaltyTeaser";
+
 import { OpeningHoursDisplay, hasOpeningHours } from "@/components/site/OpeningHoursDisplay";
 import { Instagram, MapPin, Phone, Tag } from "lucide-react";
 
