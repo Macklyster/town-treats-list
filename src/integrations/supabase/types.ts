@@ -2167,6 +2167,65 @@ export type Database = {
         Args: { lat1: number; lat2: number; lng1: number; lng2: number }
         Returns: number
       }
+      loyalty_award: {
+        Args: {
+          _amount_cents?: number
+          _apply_multiplier?: boolean
+          _credit_cents?: number
+          _daily_cap?: number
+          _idem?: string
+          _points: number
+          _reason: string
+          _ref_id?: string
+          _ref_type?: string
+          _store_id: string
+          _user_id: string
+        }
+        Returns: string
+      }
+      loyalty_checkin: {
+        Args: { p_lat: number; p_lng: number; p_store_id: string }
+        Returns: Json
+      }
+      loyalty_city_ranking: {
+        Args: { p_city: string; p_limit?: number }
+        Returns: Json
+      }
+      loyalty_fulfill_redemption: { Args: { p_code: string }; Returns: Json }
+      loyalty_issue_qr: { Args: never; Returns: Json }
+      loyalty_join: { Args: { p_store_id: string }; Returns: Json }
+      loyalty_progress_missions: {
+        Args: { _reason: string; _store_id: string; _user_id: string }
+        Returns: undefined
+      }
+      loyalty_reason_points: {
+        Args: { _reason: string; _store_id: string }
+        Returns: number
+      }
+      loyalty_recalc_tier: {
+        Args: { _membership_id: string }
+        Returns: undefined
+      }
+      loyalty_redeem_reward: { Args: { p_reward_id: string }; Returns: Json }
+      loyalty_rules: { Args: { _store_id: string }; Returns: Json }
+      loyalty_state: { Args: { p_store_id: string }; Returns: Json }
+      loyalty_store_report: {
+        Args: { p_days?: number; p_store_id: string }
+        Returns: Json
+      }
+      loyalty_track_action: {
+        Args: { p_reason: string; p_ref_id?: string; p_store_id: string }
+        Returns: Json
+      }
+      loyalty_validate_purchase: {
+        Args: {
+          p_amount_cents: number
+          p_code: string
+          p_use_credit_cents?: number
+        }
+        Returns: Json
+      }
+      loyalty_wallet: { Args: never; Returns: Json }
       offer_rating_summary: { Args: { p_offer_id: string }; Returns: Json }
       offer_social_proof: { Args: { p_offer_ids: string[] }; Returns: Json }
       pending_reviews_for_user: {
