@@ -172,6 +172,11 @@ export default function PainelLojista() {
             store ? (
               <>
                 <Button asChild variant="outline">
+                  <Link to="/painel-lojista/fidelidade">
+                    <Sparkles className="h-4 w-4" /> Fidelidade
+                  </Link>
+                </Button>
+                <Button asChild variant="outline">
                   <Link to="/painel-lojista/cupons">
                     <Ticket className="h-4 w-4" /> Cupons
                   </Link>
