@@ -162,6 +162,7 @@ export const HomeHeader = () => {
             { to: "/leiloes", label: "Leilões", icon: Gavel },
             { to: "/ofertas-invisiveis", label: "Invisíveis", icon: Sparkles },
             { to: "/eventos", label: "Eventos", icon: CalendarDays },
+            { to: "/fidelidade", label: "Fidelidade", icon: Sparkles },
             { to: "/meus-cupons", label: "Meus Cupons", icon: Ticket },
             { to: "/anuncie", label: "Anuncie", icon: Sparkles },
           ].map(({ to, label, icon: Icon, end }) => (
@@ -213,6 +214,7 @@ export const HomeHeader = () => {
                 { to: "/leiloes", label: "Leilões", icon: Gavel },
                 { to: "/ofertas-invisiveis", label: "Invisíveis", icon: Sparkles },
                 { to: "/eventos", label: "Eventos", icon: CalendarDays },
+                { to: "/fidelidade", label: "Fidelidade", icon: Sparkles },
                 { to: "/meus-cupons", label: "Meus Cupons", icon: Ticket },
                 { to: "/anuncie", label: "Anuncie", icon: Sparkles },
               ].map(({ to, label, icon: Icon }) => (
