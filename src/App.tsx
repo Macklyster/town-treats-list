@@ -67,6 +67,7 @@ const Fidelidade = lazyWithReload(() => import("./pages/Fidelidade.tsx"));
 const FidelidadeLoja = lazyWithReload(() => import("./pages/FidelidadeLoja.tsx"));
 const PainelFidelidadePage = lazyWithReload(() => import("./pages/PainelFidelidadePage.tsx"));
 const PainelAjuda = lazyWithReload(() => import("./pages/PainelAjuda.tsx"));
+const FidelidadeComoFunciona = lazyWithReload(() => import("./pages/FidelidadeComoFunciona.tsx"));
 
 
 const MeuCupomDetalhe = lazyWithReload(() => import("./pages/MeuCupomDetalhe.tsx"));
@@ -153,6 +154,7 @@ const App = () => (
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/fidelidade" element={<Fidelidade />} />
                 <Route path="/fidelidade/:slug" element={<FidelidadeLoja />} />
+                <Route path="/fidelidade/como-funciona" element={<FidelidadeComoFunciona />} />
 
                 <Route
                   path="/meus-cupons"
