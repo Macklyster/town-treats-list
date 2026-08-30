@@ -85,6 +85,25 @@ export default function Notificacoes() {
     toast.success("Notificações desativadas");
   };
 
+  const handleTest = async () => {
+    try {
+      const r = await push.sendTest();
+      if (!r || r.recipients === 0) {
+        toast.error("Nenhum dispositivo registrado. Ative as notificações novamente.");
+        return;
+      }
+      if (r.success === 0) {
+        toast.error("Registro expirado. Desative e ative as notificações novamente.");
+        await push.refreshStatus();
+        return;
+      }
+      toast.success("Teste enviado. Se não aparecer, verifique as permissões do sistema.");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Falha ao enviar o teste.");
+    }
+  };
+
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
