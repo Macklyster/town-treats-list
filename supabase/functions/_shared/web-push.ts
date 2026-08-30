@@ -6,6 +6,13 @@ const VAPID_PUBLIC = Deno.env.get("VAPID_PUBLIC_KEY")!;
 const VAPID_PRIVATE = Deno.env.get("VAPID_PRIVATE_KEY")!;
 const VAPID_SUBJECT = Deno.env.get("VAPID_SUBJECT") ?? "mailto:contato@ofertasfly.com.br";
 
+console.log("vapid config", {
+  publicPrefix: (VAPID_PUBLIC ?? "").slice(0, 12),
+  publicLength: (VAPID_PUBLIC ?? "").length,
+  privateLength: (VAPID_PRIVATE ?? "").length,
+  subject: VAPID_SUBJECT,
+});
+
 function b64urlToUint8(b64url: string): Uint8Array {
   const pad = "=".repeat((4 - (b64url.length % 4)) % 4);
   const b64 = (b64url + pad).replace(/-/g, "+").replace(/_/g, "/");
@@ -178,12 +185,20 @@ export async function sendPush(sub: PushSub, payload: PushPayload): Promise<Send
       },
       body,
     });
+    if (res.status < 200 || res.status >= 300) {
+      let detail = "";
+      try { detail = (await res.text()).slice(0, 400); } catch (_) { /* ignore */ }
+      console.error("push rejected", res.status, sub.endpoint.slice(0, 60), detail);
+    } else {
+      console.log("push accepted", res.status, sub.endpoint.slice(0, 60));
+    }
     return {
       endpoint: sub.endpoint,
       status: res.status,
       ok: res.status >= 200 && res.status < 300,
       remove: res.status === 404 || res.status === 410,
     };
+
   } catch (e) {
     console.error("sendPush error", sub.endpoint, e);
     return { endpoint: sub.endpoint, status: 0, ok: false, remove: false };
