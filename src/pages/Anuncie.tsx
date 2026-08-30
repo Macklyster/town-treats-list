@@ -88,7 +88,7 @@ const buildFaq = (trialDays: number) => [
   },
 ];
 
-const CONSULTANT_WHATSAPP = "5544991630747";
+const CONSULTANT_WHATSAPP = "5544997691237";
 
 const Anuncie = () => {
   const [submitting, setSubmitting] = useState(false);
