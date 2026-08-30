@@ -41,7 +41,7 @@ export const LOYALTY_FAQ_SECTIONS: LoyaltyFaqSection[] = [
       {
         q: "Preciso pagar para participar?",
         a: [
-          "Não. A participação é gratuita para o consumidor. Basta ter uma conta no OfertasFly e clicar em "Participar grátis" na página da loja.",
+          "Não. A participação é gratuita para o consumidor. Basta ter uma conta no OfertasFly e clicar em 'Participar grátis' na página da loja.",
         ],
         keywords: ["grátis", "pagar", "custo", "participar"],
       },
@@ -55,7 +55,7 @@ export const LOYALTY_FAQ_SECTIONS: LoyaltyFaqSection[] = [
       {
         q: "Como entro no programa de uma loja?",
         a: [
-          "Acesse a página da loja no OfertasFly, vá até a aba "Fidelidade" e clique em "Participar grátis". Pronto, você já começa a acumular pontos naquela loja.",
+          "Acesse a página da loja no OfertasFly, vá até a aba 'Fidelidade' e clique em 'Participar grátis'. Pronto, você já começa a acumular pontos naquela loja.",
         ],
         keywords: ["participar", "entrar", "cadastrar", "loja"],
       },
@@ -113,7 +113,7 @@ export const LOYALTY_FAQ_SECTIONS: LoyaltyFaqSection[] = [
       {
         q: "O que são missões?",
         a: [
-          "Missões são desafios com prazo, como "visite a loja 3 vezes este mês" ou "avalie 2 compras com foto". Ao completar, você recebe pontos extras ou selos.",
+          "Missões são desafios com prazo, como 'visite a loja 3 vezes este mês' ou 'avalie 2 compras com foto'. Ao completar, você recebe pontos extras ou selos.",
         ],
         keywords: ["missões", "desafios", "prêmios", "selos"],
       },
@@ -162,7 +162,7 @@ export const LOYALTY_FAQ_SECTIONS: LoyaltyFaqSection[] = [
       {
         q: "Como faço um resgate?",
         a: [
-          "Na página de fidelidade da loja, escolha uma recompensa e clique em "Resgatar". Se você tiver pontos suficientes e atender ao nível exigido, o resgate é confirmado na hora.",
+          "Na página de fidelidade da loja, escolha uma recompensa e clique em 'Resgatar'. Se você tiver pontos suficientes e atender ao nível exigido, o resgate é confirmado na hora.",
         ],
         keywords: ["resgatar", "como", "pontos", "nível"],
       },
@@ -253,7 +253,7 @@ export const LOYALTY_FAQ_SECTIONS: LoyaltyFaqSection[] = [
       {
         q: "Como entro no ranking?",
         a: [
-          "Na página de fidelidade, ative a opção "Participar do ranking". Você só aparece se quiser e se estiver acumulando pontos em lojas da sua cidade.",
+          "Na página de fidelidade, ative a opção 'Participar do ranking'. Você só aparece se quiser e se estiver acumulando pontos em lojas da sua cidade.",
         ],
         keywords: ["participar", "ranking", "ativar"],
       },
