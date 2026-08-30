@@ -19,7 +19,7 @@ const COLS = [
     title: "Institucional",
     links: [
       { to: "/", label: "Quem somos" },
-      { to: "/", label: "Como funciona" },
+      { to: "/fidelidade/como-funciona", label: "Como funciona" },
       { to: "/anuncie", label: "Para lojistas" },
       { to: "/", label: "Blog" },
       { to: "/politica-de-privacidade", label: "Política de Privacidade" },
@@ -30,7 +30,7 @@ const COLS = [
     title: "Ajuda",
     links: [
       { to: "/", label: "Central de ajuda" },
-      { to: "/", label: "Dúvidas frequentes" },
+      { to: "/fidelidade/como-funciona", label: "Dúvidas frequentes" },
       { to: "/", label: "Fale conosco" },
       { to: "/", label: "Segurança" },
     ],

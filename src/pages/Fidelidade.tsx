@@ -86,15 +86,20 @@ export default function Fidelidade() {
           subtitle="Cada loja parceira tem sua carteira de pontos. Compre, avalie, participe e troque por recompensas."
           crumbs={[{ label: "Início", to: "/" }, { label: "Fidelidade" }]}
           actions={
-            user ? (
-              <Button variant="accent" onClick={() => setQrOpen(true)}>
-                <QrCode className="h-4 w-4" /> Meu QR
+            <div className="flex flex-wrap gap-2">
+              {user ? (
+                <Button variant="accent" onClick={() => setQrOpen(true)}>
+                  <QrCode className="h-4 w-4" /> Meu QR
+                </Button>
+              ) : (
+                <Button asChild variant="accent">
+                  <Link to="/auth">Entrar</Link>
+                </Button>
+              )}
+              <Button asChild variant="outline">
+                <Link to="/fidelidade/como-funciona">Como funciona</Link>
               </Button>
-            ) : (
-              <Button asChild variant="accent">
-                <Link to="/auth">Entrar</Link>
-              </Button>
-            )
+            </div>
           }
         />
 
