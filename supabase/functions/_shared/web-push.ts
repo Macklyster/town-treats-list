@@ -178,12 +178,20 @@ export async function sendPush(sub: PushSub, payload: PushPayload): Promise<Send
       },
       body,
     });
+    if (res.status < 200 || res.status >= 300) {
+      let detail = "";
+      try { detail = (await res.text()).slice(0, 400); } catch (_) { /* ignore */ }
+      console.error("push rejected", res.status, sub.endpoint.slice(0, 60), detail);
+    } else {
+      console.log("push accepted", res.status, sub.endpoint.slice(0, 60));
+    }
     return {
       endpoint: sub.endpoint,
       status: res.status,
       ok: res.status >= 200 && res.status < 300,
       remove: res.status === 404 || res.status === 410,
     };
+
   } catch (e) {
     console.error("sendPush error", sub.endpoint, e);
     return { endpoint: sub.endpoint, status: 0, ok: false, remove: false };
