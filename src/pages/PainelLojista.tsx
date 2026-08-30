@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle, BarChart3, QrCode, Users, Share2, Copy, MessageCircle, Sparkles, Trash2, Ticket, History } from "lucide-react";
+import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle, BarChart3, QrCode, Users, Share2, Copy, MessageCircle, Sparkles, Trash2, Ticket, History, HelpCircle } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { OfferBulkBar } from "@/components/cms/OfferBulkBar";
 import { duplicateOffer } from "@/lib/media-api";
@@ -196,6 +196,12 @@ export default function PainelLojista() {
                     <BarChart3 className="h-4 w-4" /> Inteligência
                   </Link>
                 </Button>
+                <Button asChild variant="outline">
+                  <Link to="/painel-lojista/ajuda">
+                    <HelpCircle className="h-4 w-4" /> Ajuda
+                  </Link>
+                </Button>
+
                 <NewOfferDropdown isPlus={isPlus} hasActiveColetiva={!!activeColetiva} hasActiveLeilao={!!activeLeilao} hasActiveInvisivel={!!activeInvisivel} />
               </>
             ) : undefined

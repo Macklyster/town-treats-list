@@ -66,6 +66,8 @@ const MeusCupons = lazyWithReload(() => import("./pages/MeusCupons.tsx"));
 const Fidelidade = lazyWithReload(() => import("./pages/Fidelidade.tsx"));
 const FidelidadeLoja = lazyWithReload(() => import("./pages/FidelidadeLoja.tsx"));
 const PainelFidelidadePage = lazyWithReload(() => import("./pages/PainelFidelidadePage.tsx"));
+const PainelAjuda = lazyWithReload(() => import("./pages/PainelAjuda.tsx"));
+
 
 const MeuCupomDetalhe = lazyWithReload(() => import("./pages/MeuCupomDetalhe.tsx"));
 const Favoritos = lazyWithReload(() => import("./pages/Favoritos.tsx"));
@@ -288,6 +290,15 @@ const App = () => (
                     </ProtectedRoute>
                   }
                 />
+                <Route
+                  path="/painel-lojista/ajuda"
+                  element={
+                    <ProtectedRoute requireRole="lojista">
+                      <PainelAjuda />
+                    </ProtectedRoute>
+                  }
+                />
+
                 <Route
                   path="/admin"
                   element={
