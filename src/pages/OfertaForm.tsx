@@ -614,7 +614,16 @@ export default function OfertaForm() {
                       else toast.error(msg || "Falha ao enviar");
                       return;
                     }
-                    toast.success(`Notificação enviada para ${data?.success ?? 0} seguidor(es).`);
+                    const recipients = data?.recipients ?? 0;
+                    const success = data?.success ?? 0;
+                    if (recipients === 0) {
+                      toast.error("Nenhum seguidor com notificações ativas nesta loja.");
+                    } else if (success === 0) {
+                      toast.error("Nenhuma entrega aceita: os registros dos seguidores podem estar expirados.");
+                    } else {
+                      toast.success(`Notificação enviada para ${success} seguidor(es).`);
+                    }
+
                   }}
                 >
                   <Bell className="h-4 w-4" /> Notificar seguidores agora

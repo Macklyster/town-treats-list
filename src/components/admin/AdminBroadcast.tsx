@@ -45,9 +45,18 @@ export function AdminBroadcast() {
       toast.error((error as any).message || "Falha");
       return;
     }
-    toast.success(`Enviado para ${data?.success ?? 0}/${data?.recipients ?? 0} dispositivos.`);
+    const recipients = data?.recipients ?? 0;
+    const success = data?.success ?? 0;
+    if (recipients === 0) {
+      toast.error("Nenhum dispositivo inscrito para este público.");
+    } else if (success === 0) {
+      toast.error("Nenhuma entrega aceita pelos serviços de push. Registros podem estar expirados.");
+    } else {
+      toast.success(`Enviado para ${success}/${recipients} dispositivos.`);
+    }
     setTitle(""); setBody("");
     loadLogs();
+
   };
 
   return (

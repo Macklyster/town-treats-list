@@ -85,6 +85,25 @@ export default function Notificacoes() {
     toast.success("Notificações desativadas");
   };
 
+  const handleTest = async () => {
+    try {
+      const r = await push.sendTest();
+      if (!r || r.recipients === 0) {
+        toast.error("Nenhum dispositivo registrado. Ative as notificações novamente.");
+        return;
+      }
+      if (r.success === 0) {
+        toast.error("Registro expirado. Desative e ative as notificações novamente.");
+        await push.refreshStatus();
+        return;
+      }
+      toast.success("Teste enviado. Se não aparecer, verifique as permissões do sistema.");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Falha ao enviar o teste.");
+    }
+  };
+
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
@@ -116,16 +135,24 @@ export default function Notificacoes() {
               </Alert>
             )}
             {push.supported && (
-              push.subscribed ? (
-                <Button onClick={handleUnsubscribe} disabled={push.loading} variant="outline" size="lg">
-                  <BellOff className="h-4 w-4" /> Desativar notificações
-                </Button>
-              ) : (
-                <Button onClick={handleSubscribe} disabled={push.loading} variant="accent" size="lg">
-                  <Bell className="h-4 w-4" /> Ativar notificações
-                </Button>
-              )
+              <div className="flex flex-wrap gap-2">
+                {push.subscribed ? (
+                  <Button onClick={handleUnsubscribe} disabled={push.loading} variant="outline" size="lg">
+                    <BellOff className="h-4 w-4" /> Desativar notificações
+                  </Button>
+                ) : (
+                  <Button onClick={handleSubscribe} disabled={push.loading} variant="accent" size="lg">
+                    <Bell className="h-4 w-4" /> Ativar notificações
+                  </Button>
+                )}
+                {push.subscribed && (
+                  <Button onClick={handleTest} variant="outline" size="lg">
+                    <Bell className="h-4 w-4" /> Enviar teste para este dispositivo
+                  </Button>
+                )}
+              </div>
             )}
+
             {push.permission === "denied" && (
               <p className="text-xs text-muted-foreground">
                 Você bloqueou notificações. Habilite nas configurações do navegador para este site.
