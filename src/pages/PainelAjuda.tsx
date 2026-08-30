@@ -22,7 +22,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { SEO } from "@/components/site/SEO";
+import { SEO } from "@/components/seo/SEO";
 import { BEST_PRACTICES, FIRST_STEPS, HELP_SECTIONS } from "@/lib/help-content";
 
 const SUPPORT_EMAIL = "contato@ofertasfly.com.br";
@@ -73,8 +73,10 @@ export default function PainelAjuda() {
       <SEO
         title="Central de Ajuda do Lojista | OfertasFly"
         description="Tire todas as suas dúvidas sobre ofertas, mídias, cupons, eventos, fidelidade, FlyScore, inteligência e assinatura no OfertasFly."
+        path="/painel-lojista/ajuda"
         noindex
       />
+
       <Header />
       <main className="container flex-1 space-y-8 py-8 md:py-10">
         <PageHero
