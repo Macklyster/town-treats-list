@@ -116,16 +116,24 @@ export default function Notificacoes() {
               </Alert>
             )}
             {push.supported && (
-              push.subscribed ? (
-                <Button onClick={handleUnsubscribe} disabled={push.loading} variant="outline" size="lg">
-                  <BellOff className="h-4 w-4" /> Desativar notificações
-                </Button>
-              ) : (
-                <Button onClick={handleSubscribe} disabled={push.loading} variant="accent" size="lg">
-                  <Bell className="h-4 w-4" /> Ativar notificações
-                </Button>
-              )
+              <div className="flex flex-wrap gap-2">
+                {push.subscribed ? (
+                  <Button onClick={handleUnsubscribe} disabled={push.loading} variant="outline" size="lg">
+                    <BellOff className="h-4 w-4" /> Desativar notificações
+                  </Button>
+                ) : (
+                  <Button onClick={handleSubscribe} disabled={push.loading} variant="accent" size="lg">
+                    <Bell className="h-4 w-4" /> Ativar notificações
+                  </Button>
+                )}
+                {push.subscribed && (
+                  <Button onClick={handleTest} variant="outline" size="lg">
+                    <Bell className="h-4 w-4" /> Enviar teste para este dispositivo
+                  </Button>
+                )}
+              </div>
             )}
+
             {push.permission === "denied" && (
               <p className="text-xs text-muted-foreground">
                 Você bloqueou notificações. Habilite nas configurações do navegador para este site.
