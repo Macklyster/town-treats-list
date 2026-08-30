@@ -6,6 +6,13 @@ const VAPID_PUBLIC = Deno.env.get("VAPID_PUBLIC_KEY")!;
 const VAPID_PRIVATE = Deno.env.get("VAPID_PRIVATE_KEY")!;
 const VAPID_SUBJECT = Deno.env.get("VAPID_SUBJECT") ?? "mailto:contato@ofertasfly.com.br";
 
+console.log("vapid config", {
+  publicPrefix: (VAPID_PUBLIC ?? "").slice(0, 12),
+  publicLength: (VAPID_PUBLIC ?? "").length,
+  privateLength: (VAPID_PRIVATE ?? "").length,
+  subject: VAPID_SUBJECT,
+});
+
 function b64urlToUint8(b64url: string): Uint8Array {
   const pad = "=".repeat((4 - (b64url.length % 4)) % 4);
   const b64 = (b64url + pad).replace(/-/g, "+").replace(/_/g, "/");
