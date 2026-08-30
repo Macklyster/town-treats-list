@@ -83,13 +83,15 @@ export function ValidateCustomerDialog({ open, onOpenChange, onDone }: Props) {
         try {
           const found = await detector.detect(videoRef.current);
           const raw = found?.[0]?.rawValue as string | undefined;
-          const match = raw?.match(/(\d{6})/);
+          const cleaned = raw?.replace(/[^a-zA-Z0-9]/g, "").toUpperCase() ?? "";
+          const match = cleaned.match(/\d{6}/) ?? cleaned.match(/[A-Z0-9]{8}/);
           if (match) {
-            setCode(match[1]);
+            setCode(match[0]);
             stopCamera();
             toast.success("Código lido");
             return;
           }
+
         } catch {
           /* ignora frames inválidos */
         }
@@ -196,16 +198,19 @@ export function ValidateCustomerDialog({ open, onOpenChange, onDone }: Props) {
               />
             )}
             <div>
-              <Label>Código do cliente (6 dígitos)</Label>
+              <Label>Código do cliente (6 dígitos) ou do resgate (8 caracteres)</Label>
               <div className="flex gap-2">
                 <Input
-                  inputMode="numeric"
                   value={code}
                   maxLength={8}
-                  onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                  placeholder="000000"
+                  autoCapitalize="characters"
+                  onChange={(e) =>
+                    setCode(e.target.value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase().slice(0, 8))
+                  }
+                  placeholder="000000 / ABCD1234"
                   className="font-mono text-lg tracking-widest"
                 />
+
                 <Button variant="outline" onClick={scanning ? stopCamera : startCamera}>
                   <Camera className="h-4 w-4" />
                 </Button>
