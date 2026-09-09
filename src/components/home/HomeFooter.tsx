@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Instagram, Facebook, MessageCircle, Youtube } from "lucide-react";
-import logoAsset from "@/assets/logo-dark.png.asset.json";
+import logoAsset from "@/assets/logo-ofertasfly.png.asset.json";
 const logo = logoAsset.url;
 
 const COLS = [
@@ -42,7 +42,7 @@ export const HomeFooter = () => (
     <div className="container py-12 md:py-16">
       <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-1">
-          <img src={logo} alt="OfertasFly" className="h-14 w-auto" />
+          <img src={logo} alt="OfertasFly — Promoções que voam" className="h-14 w-auto brightness-0 invert" />
           <div className="mt-2 text-xs uppercase tracking-[0.14em] text-white/60">Descubra. Conecte. Valorize.</div>
           <p className="mt-4 text-sm text-white/70 leading-relaxed max-w-xs">
             A plataforma que conecta você ao melhor do comércio local.
