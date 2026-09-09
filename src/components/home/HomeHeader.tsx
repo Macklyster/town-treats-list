@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCity } from "@/hooks/useCity";
 import { greeting } from "@/lib/home-api";
-import logoAsset from "@/assets/logo-menu.png.asset.json";
+import logoAsset from "@/assets/logo-ofertasfly.png.asset.json";
 const logo = logoAsset.url;
 import { CategoryChips } from "./CategoryChips";
 import {
@@ -50,7 +50,7 @@ export const HomeHeader = () => {
 
       <div className="container flex h-16 items-center gap-4 md:h-20">
         <Link to="/" className="flex items-center gap-2 shrink-0" aria-label="OfertasFly">
-          <img src={logo} alt="OfertasFly — Descubra. Conecte. Valorize." className="h-12 w-auto md:h-14" />
+          <img src={logo} alt="OfertasFly — Promoções que voam" className="h-11 w-auto md:h-14" />
         </Link>
 
         <form onSubmit={submit} className="hidden md:flex flex-1 max-w-xl mx-auto">
