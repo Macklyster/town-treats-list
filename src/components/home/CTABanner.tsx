@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Store } from "lucide-react";
+import companyIconAsset from "@/assets/logo-icone-cadastrar.png.asset.json";
 
 export const CTABanner = () => (
   <section className="container py-8 md:py-12">
@@ -7,8 +8,8 @@ export const CTABanner = () => (
       <div className="absolute -right-10 -top-10 h-56 w-56 rounded-full bg-white/10 blur-3xl" aria-hidden />
       <div className="relative flex flex-col md:flex-row md:items-center gap-6 md:gap-8">
         <div className="flex items-center gap-4 flex-1">
-          <div className="h-14 w-14 shrink-0 rounded-2xl bg-white/15 backdrop-blur-md grid place-items-center">
-            <img src="/favicon.png" alt="" className="h-8 w-auto" />
+          <div className="h-16 w-16 shrink-0 grid place-items-center md:h-20 md:w-20">
+            <img src={companyIconAsset.url} alt="" className="h-full w-full object-contain" />
           </div>
           <div className="min-w-0">
             <h3 className="text-lg md:text-xl font-semibold text-primary-foreground leading-tight">
