@@ -52,6 +52,7 @@ export default {
           DEFAULT: "hsl(var(--charcoal))",
           foreground: "hsl(var(--charcoal-foreground))",
         },
+        footer: "hsl(var(--footer))",
         hot: {
           DEFAULT: "hsl(var(--hot))",
           foreground: "hsl(var(--hot-foreground))",
