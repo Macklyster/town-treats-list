@@ -80,21 +80,6 @@ Deno.serve(async (req) => {
       httpClient: Stripe.createFetchHttpClient(),
     });
 
-    // Resolve target price: prefer stored stripe_price_id; else create one on-the-fly
-    let targetPriceId = plan.stripe_price_id as string | null;
-    if (!targetPriceId) {
-      const product = await stripe.products.create({
-        name: `OfertasFly - Plano ${plan.name}`,
-      });
-      const price = await stripe.prices.create({
-        product: product.id,
-        currency: "brl",
-        unit_amount: plan.price_cents,
-        recurring: { interval: "month" },
-      });
-      targetPriceId = price.id;
-    }
-
     const stripeSub = await stripe.subscriptions.retrieve(current.stripe_subscription_id);
     const itemId = stripeSub.items.data[0]?.id;
     if (!itemId) {
@@ -102,6 +87,47 @@ Deno.serve(async (req) => {
         JSON.stringify({ error: "Assinatura inválida no Stripe." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    // Keep the customer's current billing interval unless another cycle was requested.
+    const currentInterval = stripeSub.items.data[0]?.price?.recurring?.interval;
+    const cycle: "monthly" | "yearly" =
+      requestedCycle ?? (currentInterval === "year" ? "yearly" : "monthly");
+    const interval: "month" | "year" = cycle === "yearly" ? "year" : "month";
+
+    const yearlyAmount = plan.price_cents_yearly ?? (plan.price_cents ? plan.price_cents * 10 : null);
+    const amount = cycle === "yearly" ? yearlyAmount : plan.price_cents;
+    if (!amount || amount <= 0) {
+      return new Response(
+        JSON.stringify({ error: "Este plano não pode ser assinado neste ciclo." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Resolve target price for the chosen cycle; reuse a matching Stripe price when possible.
+    let targetPriceId =
+      (cycle === "yearly" ? plan.stripe_price_id_yearly : plan.stripe_price_id) as string | null;
+    if (!targetPriceId) {
+      const label = `OfertasFly - Plano ${plan.name}${cycle === "yearly" ? " (Anual)" : ""}`;
+      const existing = await stripe.prices.search({
+        query: `active:'true' AND currency:'brl' AND metadata['ofertasfly_plan']:'${plan.slug ?? plan.id}' AND metadata['ofertasfly_cycle']:'${cycle}'`,
+        limit: 1,
+      });
+      targetPriceId = existing.data[0]?.id ?? null;
+      if (!targetPriceId) {
+        const product = await stripe.products.create({ name: label });
+        const price = await stripe.prices.create({
+          product: product.id,
+          currency: "brl",
+          unit_amount: amount,
+          recurring: { interval },
+          metadata: {
+            ofertasfly_plan: String(plan.slug ?? plan.id),
+            ofertasfly_cycle: cycle,
+          },
+        });
+        targetPriceId = price.id;
+      }
     }
 
     const updated = await stripe.subscriptions.update(current.stripe_subscription_id, {
@@ -113,6 +139,7 @@ Deno.serve(async (req) => {
         user_id: user.id,
         store_id,
         plan_id,
+        cycle,
       },
     });
 
