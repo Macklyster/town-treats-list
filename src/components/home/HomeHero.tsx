@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { BadgeCheck, Building2, MapPin, Star, Tag, Users } from "lucide-react";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { BadgeCheck, Building2, MapPin, Star, Tag, Users, Zap } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useCity } from "@/hooks/useCity";
 import { fetchFeaturedCompanies, fetchHomeStats, HomeStats, UICompany } from "@/lib/home-api";
+import { CountdownBadge } from "@/components/site/CountdownBadge";
+import { discountPct, formatBRL, type UIOffer } from "@/lib/offers-api";
 import {
   Carousel,
   CarouselContent,
@@ -16,7 +18,7 @@ import {
 const MAX_FEATURED = 5;
 const AUTOPLAY_INTERVAL = 5000;
 
-export const HomeHero = () => {
+export const HomeHero = ({ offers = [] }: { offers?: UIOffer[] }) => {
   const { city } = useCity();
   const [stats, setStats] = useState<HomeStats>({ activeCompanies: 0, publishedOffers: 0, connectedUsers: 0, cities: 0 });
   const [featured, setFeatured] = useState<UICompany[]>([]);
@@ -26,6 +28,7 @@ export const HomeHero = () => {
   const [count, setCount] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+  const [expiredFlashIds, setExpiredFlashIds] = useState<Set<string>>(new Set());
   const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -75,6 +78,23 @@ export const HomeHero = () => {
   };
 
   const cityLabel = city ? `${city.city} - ${city.state}` : "Selecione sua cidade";
+  const activeFlashOffers = useMemo(
+    () =>
+      offers
+        .filter(
+          (offer) =>
+            offer.isFlash &&
+            offer.flashEndsAt &&
+            new Date(offer.flashEndsAt).getTime() > Date.now() &&
+            !expiredFlashIds.has(offer.id),
+        )
+        .sort(
+          (a, b) =>
+            new Date(a.flashEndsAt ?? 0).getTime() - new Date(b.flashEndsAt ?? 0).getTime(),
+        ),
+    [offers, expiredFlashIds],
+  );
+  const featuredFlash = activeFlashOffers[0];
   const metrics = [
     { icon: Building2, value: `+${stats.activeCompanies.toLocaleString("pt-BR")}`, label: "Empresas ativas" },
     { icon: Tag, value: `+${stats.publishedOffers.toLocaleString("pt-BR")}`, label: "Ofertas publicadas" },
@@ -215,30 +235,94 @@ export const HomeHero = () => {
             )}
           </motion.div>
 
-          {/* Right — metrics card */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/10 p-5"
-          >
-            <ul className="space-y-4">
-              {metrics.map((m) => {
-                const I = m.icon;
-                return (
-                  <li key={m.label} className="flex items-center gap-3">
-                    <div className="h-10 w-10 shrink-0 rounded-xl bg-primary/20 text-primary-mid grid place-items-center">
-                      <I className="h-5 w-5" />
+          {/* Right — flash promotion or metrics card */}
+          {featuredFlash && featuredFlash.flashEndsAt ? (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="min-w-0"
+            >
+              <Link
+                to={`/oferta/${featuredFlash.id}`}
+                className="group block overflow-hidden rounded-2xl border border-destructive/50 bg-card shadow-pop transition hover:-translate-y-0.5"
+                aria-label={`Ver promoção Relâmpago: ${featuredFlash.title}`}
+              >
+                <div className="relative aspect-[16/9] overflow-hidden bg-muted lg:aspect-[4/3]">
+                  <img
+                    src={featuredFlash.image}
+                    alt={featuredFlash.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-destructive px-3 py-1 text-xs font-bold text-destructive-foreground shadow-soft">
+                    <Zap className="h-3.5 w-3.5 fill-current" /> Relâmpago
+                  </span>
+                  {discountPct(featuredFlash) > 0 && (
+                    <span className="absolute right-3 top-3 rounded-full bg-discount px-3 py-1 text-xs font-bold text-discount-foreground shadow-soft">
+                      -{discountPct(featuredFlash)}%
+                    </span>
+                  )}
+                  <CountdownBadge
+                    endsAt={featuredFlash.flashEndsAt}
+                    className="absolute bottom-3 left-3"
+                    onExpire={() =>
+                      setExpiredFlashIds((currentIds) => new Set(currentIds).add(featuredFlash.id))
+                    }
+                  />
+                </div>
+                <div className="space-y-2 p-4">
+                  <p className="truncate text-xs font-semibold uppercase text-muted-foreground">
+                    {featuredFlash.storeName}
+                  </p>
+                  <h2 className="line-clamp-2 text-base font-semibold text-card-foreground">
+                    {featuredFlash.title}
+                  </h2>
+                  <div className="flex flex-wrap items-end justify-between gap-2">
+                    <div className="flex min-w-0 items-baseline gap-2">
+                      <span className="text-xl font-bold text-foreground">
+                        {featuredFlash.promoPrice > 0 ? formatBRL(featuredFlash.promoPrice) : "Grátis"}
+                      </span>
+                      {featuredFlash.originalPrice > featuredFlash.promoPrice && (
+                        <span className="text-xs text-muted-foreground line-through">
+                          {formatBRL(featuredFlash.originalPrice)}
+                        </span>
+                      )}
                     </div>
-                    <div>
-                      <div className="text-lg font-semibold text-white leading-none">{m.value}</div>
-                      <div className="text-xs text-[hsl(var(--hero-muted))] mt-1">{m.label}</div>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </motion.div>
+                    <span className="text-xs font-semibold text-primary">Ver oferta →</span>
+                  </div>
+                  {activeFlashOffers.length > 1 && (
+                    <p className="border-t border-border pt-2 text-xs text-muted-foreground">
+                      +{activeFlashOffers.length - 1} {activeFlashOffers.length === 2 ? "oferta Relâmpago ativa" : "ofertas Relâmpago ativas"}
+                    </p>
+                  )}
+                </div>
+              </Link>
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/10 p-5"
+            >
+              <ul className="space-y-4">
+                {metrics.map((m) => {
+                  const I = m.icon;
+                  return (
+                    <li key={m.label} className="flex items-center gap-3">
+                      <div className="h-10 w-10 shrink-0 rounded-xl bg-primary/20 text-primary-mid grid place-items-center">
+                        <I className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <div className="text-lg font-semibold text-white leading-none">{m.value}</div>
+                        <div className="text-xs text-[hsl(var(--hero-muted))] mt-1">{m.label}</div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </motion.div>
+          )}
         </div>
       </motion.div>
     </section>

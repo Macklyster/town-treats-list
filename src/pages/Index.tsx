@@ -69,7 +69,7 @@ const Index = () => {
       <SEO title={title} description={description} path="/" jsonLd={[websiteLd, orgLd]} />
       <HomeHeader />
       <main>
-        <HomeHero />
+        <HomeHero offers={offers} />
         <FeaturedCompanies />
         <div className="container pt-6 md:pt-8">
           <CategoryChips />
