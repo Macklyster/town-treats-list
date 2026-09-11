@@ -201,7 +201,7 @@ export default function Assinatura() {
     if (!changePlanId || !storeId) return;
     setBusy(changePlanId);
     const { data, error } = await supabase.functions.invoke("change-subscription-plan", {
-      body: { plan_id: changePlanId, store_id: storeId },
+      body: { plan_id: changePlanId, store_id: storeId, cycle },
     });
     setBusy(null);
     setChangePlanId(null);

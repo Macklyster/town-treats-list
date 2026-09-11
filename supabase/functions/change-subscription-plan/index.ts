@@ -34,7 +34,9 @@ Deno.serve(async (req) => {
     }
     const user = userData.user;
 
-    const { plan_id, store_id } = await req.json();
+    const { plan_id, store_id, cycle: rawCycle } = await req.json();
+    const requestedCycle: "monthly" | "yearly" | null =
+      rawCycle === "yearly" ? "yearly" : rawCycle === "monthly" ? "monthly" : null;
     if (!plan_id || !store_id) {
       return new Response(JSON.stringify({ error: "missing fields" }), {
         status: 400,
