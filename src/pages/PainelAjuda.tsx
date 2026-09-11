@@ -26,7 +26,7 @@ import { SEO } from "@/components/seo/SEO";
 import { BEST_PRACTICES, FIRST_STEPS, HELP_SECTIONS } from "@/lib/help-content";
 
 const SUPPORT_EMAIL = "contato@ofertasfly.com.br";
-const SUPPORT_WHATSAPP = "https://wa.me/5500000000000";
+const SUPPORT_WHATSAPP = "https://wa.me/5544997691237";
 
 const normalize = (s: string) =>
   s
