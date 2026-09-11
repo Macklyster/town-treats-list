@@ -135,6 +135,7 @@ export default function Assinatura() {
       }
     }
     if (params.get("canceled")) toast.info("Solicitação de cancelamento processada.");
+    if (params.get("checkout_canceled")) toast.info("Checkout cancelado. Nenhuma cobrança foi feita.");
     if (params.get("success") || params.get("canceled")) {
       let tries = 0;
       const iv = setInterval(() => {

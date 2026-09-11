@@ -34,8 +34,24 @@ Deno.serve(async (req) => {
   const upsertSub = async (sub: Stripe.Subscription, meta?: Record<string, string>) => {
     const m = { ...(sub.metadata ?? {}), ...(meta ?? {}) };
     const store_id = m.store_id;
-    const plan_id = m.plan_id;
-    if (!store_id || !plan_id) return;
+    let plan_id = m.plan_id;
+
+    // A plan swap done inside the Stripe billing portal doesn't update metadata,
+    // so trust the actual price on the subscription item when it maps to a plan.
+    const priceId = sub.items?.data?.[0]?.price?.id;
+    if (priceId) {
+      const { data: byPrice } = await supabase
+        .from("plans")
+        .select("id")
+        .or(`stripe_price_id.eq.${priceId},stripe_price_id_yearly.eq.${priceId}`)
+        .maybeSingle();
+      if (byPrice?.id) plan_id = byPrice.id;
+    }
+
+    if (!store_id || !plan_id) {
+      console.warn("[stripe-webhook] skipping upsert, missing store_id/plan_id", { store_id, plan_id, sub: sub.id });
+      return;
+    }
     await supabase.from("subscriptions").upsert(
       {
         store_id,
