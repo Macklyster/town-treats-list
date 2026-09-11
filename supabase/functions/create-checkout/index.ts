@@ -142,8 +142,8 @@ Deno.serve(async (req) => {
             }
           : {}),
       },
-      success_url: `${origin}/assinatura?success=1${trialApplied ? "&trial=1" : ""}`,
-      cancel_url: `${origin}/assinatura?canceled=1`,
+      success_url: `${origin}/painel-lojista/assinatura?success=1${trialApplied ? "&trial=1" : ""}`,
+      cancel_url: `${origin}/painel-lojista/assinatura?checkout_canceled=1`,
     });
 
     return new Response(JSON.stringify({ url: session.url, trial_applied: trialApplied, trial_days: trialDays }), {
