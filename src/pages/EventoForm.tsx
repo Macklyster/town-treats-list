@@ -377,7 +377,7 @@ export default function EventoForm() {
               </div>
               <ImageUploader
                 value={form.image_url}
-                onChange={(url) => setForm((f) => ({ ...f, image_url: url, cover_url: f.cover_url || url }))}
+                onChange={(url) => setForm((f) => ({ ...f, image_url: url, cover_url: url }))}
                 storeId={storeId}
                 bucket="offer-images"
                 label="Imagem do evento"
