@@ -22,6 +22,13 @@
       "when": 1787963065559,
       "tag": "0002_loyalty_referrals_and_expiry",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791741286519,
+      "tag": "0003_store_duty_schedules",
+      "breakpoints": true
     }
   ]
 }
