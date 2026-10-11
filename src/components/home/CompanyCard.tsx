@@ -6,6 +6,7 @@ import { haversineKm, formatDistance } from "@/lib/geo";
 import { categories } from "@/data/categories";
 import { hasOpeningHours, isOpenNow } from "@/components/site/OpeningHoursDisplay";
 import { normalizeOpeningHours } from "@/components/site/OpeningHoursEditor";
+import { useDutyUntil } from "@/lib/duty-api";
 
 const catName = (slug?: string | null) => categories.find((c) => c.slug === slug)?.name ?? slug ?? "";
 
@@ -20,6 +21,7 @@ export const CompanyCard = ({ company }: { company: UICompany }) => {
   const reviewCount = company.review_count ?? 0;
 
   const hasHours = hasOpeningHours(company.opening_hours);
+  const dutyUntil = useDutyUntil(company.id);
   const openStatus = hasHours ? isOpenNow(normalizeOpeningHours(company.opening_hours)) : null;
 
   return (
@@ -34,7 +36,12 @@ export const CompanyCard = ({ company }: { company: UICompany }) => {
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
-        {openStatus && (
+        {dutyUntil ? (
+          <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-accent px-2.5 py-1 text-[11px] font-semibold text-accent-foreground shadow-soft">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent-foreground animate-pulse" />
+            Aberto (Plantão)
+          </span>
+        ) : openStatus && (
           <span
             className={`absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
               openStatus.open

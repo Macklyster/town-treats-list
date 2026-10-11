@@ -34,6 +34,7 @@ import * as LucideIcons from "lucide-react";
 import { Check, X, Star, Pencil, Trash2, ArrowUp, ArrowDown, Plus, Tag, Copy, Images } from "lucide-react";
 import { AdminBroadcast } from "@/components/admin/AdminBroadcast";
 import { AdminSettings } from "@/components/admin/AdminSettings";
+import { AdminDutySettings } from "@/components/admin/AdminDutySettings";
 import { AdminReviews } from "@/components/admin/AdminReviews";
 import { AdminColetivas } from "@/components/admin/AdminColetivas";
 import { AdminLeiloes } from "@/components/admin/AdminLeiloes";
@@ -638,6 +639,7 @@ export default function Admin() {
 
           <TabsContent value="settings" className="mt-6">
             <AdminSettings />
+            <div className="mt-6"><AdminDutySettings /></div>
           </TabsContent>
         </Tabs>
 

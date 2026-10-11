@@ -18,6 +18,7 @@ import {
   UIOffer,
 } from "@/lib/offers-api";
 import { absoluteUrl, citySlug, cityLabel } from "@/lib/slug";
+import { useDutyUntil, formatDutyDate } from "@/lib/duty-api";
 import { StoreLoyaltyTeaser } from "@/components/loyalty/StoreLoyaltyTeaser";
 
 import { OpeningHoursDisplay, hasOpeningHours } from "@/components/site/OpeningHoursDisplay";
@@ -28,6 +29,7 @@ const StorePage = () => {
   const [store, setStore] = useState<any | null | undefined>(undefined);
   const [offers, setOffers] = useState<UIOffer[]>([]);
   const [loading, setLoading] = useState(true);
+  const dutyUntil = useDutyUntil(store?.id);
 
   useEffect(() => {
     (async () => {
@@ -156,6 +158,15 @@ const StorePage = () => {
               )}
             </ul>
           </SectionCard>
+        )}
+
+        {dutyUntil && (
+          <div className="rounded-2xl border border-accent bg-accent/15 px-4 py-3 text-sm">
+            <span className="mr-2 inline-flex items-center gap-1.5 rounded-full bg-accent px-2.5 py-0.5 text-xs font-semibold text-accent-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent-foreground animate-pulse" /> Aberto (Plantão)
+            </span>
+            Loja em regime de plantão até {formatDutyDate(dutyUntil)}.
+          </div>
         )}
 
         {hasOpeningHours(store.opening_hours) && (
