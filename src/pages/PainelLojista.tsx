@@ -23,6 +23,7 @@ import { fetchActiveGroupOfferForStore, type GroupOffer } from "@/lib/group-offe
 import { fetchActiveAuctionForStore, type AuctionOffer, formatBRL as formatBRLAuc } from "@/lib/auction-api";
 import { fetchActiveGeoOfferForStore, formatTime as formatGeoTime, type GeoOffer } from "@/lib/geo-offer-api";
 import { FlyScoreCard } from "@/components/painel/FlyScoreCard";
+import { DutySchedulePanel } from "@/components/painel/DutySchedulePanel";
 import { Gavel, Package, EyeOff, MapPin, Clock, CalendarClock, ExternalLink } from "lucide-react";
 import { fetchStoreEvents, EVENT_KINDS, type UIEventFull } from "@/lib/events-api";
 
@@ -311,6 +312,8 @@ export default function PainelLojista() {
             </Card>
 
             <FlyScoreCard storeId={store.id} />
+
+            <DutySchedulePanel storeId={store.id} />
 
 
             {activeColetiva && (

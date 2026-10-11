@@ -17,6 +17,7 @@ export type Database = {
       app_settings: {
         Row: {
           auction_max_active_per_store: number
+          duty_max_concurrent_default: number
           event_max_active_per_store: number
           flash_default_hours: number
           geo_offer_max_active_per_store: number
@@ -35,6 +36,7 @@ export type Database = {
         }
         Insert: {
           auction_max_active_per_store?: number
+          duty_max_concurrent_default?: number
           event_max_active_per_store?: number
           flash_default_hours?: number
           geo_offer_max_active_per_store?: number
@@ -53,6 +55,7 @@ export type Database = {
         }
         Update: {
           auction_max_active_per_store?: number
+          duty_max_concurrent_default?: number
           event_max_active_per_store?: number
           flash_default_hours?: number
           geo_offer_max_active_per_store?: number
@@ -361,6 +364,32 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      duty_category_limits: {
+        Row: {
+          category_slug: string
+          max_concurrent: number
+          updated_at: string
+        }
+        Insert: {
+          category_slug: string
+          max_concurrent?: number
+          updated_at?: string
+        }
+        Update: {
+          category_slug?: string
+          max_concurrent?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "duty_category_limits_category_slug_fkey"
+            columns: ["category_slug"]
+            isOneToOne: true
+            referencedRelation: "categories"
+            referencedColumns: ["slug"]
           },
         ]
       }
@@ -1853,6 +1882,57 @@ export type Database = {
         }
         Relationships: []
       }
+      store_duty_schedules: {
+        Row: {
+          active: boolean
+          category_slug: string
+          city: string
+          created_at: string
+          ends_at: string
+          id: string
+          starts_at: string
+          state: string
+          store_id: string
+        }
+        Insert: {
+          active?: boolean
+          category_slug: string
+          city: string
+          created_at?: string
+          ends_at: string
+          id?: string
+          starts_at: string
+          state: string
+          store_id: string
+        }
+        Update: {
+          active?: boolean
+          category_slug?: string
+          city?: string
+          created_at?: string
+          ends_at?: string
+          id?: string
+          starts_at?: string
+          state?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_duty_schedules_category_slug_fkey"
+            columns: ["category_slug"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "store_duty_schedules_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_favorites: {
         Row: {
           created_at: string
@@ -2171,6 +2251,16 @@ export type Database = {
       }
       claim_unique_coupon: { Args: { p_coupon_id: string }; Returns: Json }
       duplicate_offer: { Args: { p_offer_id: string }; Returns: string }
+      duty_limit_for: { Args: { p_category: string }; Returns: number }
+      duty_schedule_create: {
+        Args: {
+          p_category: string
+          p_ends: string
+          p_starts: string
+          p_store_id: string
+        }
+        Returns: Json
+      }
       event_by_slug: { Args: { p_slug: string }; Returns: Json }
       event_track_view: { Args: { p_id: string }; Returns: undefined }
       geo_offer_register_visit: {
