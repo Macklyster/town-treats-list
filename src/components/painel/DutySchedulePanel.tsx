@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cancelDuty, createDuty, formatDutyDate, listStoreDuties, type DutySchedule } from "@/lib/duty-api";
 
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -14,7 +13,7 @@ const toLocalInput = (d: Date) =>
   `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 
 export const DutySchedulePanel = ({ storeId }: { storeId: string }) => {
-  const [cats, setCats] = useState<{ slug: string; name: string }[]>([]);
+  const [catNames, setCatNames] = useState<Record<string, string>>({});
   const [category, setCategory] = useState("");
   const [starts, setStarts] = useState("");
   const [ends, setEnds] = useState("");
@@ -24,13 +23,22 @@ export const DutySchedulePanel = ({ storeId }: { storeId: string }) => {
   const reload = () => listStoreDuties(storeId).then(setItems);
 
   useEffect(() => {
-    supabase.from("categories").select("slug,name").order("sort_order").then(({ data }) => setCats(data ?? []));
+    supabase.from("categories").select("slug,name").order("sort_order").then(({ data }) => {
+      const map: Record<string, string> = {};
+      for (const c of data ?? []) map[c.slug] = c.name;
+      setCatNames(map);
+    });
+    // Herda a categoria da loja: usa a categoria mais frequente entre suas ofertas
     supabase
       .from("offers")
       .select("category_slug")
       .eq("store_id", storeId)
-      .limit(1)
-      .then(({ data }) => data?.[0]?.category_slug && setCategory((c) => c || data[0].category_slug));
+      .then(({ data }) => {
+        const counts = new Map<string, number>();
+        for (const o of data ?? []) counts.set(o.category_slug, (counts.get(o.category_slug) ?? 0) + 1);
+        const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+        if (top) setCategory(top);
+      });
     reload();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeId]);
@@ -60,7 +68,8 @@ export const DutySchedulePanel = ({ storeId }: { storeId: string }) => {
   };
 
   const submit = async () => {
-    if (!category || !starts || !ends) return toast.error("Preencha categoria, início e término.");
+    if (!category) return toast.error("Cadastre uma oferta primeiro para definir a categoria da loja.");
+    if (!starts || !ends) return toast.error("Preencha início e término.");
     setSaving(true);
     const r = await createDuty(storeId, category, new Date(starts), new Date(ends));
     setSaving(false);
@@ -74,13 +83,18 @@ export const DutySchedulePanel = ({ storeId }: { storeId: string }) => {
   const now = Date.now();
 
   return (
-    <Card className="md:col-span-3">
+    <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <ShieldPlus className="h-5 w-5 text-primary" /> Plantões
         </CardTitle>
         <p className="text-sm text-muted-foreground">
           Durante o período agendado sua loja aparece com a tag <strong>Aberto (Plantão)</strong>.
+          {category && (
+            <>
+              {" "}Categoria: <strong>{catNames[category] ?? category}</strong> (herdada das suas ofertas).
+            </>
+          )}
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -89,16 +103,7 @@ export const DutySchedulePanel = ({ storeId }: { storeId: string }) => {
           <Button type="button" size="sm" variant="outline" onClick={() => preset("weekend")}>Fim de semana</Button>
           <Button type="button" size="sm" variant="outline" onClick={() => preset("week")}>Semana completa</Button>
         </div>
-        <div className="grid gap-3 sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-end">
-          <div className="space-y-1">
-            <Label>Categoria</Label>
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-              <SelectContent>
-                {cats.map((c) => <SelectItem key={c.slug} value={c.slug}>{c.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
           <div className="space-y-1">
             <Label>Início</Label>
             <Input type="datetime-local" value={starts} onChange={(e) => setStarts(e.target.value)} />
@@ -107,7 +112,7 @@ export const DutySchedulePanel = ({ storeId }: { storeId: string }) => {
             <Label>Término</Label>
             <Input type="datetime-local" value={ends} onChange={(e) => setEnds(e.target.value)} />
           </div>
-          <Button onClick={submit} disabled={saving}>{saving ? "Agendando…" : "Agendar"}</Button>
+          <Button type="button" onClick={submit} disabled={saving}>{saving ? "Agendando…" : "Agendar"}</Button>
         </div>
 
         {items.length > 0 ? (
@@ -121,7 +126,7 @@ export const DutySchedulePanel = ({ storeId }: { storeId: string }) => {
                       {formatDutyDate(d.starts_at)} → {formatDutyDate(d.ends_at)}
                       {live && <span className="ml-2 rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">Em andamento</span>}
                     </div>
-                    <div className="text-xs text-muted-foreground">{cats.find((c) => c.slug === d.category_slug)?.name ?? d.category_slug}</div>
+                    <div className="text-xs text-muted-foreground">{catNames[d.category_slug] ?? d.category_slug}</div>
                   </div>
                   <Button
                     size="icon"
