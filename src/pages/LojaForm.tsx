@@ -250,6 +250,12 @@ export default function LojaForm() {
             </form>
           </CardContent>
         </Card>
+
+        {storeId && (
+          <div className="mx-auto mt-6 max-w-2xl">
+            <DutySchedulePanel storeId={storeId} />
+          </div>
+        )}
       </main>
       <Footer />
     </div>
