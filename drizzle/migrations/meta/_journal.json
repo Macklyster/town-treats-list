@@ -29,6 +29,13 @@
       "when": 1791741286519,
       "tag": "0003_store_duty_schedules",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791890343543,
+      "tag": "0004_duty_limit_peak_concurrency",
+      "breakpoints": true
     }
   ]
 }
