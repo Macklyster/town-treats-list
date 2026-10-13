@@ -100,8 +100,12 @@ export default function LojaForm() {
 
     const payload = {
       ...form,
+      name: form.name.trim(),
+      city: form.city.trim(),
+      state: form.state.trim(),
+      address: form.address?.trim(),
       owner_id: user.id,
-      slug: slugify(form.name) + "-" + user.id.slice(0, 6),
+      slug: slugify(form.name.trim()) + "-" + user.id.slice(0, 6),
     };
 
     let resultId = storeId;
