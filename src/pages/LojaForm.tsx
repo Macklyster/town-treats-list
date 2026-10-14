@@ -13,6 +13,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 import { ImageUploader } from "@/components/site/ImageUploader";
 import { LocationPicker } from "@/components/site/LocationPicker";
+import { StateSelect, CitySelect } from "@/components/site/LocationSelect";
 import { OpeningHoursEditor, defaultOpeningHours, normalizeOpeningHours, type OpeningHours } from "@/components/site/OpeningHoursEditor";
 import { DutySchedulePanel } from "@/components/painel/DutySchedulePanel";
 import { supabase } from "@/integrations/supabase/client";
@@ -153,22 +154,21 @@ export default function LojaForm() {
                 <Label>Endereço</Label>
                 <Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
               </div>
-              <div className="grid gap-4 sm:grid-cols-[1fr_120px]">
-                <div>
-                  <Label>Cidade *</Label>
-                  <Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} required />
-                </div>
+              <div className="grid gap-4 sm:grid-cols-[220px_1fr]">
                 <div>
                   <Label>UF *</Label>
-                  <select
+                  <StateSelect
                     value={form.state}
-                    onChange={(e) => setForm({ ...form, state: e.target.value })}
-                    required
-                    className="mt-0 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="">--</option>
-                    {UFS.map((uf) => <option key={uf} value={uf}>{uf}</option>)}
-                  </select>
+                    onChange={(uf) => setForm({ ...form, state: uf, city: "" })}
+                  />
+                </div>
+                <div>
+                  <Label>Cidade *</Label>
+                  <CitySelect
+                    uf={form.state}
+                    value={form.city}
+                    onChange={(city) => setForm({ ...form, city })}
+                  />
                 </div>
               </div>
 
