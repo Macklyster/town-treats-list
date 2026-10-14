@@ -20,8 +20,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { slugify } from "@/lib/format";
 
-const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
-
 const schema = z.object({
   name: z.string().trim().min(2, "Nome muito curto").max(120),
   description: z.string().trim().max(1000).optional().or(z.literal("")),
