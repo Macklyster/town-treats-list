@@ -43,6 +43,13 @@
       "when": 1792034615043,
       "tag": "0005_admin_store_management",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792035112009,
+      "tag": "0006_pending_store_uploads",
+      "breakpoints": true
     }
   ]
 }

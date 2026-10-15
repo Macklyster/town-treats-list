@@ -211,7 +211,6 @@ export default function LojaForm() {
                 maxWidth={512}
                 accept={["image/svg+xml", "image/png"]}
                 maxBytes={2 * 1024 * 1024}
-                disabled={!storeId}
               />
 
               <ImageUploader
@@ -225,23 +224,14 @@ export default function LojaForm() {
                 maxWidth={1600}
                 accept={["image/jpeg", "image/png", "image/webp"]}
                 maxBytes={5 * 1024 * 1024}
-                disabled={!storeId}
               />
 
 
-              {!storeId && (
+              {!approved && (
                 <Alert>
                   <Info className="h-4 w-4" />
                   <AlertDescription>
-                    Salve os dados da loja primeiro para liberar o envio do logo.
-                  </AlertDescription>
-                </Alert>
-              )}
-              {storeId && !approved && (
-                <Alert>
-                  <Info className="h-4 w-4" />
-                  <AlertDescription>
-                    Sua loja está em análise — o logo aparecerá publicamente após a aprovação.
+                    O logo e a capa aparecem publicamente após a aprovação da loja. Se o cadastro for reprovado, as imagens enviadas são excluídas.
                   </AlertDescription>
                 </Alert>
               )}
