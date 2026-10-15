@@ -211,7 +211,6 @@ export default function LojaForm() {
                 maxWidth={512}
                 accept={["image/svg+xml", "image/png"]}
                 maxBytes={2 * 1024 * 1024}
-                disabled={!storeId}
               />
 
               <ImageUploader
@@ -225,7 +224,6 @@ export default function LojaForm() {
                 maxWidth={1600}
                 accept={["image/jpeg", "image/png", "image/webp"]}
                 maxBytes={5 * 1024 * 1024}
-                disabled={!storeId}
               />
 
 

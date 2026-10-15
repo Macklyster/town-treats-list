@@ -94,9 +94,14 @@ export function ImageUploader({
 
   const handleFile = async (file: File) => {
     if (disabled) return;
-    if (!storeId) {
-      toast.error("Cadastre sua loja antes de enviar imagens.");
-      return;
+    let folder = storeId;
+    if (!folder) {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) {
+        toast.error("Entre na sua conta para enviar imagens.");
+        return;
+      }
+      folder = `pending/${u.user.id}`;
     }
     if (!accept.includes(file.type)) {
       toast.error(`Formato inválido. Use ${acceptLabel}.`);
@@ -127,7 +132,7 @@ export function ImageUploader({
         contentType = "image/webp";
       }
 
-      const path = `${storeId}/${crypto.randomUUID()}.${ext}`;
+      const path = `${folder}/${crypto.randomUUID()}.${ext}`;
       const { error } = await supabase.storage
         .from(bucket)
         .upload(path, blob, { contentType, upsert: false });
