@@ -36,6 +36,13 @@
       "when": 1791890343543,
       "tag": "0004_duty_limit_peak_concurrency",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792034615043,
+      "tag": "0005_admin_store_management",
+      "breakpoints": true
     }
   ]
 }

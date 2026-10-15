@@ -33,6 +33,7 @@ import { toast } from "sonner";
 import * as LucideIcons from "lucide-react";
 import { Check, X, Star, Pencil, Trash2, ArrowUp, ArrowDown, Plus, Tag, Copy, Images } from "lucide-react";
 import { AdminBroadcast } from "@/components/admin/AdminBroadcast";
+import { AdminStoreManager } from "@/components/admin/AdminStoreManager";
 import { AdminSettings } from "@/components/admin/AdminSettings";
 import { AdminDutySettings } from "@/components/admin/AdminDutySettings";
 import { AdminReviews } from "@/components/admin/AdminReviews";
@@ -317,6 +318,7 @@ export default function Admin() {
             <TabsTrigger value="invisiveis">Invisíveis ({invisivelCount})</TabsTrigger>
             <TabsTrigger value="eventos">Eventos ({eventCount})</TabsTrigger>
             <TabsTrigger value="media">Mídia</TabsTrigger>
+            <TabsTrigger value="gestao">Gestão de Loja</TabsTrigger>
             <TabsTrigger value="settings">Configurações</TabsTrigger>
           </TabsList>
 
@@ -633,6 +635,10 @@ export default function Admin() {
 
           <TabsContent value="media" className="mt-6">
             <AdminMedia />
+          </TabsContent>
+
+          <TabsContent value="gestao" className="mt-6">
+            <AdminStoreManager />
           </TabsContent>
 
 
