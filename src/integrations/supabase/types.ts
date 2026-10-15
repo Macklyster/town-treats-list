@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          admin_id: string
+          changes: Json
+          created_at: string
+          id: string
+          section: string
+          store_id: string | null
+        }
+        Insert: {
+          admin_id?: string
+          changes?: Json
+          created_at?: string
+          id?: string
+          section: string
+          store_id?: string | null
+        }
+        Update: {
+          admin_id?: string
+          changes?: Json
+          created_at?: string
+          id?: string
+          section?: string
+          store_id?: string | null
+        }
+        Relationships: []
+      }
       app_settings: {
         Row: {
           auction_max_active_per_store: number
