@@ -293,6 +293,26 @@ export default function Admin() {
     load();
   };
 
+  // Reprovar cadastro: remove logo/capa do armazenamento e limpa os campos.
+  const rejectStore = async (id: string) => {
+    if (!confirm("Reprovar esta loja? O logo e a capa enviados serão excluídos.")) return;
+    const { data: st } = await supabase.from("stores").select("logo_url,cover_url").eq("id", id).single();
+    const pathOf = (url: string | null | undefined, bucket: string) => {
+      if (!url) return null;
+      const m = `/object/public/${bucket}/`;
+      const i = url.indexOf(m);
+      return i >= 0 ? decodeURIComponent(url.slice(i + m.length)) : null;
+    };
+    const logo = pathOf(st?.logo_url, "store-logos");
+    const cover = pathOf(st?.cover_url, "offer-images");
+    if (logo) await supabase.storage.from("store-logos").remove([logo]);
+    if (cover) await supabase.storage.from("offer-images").remove([cover]);
+    const { error } = await supabase.from("stores").update({ logo_url: null, cover_url: null, approved: false }).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Loja reprovada e imagens excluídas");
+    load();
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
@@ -495,6 +515,11 @@ export default function Admin() {
                                 )}
                               </td>
                               <td className="text-right">
+                                {!s.approved && (
+                                  <Button size="sm" variant="outline" className="mr-2" onClick={() => rejectStore(s.id)}>
+                                    Reprovar
+                                  </Button>
+                                )}
                                 <Button
                                   size="sm"
                                   variant={s.approved ? "outline" : "accent"}
