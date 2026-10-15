@@ -83,7 +83,7 @@ function StoreSheet({ id, onSaved }: { id: string; onSaved: () => void }) {
   const [sub, setSub] = useState<any>(null);
   const [stats, setStats] = useState({ offers: 0, events: 0, reviews: 0, score: null as number | null });
   const [log, setLog] = useState<any[]>([]);
-  const [confirm, setConfirm] = useState<{ text: string; run: () => Promise<void> } | null>(null);
+  const [confirm, setConfirm] = useState<{ text: string; run: () => Promise<unknown> } | null>(null);
   const [busy, setBusy] = useState(false);
 
   const loadLog = () => supabase.from("admin_audit_log").select("*").eq("store_id", id).order("created_at", { ascending: false }).limit(20).then(({ data }) => setLog(data ?? []));
