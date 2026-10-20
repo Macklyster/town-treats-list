@@ -99,6 +99,13 @@ const ELIGIBLE_PLANS = new Set(["destaque", "plus"]);
 const ACTIVE_SUB_STATUSES = new Set(["active", "trialing", "past_due"]);
 
 export default function Admin() {
+  const [searchParams] = useSearchParams();
+  const adminTab = searchParams.get("tab") ?? "offers";
+  const [managedCount, setManagedCount] = useState(0);
+  useEffect(() => {
+    supabase.from("stores").select("id", { count: "exact", head: true }).eq("managed_offers", true)
+      .then(({ count }) => setManagedCount(count ?? 0));
+  }, []);
   const [offers, setOffers] = useState<AdminOffer[]>([]);
   const [stores, setStores] = useState<AdminStore[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
