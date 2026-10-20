@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { ImageUploader } from "@/components/site/ImageUploader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useManagedStore } from "@/hooks/useManagedStore";
 import { useSubscription } from "@/hooks/useSubscription";
 import {
   fetchActiveGeoOfferForStore,
@@ -47,6 +48,7 @@ export default function OfertaInvisivelForm() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams();
+  const ms = useManagedStore();
   const isEdit = !!id;
 
   const [storeId, setStoreId] = useState<string | null>(null);
@@ -84,7 +86,7 @@ export default function OfertaInvisivelForm() {
       const { data: stores } = await supabase
         .from("stores")
         .select("id, latitude, longitude, address")
-        .eq("owner_id", user.id)
+        .eq(ms.managedStoreId ? "id" : "owner_id", ms.managedStoreId ?? user!.id)
         .limit(1);
       const sid = stores?.[0]?.id ?? null;
       setStoreId(sid);
@@ -187,6 +189,7 @@ export default function OfertaInvisivelForm() {
     const dbPayload: any = {
       ...parsed.data,
       store_id: storeId,
+      ...ms.adminExtra,
       image_url: parsed.data.image_url || null,
       description: parsed.data.description || null,
       conditions: parsed.data.conditions || null,
@@ -210,7 +213,7 @@ export default function OfertaInvisivelForm() {
     }
     setSaving(false);
     toast.success("Oferta invisível salva! Aguarde aprovação.");
-    if (!isEdit && resultId) navigate(`/painel-lojista/oferta-invisivel/${resultId}`, { replace: true });
+    if (!isEdit && resultId) navigate(`${ms.base}/oferta-invisivel/${resultId}`, { replace: true });
   };
 
   const shareUrl = savedToken ? `${window.location.origin}/oferta-invisivel/${savedToken}` : "";
@@ -283,8 +286,8 @@ export default function OfertaInvisivelForm() {
                 É permitida apenas <strong>1 oferta invisível ativa por loja</strong>.
               </p>
               <div className="flex gap-2">
-                <Button asChild variant="accent"><Link to={`/painel-lojista/oferta-invisivel/${activeOther.id}`}>Ver oferta atual</Link></Button>
-                <Button asChild variant="outline"><Link to="/painel-lojista">Voltar ao painel</Link></Button>
+                <Button asChild variant="accent"><Link to={`${ms.base}/oferta-invisivel/${activeOther.id}`}>Ver oferta atual</Link></Button>
+                <Button asChild variant="outline"><Link to={ms.back}>Voltar ao painel</Link></Button>
               </div>
             </CardContent>
           </Card>
@@ -421,7 +424,7 @@ export default function OfertaInvisivelForm() {
           )}
 
           <div className="flex justify-end gap-2">
-            <Button variant="outline" asChild><Link to="/painel-lojista">Cancelar</Link></Button>
+            <Button variant="outline" asChild><Link to={ms.back}>Cancelar</Link></Button>
             <Button onClick={handleSave} disabled={saving} variant="accent">{saving ? "Salvando…" : "Salvar oferta invisível"}</Button>
           </div>
         </div>

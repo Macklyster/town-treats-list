@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { ImageUploader } from "@/components/site/ImageUploader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useManagedStore } from "@/hooks/useManagedStore";
 import { useSubscription } from "@/hooks/useSubscription";
 import {
   fetchActiveAuctionForStore,
@@ -41,6 +42,7 @@ export default function LeilaoForm() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams();
+  const ms = useManagedStore();
   const isEdit = !!id;
 
   const [storeId, setStoreId] = useState<string | null>(null);
@@ -71,7 +73,7 @@ export default function LeilaoForm() {
       const { data: stores } = await supabase
         .from("stores")
         .select("id")
-        .eq("owner_id", user.id)
+        .eq(ms.managedStoreId ? "id" : "owner_id", ms.managedStoreId ?? user!.id)
         .limit(1);
       const sid = stores?.[0]?.id ?? null;
       setStoreId(sid);
@@ -140,6 +142,7 @@ export default function LeilaoForm() {
     const payload = {
       ...parsed.data,
       store_id: storeId,
+      ...ms.adminExtra,
       image_url: parsed.data.image_url || null,
       description: parsed.data.description || null,
       conditions: parsed.data.conditions || null,
@@ -170,7 +173,7 @@ export default function LeilaoForm() {
     }
     setSaving(false);
     toast.success("Leilão salvo! Aguarde aprovação.");
-    if (!isEdit && resultId) navigate(`/painel-lojista/leilao/${resultId}`, { replace: true });
+    if (!isEdit && resultId) navigate(`${ms.base}/leilao/${resultId}`, { replace: true });
   };
 
   const shareUrl = savedToken ? `${window.location.origin}/leilao/${savedToken}` : "";
@@ -246,10 +249,10 @@ export default function LeilaoForm() {
               </p>
               <div className="flex gap-2">
                 <Button asChild variant="accent">
-                  <Link to={`/painel-lojista/leilao/${activeOther.id}`}>Ver leilão atual</Link>
+                  <Link to={`${ms.base}/leilao/${activeOther.id}`}>Ver leilão atual</Link>
                 </Button>
                 <Button asChild variant="outline">
-                  <Link to="/painel-lojista">Voltar ao painel</Link>
+                  <Link to={ms.back}>Voltar ao painel</Link>
                 </Button>
               </div>
             </CardContent>
@@ -406,7 +409,7 @@ export default function LeilaoForm() {
             <Button onClick={handleSave} disabled={saving} variant="accent">
               {saving ? "Salvando..." : isEdit ? "Salvar alterações" : "Criar leilão"}
             </Button>
-            <Button variant="ghost" onClick={() => navigate("/painel-lojista")}>Cancelar</Button>
+            <Button variant="ghost" onClick={() => navigate(ms.back)}>Cancelar</Button>
           </div>
         </div>
       </main>
