@@ -57,8 +57,8 @@ Deno.serve(async (req) => {
         .select("id").eq("audience", "store_followers")
         .eq("store_id", store_id).eq("offer_id", offer_id).limit(1);
       if (prev && prev.length > 0) {
-        return new Response(JSON.stringify({ error: "already sent for this offer" }), {
-          status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        return new Response(JSON.stringify({ ok: false, already_sent: true }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
     }
