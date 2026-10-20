@@ -617,6 +617,10 @@ export default function OfertaForm() {
                       else toast.error(msg || "Falha ao enviar");
                       return;
                     }
+                    if (data?.already_sent) {
+                      toast.info("Os seguidores já foram notificados sobre esta oferta.");
+                      return;
+                    }
                     const recipients = data?.recipients ?? 0;
                     const success = data?.success ?? 0;
                     if (recipients === 0) {
