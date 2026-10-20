@@ -51,10 +51,10 @@ export function OfferMediaCarousel({ items, title, className }: Props) {
             controls
             playsInline
             preload="metadata"
-            className="aspect-[4/3] w-full bg-black object-contain"
+            className="aspect-[4/3] w-full bg-muted object-contain"
           />
         ) : (
-          <img src={it.url} alt={it.alt_text ?? title} className="aspect-[4/3] w-full object-cover" />
+          <img src={it.url} alt={it.alt_text ?? title} className="aspect-[4/3] w-full bg-muted object-contain" />
         )}
       </div>
     );
@@ -73,13 +73,13 @@ export function OfferMediaCarousel({ items, title, className }: Props) {
                   controls
                   playsInline
                   preload="metadata"
-                  className="aspect-[4/3] w-full bg-black object-contain"
+                  className="aspect-[4/3] w-full bg-muted object-contain"
                 />
               ) : (
                 <img
                   src={it.url}
                   alt={it.alt_text ?? title}
-                  className="aspect-[4/3] w-full object-cover"
+                  className="aspect-[4/3] w-full bg-muted object-contain"
                   loading={idx === 0 ? "eager" : "lazy"}
                 />
               )}
@@ -115,7 +115,7 @@ export function OfferMediaCarousel({ items, title, className }: Props) {
             <img
               src={it.media_type === "video" ? it.poster_url ?? it.url : it.url}
               alt=""
-              className="h-full w-full object-cover"
+              className="h-full w-full bg-muted object-contain"
               loading="lazy"
             />
             {it.media_type === "video" && (
