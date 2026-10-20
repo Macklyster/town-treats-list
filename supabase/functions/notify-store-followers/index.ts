@@ -36,10 +36,16 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    // Verifica ownership da loja
+    // Verifica ownership da loja (ou admin em loja com gestão contratada)
     const { data: store } = await admin.from("stores")
-      .select("id, owner_id, name").eq("id", store_id).maybeSingle();
-    if (!store || store.owner_id !== userData.user.id) {
+      .select("id, owner_id, name, managed_offers").eq("id", store_id).maybeSingle();
+    let allowed = !!store && store.owner_id === userData.user.id;
+    if (store && !allowed && store.managed_offers) {
+      const { data: isAdm } = await admin.from("user_roles").select("role")
+        .eq("user_id", userData.user.id).eq("role", "admin").limit(1);
+      allowed = !!isAdm?.length;
+    }
+    if (!allowed) {
       return new Response(JSON.stringify({ error: "forbidden" }), {
         status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
