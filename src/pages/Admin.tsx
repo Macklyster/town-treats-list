@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -99,7 +100,7 @@ const ELIGIBLE_PLANS = new Set(["destaque", "plus"]);
 const ACTIVE_SUB_STATUSES = new Set(["active", "trialing", "past_due"]);
 
 export default function Admin() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const adminTab = searchParams.get("tab") ?? "offers";
   const [managedCount, setManagedCount] = useState(0);
   useEffect(() => {
@@ -118,6 +119,37 @@ export default function Admin() {
   const [loading, setLoading] = useState(true);
   const [selectedOffers, setSelectedOffers] = useState<string[]>([]);
   const [approveStore, setApproveStore] = useState<AdminStore | null>(null);
+
+  const navigationGroups = [
+    { label: "Ofertas e conteúdo", items: [
+      { value: "offers", label: "Ofertas", count: offers.length },
+      { value: "coletivas", label: "Coletivas", count: coletivaCount },
+      { value: "leiloes", label: "Leilões", count: leilaoCount },
+      { value: "invisiveis", label: "Invisíveis", count: invisivelCount },
+      { value: "eventos", label: "Eventos", count: eventCount },
+      { value: "media", label: "Mídia" },
+    ] },
+    { label: "Lojistas", items: [
+      { value: "stores", label: "Lojas", count: stores.length },
+      { value: "gestao", label: "Gestão de Loja" },
+      { value: "gerenciadas", label: "Ofertas Gerenciadas", count: managedCount },
+    ] },
+    { label: "Plataforma", items: [
+      { value: "categories", label: "Categorias", count: categories.length },
+      { value: "notifications", label: "Notificações", count: notificationCount },
+      { value: "reviews", label: "Avaliações", count: reviewCount },
+      { value: "settings", label: "Configurações" },
+    ] },
+  ];
+  const navigationItems = navigationGroups.flatMap((group) => group.items);
+  const activeTab = navigationItems.some((item) => item.value === adminTab) ? adminTab : "offers";
+  const changeTab = (value: string) => {
+    setSearchParams((previous) => {
+      const next = new URLSearchParams(previous);
+      next.set("tab", value);
+      return next;
+    });
+  };
 
   const toggleSelect = (id: string) =>
     setSelectedOffers((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -325,7 +357,7 @@ export default function Admin() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
-      <main className="container flex-1 space-y-8 py-8 md:py-10">
+      <main className="container min-w-0 flex-1 space-y-8 py-8 md:py-10">
         <PageHero
           eyebrow="Administração"
           title="Painel Admin"
@@ -335,21 +367,38 @@ export default function Admin() {
         />
 
 
-        <Tabs defaultValue={adminTab}>
-          <TabsList>
-            <TabsTrigger value="offers">Ofertas ({offers.length})</TabsTrigger>
-            <TabsTrigger value="stores">Lojas ({stores.length})</TabsTrigger>
-            <TabsTrigger value="categories">Categorias ({categories.length})</TabsTrigger>
-            <TabsTrigger value="notifications">Notificações ({notificationCount})</TabsTrigger>
-            <TabsTrigger value="reviews">Avaliações ({reviewCount})</TabsTrigger>
-            <TabsTrigger value="coletivas">Coletivas ({coletivaCount})</TabsTrigger>
-            <TabsTrigger value="leiloes">Leilões ({leilaoCount})</TabsTrigger>
-            <TabsTrigger value="invisiveis">Invisíveis ({invisivelCount})</TabsTrigger>
-            <TabsTrigger value="eventos">Eventos ({eventCount})</TabsTrigger>
-            <TabsTrigger value="media">Mídia</TabsTrigger>
-            <TabsTrigger value="gestao">Gestão de Loja</TabsTrigger>
-            <TabsTrigger value="gerenciadas">Ofertas Gerenciadas ({managedCount})</TabsTrigger>
-            <TabsTrigger value="settings">Configurações</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={changeTab} className="min-w-0">
+          <div className="space-y-2 md:hidden">
+            <Label htmlFor="admin-section">Seção do Admin</Label>
+            <Select value={activeTab} onValueChange={changeTab}>
+              <SelectTrigger id="admin-section" className="h-12 w-full" aria-label="Seção do Admin">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="max-h-[min(24rem,var(--radix-select-content-available-height))]">
+                {navigationGroups.map((group) => (
+                  <SelectGroup key={group.label}>
+                    <SelectLabel>{group.label}</SelectLabel>
+                    {group.items.map((item) => (
+                      <SelectItem key={item.value} value={item.value} className="min-h-11">
+                        {item.label}{item.count !== undefined ? ` (${item.count})` : ""}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <TabsList aria-label="Seções do Admin" className="hidden h-auto w-full flex-wrap justify-start gap-1 md:flex">
+            {navigationItems.map((item) => (
+              <TabsTrigger key={item.value} value={item.value} className="min-h-10 gap-2">
+                {item.label}
+                {item.count !== undefined && (
+                  <span className="rounded-sm bg-background/70 px-1.5 py-0.5 text-xs tabular-nums text-muted-foreground">
+                    {item.count}
+                  </span>
+                )}
+              </TabsTrigger>
+            ))}
           </TabsList>
 
           <TabsContent value="offers" className="mt-6">
