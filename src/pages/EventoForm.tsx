@@ -21,6 +21,7 @@ import { ImageUploader } from "@/components/site/ImageUploader";
 import { LocationPicker } from "@/components/site/LocationPicker";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useManagedStore } from "@/hooks/useManagedStore";
 import { useSubscription } from "@/hooks/useSubscription";
 import { Lock, Share2, Copy, MessageCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -56,6 +57,7 @@ export default function EventoForm() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams();
+  const ms = useManagedStore();
   const isEdit = !!id;
 
   const [storeId, setStoreId] = useState<string | null>(null);
@@ -93,7 +95,7 @@ export default function EventoForm() {
       const { data: stores } = await supabase
         .from("stores")
         .select("id,city,state")
-        .eq("owner_id", user.id)
+        .eq(ms.managedStoreId ? "id" : "owner_id", ms.managedStoreId ?? user!.id)
         .limit(1);
       const s = stores?.[0];
       setStoreId(s?.id ?? null);
@@ -149,6 +151,7 @@ export default function EventoForm() {
     setSaving(true);
     const payload: any = {
       store_id: storeId,
+      ...ms.adminExtra,
       title: parsed.data.title,
       kind: parsed.data.kind,
       category_slug: parsed.data.category_slug || null,
@@ -189,7 +192,7 @@ export default function EventoForm() {
       if (error) return toast.error(error.message);
       setSavedSlug((data as any).slug);
       toast.success("Evento enviado para aprovação!");
-      navigate(`/painel-lojista/evento/${(data as any).id}`, { replace: true });
+      navigate(`${ms.base}/evento/${(data as any).id}`, { replace: true });
     }
   };
 
@@ -460,7 +463,7 @@ export default function EventoForm() {
             <Button onClick={handleSave} disabled={saving} variant="accent">
               {saving ? "Salvando…" : isEdit ? "Salvar alterações" : "Criar evento"}
             </Button>
-            <Button variant="ghost" onClick={() => navigate("/painel-lojista")}>
+            <Button variant="ghost" onClick={() => navigate(ms.back)}>
               Cancelar
             </Button>
           </div>

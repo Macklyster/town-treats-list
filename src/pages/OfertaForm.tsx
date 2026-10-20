@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useManagedStore } from "@/hooks/useManagedStore";
 import { useSubscription } from "@/hooks/useSubscription";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
@@ -53,6 +54,7 @@ export default function OfertaForm() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams();
+  const ms = useManagedStore();
   const isEdit = !!id;
 
   const [storeId, setStoreId] = useState<string | null>(null);
@@ -104,7 +106,7 @@ export default function OfertaForm() {
     (async () => {
       const [{ data: cats }, { data: stores }, { data: settings }] = await Promise.all([
         supabase.from("categories").select("slug,name").order("sort_order"),
-        supabase.from("stores").select("id").eq("owner_id", user!.id).limit(1),
+        supabase.from("stores").select("id").eq(ms.managedStoreId ? "id" : "owner_id", ms.managedStoreId ?? user!.id).limit(1),
         supabase
           .from("app_settings")
           .select("scheduled_offer_min_lead_hours, scheduled_offer_max_lead_days, offer_approval_sla_hours, offer_min_validity_hours")
@@ -251,8 +253,9 @@ export default function OfertaForm() {
       ...form,
       conditions: buildConditions(paymentMethods, form.conditions),
       store_id: storeId,
+      ...ms.adminExtra,
       valid_until: form.valid_until || null,
-      status: "pending" as const,
+      status: (ms.managedStoreId ? "approved" : "pending") as "approved" | "pending",
       scheduled_start_at: form.is_scheduled && form.scheduled_start_at ? new Date(form.scheduled_start_at).toISOString() : null,
       scheduled_end_at: form.is_scheduled && form.scheduled_end_at ? new Date(form.scheduled_end_at).toISOString() : null,
     };
@@ -276,7 +279,7 @@ export default function OfertaForm() {
     }
     setLoading(false);
     toast.success(isEdit ? "Oferta atualizada" : "Oferta enviada para aprovação");
-    navigate("/painel-lojista");
+    navigate(ms.back);
   };
 
   const featureDisabled = !sub.isActive || sub.featuredSlots === 0 || (!isEdit && !sub.canFeature && !form.featured);
@@ -576,7 +579,7 @@ export default function OfertaForm() {
 
               <div className="flex gap-3 pt-2">
                 <Button type="submit" variant="accent" disabled={loading || blocked}>Salvar</Button>
-                <Button type="button" variant="ghost" onClick={() => navigate("/painel-lojista")}>Cancelar</Button>
+                <Button type="button" variant="ghost" onClick={() => navigate(ms.back)}>Cancelar</Button>
               </div>
             </form>
 

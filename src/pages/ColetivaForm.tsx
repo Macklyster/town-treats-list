@@ -15,6 +15,7 @@ import { ImageUploader } from "@/components/site/ImageUploader";
 import { GroupOfferTierEditor } from "@/components/site/GroupOfferTierEditor";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useManagedStore } from "@/hooks/useManagedStore";
 import { useSubscription } from "@/hooks/useSubscription";
 import {
   fetchActiveGroupOfferForStore,
@@ -45,6 +46,7 @@ export default function ColetivaForm() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams();
+  const ms = useManagedStore();
   const isEdit = !!id;
 
   const [storeId, setStoreId] = useState<string | null>(null);
@@ -74,7 +76,7 @@ export default function ColetivaForm() {
       const { data: stores } = await supabase
         .from("stores")
         .select("id")
-        .eq("owner_id", user.id)
+        .eq(ms.managedStoreId ? "id" : "owner_id", ms.managedStoreId ?? user!.id)
         .limit(1);
       const sid = stores?.[0]?.id ?? null;
       setStoreId(sid);
@@ -121,6 +123,7 @@ export default function ColetivaForm() {
     const payload = {
       ...parsed.data,
       store_id: storeId,
+      ...ms.adminExtra,
       image_url: parsed.data.image_url || null,
       description: parsed.data.description || null,
       conditions: parsed.data.conditions || null,
@@ -151,7 +154,7 @@ export default function ColetivaForm() {
     }
     setSaving(false);
     toast.success("Coletiva salva! Aguarde aprovação para começar.");
-    if (!isEdit && resultId) navigate(`/painel-lojista/coletiva/${resultId}`, { replace: true });
+    if (!isEdit && resultId) navigate(`${ms.base}/coletiva/${resultId}`, { replace: true });
   };
 
   const shareUrl = savedToken ? `${window.location.origin}/coletiva/${savedToken}` : "";
@@ -230,10 +233,10 @@ export default function ColetivaForm() {
               </p>
               <div className="flex gap-2">
                 <Button asChild variant="accent">
-                  <Link to={`/painel-lojista/coletiva/${activeOther.id}`}>Ver coletiva atual</Link>
+                  <Link to={`${ms.base}/coletiva/${activeOther.id}`}>Ver coletiva atual</Link>
                 </Button>
                 <Button asChild variant="outline">
-                  <Link to="/painel-lojista">Voltar ao painel</Link>
+                  <Link to={ms.back}>Voltar ao painel</Link>
                 </Button>
               </div>
             </CardContent>
@@ -399,7 +402,7 @@ export default function ColetivaForm() {
             <Button onClick={handleSave} disabled={saving} variant="accent">
               {saving ? "Salvando..." : isEdit ? "Salvar alterações" : "Criar coletiva"}
             </Button>
-            <Button variant="ghost" onClick={() => navigate("/painel-lojista")}>Cancelar</Button>
+            <Button variant="ghost" onClick={() => navigate(ms.back)}>Cancelar</Button>
           </div>
         </div>
       </main>

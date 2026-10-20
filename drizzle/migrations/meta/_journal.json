@@ -50,6 +50,13 @@
       "when": 1792035112009,
       "tag": "0006_pending_store_uploads",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792459531556,
+      "tag": "0007_admin_managed_offers",
+      "breakpoints": true
     }
   ]
 }

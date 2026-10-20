@@ -42,6 +42,8 @@ import { AdminLeiloes } from "@/components/admin/AdminLeiloes";
 import { AdminOfertasInvisiveis } from "@/components/admin/AdminOfertasInvisiveis";
 import { AdminMedia } from "@/components/admin/AdminMedia";
 import { AdminEventos } from "@/components/admin/AdminEventos";
+import { AdminManagedOffers } from "@/components/admin/AdminManagedOffers";
+import { useSearchParams } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -97,6 +99,13 @@ const ELIGIBLE_PLANS = new Set(["destaque", "plus"]);
 const ACTIVE_SUB_STATUSES = new Set(["active", "trialing", "past_due"]);
 
 export default function Admin() {
+  const [searchParams] = useSearchParams();
+  const adminTab = searchParams.get("tab") ?? "offers";
+  const [managedCount, setManagedCount] = useState(0);
+  useEffect(() => {
+    supabase.from("stores").select("id", { count: "exact", head: true }).eq("managed_offers", true)
+      .then(({ count }) => setManagedCount(count ?? 0));
+  }, []);
   const [offers, setOffers] = useState<AdminOffer[]>([]);
   const [stores, setStores] = useState<AdminStore[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -326,7 +335,7 @@ export default function Admin() {
         />
 
 
-        <Tabs defaultValue="offers">
+        <Tabs defaultValue={adminTab}>
           <TabsList>
             <TabsTrigger value="offers">Ofertas ({offers.length})</TabsTrigger>
             <TabsTrigger value="stores">Lojas ({stores.length})</TabsTrigger>
@@ -339,6 +348,7 @@ export default function Admin() {
             <TabsTrigger value="eventos">Eventos ({eventCount})</TabsTrigger>
             <TabsTrigger value="media">Mídia</TabsTrigger>
             <TabsTrigger value="gestao">Gestão de Loja</TabsTrigger>
+            <TabsTrigger value="gerenciadas">Ofertas Gerenciadas ({managedCount})</TabsTrigger>
             <TabsTrigger value="settings">Configurações</TabsTrigger>
           </TabsList>
 
@@ -660,6 +670,10 @@ export default function Admin() {
 
           <TabsContent value="media" className="mt-6">
             <AdminMedia />
+          </TabsContent>
+
+          <TabsContent value="gerenciadas" className="mt-6">
+            <AdminManagedOffers />
           </TabsContent>
 
           <TabsContent value="gestao" className="mt-6">

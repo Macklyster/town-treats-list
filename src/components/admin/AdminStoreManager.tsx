@@ -193,6 +193,20 @@ function StoreSheet({ id, onSaved }: { id: string; onSaved: () => void }) {
         </div>
       </Section>
 
+      <Section title="Gestão de Ofertas (serviço contratado)" onSave={() => saveStore("gestao_ofertas", ["managed_offers", "managed_offers_since", "managed_offers_notes"])} busy={busy}>
+        <div className="flex flex-wrap items-end gap-6">
+          <label className="flex items-center gap-2">
+            <Switch checked={!!(s as any).managed_offers} onCheckedChange={(v) => set({ managed_offers: v, managed_offers_since: v ? ((s as any).managed_offers_since ?? new Date().toISOString()) : (s as any).managed_offers_since } as any)} />
+            Gestão de Ofertas contratada
+          </label>
+          <div className="w-48"><Label>Desde</Label>
+            <Input type="date" value={((s as any).managed_offers_since ?? "").slice(0, 10)}
+              onChange={(e) => set({ managed_offers_since: e.target.value ? new Date(e.target.value).toISOString() : null } as any)} /></div>
+          <div className="min-w-[240px] flex-1"><Label>Observação</Label>
+            <Input value={(s as any).managed_offers_notes ?? ""} onChange={(e) => set({ managed_offers_notes: e.target.value } as any)} /></div>
+        </div>
+      </Section>
+
       {sub && (
         <Section title="Plano e assinatura" busy={busy} onSave={() => setConfirm({
           text: "Alterar o plano manualmente (sem cobrança no Stripe)?",
