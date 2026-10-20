@@ -315,6 +315,8 @@ const App = () => (
                 <Route path="/admin/loja/:storeId/leilao/:id?" element={<ManagedStoreRoute><LeilaoForm /></ManagedStoreRoute>} />
                 <Route path="/admin/loja/:storeId/oferta-invisivel/:id?" element={<ManagedStoreRoute><OfertaInvisivelForm /></ManagedStoreRoute>} />
                 <Route path="/admin/loja/:storeId/evento/:id?" element={<ManagedStoreRoute><EventoForm /></ManagedStoreRoute>} />
+                <Route path="/admin/loja/:storeId/cupons" element={<ManagedStoreRoute><Cupons /></ManagedStoreRoute>} />
+                <Route path="/admin/loja/:storeId/midia" element={<ManagedStoreRoute><Biblioteca /></ManagedStoreRoute>} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

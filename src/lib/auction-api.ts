@@ -70,6 +70,7 @@ export const fetchActiveAuctionsAsUIOffers = async (
 export type AuctionStatus = "pending" | "approved" | "sold_out" | "expired" | "rejected";
 
 export type AuctionOffer = {
+  created_by_admin?: boolean;
   id: string;
   store_id: string;
   title: string;

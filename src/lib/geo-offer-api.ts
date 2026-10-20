@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 export type GeoOfferStatus = "pending" | "approved" | "expired" | "rejected";
 
 export type GeoOffer = {
+  created_by_admin?: boolean;
   id: string;
   store_id: string;
   title: string;

@@ -28,6 +28,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useManagedStore } from "@/hooks/useManagedStore";
 import { toast } from "sonner";
 
 type Coupon = {
@@ -73,6 +74,7 @@ const emptyForm = {
 
 export default function Cupons() {
   const { user } = useAuth();
+  const ms = useManagedStore();
   const [storeId, setStoreId] = useState<string | null>(null);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [redemptions, setRedemptions] = useState<Record<string, Redemption[]>>({});
@@ -89,7 +91,7 @@ export default function Cupons() {
     const { data: stores } = await supabase
       .from("stores")
       .select("id")
-      .eq("owner_id", user.id)
+      .eq(ms.managedStoreId ? "id" : "owner_id", ms.managedStoreId ?? user.id)
       .limit(1);
     const s = stores?.[0];
     if (!s) {
@@ -134,7 +136,7 @@ export default function Cupons() {
 
   useEffect(() => {
     load();
-  }, [user?.id]);
+  }, [user?.id, ms.managedStoreId]);
 
   const handleCreate = async () => {
     if (!storeId) return;
@@ -206,10 +208,10 @@ export default function Cupons() {
       <Header />
       <main className="container flex-1 space-y-8 py-8 md:py-10">
         <PageHero
-          eyebrow="Painel do lojista"
+          eyebrow={ms.managedStoreId ? "Gestão de Ofertas" : "Painel do lojista"}
           title="Cupons"
           subtitle="Crie códigos promocionais fixos ou cupons únicos rastreáveis por cliente."
-          crumbs={[{ label: "Painel", to: "/painel-lojista" }, { label: "Cupons" }]}
+          crumbs={[{ label: ms.managedStoreId ? "Admin" : "Painel", to: ms.back }, { label: "Cupons" }]}
           compact
           actions={<span />}
         />
@@ -423,7 +425,8 @@ export default function Cupons() {
                           variant="ghost"
                           size="sm"
                           onClick={() => {
-                            navigator.clipboard.writeText(c.code!);
+                            if (!c.code) return;
+                            navigator.clipboard.writeText(c.code);
                             toast.success("Código copiado");
                           }}
                         >
