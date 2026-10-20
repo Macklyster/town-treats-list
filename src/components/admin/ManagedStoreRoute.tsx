@@ -10,9 +10,13 @@ export function ManagedStoreRoute({ children }: { children: React.ReactNode }) {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (!storeId) return;
+    let cancelled = false;
+    setStore(null);
+    setLoaded(false);
+    if (!storeId) { setLoaded(true); return; }
     supabase.from("stores").select("name, managed_offers").eq("id", storeId).maybeSingle()
-      .then(({ data }) => { setStore(data as any); setLoaded(true); });
+      .then(({ data }) => { if (!cancelled) { setStore(data); setLoaded(true); } });
+    return () => { cancelled = true; };
   }, [storeId]);
 
   return (
@@ -26,7 +30,11 @@ export function ManagedStoreRoute({ children }: { children: React.ReactNode }) {
           </Link>
         </div>
       </div>
-      {loaded && store && !store.managed_offers ? (
+      {!loaded ? (
+        <div className="container py-16 text-center text-muted-foreground">Carregando loja…</div>
+      ) : !store ? (
+        <div className="container py-16 text-center text-muted-foreground">Loja não encontrada ou indisponível.</div>
+      ) : !store.managed_offers ? (
         <div className="container py-16 text-center text-muted-foreground">
           Esta loja não contratou o serviço de Gestão de Ofertas. Ative em Admin → Gestão de Loja.
         </div>

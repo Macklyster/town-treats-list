@@ -33,6 +33,7 @@ type StoreRow = {
   approved: boolean;
 };
 type OfferRow = {
+  created_by_admin: boolean;
   id: string;
   title: string;
   status: string;
@@ -101,7 +102,7 @@ export default function PainelLojista() {
     if (s) {
       const { data: offs } = await supabase
         .from("offers")
-        .select("id,title,status,promo_price,original_price,category_slug,featured,valid_until,auto_renew,auto_renew_count")
+        .select("id,title,status,promo_price,original_price,category_slug,featured,valid_until,auto_renew,auto_renew_count,created_by_admin")
         .eq("store_id", s.id)
         .order("created_at", { ascending: false });
       setOffers((offs ?? []) as OfferRow[]);
@@ -336,6 +337,7 @@ export default function PainelLojista() {
                     )}
                     <div className="flex-1 space-y-2">
                       <h3 className="font-semibold text-foreground">{activeColetiva.title}</h3>
+                      {activeColetiva.created_by_admin && <Badge variant="outline">Gerenciada pela OfertasFly</Badge>}
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                         <span>De {formatBRLNumber(Number(activeColetiva.original_price))}</span>
                         <span>
@@ -443,6 +445,7 @@ export default function PainelLojista() {
                     )}
                     <div className="flex-1 space-y-2">
                       <h3 className="font-semibold text-foreground">{activeLeilao.title}</h3>
+                      {activeLeilao.created_by_admin && <Badge variant="outline">Gerenciada pela OfertasFly</Badge>}
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                         <span>De {formatBRLAuc(Number(activeLeilao.starting_price))} até {formatBRLAuc(Number(activeLeilao.min_price))}</span>
                         <span>−{formatBRLAuc(Number(activeLeilao.decrement_amount))} a cada {activeLeilao.decrement_interval_minutes} min</span>
@@ -548,6 +551,7 @@ export default function PainelLojista() {
                     )}
                     <div className="flex-1 space-y-2">
                       <h3 className="font-semibold text-foreground">{activeInvisivel.title}</h3>
+                      {activeInvisivel.created_by_admin && <Badge variant="outline">Gerenciada pela OfertasFly</Badge>}
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                         <span><span className="line-through">R$ {Number(activeInvisivel.original_price).toFixed(2)}</span> → <strong>R$ {Number(activeInvisivel.promo_price).toFixed(2)}</strong></span>
                         <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> Raio {activeInvisivel.radius_meters} m</span>
@@ -623,6 +627,7 @@ export default function PainelLojista() {
                               <CalendarClock className="h-3.5 w-3.5 text-primary" />
                               {ev.title}
                             </div>
+                            {ev.created_by_admin && <Badge variant="outline" className="mt-1">Gerenciada pela OfertasFly</Badge>}
                           </td>
                           <td className="px-3 py-3 text-xs">
                             {EVENT_KINDS.find((k) => k.value === ev.kind)?.label ?? ev.kind}
@@ -721,7 +726,7 @@ export default function PainelLojista() {
                               aria-label={`Selecionar ${o.title}`}
                             />
                           </td>
-                          <td className="px-3 py-3 font-medium text-foreground">{o.title}</td>
+                          <td className="px-3 py-3 font-medium text-foreground"><div>{o.title}</div>{o.created_by_admin && <Badge variant="outline" className="mt-1">Gerenciada pela OfertasFly</Badge>}</td>
                           <td className="px-3 py-3">{o.category_slug}</td>
                           <td className="px-3 py-3">{formatBRLNumber(Number(o.promo_price))}</td>
                           <td className="px-3 py-3">

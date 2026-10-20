@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Copy, Pause, Pencil, Play, Plus, Trash2 } from "lucide-react";
+import { Copy, Images, Pause, Pencil, Play, Plus, Ticket, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -82,12 +82,13 @@ export function AdminManagedOffers() {
           <ul className="max-h-[60vh] space-y-1 overflow-auto">
             {filtered.map((s) => (
               <li key={s.id}>
-                <button
+                <Button
+                  variant="ghost"
                   onClick={() => setParams({ tab: "gerenciadas", store: s.id })}
-                  className={`w-full rounded-md px-3 py-2 text-left text-sm hover:bg-muted ${sel === s.id ? "bg-muted font-semibold" : ""}`}
+                  className={`h-auto w-full flex-col items-start px-3 py-2 text-left text-sm ${sel === s.id ? "bg-muted font-semibold" : ""}`}
                 >
                   {s.name}<span className="block text-xs text-muted-foreground">{s.city}/{s.state}</span>
-                </button>
+                </Button>
               </li>
             ))}
           </ul>
@@ -98,6 +99,9 @@ export function AdminManagedOffers() {
         <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2">
           <CardTitle className="text-base">{store ? `Ofertas de ${store.name} (${rows.length})` : "Selecione uma loja"}</CardTitle>
           {store && (
+            <div className="flex flex-wrap items-center gap-2">
+              <Button asChild size="sm" variant="outline"><Link to={`/admin/loja/${store.id}/cupons`}><Ticket className="mr-1 h-4 w-4" /> Cupons</Link></Button>
+              <Button asChild size="sm" variant="outline"><Link to={`/admin/loja/${store.id}/midia`}><Images className="mr-1 h-4 w-4" /> Mídias</Link></Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild><Button size="sm"><Plus className="mr-1 h-4 w-4" /> Nova oferta</Button></DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -106,6 +110,7 @@ export function AdminManagedOffers() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+            </div>
           )}
         </CardHeader>
         <CardContent>

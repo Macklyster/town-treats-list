@@ -4,6 +4,7 @@ export type EventKind = "happy_hour" | "show" | "feira" | "evento" | "promocao";
 export type EventStatus = "pending" | "approved" | "rejected" | "expired";
 
 export type UIEventFull = {
+  created_by_admin?: boolean;
   id: string;
   store_id: string | null;
   slug: string;

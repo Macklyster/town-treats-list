@@ -67,6 +67,7 @@ export const fetchActiveGroupOffersAsUIOffers = async (
 export type Tier = { min_people: number; price: number };
 
 export type GroupOffer = {
+  created_by_admin?: boolean;
   id: string;
   store_id: string;
   title: string;
