@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { CityProvider } from "@/hooks/useCity";
 import { CitySelector } from "@/components/site/CitySelector";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { ManagedStoreRoute } from "@/components/admin/ManagedStoreRoute";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { ScrollToHash } from "./components/ScrollToHash";
@@ -309,6 +310,11 @@ const App = () => (
                     </ProtectedRoute>
                   }
                 />
+                <Route path="/admin/loja/:storeId/oferta/:id?" element={<ManagedStoreRoute><OfertaForm /></ManagedStoreRoute>} />
+                <Route path="/admin/loja/:storeId/coletiva/:id?" element={<ManagedStoreRoute><ColetivaForm /></ManagedStoreRoute>} />
+                <Route path="/admin/loja/:storeId/leilao/:id?" element={<ManagedStoreRoute><LeilaoForm /></ManagedStoreRoute>} />
+                <Route path="/admin/loja/:storeId/oferta-invisivel/:id?" element={<ManagedStoreRoute><OfertaInvisivelForm /></ManagedStoreRoute>} />
+                <Route path="/admin/loja/:storeId/evento/:id?" element={<ManagedStoreRoute><EventoForm /></ManagedStoreRoute>} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

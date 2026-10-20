@@ -42,6 +42,8 @@ import { AdminLeiloes } from "@/components/admin/AdminLeiloes";
 import { AdminOfertasInvisiveis } from "@/components/admin/AdminOfertasInvisiveis";
 import { AdminMedia } from "@/components/admin/AdminMedia";
 import { AdminEventos } from "@/components/admin/AdminEventos";
+import { AdminManagedOffers } from "@/components/admin/AdminManagedOffers";
+import { useSearchParams } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -326,7 +328,7 @@ export default function Admin() {
         />
 
 
-        <Tabs defaultValue="offers">
+        <Tabs defaultValue={adminTab}>
           <TabsList>
             <TabsTrigger value="offers">Ofertas ({offers.length})</TabsTrigger>
             <TabsTrigger value="stores">Lojas ({stores.length})</TabsTrigger>
@@ -339,6 +341,7 @@ export default function Admin() {
             <TabsTrigger value="eventos">Eventos ({eventCount})</TabsTrigger>
             <TabsTrigger value="media">Mídia</TabsTrigger>
             <TabsTrigger value="gestao">Gestão de Loja</TabsTrigger>
+            <TabsTrigger value="gerenciadas">Ofertas Gerenciadas ({managedCount})</TabsTrigger>
             <TabsTrigger value="settings">Configurações</TabsTrigger>
           </TabsList>
 
@@ -660,6 +663,10 @@ export default function Admin() {
 
           <TabsContent value="media" className="mt-6">
             <AdminMedia />
+          </TabsContent>
+
+          <TabsContent value="gerenciadas" className="mt-6">
+            <AdminManagedOffers />
           </TabsContent>
 
           <TabsContent value="gestao" className="mt-6">
