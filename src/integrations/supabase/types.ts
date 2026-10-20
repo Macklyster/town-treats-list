@@ -106,6 +106,7 @@ export type Database = {
           category_slug: string
           conditions: string | null
           created_at: string
+          created_by_admin: boolean
           decrement_amount: number
           decrement_interval_minutes: number
           description: string | null
@@ -127,6 +128,7 @@ export type Database = {
           category_slug: string
           conditions?: string | null
           created_at?: string
+          created_by_admin?: boolean
           decrement_amount: number
           decrement_interval_minutes?: number
           description?: string | null
@@ -148,6 +150,7 @@ export type Database = {
           category_slug?: string
           conditions?: string | null
           created_at?: string
+          created_by_admin?: boolean
           decrement_amount?: number
           decrement_interval_minutes?: number
           description?: string | null
@@ -429,6 +432,7 @@ export type Database = {
           cover_url: string | null
           created_at: string
           created_by: string | null
+          created_by_admin: boolean
           description: string | null
           ends_at: string
           featured: boolean
@@ -460,6 +464,7 @@ export type Database = {
           cover_url?: string | null
           created_at?: string
           created_by?: string | null
+          created_by_admin?: boolean
           description?: string | null
           ends_at: string
           featured?: boolean
@@ -491,6 +496,7 @@ export type Database = {
           cover_url?: string | null
           created_at?: string
           created_by?: string | null
+          created_by_admin?: boolean
           description?: string | null
           ends_at?: string
           featured?: boolean
@@ -590,6 +596,7 @@ export type Database = {
           center_lng: number
           conditions: string | null
           created_at: string
+          created_by_admin: boolean
           description: string | null
           id: string
           image_url: string | null
@@ -612,6 +619,7 @@ export type Database = {
           center_lng: number
           conditions?: string | null
           created_at?: string
+          created_by_admin?: boolean
           description?: string | null
           id?: string
           image_url?: string | null
@@ -634,6 +642,7 @@ export type Database = {
           center_lng?: number
           conditions?: string | null
           created_at?: string
+          created_by_admin?: boolean
           description?: string | null
           id?: string
           image_url?: string | null
@@ -714,6 +723,7 @@ export type Database = {
           category_slug: string
           conditions: string | null
           created_at: string
+          created_by_admin: boolean
           description: string | null
           duration_hours: number
           ends_at: string | null
@@ -732,6 +742,7 @@ export type Database = {
           category_slug: string
           conditions?: string | null
           created_at?: string
+          created_by_admin?: boolean
           description?: string | null
           duration_hours?: number
           ends_at?: string | null
@@ -750,6 +761,7 @@ export type Database = {
           category_slug?: string
           conditions?: string | null
           created_at?: string
+          created_by_admin?: boolean
           description?: string | null
           duration_hours?: number
           ends_at?: string | null
@@ -1656,6 +1668,7 @@ export type Database = {
           category_slug: string
           conditions: string | null
           created_at: string
+          created_by_admin: boolean
           description: string | null
           featured: boolean
           flash_duration_hours: number | null
@@ -1686,6 +1699,7 @@ export type Database = {
           category_slug: string
           conditions?: string | null
           created_at?: string
+          created_by_admin?: boolean
           description?: string | null
           featured?: boolean
           flash_duration_hours?: number | null
@@ -1716,6 +1730,7 @@ export type Database = {
           category_slug?: string
           conditions?: string | null
           created_at?: string
+          created_by_admin?: boolean
           description?: string | null
           featured?: boolean
           flash_duration_hours?: number | null
@@ -2024,6 +2039,9 @@ export type Database = {
           latitude: number | null
           logo_url: string | null
           longitude: number | null
+          managed_offers: boolean
+          managed_offers_notes: string | null
+          managed_offers_since: string | null
           name: string
           opening_hours: Json | null
           owner_id: string
@@ -2048,6 +2066,9 @@ export type Database = {
           latitude?: number | null
           logo_url?: string | null
           longitude?: number | null
+          managed_offers?: boolean
+          managed_offers_notes?: string | null
+          managed_offers_since?: string | null
           name: string
           opening_hours?: Json | null
           owner_id: string
@@ -2072,6 +2093,9 @@ export type Database = {
           latitude?: number | null
           logo_url?: string | null
           longitude?: number | null
+          managed_offers?: boolean
+          managed_offers_notes?: string | null
+          managed_offers_since?: string | null
           name?: string
           opening_hours?: Json | null
           owner_id?: string
@@ -2241,6 +2265,7 @@ export type Database = {
           center_lng: number
           conditions: string | null
           created_at: string
+          created_by_admin: boolean
           description: string | null
           id: string
           image_url: string | null
@@ -2319,6 +2344,7 @@ export type Database = {
         Args: { lat1: number; lat2: number; lng1: number; lng2: number }
         Returns: number
       }
+      is_managed_store: { Args: { _store_id: string }; Returns: boolean }
       loyalty_award: {
         Args: {
           _amount_cents?: number
