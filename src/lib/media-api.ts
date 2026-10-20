@@ -243,6 +243,15 @@ export async function setOfferMedia(offerId: string, mediaIds: string[], coverId
     position: i,
     is_cover: media_id === cover,
   }));
+  // Only one cover is allowed per offer: clear the previous cover before
+  // upserting, otherwise a new cover row collides with the old one.
+  const { error: clearCoverError } = await supabase
+    .from("offer_media")
+    .update({ is_cover: false })
+    .eq("offer_id", offerId)
+    .eq("is_cover", true);
+  if (clearCoverError) throw clearCoverError;
+
   const { error: upsertError } = await supabase
     .from("offer_media")
     .upsert(rows, { onConflict: "offer_id,media_id" });
