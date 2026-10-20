@@ -11,6 +11,6 @@ export function useManagedStore() {
     managedStoreId,
     base: managedStoreId ? `/admin/loja/${managedStoreId}` : "/painel-lojista",
     back: managedStoreId ? `/admin?tab=gerenciadas&store=${managedStoreId}` : "/painel-lojista",
-    adminExtra: managedStoreId ? { created_by_admin: true } : {},
+    adminExtra: managedStoreId ? { created_by_admin: true, status: "approved" as const } : {},
   };
 }

@@ -255,7 +255,7 @@ export default function OfertaForm() {
       store_id: storeId,
       ...ms.adminExtra,
       valid_until: form.valid_until || null,
-      status: "pending" as const,
+      status: (ms.managedStoreId ? "approved" : "pending") as "approved" | "pending",
       scheduled_start_at: form.is_scheduled && form.scheduled_start_at ? new Date(form.scheduled_start_at).toISOString() : null,
       scheduled_end_at: form.is_scheduled && form.scheduled_end_at ? new Date(form.scheduled_end_at).toISOString() : null,
     };
