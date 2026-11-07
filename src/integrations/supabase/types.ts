@@ -2315,6 +2315,7 @@ export type Database = {
       }
       event_by_slug: { Args: { p_slug: string }; Returns: Json }
       event_track_view: { Args: { p_id: string }; Returns: undefined }
+      expire_past_due_offers: { Args: never; Returns: number }
       geo_offer_register_visit: {
         Args: {
           p_lat: number

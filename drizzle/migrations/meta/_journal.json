@@ -64,6 +64,13 @@
       "when": 1792460601942,
       "tag": "0008_managed_coupon_redemption_confirmation",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794062511796,
+      "tag": "0009_expire_offers_past_valid_until",
+      "breakpoints": true
     }
   ]
 }
