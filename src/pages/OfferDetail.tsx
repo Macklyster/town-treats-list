@@ -15,6 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Clock, MapPin, Phone, Instagram, MessageCircle, ChevronRight } from "lucide-react";
 import { SectionCard } from "@/components/site/SectionCard";
 import { parseConditions, getMethod } from "@/lib/payment-methods";
+import { fetchStorePix, type StorePix } from "@/lib/pix";
+import { PixPaymentDialog } from "@/components/site/PixPaymentDialog";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { trackOfferEvent } from "@/lib/offer-events";
 import { FollowStoreButton } from "@/components/site/FollowStoreButton";
@@ -43,6 +45,7 @@ const OfferDetail = () => {
   const [rating, setRating] = useState<RatingSummaryData | null>(null);
   const [sp, setSp] = useState<SocialProof | undefined>(undefined);
   const [media, setMedia] = useState<CarouselMedia[]>([]);
+  const [pix, setPix] = useState<StorePix | null>(null);
 
   useEffect(() => {
     if (!offer?.id) return;
@@ -84,6 +87,9 @@ const OfferDetail = () => {
       ]);
       setStore(s);
       setRating(r);
+      if (parseConditions(o.conditions ?? "").methods.includes("pix")) {
+        fetchStorePix(o.storeId).then(setPix).catch(() => {});
+      }
       const mapped: CarouselMedia[] = mm.map((r) => ({
         id: r.asset.id,
         url: r.asset.url,
@@ -315,6 +321,9 @@ const OfferDetail = () => {
                       <MessageCircle className="h-5 w-5" /> Pegar Oferta no WhatsApp
                     </a>
                   </Button>
+                )}
+                {pix && offer.promoPrice > 0 && (
+                  <PixPaymentDialog pix={pix} amount={offer.promoPrice} offerTitle={offer.title} offerId={offer.id} whatsapp={store?.whatsapp} />
                 )}
                 {store?.phone && (
                   <Button asChild variant="outline" size="lg" className="w-full">
