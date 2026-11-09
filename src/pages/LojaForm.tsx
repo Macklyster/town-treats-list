@@ -16,6 +16,7 @@ import { LocationPicker } from "@/components/site/LocationPicker";
 import { StateSelect, CitySelect } from "@/components/site/LocationSelect";
 import { OpeningHoursEditor, defaultOpeningHours, normalizeOpeningHours, type OpeningHours } from "@/components/site/OpeningHoursEditor";
 import { DutySchedulePanel } from "@/components/painel/DutySchedulePanel";
+import { PixKeyPanel } from "@/components/painel/PixKeyPanel";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { slugify } from "@/lib/format";
@@ -246,6 +247,11 @@ export default function LojaForm() {
         {storeId && (
           <div className="mx-auto mt-6 max-w-2xl">
             <DutySchedulePanel storeId={storeId} />
+          </div>
+        )}
+        {storeId && (
+          <div className="mx-auto mt-6 max-w-2xl">
+            <PixKeyPanel storeId={storeId} />
           </div>
         )}
       </main>

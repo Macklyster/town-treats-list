@@ -2025,6 +2025,44 @@ export type Database = {
         }
         Relationships: []
       }
+      store_pix_keys: {
+        Row: {
+          bank_name: string | null
+          holder_city: string
+          holder_name: string
+          key_type: string
+          pix_key: string
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          bank_name?: string | null
+          holder_city: string
+          holder_name: string
+          key_type: string
+          pix_key: string
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          bank_name?: string | null
+          holder_city?: string
+          holder_name?: string
+          key_type?: string
+          pix_key?: string
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_pix_keys_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stores: {
         Row: {
           address: string | null

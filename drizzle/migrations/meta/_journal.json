@@ -71,6 +71,13 @@
       "when": 1794062511796,
       "tag": "0009_expire_offers_past_valid_until",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794265657134,
+      "tag": "0010_store_pix_keys",
+      "breakpoints": true
     }
   ]
 }
