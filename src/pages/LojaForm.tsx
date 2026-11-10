@@ -20,6 +20,7 @@ import { PixKeyPanel } from "@/components/painel/PixKeyPanel";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { slugify } from "@/lib/format";
+import { formatDoc, onlyDigits, validateLegal, type PersonType } from "@/lib/legal-doc";
 
 const schema = z.object({
   name: z.string().trim().min(2, "Nome muito curto").max(120),
@@ -56,6 +57,7 @@ export default function LojaForm() {
     opening_hours: defaultOpeningHours() as OpeningHours,
   });
   const [pinManuallySet, setPinManuallySet] = useState(false);
+  const [legal, setLegal] = useState<{ type: PersonType; doc: string; name: string }>({ type: "pj", doc: "", name: "" });
 
   useEffect(() => {
     (async () => {
@@ -84,6 +86,8 @@ export default function LojaForm() {
           opening_hours: normalizeOpeningHours((data as any).opening_hours),
         });
         if (data.latitude != null && data.longitude != null) setPinManuallySet(true);
+        const { data: li } = await supabase.from("store_legal_info").select("*").eq("store_id", data.id).maybeSingle();
+        if (li) setLegal({ type: li.person_type as PersonType, doc: formatDoc(li.person_type as PersonType, li.document), name: li.legal_name });
       }
     })();
   }, [user?.id]);
@@ -95,6 +99,8 @@ export default function LojaForm() {
       toast.error(parsed.error.errors[0].message);
       return;
     }
+    const legalErr = validateLegal(legal.type, legal.doc, legal.name);
+    if (legalErr) { toast.error(legalErr); return; }
     if (!user) return;
     setLoading(true);
 
@@ -117,6 +123,16 @@ export default function LojaForm() {
       if (error) { setLoading(false); return toast.error(error.message); }
       resultId = data?.id ?? null;
       setStoreId(resultId);
+    }
+
+    if (resultId) {
+      const { error } = await supabase.from("store_legal_info").upsert({
+        store_id: resultId,
+        person_type: legal.type,
+        document: onlyDigits(legal.doc),
+        legal_name: legal.name.trim(),
+      });
+      if (error) { setLoading(false); return toast.error("Dados de CPF/CNPJ não salvos: " + error.message); }
     }
 
     // Geocode in background only if user did NOT pick a point manually
@@ -144,6 +160,30 @@ export default function LojaForm() {
               <div>
                 <Label>Nome da loja *</Label>
                 <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+              </div>
+              <div className="space-y-3 rounded-lg border p-4">
+                <div className="flex gap-2">
+                  {(["pj", "pf"] as PersonType[]).map((t) => (
+                    <Button key={t} type="button" size="sm" variant={legal.type === t ? "default" : "outline"}
+                      onClick={() => setLegal({ type: t, doc: "", name: legal.name })}>
+                      {t === "pj" ? "Pessoa Jurídica (CNPJ)" : "Pessoa Física (CPF)"}
+                    </Button>
+                  ))}
+                </div>
+                <div className="grid gap-4 sm:grid-cols-[200px_1fr]">
+                  <div>
+                    <Label>{legal.type === "pj" ? "CNPJ *" : "CPF *"}</Label>
+                    <Input inputMode="numeric" value={legal.doc} required
+                      placeholder={legal.type === "pj" ? "00.000.000/0000-00" : "000.000.000-00"}
+                      onChange={(e) => setLegal({ ...legal, doc: formatDoc(legal.type, e.target.value) })} />
+                  </div>
+                  <div>
+                    <Label>{legal.type === "pj" ? "Razão social *" : "Nome completo *"}</Label>
+                    <Input value={legal.name} required maxLength={160}
+                      onChange={(e) => setLegal({ ...legal, name: e.target.value })} />
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">Usado só para verificação. Não aparece na sua página.</p>
               </div>
               <div>
                 <Label>Descrição</Label>

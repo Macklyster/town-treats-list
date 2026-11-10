@@ -2025,6 +2025,38 @@ export type Database = {
         }
         Relationships: []
       }
+      store_legal_info: {
+        Row: {
+          document: string
+          legal_name: string
+          person_type: string
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          document: string
+          legal_name: string
+          person_type: string
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          document?: string
+          legal_name?: string
+          person_type?: string
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_legal_info_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_pix_keys: {
         Row: {
           bank_name: string | null
