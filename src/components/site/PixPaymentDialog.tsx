@@ -35,29 +35,29 @@ export const PixPaymentDialog = ({
       <DialogTrigger asChild>
         <Button variant="discount" size="lg" className="w-full"><QrCode className="h-5 w-5" /> Pagar via PIX</Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Pagar {brl(amount)} via PIX</DialogTitle>
-          <DialogDescription>O pagamento vai direto para a conta da loja.</DialogDescription>
+      <DialogContent className="w-[calc(100%-1rem)] gap-2 rounded-lg p-4 sm:max-w-md sm:gap-3">
+        <DialogHeader className="space-y-1 pr-5">
+          <DialogTitle className="text-base">Pagar {brl(amount)} via PIX</DialogTitle>
+          <DialogDescription className="text-xs">Pagamento direto para a conta da loja.</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-2 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm">
+        <div className="space-y-1 rounded-lg border border-destructive/40 bg-destructive/10 p-2 text-xs">
           <p className="flex items-center gap-2 font-semibold text-destructive"><AlertTriangle className="h-4 w-4" /> Antes de pagar</p>
-          <ul className="list-disc space-y-1 pl-5 text-foreground">
-            <li>Confirme com a loja a disponibilidade do produto ou horário.</li>
-            <li>No app do seu banco, confira se o recebedor é <strong>{pix.holder_name}</strong>{pix.bank_name ? <> ({pix.bank_name})</> : null}. Se o nome for diferente, não pague.</li>
+          <ul className="list-disc space-y-1 pl-4 text-foreground">
+            <li>Confirme a disponibilidade com a loja.</li>
+            <li>Confira no banco: <strong className="break-words">{pix.holder_name}</strong>{pix.bank_name ? <> ({pix.bank_name})</> : null}. Se o recebedor for diferente, não pague.</li>
           </ul>
         </div>
 
-        <div className="flex flex-col items-center gap-2">
-          {img ? <img src={img} alt="QR Code PIX" className="h-56 w-56 rounded-lg bg-card p-2" /> : <div className="h-56 w-56 animate-pulse rounded-lg bg-muted" />}
-          <p className="text-xs text-muted-foreground">Chave ({PIX_KEY_LABELS[pix.key_type]}): {pix.pix_key}</p>
+        <div className="flex min-w-0 flex-col items-center gap-1">
+          {img ? <img src={img} alt="QR Code PIX" className="aspect-square w-[min(11rem,30dvh)] rounded-lg bg-card p-1" /> : <div className="aspect-square w-[min(11rem,30dvh)] animate-pulse rounded-lg bg-muted" />}
+          <p className="max-w-full break-all text-center text-xs text-muted-foreground">Chave ({PIX_KEY_LABELS[pix.key_type]}): {pix.pix_key}</p>
         </div>
 
-        <Button variant="outline" className="w-full" onClick={copy}><Copy className="h-4 w-4" /> Copiar código Pix Copia e Cola</Button>
+        <Button variant="outline" className="h-auto min-h-10 w-full whitespace-normal px-2 text-xs" onClick={copy}><Copy className="h-4 w-4" /> Copiar Pix Copia e Cola</Button>
 
         {waLink && (
-          <Button asChild variant="accent" className="w-full">
+          <Button asChild variant="accent" className="h-auto min-h-10 w-full whitespace-normal px-2 text-xs">
             <a href={waLink} target="_blank" rel="noreferrer"><MessageCircle className="h-4 w-4" /> Já fiz o PIX! Enviar comprovante</a>
           </Button>
         )}
