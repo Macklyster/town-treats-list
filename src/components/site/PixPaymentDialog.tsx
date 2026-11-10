@@ -33,7 +33,7 @@ export const PixPaymentDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="lg" className="w-full"><QrCode className="h-5 w-5" /> Pagar via PIX</Button>
+        <Button variant="discount" size="lg" className="w-full"><QrCode className="h-5 w-5" /> Pagar via PIX</Button>
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
         <DialogHeader>
