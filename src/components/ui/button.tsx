@@ -17,6 +17,7 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         accent: "bg-accent text-accent-foreground shadow-pop hover:bg-accent-strong hover:text-primary-foreground",
         accentOutline: "border-2 border-accent text-accent-strong bg-transparent hover:bg-accent hover:text-accent-foreground",
+        discount: "bg-discount text-discount-foreground shadow-pop hover:bg-discount/90",
       },
       size: {
         default: "h-10 px-4 py-2",
