@@ -49,8 +49,8 @@ export const HomeHeader = () => {
 
 
       <div className="container flex h-16 items-center gap-4 md:h-20">
-        <Link to="/" className="flex items-center gap-2 shrink-0" aria-label="OfertasFly">
-          <img src={logo} alt="OfertasFly — Promoções que voam" className="h-11 w-auto md:h-14" />
+        <Link to="/" className="flex min-w-0 items-center gap-2 md:shrink-0" aria-label="OfertasFly">
+          <img src={logo} alt="OfertasFly — Promoções que voam" className="h-11 w-auto max-w-full object-contain md:h-14" />
         </Link>
 
         <form onSubmit={submit} className="hidden md:flex flex-1 max-w-xl mx-auto">
@@ -146,7 +146,7 @@ export const HomeHeader = () => {
         </div>
 
         <button
-          className="md:hidden ml-auto grid h-10 w-10 place-items-center rounded-full border border-border"
+          className="md:hidden ml-auto grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border"
           onClick={() => setOpen((v) => !v)}
           aria-label="Menu"
         >
@@ -197,9 +197,9 @@ export const HomeHeader = () => {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Buscar…"
-                className="flex-1 bg-transparent text-sm outline-none"
+                className="min-w-0 flex-1 bg-transparent text-sm outline-none"
               />
-              <button className="h-9 w-10 rounded-full bg-primary text-primary-foreground grid place-items-center" aria-label="Buscar">
+              <button className="h-9 w-10 shrink-0 rounded-full bg-primary text-primary-foreground grid place-items-center" aria-label="Buscar">
                 <Search className="h-4 w-4" />
               </button>
             </form>
