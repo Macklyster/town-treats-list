@@ -215,8 +215,8 @@ const OfferDetail = () => {
         </nav>
 
 
-        <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr]">
-          <div>
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+          <div className="min-w-0 break-words">
             <div className={`relative overflow-hidden rounded-3xl bg-muted shadow-card ${offer.isFlash ? "ring-2 ring-destructive/70" : ""}`}>
               {media.length > 0 ? (
                 <OfferMediaCarousel items={media} title={offer.title} />
@@ -284,7 +284,7 @@ const OfferDetail = () => {
             </div>
           </div>
 
-          <aside className="space-y-6">
+          <aside className="min-w-0 space-y-6 break-words">
             <div className="rounded-2xl bg-card p-6 shadow-card">
               <div className="flex flex-wrap items-center gap-3">
                 <StoreAvatar name={offer.storeName} logoUrl={offer.storeLogo} size={40} />
@@ -296,7 +296,7 @@ const OfferDetail = () => {
               <h1 className="mt-3 text-2xl font-semibold leading-tight text-foreground md:text-[28px]">
                 {offer.title}
               </h1>
-              <div className="mt-5 flex items-baseline gap-3">
+              <div className="mt-5 flex flex-wrap items-baseline gap-3">
                 {pct > 0 && (
                   <span className="text-lg text-muted-foreground line-through">
                     {formatBRL(offer.originalPrice)}
@@ -311,7 +311,7 @@ const OfferDetail = () => {
 
               <div className="mt-6 space-y-3">
                 {store?.whatsapp && (
-                  <Button asChild variant="accent" size="lg" className="w-full">
+                  <Button asChild variant="accent" size="lg" className="h-auto min-h-11 w-full whitespace-normal px-4 text-center">
                     <a
                       href={waLink}
                       target="_blank"
@@ -349,7 +349,7 @@ const OfferDetail = () => {
               <div className="rounded-2xl bg-card p-6 shadow-card">
                 <div className="flex items-center gap-3">
                   <StoreAvatar name={store.name ?? offer.storeName} logoUrl={store.logo_url} size={56} />
-                  <div className="flex flex-col gap-1">
+                  <div className="flex min-w-0 flex-col gap-1">
                     <h3 className="text-lg font-medium text-foreground">{store.name ?? "Sobre a loja"}</h3>
                     {store.featured_badge && <StoreFeaturedBadge />}
                   </div>
