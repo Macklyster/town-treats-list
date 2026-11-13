@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -291,7 +291,7 @@ export default function OfertaForm() {
       <main className="container flex-1 py-10">
         <Card className="mx-auto max-w-2xl">
           <CardHeader>
-            <CardTitle>{isEdit ? "Editar oferta" : "Nova oferta"}</CardTitle>
+            <h1 className="text-2xl font-semibold leading-none">{isEdit ? "Editar oferta" : "Nova oferta"}</h1>
           </CardHeader>
           <CardContent>
             {!sub.loading && sub.isActive && !isEdit && sub.offerCount >= sub.maxOffers && (

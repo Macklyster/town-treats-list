@@ -7,7 +7,7 @@ import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
@@ -104,7 +104,7 @@ export default function Auth() {
         <Card className="w-full max-w-md rounded-3xl border-border bg-card shadow-card">
           <CardHeader className="space-y-2 pb-2">
             <span className="label-eyebrow text-primary">Área do lojista</span>
-            <CardTitle className="font-display text-2xl font-medium">Acesse o OfertasFly</CardTitle>
+            <h1 className="font-display text-2xl font-medium leading-none">Acesse o OfertasFly</h1>
             <p className="text-sm text-muted-foreground">Entre ou crie sua conta para gerenciar sua loja.</p>
           </CardHeader>
 

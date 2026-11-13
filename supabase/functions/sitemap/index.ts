@@ -1,7 +1,7 @@
 // Public sitemap.xml generator (no auth required)
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
-const SITE_URL = "https://ofertasfly.com.br";
+const SITE_URL = "https://ofertasfly.lovable.app";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -45,13 +45,14 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const today = new Date().toISOString().slice(0, 10);
     const urls: UrlEntry[] = [
-      { loc: `${SITE_URL}/`, changefreq: "daily", priority: 1.0, lastmod: today },
+      { loc: `${SITE_URL}/`, changefreq: "daily", priority: 1.0 },
       { loc: `${SITE_URL}/anuncie`, changefreq: "weekly", priority: 0.7 },
       { loc: `${SITE_URL}/coletivas`, changefreq: "daily", priority: 0.6 },
       { loc: `${SITE_URL}/leiloes`, changefreq: "daily", priority: 0.6 },
       { loc: `${SITE_URL}/ofertas-invisiveis`, changefreq: "daily", priority: 0.6 },
+      { loc: `${SITE_URL}/eventos`, changefreq: "daily", priority: 0.6 },
+      { loc: `${SITE_URL}/fidelidade/como-funciona`, changefreq: "monthly", priority: 0.6 },
       { loc: `${SITE_URL}/termos-de-uso`, changefreq: "yearly", priority: 0.2 },
       { loc: `${SITE_URL}/politica-de-privacidade`, changefreq: "yearly", priority: 0.2 },
     ];

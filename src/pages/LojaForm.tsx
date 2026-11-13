@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 import { ImageUploader } from "@/components/site/ImageUploader";
@@ -153,7 +153,7 @@ export default function LojaForm() {
       <main className="container flex-1 py-10">
         <Card className="mx-auto max-w-2xl">
           <CardHeader>
-            <CardTitle>{storeId ? "Editar loja" : "Cadastrar loja"}</CardTitle>
+            <h1 className="text-2xl font-semibold leading-none">{storeId ? "Editar loja" : "Cadastrar loja"}</h1>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
