@@ -4,6 +4,6 @@
 - [x] Validar permissões existentes e os fluxos com sessão autenticada (cupom e imagem criados, relidos e removidos).
 
 # Correções de SEO
-- [ ] Corrigir e verificar títulos e descrições das imagens.
-- [ ] Alinhar os endereços dos sitemaps e robots ao domínio do projeto.
-- [ ] Concluir confirmação do Google Search Console e envio do sitemap.
+- [x] Corrigir e verificar títulos e descrições das imagens.
+- [x] Alinhar os endereços dos sitemaps e robots ao domínio do projeto.
+- [x] Concluir confirmação do Google Search Console e envio do sitemap.
