@@ -4,3 +4,6 @@
 - Admin section navigation uses one grouped item list for wrapped desktop tabs and a compact mobile selector, with the active section in the URL so both controls and direct links stay synchronized.
 
 - Authentication emails use the managed scaffold and callback-based auth-email-hook; do not add database email queues because managed delivery owns sending and tracking.
+- Storage SELECT policies permit file enumeration only for authenticated owners or admins; public image URLs remain usable because displaying catalog images must not require listing a bucket.
+- Public offer-media reads follow offer approval, validity, and scheduling; public loyalty-tier reads require an approved store with an active program, while existing owner/admin policies preserve editing access.
+- Categories and badge definitions are intentionally public catalogs, not private customer records; keep their public read policies for browsing and FlyPontos descriptions.
