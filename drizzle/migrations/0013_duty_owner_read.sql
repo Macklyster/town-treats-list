@@ -1,0 +1,2 @@
+CREATE POLICY "duty owner or admin read" ON public.store_duty_schedules FOR SELECT TO authenticated
+USING (public.has_role(auth.uid(), 'admin') OR EXISTS (SELECT 1 FROM public.stores s WHERE s.id = store_id AND s.owner_id = auth.uid()));
