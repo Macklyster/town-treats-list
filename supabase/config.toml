@@ -1,37 +1,29 @@
 project_id = "ougpesguavrqbeethbjl"
 
-[functions.create-checkout]
-verify_jwt = false
-
-[functions.customer-portal]
-verify_jwt = false
-
-[functions.stripe-webhook]
-verify_jwt = false
-
-[functions.reactivate-subscription]
-verify_jwt = false
-
-[functions.sitemap]
-verify_jwt = false
-
-[functions.flash-expire]
-verify_jwt = false
-
-[functions.auto-renew-offers]
-verify_jwt = false
-
-[functions.backfill-geocode-stores]
-verify_jwt = false
-
-[functions.generate-review-prompts]
-verify_jwt = false
-
-[functions.notify-review-request]
-verify_jwt = false
-
-[functions.group-offer-expire]
-verify_jwt = false
-
-[functions.change-subscription-plan]
-verify_jwt = false
+[functions]
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.auto-renew-offers]
+    verify_jwt = false
+  [functions.backfill-geocode-stores]
+    verify_jwt = false
+  [functions.change-subscription-plan]
+    verify_jwt = false
+  [functions.create-checkout]
+    verify_jwt = false
+  [functions.customer-portal]
+    verify_jwt = false
+  [functions.flash-expire]
+    verify_jwt = false
+  [functions.generate-review-prompts]
+    verify_jwt = false
+  [functions.group-offer-expire]
+    verify_jwt = false
+  [functions.notify-review-request]
+    verify_jwt = false
+  [functions.reactivate-subscription]
+    verify_jwt = false
+  [functions.sitemap]
+    verify_jwt = false
+  [functions.stripe-webhook]
+    verify_jwt = false
