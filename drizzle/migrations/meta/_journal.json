@@ -99,6 +99,13 @@
       "when": 1794574880321,
       "tag": "0013_duty_owner_read",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1794602633002,
+      "tag": "0014_restrict_selected_media_and_loyalty_read_policies",
+      "breakpoints": true
     }
   ]
 }
