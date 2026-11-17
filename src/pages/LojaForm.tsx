@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Header } from "@/components/site/Header";
@@ -96,7 +96,7 @@ export default function LojaForm() {
     e.preventDefault();
     const parsed = schema.safeParse(form);
     if (!parsed.success) {
-      toast.error(parsed.error.errors[0].message);
+      toast.error(parsed.error.errors[0]?.message ?? "Dados inválidos");
       return;
     }
     const legalErr = validateLegal(legal.type, legal.doc, legal.name);
@@ -145,6 +145,7 @@ export default function LojaForm() {
     setLoading(false);
     toast.success(storeId ? "Loja atualizada" : "Loja criada — aguardando aprovação");
     navigate("/painel-lojista");
+    return undefined;
   };
 
   return (

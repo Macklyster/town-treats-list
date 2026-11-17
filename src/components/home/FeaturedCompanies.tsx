@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { CompanyCard } from "./CompanyCard";

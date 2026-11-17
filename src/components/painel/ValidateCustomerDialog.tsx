@@ -124,6 +124,7 @@ export function ValidateCustomerDialog({ open, onOpenChange, onDone }: Props) {
     } finally {
       setBusy(false);
     }
+    return undefined;
   };
 
   const handleFulfill = async () => {
@@ -144,6 +145,7 @@ export function ValidateCustomerDialog({ open, onOpenChange, onDone }: Props) {
     } finally {
       setBusy(false);
     }
+    return undefined;
   };
 
   return (

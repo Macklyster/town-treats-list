@@ -37,7 +37,10 @@ export function OfferMediaEditor({ storeId, value, coverId, onChange, maxImages 
     const j = idx + dir;
     if (j < 0 || j >= items.length) return;
     const next = [...items];
-    [next[idx], next[j]] = [next[j], next[idx]];
+    const a = next[idx];
+    const b = next[j];
+    if (!a || !b) return;
+    [next[idx], next[j]] = [b, a];
     emit(next, cover);
   };
 
@@ -93,7 +96,7 @@ export function OfferMediaEditor({ storeId, value, coverId, onChange, maxImages 
       return true;
     });
     // cover must be image
-    let c = nextCover;
+    let c: string | undefined = nextCover;
     const coverAsset = final.find((i) => i.id === c);
     if (!coverAsset || coverAsset.media_type !== "image") {
       c = final.find((i) => i.media_type === "image")?.id;

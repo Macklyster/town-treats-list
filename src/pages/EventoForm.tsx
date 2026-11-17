@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useNavigate, useParams, Link } from "@/lib/router-compat";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Header } from "@/components/site/Header";
@@ -194,6 +194,7 @@ export default function EventoForm() {
       toast.success("Evento enviado para aprovação!");
       navigate(`${ms.base}/evento/${(data as any).id}`, { replace: true });
     }
+    return undefined;
   };
 
   if (!loaded || sub.loading) {

@@ -1,3 +1,4 @@
+import { invokeBackend } from "@/lib/invoke-backend";
 import { useState } from "react";
 import { Sparkles, Loader2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -37,7 +38,7 @@ export function AISuggestButton({
   const fetchSuggestion = async () => {
     setLoading(true);
     setS(null);
-    const { data, error } = await supabase.functions.invoke("suggest-offer", {
+    const { data, error } = await invokeBackend("suggest-offer", {
       body: { category_slug, original_price, current_title, image_url, store_name },
     });
     setLoading(false);

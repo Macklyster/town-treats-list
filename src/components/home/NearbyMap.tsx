@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { MapPin } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { useCity } from "@/hooks/useCity";

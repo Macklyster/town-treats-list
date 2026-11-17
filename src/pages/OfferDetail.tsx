@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "@/lib/router-compat";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { OfferCard } from "@/components/site/OfferCard";
@@ -182,7 +182,7 @@ const OfferDetail = () => {
     },
   };
   if (rating && rating.count > 0) {
-    productLd.aggregateRating = {
+    productLd["aggregateRating"] = {
       "@type": "AggregateRating",
       ratingValue: rating.avg,
       reviewCount: rating.count,

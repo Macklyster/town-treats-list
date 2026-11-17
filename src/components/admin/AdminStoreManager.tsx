@@ -1,3 +1,4 @@
+import { invokeBackend } from "@/lib/invoke-backend";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -105,7 +106,7 @@ function StoreSheet({ id, onSaved }: { id: string; onSaved: () => void }) {
       setPlans(pl.data ?? []);
       setSub(sb.data ?? { store_id: id, plan_id: "", status: "active", current_period_end: null });
       setStats({ offers: o.count ?? 0, events: e.count ?? 0, reviews: r.count ?? 0, score: f.data?.overall ?? null });
-      const { data: ow } = await supabase.functions.invoke("admin-manage-user", { body: { action: "get", user_id: st!.owner_id } });
+      const { data: ow } = await invokeBackend("admin-manage-user", { body: { action: "get", user_id: st!.owner_id } });
       if (ow && !ow.error) { setOwner(ow); setEmail(ow.email ?? ""); setRoles(ow.roles ?? []); }
       loadLog();
     })();
@@ -123,12 +124,14 @@ function StoreSheet({ id, onSaved }: { id: string; onSaved: () => void }) {
     if (error) return toast.error(error.message);
     await audit(id, section, patch); loadLog(); onSaved();
     toast.success("Salvo");
+    return undefined;
   };
 
   const callFn = async (body: any, ok: string) => {
-    const { data, error } = await supabase.functions.invoke("admin-manage-user", { body: { ...body, user_id: s.owner_id, store_id: id } });
+    const { data, error } = await invokeBackend("admin-manage-user", { body: { ...body, user_id: s.owner_id, store_id: id } });
     if (error || data?.error) return toast.error(data?.error ?? error?.message ?? "Erro");
     toast.success(ok); loadLog();
+    return undefined;
   };
 
   const mask = (v?: string | null) => (!v ? "—" : reveal ? v : v.replace(/.(?=.{3})/g, "•"));
@@ -265,6 +268,7 @@ function StoreSheet({ id, onSaved }: { id: string; onSaved: () => void }) {
                   const { error } = await supabase.from("profiles").upsert({ id: profile.id, ...patch });
                   if (error) return toast.error(error.message);
                   await audit(id, "perfil", patch); loadLog(); toast.success("Perfil salvo");
+                  return undefined;
                 }}>Salvar perfil</Button>
 
                 <div className="flex flex-wrap items-end gap-3 border-t pt-4">

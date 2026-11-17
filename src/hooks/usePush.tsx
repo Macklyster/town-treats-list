@@ -1,3 +1,4 @@
+import { invokeBackend } from "@/lib/invoke-backend";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { VAPID_PUBLIC_KEY, urlBase64ToUint8Array } from "@/lib/push-config";
@@ -13,7 +14,7 @@ async function ensureRegistration(): Promise<ServiceWorkerRegistration> {
 
 async function persistSubscription(sub: PushSubscription) {
   const json = sub.toJSON();
-  const { error } = await supabase.functions.invoke("subscribe-push", {
+  const { error } = await invokeBackend("subscribe-push", {
     body: {
       endpoint: json.endpoint,
       keys: json.keys,
@@ -86,7 +87,7 @@ export function usePush() {
       const reg = await navigator.serviceWorker.getRegistration();
       const sub = await reg?.pushManager.getSubscription();
       if (sub) {
-        await supabase.functions.invoke("unsubscribe-push", {
+        await invokeBackend("unsubscribe-push", {
           body: { endpoint: sub.endpoint },
         });
         await sub.unsubscribe();

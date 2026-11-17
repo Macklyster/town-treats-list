@@ -26,8 +26,8 @@ export const trackOfferEvent = async (
       p_offer_id: offerId,
       p_event_type: eventType,
       p_session_id: getSessionId(),
-      p_user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
-      p_referrer: typeof document !== "undefined" ? document.referrer || null : null,
+      p_user_agent: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
+      p_referrer: typeof document !== "undefined" ? document.referrer || undefined : undefined,
     });
   } catch (e) {
     console.warn("trackOfferEvent failed", e);

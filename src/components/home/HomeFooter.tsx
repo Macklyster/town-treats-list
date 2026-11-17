@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Instagram, Facebook, MessageCircle, Youtube } from "lucide-react";
 import logoAsset from "@/assets/logo-ofertasfly-footer.png.asset.json";
 const logo = logoAsset.url;

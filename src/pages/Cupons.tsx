@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { ArrowLeft, Plus, Trash2, Copy, CheckCircle2, XCircle, Ticket } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { PageHero } from "@/components/site/PageHero";
@@ -169,6 +169,7 @@ export default function Cupons() {
     setOpen(false);
     setForm(emptyForm);
     load();
+    return undefined;
   };
 
   const toggleActive = async (c: Coupon) => {
@@ -178,6 +179,7 @@ export default function Cupons() {
       .eq("id", c.id);
     if (error) return toast.error(error.message);
     load();
+    return undefined;
   };
 
   const handleDelete = async (id: string) => {
@@ -186,6 +188,7 @@ export default function Cupons() {
     if (error) return toast.error(error.message);
     toast.success("Cupom excluído");
     load();
+    return undefined;
   };
 
   const markRedeemed = async (r: Redemption) => {
@@ -196,6 +199,7 @@ export default function Cupons() {
     if (error) return toast.error(error.message);
     toast.success("Resgate confirmado");
     load();
+    return undefined;
   };
 
   const formatDiscount = (c: Coupon) =>

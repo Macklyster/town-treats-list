@@ -1,5 +1,11 @@
 import { cleanup, render, waitFor } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import {
+  RouterProvider,
+  createMemoryHistory,
+  createRootRoute,
+  createRoute,
+  createRouter,
+} from "@tanstack/react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ManagedStoreRoute } from "./ManagedStoreRoute";
 
@@ -13,9 +19,21 @@ vi.mock("@/components/auth/ProtectedRoute", () => ({
 
 function Form() { mocks.mounted(); return null; }
 function openRoute() {
-  return render(<MemoryRouter initialEntries={["/admin/loja/store-id/cupons"]}>
-    <Routes><Route path="/admin/loja/:storeId/cupons" element={<ManagedStoreRoute><Form /></ManagedStoreRoute>} /></Routes>
-  </MemoryRouter>);
+  const rootRoute = createRootRoute();
+  const couponsRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: "/admin/loja/$storeId/cupons",
+    component: () => (
+      <ManagedStoreRoute>
+        <Form />
+      </ManagedStoreRoute>
+    ),
+  });
+  const router = createRouter({
+    routeTree: rootRoute.addChildren([couponsRoute]),
+    history: createMemoryHistory({ initialEntries: ["/admin/loja/store-id/cupons"] }),
+  });
+  return render(<RouterProvider router={router} />);
 }
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 

@@ -44,7 +44,7 @@ import { AdminOfertasInvisiveis } from "@/components/admin/AdminOfertasInvisivei
 import { AdminMedia } from "@/components/admin/AdminMedia";
 import { AdminEventos } from "@/components/admin/AdminEventos";
 import { AdminManagedOffers } from "@/components/admin/AdminManagedOffers";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "@/lib/router-compat";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -276,6 +276,7 @@ export default function Admin() {
     toast.success(editingCat ? "Categoria atualizada" : "Categoria criada");
     setCatDialogOpen(false);
     load();
+    return undefined;
   };
 
   const deleteCategory = async (slug: string) => {
@@ -283,6 +284,7 @@ export default function Admin() {
     if (error) return toast.error(error.message);
     toast.success("Categoria excluída");
     load();
+    return undefined;
   };
 
   const moveCategory = async (index: number, dir: -1 | 1) => {
@@ -297,6 +299,7 @@ export default function Admin() {
       ], { onConflict: "slug" });
     if (error) return toast.error(error.message);
     load();
+    return undefined;
   };
 
   const updateOffer = async (id: string, patch: { status?: "pending" | "approved" | "rejected" | "paused"; featured?: boolean; is_flash?: boolean; flash_duration_hours?: number }) => {
@@ -314,6 +317,7 @@ export default function Admin() {
       });
     }
     load();
+    return undefined;
   };
 
   const sendFlashBroadcast = async (id: string) => {
@@ -322,6 +326,7 @@ export default function Admin() {
     });
     if (error) return toast.error("Falha ao enviar broadcast");
     toast.success(`Broadcast enviado para ${data?.success ?? 0} usuário(s)`);
+    return undefined;
   };
 
   const updateStore = async (
@@ -332,6 +337,7 @@ export default function Admin() {
     if (error) return toast.error(error.message);
     toast.success("Atualizado");
     load();
+    return undefined;
   };
 
   // Reprovar cadastro: remove logo/capa do armazenamento e limpa os campos.
@@ -352,6 +358,7 @@ export default function Admin() {
     if (error) return toast.error(error.message);
     toast.success("Loja reprovada e imagens excluídas");
     load();
+    return undefined;
   };
 
   return (

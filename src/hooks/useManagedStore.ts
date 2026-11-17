@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams } from "@/lib/router-compat";
 
 /**
  * When a form is opened under /admin/loja/:storeId/..., the admin is creating

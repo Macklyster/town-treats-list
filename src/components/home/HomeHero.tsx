@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { motion } from "framer-motion";
 import { BadgeCheck, Building2, MapPin, Star, Tag, Users, Zap } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
@@ -202,7 +202,7 @@ export const HomeHero = ({ offers = [] }: { offers?: UIOffer[] }) => {
             {loading || featured.length === 0 ? (
               <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--hero-surface))] via-[hsl(var(--primary-deep)/0.35)] to-[hsl(var(--hero-bg))]" aria-hidden />
             ) : featured.length === 1 ? (
-              renderSlideContent(featured[0])
+              renderSlideContent(featured[0]!)
             ) : (
               <Carousel setApi={setApi} opts={{ loop: true }} className="h-full w-full [&>*]:h-full">
                 <CarouselContent className="h-full ml-0 [&>*]:h-full">

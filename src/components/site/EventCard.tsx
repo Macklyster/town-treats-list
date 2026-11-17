@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Flame, Music, Store as StoreIcon, PartyPopper, Tag } from "lucide-react";
 import { StoreAvatar } from "@/components/site/StoreAvatar";

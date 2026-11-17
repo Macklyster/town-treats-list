@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Check, X, ExternalLink, MapPin, Clock } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { formatBRL, formatTime, type GeoOfferStatus } from "@/lib/geo-offer-api";
 
 type Row = {
@@ -47,6 +47,7 @@ export const AdminOfertasInvisiveis = () => {
     if (error) return toast.error(error.message);
     toast.success("Atualizado");
     load();
+    return undefined;
   };
 
   return (

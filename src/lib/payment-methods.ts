@@ -24,7 +24,7 @@ export function parseConditions(raw: string): { methods: PaymentMethodId[]; text
   if (!raw) return { methods: [], text: "" };
   const m = raw.match(TAG);
   if (!m) return { methods: [], text: raw };
-  const ids = m[1]
+  const ids = (m[1] ?? "")
     .split(",")
     .map((s) => s.trim().toLowerCase())
     .filter((s): s is PaymentMethodId => PAYMENT_METHODS.some((p) => p.id === s));

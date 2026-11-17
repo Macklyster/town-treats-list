@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "@/lib/router-compat";
 import {
   Clock,
   Gift,
@@ -132,6 +132,7 @@ export default function FidelidadeLoja() {
       },
       { enableHighAccuracy: true, timeout: 10000 },
     );
+    return undefined;
   };
 
   const handleRedeem = async (reward: LoyaltyReward) => {

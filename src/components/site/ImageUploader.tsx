@@ -89,7 +89,7 @@ export function ImageUploader({
     b >= 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(0)} MB` : `${Math.round(b / 1024)} KB`;
 
   const acceptLabel = accept
-    .map((m) => m.split("/")[1].replace("svg+xml", "SVG").toUpperCase())
+    .map((m) => (m.split("/")[1] ?? m).replace("svg+xml", "SVG").toUpperCase())
     .join(", ");
 
   const handleFile = async (file: File) => {

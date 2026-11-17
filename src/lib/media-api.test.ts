@@ -50,7 +50,7 @@ vi.mock("@/integrations/supabase/client", () => {
           const finish = () => thenable(ok());
           const exec = (keepIds?: string[]) => {
             for (let i = db.offerMedia.length - 1; i >= 0; i--) {
-              const r = db.offerMedia[i];
+              const r = db.offerMedia[i]!;
               if (r.offer_id === offerId && (!keepIds || !keepIds.includes(r.media_id))) {
                 db.offerMedia.splice(i, 1);
               }
@@ -115,7 +115,7 @@ describe("setOfferMedia", () => {
 
     const covers = db.offerMedia.filter((r) => r.offer_id === OFFER && r.is_cover);
     expect(covers).toHaveLength(1);
-    expect(covers[0].media_id).toBe("b");
+    expect(covers[0]?.media_id).toBe("b");
   });
 
   it("define como capa uma mídia recém-adicionada a uma oferta que já tem capa", async () => {
@@ -125,6 +125,6 @@ describe("setOfferMedia", () => {
 
     const covers = db.offerMedia.filter((r) => r.offer_id === OFFER && r.is_cover);
     expect(covers).toHaveLength(1);
-    expect(covers[0].media_id).toBe("c");
+    expect(covers[0]?.media_id).toBe("c");
   });
 });

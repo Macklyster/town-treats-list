@@ -1,4 +1,4 @@
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "@/lib/router-compat";
 import { CalendarDays, Gavel, Heart, LogOut, MapPin, Menu, Search, Shield, Sparkles, Store, Tag, Ticket, User as UserIcon, Users, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";

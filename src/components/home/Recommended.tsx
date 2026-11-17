@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { BadgeCheck, MapPin, Star } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { fetchRecommendedCompanies, UIRecommendedCompany } from "@/lib/home-api";

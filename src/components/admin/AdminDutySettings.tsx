@@ -41,6 +41,7 @@ export const AdminDutySettings = () => {
     setSaving(false);
     if (error || r1.error || r2.error) return toast.error("Não foi possível salvar os limites de plantão.");
     toast.success("Limites de plantão salvos");
+    return undefined;
   };
 
   return (

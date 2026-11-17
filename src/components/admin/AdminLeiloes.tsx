@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Check, X, ExternalLink, Package } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { formatBRL, type AuctionStatus } from "@/lib/auction-api";
 
 type Row = {
@@ -45,6 +45,7 @@ export const AdminLeiloes = () => {
     if (error) return toast.error(error.message);
     toast.success("Atualizado");
     load();
+    return undefined;
   };
 
   return (

@@ -1,0 +1,148 @@
+{
+ "functions": [
+  {
+   "name": "admin-manage-user",
+   "classification": "internal-only",
+   "signal": "called only from src/",
+   "outcome": "migrated"
+  },
+  {
+   "name": "create-checkout",
+   "classification": "internal-only",
+   "signal": "called only from src/",
+   "outcome": "migrated"
+  },
+  {
+   "name": "change-subscription-plan",
+   "classification": "internal-only",
+   "signal": "called only from src/",
+   "outcome": "migrated"
+  },
+  {
+   "name": "customer-portal",
+   "classification": "internal-only",
+   "signal": "called only from src/",
+   "outcome": "migrated"
+  },
+  {
+   "name": "reactivate-subscription",
+   "classification": "internal-only",
+   "signal": "called only from src/",
+   "outcome": "migrated"
+  },
+  {
+   "name": "subscribe-push",
+   "classification": "internal-only",
+   "signal": "called only from src/",
+   "outcome": "migrated"
+  },
+  {
+   "name": "unsubscribe-push",
+   "classification": "internal-only",
+   "signal": "called only from src/",
+   "outcome": "migrated"
+  },
+  {
+   "name": "suggest-offer",
+   "classification": "internal-only",
+   "signal": "called only from src/",
+   "outcome": "migrated"
+  },
+  {
+   "name": "admin-broadcast",
+   "classification": "Deno-only dependency",
+   "signal": "shared push sender imports deno.land/x/djwt",
+   "outcome": "left"
+  },
+  {
+   "name": "notify-flash-offer",
+   "classification": "Deno-only dependency",
+   "signal": "shared push sender imports deno.land/x/djwt",
+   "outcome": "left"
+  },
+  {
+   "name": "notify-store-followers",
+   "classification": "Deno-only dependency",
+   "signal": "shared push sender imports deno.land/x/djwt",
+   "outcome": "left"
+  },
+  {
+   "name": "push-test",
+   "classification": "Deno-only dependency",
+   "signal": "shared push sender imports deno.land/x/djwt",
+   "outcome": "left"
+  },
+  {
+   "name": "stripe-webhook",
+   "classification": "webhook receiver",
+   "signal": "verifies stripe-signature header",
+   "outcome": "left"
+  },
+  {
+   "name": "auth-email-hook",
+   "classification": "webhook receiver",
+   "signal": "auth email hook callback",
+   "outcome": "left"
+  },
+  {
+   "name": "group-offer-expire",
+   "classification": "cron target",
+   "signal": "referenced in supabase/migrations",
+   "outcome": "left"
+  },
+  {
+   "name": "auto-renew-offers",
+   "classification": "unknown",
+   "signal": "no internal call sites; scheduled job name",
+   "outcome": "left"
+  },
+  {
+   "name": "flash-expire",
+   "classification": "unknown",
+   "signal": "no internal call sites; scheduled job name",
+   "outcome": "left"
+  },
+  {
+   "name": "generate-review-prompts",
+   "classification": "unknown",
+   "signal": "no internal call sites",
+   "outcome": "left"
+  },
+  {
+   "name": "loyalty-expire-points",
+   "classification": "unknown",
+   "signal": "no internal call sites; Deno-only push sender",
+   "outcome": "left"
+  },
+  {
+   "name": "notify-review-request",
+   "classification": "unknown",
+   "signal": "no internal call sites; Deno-only push sender",
+   "outcome": "left"
+  },
+  {
+   "name": "notify-event-approved",
+   "classification": "unknown",
+   "signal": "no internal call sites; Deno-only push sender",
+   "outcome": "left"
+  },
+  {
+   "name": "backfill-geocode-stores",
+   "classification": "unknown",
+   "signal": "no internal call sites",
+   "outcome": "left"
+  },
+  {
+   "name": "geocode-store",
+   "classification": "unknown",
+   "signal": "no internal call sites",
+   "outcome": "left"
+  },
+  {
+   "name": "sitemap",
+   "classification": "unknown",
+   "signal": "no internal call sites; public sitemap URL",
+   "outcome": "left"
+  }
+ ]
+}

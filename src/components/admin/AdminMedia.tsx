@@ -21,7 +21,7 @@ export function AdminMedia() {
       .order("name", { ascending: true })
       .then(({ data }) => {
         setStores((data ?? []) as any);
-        if (data && data.length) setStoreId(data[0].id);
+        if (data?.[0]) setStoreId(data[0].id);
       });
   }, []);
 

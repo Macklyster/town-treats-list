@@ -78,6 +78,7 @@ export const DutySchedulePanel = ({ storeId }: { storeId: string }) => {
     setStarts("");
     setEnds("");
     reload();
+    return undefined;
   };
 
   const now = Date.now();

@@ -23,6 +23,7 @@ export const GroupOfferTierEditor = ({ value, onChange, originalPrice = 0 }: Pro
 
   const addTier = () => {
     const last = tiers[tiers.length - 1];
+    if (!last) return;
     onChange([
       ...tiers,
       {
@@ -41,7 +42,7 @@ export const GroupOfferTierEditor = ({ value, onChange, originalPrice = 0 }: Pro
   const errors = tiers.map((t, i) => {
     if (i === 0 && t.min_people !== 1) return "A primeira faixa deve ser 1 pessoa";
     if (i > 0) {
-      const prev = tiers[i - 1];
+      const prev = tiers[i - 1]!;
       if (t.min_people <= prev.min_people) return "Pessoas devem ser maior que a faixa anterior";
       if (t.price >= prev.price) return "Preço deve ser menor que a faixa anterior";
     }

@@ -163,7 +163,7 @@ export async function fetchRecommendedCompanies(
   const storeCats = new Map<string, string[]>();
   for (const [sid, m] of storeCatCounts) {
     const sorted = [...m.entries()].sort((a, b) => b[1] - a[1]);
-    primaryCat.set(sid, sorted[0][0]);
+    if (sorted[0]) primaryCat.set(sid, sorted[0][0]);
     storeCats.set(sid, sorted.map((s) => s[0]));
   }
 

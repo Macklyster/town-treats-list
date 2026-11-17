@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Tag } from "lucide-react";
 import { UIOffer, discountPct, formatBRL } from "@/lib/offers-api";
 import { formatDistance } from "@/lib/geo";

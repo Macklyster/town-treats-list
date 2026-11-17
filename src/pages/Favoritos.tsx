@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Heart, Store as StoreIcon, Tag } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { PageHero } from "@/components/site/PageHero";

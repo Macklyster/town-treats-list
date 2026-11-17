@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { UIOffer } from "@/lib/offers-api";
 import { discountPct, formatBRL } from "@/lib/offers-api";

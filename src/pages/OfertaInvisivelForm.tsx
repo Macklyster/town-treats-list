@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "@/lib/router-compat";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Header } from "@/components/site/Header";
@@ -130,11 +130,12 @@ export default function OfertaInvisivelForm() {
           const active = await fetchActiveGeoOfferForStore(sid);
           if (active) setActiveOther(active);
           // Pré-preencher com a localização da loja
-          if (stores?.[0]?.latitude && stores?.[0]?.longitude) {
+          const firstStore = stores?.[0];
+          if (firstStore?.latitude && firstStore?.longitude) {
             setForm((f) => ({
               ...f,
-              center_lat: Number(stores[0].latitude),
-              center_lng: Number(stores[0].longitude),
+              center_lat: Number(firstStore.latitude),
+              center_lng: Number(firstStore.longitude),
             }));
           }
         }
@@ -380,7 +381,7 @@ export default function OfertaInvisivelForm() {
                   <Label>Raio de atuação</Label>
                   <span className="text-sm font-medium tabular-nums">{form.radius_meters} m</span>
                 </div>
-                <Slider min={50} max={5000} step={50} value={[form.radius_meters]} onValueChange={(v) => setForm({ ...form, radius_meters: v[0] })} />
+                <Slider min={50} max={5000} step={50} value={[form.radius_meters]} onValueChange={(v) => setForm({ ...form, radius_meters: v[0] ?? form.radius_meters })} />
                 <p className="mt-1 text-xs text-muted-foreground">Entre 50 e 5000 metros. O cliente só verá a oferta dentro deste raio.</p>
               </div>
             </CardContent>

@@ -46,6 +46,7 @@ export const AdminReviews = () => {
     if (error) return toast.error(error.message);
     toast.success(status === "approved" ? "Avaliação aprovada" : "Avaliação rejeitada");
     load();
+    return undefined;
   };
 
   return (

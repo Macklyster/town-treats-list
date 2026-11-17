@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { BadgeCheck, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { fetchRecentReviews, UIReviewCard } from "@/lib/home-api";
 import { SectionHeading } from "./SectionHeading";

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { BadgeCheck, MapPin, Star } from "lucide-react";
 import type { UICompany } from "@/lib/home-api";
 import { useUserLocation } from "@/hooks/useUserLocation";

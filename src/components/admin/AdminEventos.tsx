@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Check, X, ExternalLink, Star, CalendarClock } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { EVENT_KINDS, type EventKind, type EventStatus } from "@/lib/events-api";
 
 type Row = {
@@ -60,6 +60,7 @@ export const AdminEventos = () => {
         else if (data?.success != null) toast.success(`Push enviado para ${data.success} usuário(s)`);
       });
     load();
+    return undefined;
   };
 
   const reject = async (id: string) => {
@@ -70,6 +71,7 @@ export const AdminEventos = () => {
     setRejecting(null);
     setReason("");
     load();
+    return undefined;
   };
 
   const toggleFeatured = async (r: Row) => {
@@ -80,6 +82,7 @@ export const AdminEventos = () => {
     if (error) return toast.error(error.message);
     toast.success("Atualizado");
     load();
+    return undefined;
   };
 
   const expire = async (id: string) => {
@@ -90,6 +93,7 @@ export const AdminEventos = () => {
     if (error) return toast.error(error.message);
     toast.success("Evento encerrado");
     load();
+    return undefined;
   };
 
   return (

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "@/lib/router-compat";
 import { Copy, Images, Pause, Pencil, Play, Plus, Ticket, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,7 +39,10 @@ export function AdminManagedOffers() {
       KINDS.map((k) => (supabase.from(k.table as any) as any).select("id,title,status,created_by_admin,created_at").eq("store_id", sel)),
     );
     const all: Row[] = res.flatMap((r, i) =>
-      ((r.data ?? []) as any[]).map((d) => ({ ...d, kind: KINDS[i].label, table: KINDS[i].table, path: KINDS[i].path })),
+      ((r.data ?? []) as any[]).map((d) => {
+        const k = KINDS[i]!;
+        return { ...d, kind: k.label, table: k.table, path: k.path };
+      }),
     );
     all.sort((a, b) => b.created_at.localeCompare(a.created_at));
     setRows(all);
@@ -58,12 +61,14 @@ export function AdminManagedOffers() {
     const { error } = await supabase.from("offers").update({ status }).eq("id", r.id);
     if (error) return toast.error(error.message);
     load();
+    return undefined;
   };
   const remove = async (r: Row) => {
     if (!confirm(`Excluir "${r.title}"?`)) return;
     const { error } = await (supabase.from(r.table as any) as any).delete().eq("id", r.id);
     if (error) return toast.error(error.message);
     toast.success("Excluído"); load();
+    return undefined;
   };
   const dup = async (r: Row) => {
     try { await duplicateOffer(r.id); toast.success("Oferta duplicada"); load(); }

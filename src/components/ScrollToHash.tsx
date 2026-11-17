@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "@/lib/router-compat";
 
 const getHeaderOffset = () => {
   const v = getComputedStyle(document.documentElement).getPropertyValue("--header-h").trim();

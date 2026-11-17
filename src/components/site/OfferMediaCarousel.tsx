@@ -40,8 +40,9 @@ export function OfferMediaCarousel({ items, title, className }: Props) {
 
   if (!items.length) return null;
 
-  if (items.length === 1) {
-    const it = items[0];
+  const first = items[0];
+  if (items.length === 1 && first) {
+    const it = first;
     return (
       <div className={className}>
         {it.media_type === "video" ? (

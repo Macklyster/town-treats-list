@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams, Navigate } from "react-router-dom";
+import { Link, useParams, Navigate } from "@/lib/router-compat";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { OfferCard } from "@/components/site/OfferCard";

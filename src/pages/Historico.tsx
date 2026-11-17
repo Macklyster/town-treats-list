@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState, type ReactElement } from "react";
+import { Link } from "@/lib/router-compat";
 import {
   ArrowLeft,
   ArrowRight,
@@ -59,7 +59,7 @@ const EVENT_LABEL: Record<EventRow["event_type"], string> = {
   qr_scan: "Scan QR",
 };
 
-const EVENT_ICON: Record<EventRow["event_type"], JSX.Element> = {
+const EVENT_ICON: Record<EventRow["event_type"], ReactElement> = {
   view: <Eye className="h-3.5 w-3.5" />,
   whatsapp_click: <MessageCircle className="h-3.5 w-3.5" />,
   phone_click: <Phone className="h-3.5 w-3.5" />,

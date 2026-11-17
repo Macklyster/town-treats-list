@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "@/lib/router-compat";
 import { OfferCard } from "@/components/site/OfferCard";
 import { fetchOffers, UIOffer, discountPct } from "@/lib/offers-api";
 import { useCity } from "@/hooks/useCity";

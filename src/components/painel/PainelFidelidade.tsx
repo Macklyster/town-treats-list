@@ -189,6 +189,7 @@ export function PainelFidelidade({ storeId }: { storeId: string }) {
     } finally {
       setSaving(false);
     }
+    return undefined;
   };
 
   const submitMission = async () => {
@@ -213,6 +214,7 @@ export function PainelFidelidade({ storeId }: { storeId: string }) {
     } finally {
       setSaving(false);
     }
+    return undefined;
   };
 
   if (loading) {

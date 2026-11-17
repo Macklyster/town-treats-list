@@ -42,6 +42,7 @@ export function OfferBulkBar({ ids, categories = [], onCleared, onDone }: Props)
     if (error) return toast.error(error.message);
     toast.success(`${label} aplicado a ${ids.length} oferta(s)`);
     onDone();
+    return undefined;
   };
 
   const setStatus = (status: "approved" | "rejected" | "paused" | "pending") =>
@@ -69,6 +70,7 @@ export function OfferBulkBar({ ids, categories = [], onCleared, onDone }: Props)
     setBusy(false);
     toast.success(`Validade +${days}d em ${ids.length} oferta(s)`);
     onDone();
+    return undefined;
   };
 
   const setCategory = (slug: string) =>

@@ -21,7 +21,7 @@ function minutes(t: string): number {
 }
 
 export function isOpenNow(hours: OpeningHours, now = new Date()): { open: boolean; nextRange?: { day: DayKey; open: string } } {
-  const today = JS_DAY_TO_KEY[now.getDay()];
+  const today = JS_DAY_TO_KEY[now.getDay()]!;
   const nowMin = now.getHours() * 60 + now.getMinutes();
   const d = hours[today];
   if (d && !d.closed) {
@@ -33,7 +33,7 @@ export function isOpenNow(hours: OpeningHours, now = new Date()): { open: boolea
   }
   // Find next opening
   for (let offset = 0; offset < 8; offset++) {
-    const key = JS_DAY_TO_KEY[(now.getDay() + offset) % 7];
+    const key = JS_DAY_TO_KEY[(now.getDay() + offset) % 7]!;
     const dd = hours[key];
     if (!dd || dd.closed) continue;
     for (const r of dd.ranges) {

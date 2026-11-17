@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Store } from "lucide-react";
 import companyIconAsset from "@/assets/logo-icone-cadastrar.png.asset.json";
 

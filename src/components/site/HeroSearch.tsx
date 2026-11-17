@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { MapPin, Search, Plane } from "lucide-react";
 import { useState } from "react";
 import { categories } from "@/data/categories";

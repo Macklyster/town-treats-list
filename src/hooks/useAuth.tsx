@@ -40,8 +40,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     const fallback =
-      u.user_metadata?.full_name ||
-      u.user_metadata?.name ||
+      u.user_metadata?.["full_name"] ||
+      u.user_metadata?.["name"] ||
       u.email?.split("@")[0] ||
       null;
     const { data } = await supabase.from("profiles").select("full_name").eq("id", u.id).maybeSingle();

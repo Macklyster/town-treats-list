@@ -121,7 +121,7 @@ export const OffersMap = ({ items, userLoc }: Props) => {
           : "";
       const html = `
         <div style="min-width:220px;max-width:260px;font-family:inherit;">
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#666;margin-bottom:4px;">${escape(g.items[0].storeName)}</div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#666;margin-bottom:4px;">${escape(g.items[0]?.storeName ?? "")}</div>
           ${itemsHtml}${more}
         </div>`;
       marker.bindPopup(html);

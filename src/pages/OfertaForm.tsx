@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "@/lib/router-compat";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Header } from "@/components/site/Header";
@@ -16,7 +16,7 @@ import { useManagedStore } from "@/hooks/useManagedStore";
 import { useSubscription } from "@/hooks/useSubscription";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { AlertCircle, Bell, RefreshCw, CalendarClock, Lock } from "lucide-react";
 import { OfferMediaEditor, type OfferMediaItem } from "@/components/cms/OfferMediaEditor";
 import { listOfferMedia, setOfferMedia } from "@/lib/media-api";
@@ -186,7 +186,7 @@ export default function OfertaForm() {
     e.preventDefault();
     const parsed = schema.safeParse(form);
     if (!parsed.success) {
-      toast.error(parsed.error.errors[0].message);
+      toast.error(parsed.error.errors[0]?.message ?? "Dados inválidos");
       return;
     }
     if (Number(form.promo_price) <= 0) {
@@ -280,6 +280,7 @@ export default function OfertaForm() {
     setLoading(false);
     toast.success(isEdit ? "Oferta atualizada" : "Oferta enviada para aprovação");
     navigate(ms.back);
+    return undefined;
   };
 
   const featureDisabled = !sub.isActive || sub.featuredSlots === 0 || (!isEdit && !sub.canFeature && !form.featured);

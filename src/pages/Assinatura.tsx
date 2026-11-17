@@ -1,5 +1,6 @@
+import { invokeBackend } from "@/lib/invoke-backend";
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "@/lib/router-compat";
 import { Check, Loader2, AlertTriangle, Gift, Shield, Sparkles, XCircle } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
@@ -145,6 +146,7 @@ export default function Assinatura() {
       }, 2000);
       return () => clearInterval(iv);
     }
+    return undefined;
   }, [user?.id]);
 
   useEffect(() => {
@@ -175,7 +177,7 @@ export default function Assinatura() {
       return;
     }
     setBusy(planId);
-    const { data, error } = await supabase.functions.invoke("create-checkout", {
+    const { data, error } = await invokeBackend("create-checkout", {
       body: { plan_id: planId, store_id: storeId, cycle },
     });
     setBusy(null);
@@ -201,7 +203,7 @@ export default function Assinatura() {
   const confirmChangePlan = async () => {
     if (!changePlanId || !storeId) return;
     setBusy(changePlanId);
-    const { data, error } = await supabase.functions.invoke("change-subscription-plan", {
+    const { data, error } = await invokeBackend("change-subscription-plan", {
       body: { plan_id: changePlanId, store_id: storeId, cycle },
     });
     setBusy(null);
@@ -226,7 +228,7 @@ export default function Assinatura() {
 
   const manage = async () => {
     setBusy("portal");
-    const { data, error } = await supabase.functions.invoke("customer-portal", { body: {} });
+    const { data, error } = await invokeBackend("customer-portal", { body: {} });
     setBusy(null);
     if (error || !data?.url) {
       toast.error("Não foi possível abrir o portal.");
@@ -248,7 +250,7 @@ export default function Assinatura() {
       });
     }
 
-    const { data, error } = await supabase.functions.invoke("customer-portal", {
+    const { data, error } = await invokeBackend("customer-portal", {
       body: { flow: "cancel", subscription_id: sub.stripe_subscription_id },
     });
     setBusy(null);
@@ -263,7 +265,7 @@ export default function Assinatura() {
   const reactivate = async () => {
     if (!storeId) return;
     setBusy("reactivate");
-    const { error } = await supabase.functions.invoke("reactivate-subscription", {
+    const { error } = await invokeBackend("reactivate-subscription", {
       body: { store_id: storeId },
     });
     setBusy(null);

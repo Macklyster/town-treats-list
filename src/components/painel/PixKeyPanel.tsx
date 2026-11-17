@@ -49,6 +49,7 @@ export const PixKeyPanel = ({ storeId }: { storeId: string }) => {
     setKey(norm);
     setExists(true);
     toast.success("Chave PIX salva!");
+    return undefined;
   };
 
   const remove = async () => {
@@ -58,6 +59,7 @@ export const PixKeyPanel = ({ storeId }: { storeId: string }) => {
     setExists(false);
     setKey(""); setHolder(""); setCity(""); setBank("");
     toast.success("Chave PIX removida.");
+    return undefined;
   };
 
   return (

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "@/lib/router-compat";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { SEO } from "@/components/seo/SEO";

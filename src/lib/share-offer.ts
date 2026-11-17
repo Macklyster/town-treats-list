@@ -35,7 +35,7 @@ const wrapText = (
   }
   if (line) lines.push(line);
   if (lines.length === maxLines) {
-    let last = lines[maxLines - 1];
+    let last = lines[maxLines - 1] ?? "";
     while (ctx.measureText(last + "…").width > maxWidth && last.length > 0) {
       last = last.slice(0, -1);
     }

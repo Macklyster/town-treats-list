@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "@/lib/router-compat";
 import { Plus, Store, Tag, Settings, CreditCard, Pencil, AlertTriangle, BarChart3, QrCode, Users, Share2, Copy, MessageCircle, Sparkles, Trash2, Ticket, History, HelpCircle } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { OfferBulkBar } from "@/components/cms/OfferBulkBar";
@@ -157,6 +157,7 @@ export default function PainelLojista() {
     if (error) return toast.error(error.message);
     toast.success("Oferta excluída");
     load();
+    return undefined;
   };
 
   return (
@@ -397,6 +398,7 @@ export default function PainelLojista() {
                             if (error) return toast.error(error.message);
                             toast.success("Coletiva encerrada");
                             load();
+                            return undefined;
                           }}
                         >
                           Encerrar
@@ -415,6 +417,7 @@ export default function PainelLojista() {
                         if (error) return toast.error(error.message);
                         toast.success("Coletiva excluída");
                         load();
+                        return undefined;
                       }}
                     >
                       <Trash2 className="h-4 w-4" /> Excluir
@@ -507,6 +510,7 @@ export default function PainelLojista() {
                             if (error) return toast.error(error.message);
                             toast.success("Leilão encerrado");
                             load();
+                            return undefined;
                           }}
                         >
                           Encerrar
@@ -525,6 +529,7 @@ export default function PainelLojista() {
                         if (error) return toast.error(error.message);
                         toast.success("Leilão excluído");
                         load();
+                        return undefined;
                       }}
                     >
                       <Trash2 className="h-4 w-4" /> Excluir
@@ -583,6 +588,7 @@ export default function PainelLojista() {
                       const { error } = await supabase.from("geo_offers" as any).delete().eq("id", activeInvisivel.id);
                       if (error) return toast.error(error.message);
                       toast.success("Oferta excluída"); load();
+                      return undefined;
                     }}><Trash2 className="h-4 w-4" /> Excluir</Button>
                   </div>
                 </CardContent>
@@ -670,6 +676,7 @@ export default function PainelLojista() {
                                   if (error) return toast.error(error.message);
                                   toast.success("Evento excluído");
                                   load();
+                                  return undefined;
                                 }}
                               >
                                 <Trash2 className="h-3.5 w-3.5" />

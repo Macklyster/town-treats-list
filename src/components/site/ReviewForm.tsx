@@ -75,6 +75,7 @@ export function ReviewForm({ offerId, storeName, onSubmitted, onCancel }: Props)
 
   const removePhoto = async (index: number) => {
     const p = photos[index];
+    if (!p) return;
     setPhotos((arr) => arr.filter((_, i) => i !== index));
     if (p.url) {
       const marker = "/object/public/review-photos/";

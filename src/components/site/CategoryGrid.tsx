@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { ShoppingBag, Sparkles, UtensilsCrossed, type LucideIcon } from "lucide-react";
 import { categories } from "@/data/categories";
 
