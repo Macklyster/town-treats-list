@@ -67,11 +67,15 @@ const OfferDetail = () => {
 
   useEffect(() => {
     if (!id) return;
+    let cancelled = false;
+    setPix(null);
     (async () => {
       const o = await fetchOfferById(id);
       if (!o) {
-        setNotFound(true);
-        setLoading(false);
+        if (!cancelled) {
+          setNotFound(true);
+          setLoading(false);
+        }
         return;
       }
       setOffer(o);
@@ -88,7 +92,11 @@ const OfferDetail = () => {
       setStore(s);
       setRating(r);
       if (parseConditions(o.conditions ?? "").methods.includes("pix")) {
-        fetchStorePix(o.storeId).then(setPix).catch(() => {});
+        fetchStorePix(o.storeId)
+          .then((p) => {
+            if (!cancelled) setPix(p);
+          })
+          .catch(() => {});
       }
       const mapped: CarouselMedia[] = mm.map((r) => ({
         id: r.asset.id,
@@ -113,6 +121,9 @@ const OfferDetail = () => {
       );
       setLoading(false);
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   if (notFound) return <NotFound />;
