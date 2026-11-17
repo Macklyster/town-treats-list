@@ -1,7 +1,7 @@
 // Public sitemap.xml generator (no auth required)
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
-const SITE_URL = "https://ofertasfly.lovable.app";
+const SITE_URL = "https://ofertasfly.com.br";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

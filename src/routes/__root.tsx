@@ -38,7 +38,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: SITE_TITLE },
       { name: "description", content: SITE_DESCRIPTION },
       { name: "author", content: "OfertasFly" },
-      { name: "google-site-verification", content: "hADxQAg9Y38J5JekI5O9xZfERpW0trRHIghzmWiiJJ4" },
+      { name: "google-site-verification", content: "y34RXAOvTRImiboV7udDEwmh2izT3po7R_jTrK66TQU" },
       { name: "theme-color", content: "#4338CA" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
@@ -86,6 +86,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <meta name="google-site-verification" content="hADxQAg9Y38J5JekI5O9xZfERpW0trRHIghzmWiiJJ4" />
       </head>
       <body>
         {children}
