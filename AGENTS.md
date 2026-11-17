@@ -7,3 +7,4 @@
 - Storage SELECT policies permit file enumeration only for authenticated owners or admins; public image URLs remain usable because displaying catalog images must not require listing a bucket.
 - Public offer-media reads follow offer approval, validity, and scheduling; public loyalty-tier reads require an approved store with an active program, while existing owner/admin policies preserve editing access.
 - Categories and badge definitions are intentionally public catalogs, not private customer records; keep their public read policies for browsing and FlyPontos descriptions.
+- PageHero uses titleAsChild for route-owned H1 elements, preserving shared heading styles without rendering nested or duplicate main headings.

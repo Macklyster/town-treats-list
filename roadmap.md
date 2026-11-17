@@ -12,3 +12,7 @@
 - [x] Preservar dados e esclarecer envio pelo WhatsApp sem confirmação prematura.
 - [x] Incluir endereço na prévia de compartilhamento da página inicial.
 - [x] Validar as correções e atualizar os três alertas selecionados.
+
+# Revisão SEO — títulos públicos
+- [x] Tornar o título inicial descritivo e explicitar um único H1 nas páginas de cidade e loja.
+- [x] Verificar títulos com dados reais e atualizar o alerta de conteúdo.

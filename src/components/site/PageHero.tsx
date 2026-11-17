@@ -1,12 +1,14 @@
 import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
+import { Slot } from "@radix-ui/react-slot";
 
 export type Crumb = { label: string; to?: string };
 
 type Props = {
   eyebrow?: ReactNode;
   title: ReactNode;
+  titleAsChild?: boolean;
   subtitle?: ReactNode;
   crumbs?: Crumb[];
   actions?: ReactNode;
@@ -18,7 +20,8 @@ type Props = {
  * Dark hero-island — the shared page header for the OfertasFly Light theme.
  * Sits inside `container` with rounded-3xl and casts a soft violet glow.
  */
-export const PageHero = ({ eyebrow, title, subtitle, crumbs, actions, aside, compact }: Props) => {
+export const PageHero = ({ eyebrow, title, titleAsChild = false, subtitle, crumbs, actions, aside, compact }: Props) => {
+  const Heading = titleAsChild ? Slot : "h1";
   return (
     <section
       className={`relative overflow-hidden rounded-3xl bg-[hsl(var(--hero-bg))] text-[hsl(var(--hero-fg))] shadow-pop ${
@@ -59,13 +62,13 @@ export const PageHero = ({ eyebrow, title, subtitle, crumbs, actions, aside, com
             </span>
           )}
 
-          <h1
+          <Heading
             className={`font-display font-medium tracking-tight ${
               compact ? "mt-3 text-3xl md:text-4xl" : "mt-4 text-4xl md:text-5xl"
             }`}
           >
             {title}
-          </h1>
+          </Heading>
 
           {subtitle && (
             <p className="mt-3 max-w-2xl text-sm text-[hsl(var(--hero-muted))] md:text-base">{subtitle}</p>

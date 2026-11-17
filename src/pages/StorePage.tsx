@@ -126,7 +126,8 @@ const StorePage = () => {
       <main className="container space-y-10 py-8 md:py-10">
         <PageHero
           eyebrow="Loja parceira"
-          title={store.name}
+          titleAsChild
+          title={<h1>{store.name}</h1>}
           subtitle={store.description || `Descubra as ofertas de ${store.name} no OfertasFly.`}
           crumbs={crumbs}
           aside={heroAside}

@@ -134,7 +134,8 @@ const CityOffers = () => {
               <MapPin className="h-3 w-3" /> {cityName}
             </span>
           }
-          title={category ? `${category.name} em ${cityName}` : `Ofertas em ${cityName}`}
+          titleAsChild
+          title={<h1>{category ? `${category.name} em ${cityName || "sua cidade"}` : `Ofertas em ${cityName || "sua cidade"}`}</h1>}
           subtitle={
             category
               ? `Veja as melhores ofertas de ${category.name.toLowerCase()} em ${cityName}: descontos, cupons e brindes de lojas locais.`

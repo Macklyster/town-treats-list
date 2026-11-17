@@ -168,9 +168,8 @@ export const HomeHero = ({ offers = [] }: { offers?: UIOffer[] }) => {
         <div className="relative grid gap-8 lg:grid-cols-[1.1fr_1.3fr_0.95fr] lg:items-center">
           {/* Left — copy */}
           <div>
-            <h1 className="font-display text-4xl md:text-5xl leading-[1.05] tracking-tight text-white">
-              Descubra o<br />melhor da<br />
-              <span className="text-primary-mid">sua cidade.</span>
+            <h1 className="font-display text-4xl md:text-5xl leading-[1.05] text-[hsl(var(--hero-fg))] break-words">
+              Ofertas, eventos e empresas da <span className="text-primary-mid">sua cidade</span>
             </h1>
             <p className="mt-4 max-w-sm text-sm text-[hsl(var(--hero-muted))] leading-relaxed">
               Empresas. Serviços. Ofertas. Eventos.<br />Tudo perto de você.
