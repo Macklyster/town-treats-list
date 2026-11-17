@@ -5,16 +5,13 @@ import { Card } from "@/components/ui/card";
 import { Copy, Link2, MessageCircle, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatSocials } from "@/lib/socials";
+import { copyMarketingText, marketingMessage, whatsappUrl } from "@/lib/marketing-share";
 import { AdminStoreSocials } from "./AdminStoreSocials";
 
 const SITE = "https://ofertasfly.com.br";
 const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 type Post = { id: string; group: string; title: string; text: string; url: string };
-
-export function whatsappUrl(text: string, url: string) {
-  return `https://wa.me/?text=${encodeURIComponent(`${text}\n\n${url}`)}`;
-}
 
 export function AdminDivulgacao() {
   const [offers, setOffers] = useState<any[]>([]);
@@ -58,13 +55,17 @@ export function AdminDivulgacao() {
   }, [offers, events]);
 
   const copy = async (value: string, msg: string) => {
-    await navigator.clipboard.writeText(value);
-    toast.success(msg);
+    try {
+      await copyMarketingText(value);
+      toast.success(msg);
+    } catch {
+      toast.error("Não foi possível copiar. Selecione o texto da postagem e copie manualmente.");
+    }
   };
   const share = async (p: Post) => {
     if (navigator.share) {
       try { await navigator.share({ title: p.title, text: p.text, url: p.url }); } catch { /* cancelado */ }
-    } else copy(`${p.text}\n\n${p.url}`, "Texto copiado");
+    } else await copy(marketingMessage(p.text, p.url), "Texto copiado");
   };
 
   return (
@@ -84,9 +85,15 @@ export function AdminDivulgacao() {
             <pre className="flex-1 whitespace-pre-wrap rounded-md bg-muted p-3 font-sans text-sm">{p.text}{"\n\n"}{p.url}</pre>
             <div className="flex flex-wrap gap-2">
               <Button asChild variant="discount" size="sm">
-                <a href={whatsappUrl(p.text, p.url)} target="_blank" rel="noopener noreferrer"><MessageCircle className="mr-1 h-4 w-4" />WhatsApp</a>
+                <a href={whatsappUrl(p.text, p.url)} target="_blank" rel="noopener noreferrer"
+                  onClick={() => {
+                    // Start copying during the click; never await before opening WhatsApp.
+                    void copyMarketingText(marketingMessage(p.text, p.url)).catch(() => {
+                      toast.warning("Se a mensagem não aparecer no WhatsApp, volte e use Copiar texto.");
+                    });
+                  }}><MessageCircle className="mr-1 h-4 w-4" />WhatsApp</a>
               </Button>
-              <Button size="sm" variant="outline" onClick={() => copy(`${p.text}\n\n${p.url}`, "Texto copiado")}><Copy className="mr-1 h-4 w-4" />Copiar texto</Button>
+              <Button size="sm" variant="outline" onClick={() => copy(marketingMessage(p.text, p.url), "Texto copiado")}><Copy className="mr-1 h-4 w-4" />Copiar texto</Button>
               <Button size="sm" variant="outline" onClick={() => copy(p.url, "Link copiado")}><Link2 className="mr-1 h-4 w-4" />Copiar link</Button>
               <Button size="sm" variant="ghost" onClick={() => share(p)}><Share2 className="mr-1 h-4 w-4" />Compartilhar</Button>
             </div>
