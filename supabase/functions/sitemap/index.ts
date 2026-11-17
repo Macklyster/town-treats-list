@@ -57,6 +57,17 @@ Deno.serve(async (req) => {
       { loc: `${SITE_URL}/politica-de-privacidade`, changefreq: "yearly", priority: 0.2 },
     ];
 
+    // Approved upcoming events -> /evento/:slug
+    const { data: events, error: eventsError } = await supabase
+      .from("events")
+      .select("slug,updated_at")
+      .eq("status", "approved")
+      .gt("ends_at", new Date().toISOString());
+    if (eventsError) throw eventsError;
+    (events ?? []).forEach((e: any) => {
+      if (e.slug) urls.push({ loc: `${SITE_URL}/evento/${e.slug}`, lastmod: e.updated_at ? e.updated_at.slice(0, 10) : undefined, changefreq: "daily", priority: 0.6 });
+    });
+
     // Approved stores -> /loja/:slug + collect cities
     const { data: stores } = await supabase
       .from("stores")

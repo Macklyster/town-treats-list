@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, Filter, CalendarDays } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { PageHero } from "@/components/site/PageHero";
-import { SEO } from "@/components/seo/SEO";
+import { Link } from "@/lib/router-compat";
 import { SectionCard } from "@/components/site/SectionCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,24 @@ const DATE_FILTERS: { value: EventDateFilter; label: string }[] = [
   { value: "next30", label: "30 dias" },
 ];
 
-export default function Eventos() {
+export type SeoEvent = {
+  slug: string;
+  title: string;
+  description: string | null;
+  starts_at: string;
+  ends_at: string;
+  city: string;
+  state: string;
+  venue: string | null;
+  address: string | null;
+  cover_url: string | null;
+  image_url: string | null;
+};
+
+const fmtDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", timeZone: "America/Sao_Paulo" });
+
+export default function Eventos({ upcoming = [] }: { upcoming?: SeoEvent[] }) {
   const { city, openSelector } = useCity();
   const [kind, setKind] = useState<EventKind | null>(null);
   const [dateFilter, setDateFilter] = useState<EventDateFilter>("all");
@@ -53,28 +70,8 @@ export default function Eventos() {
     };
   }, [city?.city, city?.state, kind, dateFilter, q]);
 
-  const jsonLd = useMemo(
-    () => ({
-      "@context": "https://schema.org",
-      "@type": "ItemList",
-      itemListElement: events.slice(0, 20).map((e, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
-        url: `${typeof window !== "undefined" ? window.location.origin : ""}/evento/${e.slug}`,
-        name: e.title,
-      })),
-    }),
-    [events],
-  );
-
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <SEO
-        title="Eventos e experiências — OfertasFly"
-        description="Descubra shows, happy hours, feiras e experiências acontecendo na sua cidade. Atualizados em tempo real."
-        path="/eventos"
-        jsonLd={jsonLd}
-      />
       <Header />
       <main className="container flex-1 space-y-6 py-8">
         <PageHero
@@ -173,6 +170,29 @@ export default function Eventos() {
             ))}
           </div>
         )}
+        <SectionCard eyebrow="Agenda" title="Próximos eventos no OfertasFly">
+          <p className="text-sm text-muted-foreground">
+            Aqui você encontra shows, feiras, happy hours e promoções especiais organizados pelas lojas
+            parceiras do OfertasFly e pela comunidade da sua cidade. Cada evento traz data, horário, local
+            e como participar.
+          </p>
+          {upcoming.length === 0 ? (
+            <p className="mt-3 text-sm text-muted-foreground">Nenhum evento programado no momento. Volte em breve!</p>
+          ) : (
+            <ul className="mt-3 space-y-1 text-sm">
+              {upcoming.map((e) => (
+                <li key={e.slug}>
+                  <Link to={`/evento/${e.slug}`} className="text-accent-strong hover:underline">
+                    {e.title}
+                  </Link>{" "}
+                  <span className="text-muted-foreground">
+                    — {fmtDate(e.starts_at)} · {e.city.trim()}/{e.state}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </SectionCard>
       </main>
       <Footer />
     </div>
