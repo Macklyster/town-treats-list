@@ -2139,6 +2139,7 @@ export type Database = {
           cover_url: string | null
           created_at: string
           description: string | null
+          facebook: string | null
           featured_badge: boolean
           id: string
           instagram: string | null
@@ -2154,9 +2155,11 @@ export type Database = {
           phone: string | null
           slug: string
           state: string
+          tiktok: string | null
           trial_days_override: number | null
           trial_granted_at: string | null
           updated_at: string
+          website: string | null
           whatsapp: string | null
         }
         Insert: {
@@ -2166,6 +2169,7 @@ export type Database = {
           cover_url?: string | null
           created_at?: string
           description?: string | null
+          facebook?: string | null
           featured_badge?: boolean
           id?: string
           instagram?: string | null
@@ -2181,9 +2185,11 @@ export type Database = {
           phone?: string | null
           slug: string
           state?: string
+          tiktok?: string | null
           trial_days_override?: number | null
           trial_granted_at?: string | null
           updated_at?: string
+          website?: string | null
           whatsapp?: string | null
         }
         Update: {
@@ -2193,6 +2199,7 @@ export type Database = {
           cover_url?: string | null
           created_at?: string
           description?: string | null
+          facebook?: string | null
           featured_badge?: boolean
           id?: string
           instagram?: string | null
@@ -2208,9 +2215,11 @@ export type Database = {
           phone?: string | null
           slug?: string
           state?: string
+          tiktok?: string | null
           trial_days_override?: number | null
           trial_granted_at?: string | null
           updated_at?: string
+          website?: string | null
           whatsapp?: string | null
         }
         Relationships: []

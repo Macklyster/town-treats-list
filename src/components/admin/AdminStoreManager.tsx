@@ -166,11 +166,14 @@ function StoreSheet({ id, onSaved }: { id: string; onSaved: () => void }) {
           label="Capa" aspect="video" maxWidth={1600} accept={["image/jpeg", "image/png", "image/webp"]} maxBytes={5 * 1024 * 1024} />
       </Section>
 
-      <Section title="Contato e localização" onSave={() => saveStore("contato", ["phone", "whatsapp", "instagram", "address", "state", "city", "latitude", "longitude"])} busy={busy}>
+      <Section title="Contato e localização" onSave={() => saveStore("contato", ["phone", "whatsapp", "instagram", "facebook", "tiktok", "website", "address", "state", "city", "latitude", "longitude"])} busy={busy}>
         <div className="grid gap-4 sm:grid-cols-3">
           <div><Label>Telefone</Label><Input value={s.phone ?? ""} onChange={(e) => set({ phone: e.target.value })} /></div>
           <div><Label>WhatsApp</Label><Input value={s.whatsapp ?? ""} onChange={(e) => set({ whatsapp: e.target.value })} /></div>
           <div><Label>Instagram</Label><Input value={s.instagram ?? ""} onChange={(e) => set({ instagram: e.target.value })} /></div>
+          <div><Label>Facebook</Label><Input value={s.facebook ?? ""} onChange={(e) => set({ facebook: e.target.value })} /></div>
+          <div><Label>TikTok</Label><Input value={s.tiktok ?? ""} onChange={(e) => set({ tiktok: e.target.value })} /></div>
+          <div><Label>Site</Label><Input value={s.website ?? ""} onChange={(e) => set({ website: e.target.value })} /></div>
         </div>
         <div><Label>Endereço</Label><Input value={s.address ?? ""} onChange={(e) => set({ address: e.target.value })} /></div>
         <div className="grid gap-4 sm:grid-cols-2">

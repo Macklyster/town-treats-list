@@ -1,0 +1,1 @@
+ALTER TABLE public.stores ADD COLUMN IF NOT EXISTS facebook text, ADD COLUMN IF NOT EXISTS tiktok text, ADD COLUMN IF NOT EXISTS website text;

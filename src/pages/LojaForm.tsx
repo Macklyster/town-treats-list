@@ -31,6 +31,9 @@ const schema = z.object({
   phone: z.string().trim().max(30).optional().or(z.literal("")),
   whatsapp: z.string().trim().max(30).optional().or(z.literal("")),
   instagram: z.string().trim().max(60).optional().or(z.literal("")),
+  facebook: z.string().trim().max(120).optional().or(z.literal("")),
+  tiktok: z.string().trim().max(120).optional().or(z.literal("")),
+  website: z.string().trim().max(200).optional().or(z.literal("")),
   logo_url: z.string().trim().url().max(500).optional().or(z.literal("")),
   cover_url: z.string().trim().url().max(500).optional().or(z.literal("")),
 });
@@ -50,6 +53,9 @@ export default function LojaForm() {
     phone: "",
     whatsapp: "",
     instagram: "",
+    facebook: "",
+    tiktok: "",
+    website: "",
     logo_url: "",
     cover_url: "",
     latitude: null as number | null,
@@ -79,6 +85,9 @@ export default function LojaForm() {
           phone: data.phone ?? "",
           whatsapp: data.whatsapp ?? "",
           instagram: data.instagram ?? "",
+          facebook: (data as any).facebook ?? "",
+          tiktok: (data as any).tiktok ?? "",
+          website: (data as any).website ?? "",
           logo_url: data.logo_url ?? "",
           cover_url: data.cover_url ?? "",
           latitude: data.latitude ?? null,
@@ -233,6 +242,11 @@ export default function LojaForm() {
               <div>
                 <Label>Instagram</Label>
                 <Input value={form.instagram} onChange={(e) => setForm({ ...form, instagram: e.target.value })} placeholder="@minhaloja" />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div><Label>Facebook</Label><Input value={form.facebook} onChange={(e) => setForm({ ...form, facebook: e.target.value })} placeholder="facebook.com/minhaloja" /></div>
+                <div><Label>TikTok</Label><Input value={form.tiktok} onChange={(e) => setForm({ ...form, tiktok: e.target.value })} placeholder="@minhaloja" /></div>
+                <div><Label>Site</Label><Input value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="minhaloja.com.br" /></div>
               </div>
 
               <OpeningHoursEditor

@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Copy, Link2, MessageCircle, Share2 } from "lucide-react";
 import { toast } from "sonner";
+import { formatSocials } from "@/lib/socials";
+import { AdminStoreSocials } from "./AdminStoreSocials";
 
 const SITE = "https://ofertasfly.com.br";
 const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -18,14 +20,15 @@ export function AdminDivulgacao() {
   const [offers, setOffers] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
 
+  const [reload, setReload] = useState(0);
   useEffect(() => {
-    supabase.from("offers").select("id,title,promo_price,original_price,type,store:stores(name,city)")
+    supabase.from("offers").select("id,title,promo_price,original_price,type,store:stores(name,city,instagram,facebook,tiktok,website)")
       .eq("status", "approved").order("created_at", { ascending: false }).limit(6)
       .then(({ data }) => setOffers(data ?? []));
     supabase.from("events").select("title,slug,starts_at,city").gte("starts_at", new Date().toISOString())
       .order("starts_at", { ascending: true }).limit(4)
       .then(({ data }) => setEvents(data ?? []));
-  }, []);
+  }, [reload]);
 
   const posts = useMemo<Post[]>(() => {
     const list: Post[] = [
@@ -48,7 +51,7 @@ export function AdminDivulgacao() {
       const orig = Number(o.original_price) || 0;
       const price = promo > 0 ? `\n💰 ${orig > promo ? `De ${brl(orig)} por ` : "Por "}${brl(promo)}` : o.type === "brinde" ? "\n🎁 Brinde grátis" : "";
       list.push({ id: o.id, group: "Ofertas recentes", title: o.title,
-        text: `🔥 ${o.title}\n🏪 ${o.store?.name ?? ""}${o.store?.city ? ` — ${o.store.city}` : ""}${price}\n\nCorre que é por tempo limitado 👇`,
+        text: `🔥 ${o.title}\n🏪 ${o.store?.name ?? ""}${o.store?.city ? ` — ${o.store.city}` : ""}${price}${(() => { const s = formatSocials(o.store ?? {}); return s.length ? `\n\n${s.join("\n")}` : ""; })()}\n\nCorre que é por tempo limitado 👇`,
         url: `${SITE}/oferta/${o.id}` });
     }
     return list;
@@ -70,6 +73,7 @@ export function AdminDivulgacao() {
         <h2 className="text-xl font-bold">Divulgação</h2>
         <p className="text-sm text-muted-foreground">Postagens prontas para WhatsApp, Instagram e Facebook. Os links já mostram foto e título ao colar.</p>
       </div>
+      <AdminStoreSocials onSaved={() => setReload((n) => n + 1)} />
       <div className="grid gap-4 md:grid-cols-2">
         {posts.map((p) => (
           <Card key={p.id} className="flex flex-col gap-3 p-4">
