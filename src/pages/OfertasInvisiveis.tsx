@@ -101,7 +101,8 @@ export default function OfertasInvisiveis() {
       <main className="container flex-1 space-y-8 py-8">
         <PageHero
           eyebrow="Novo · Geolocalizado"
-          title="Ofertas Invisíveis"
+          titleAsChild
+          title={<h1>Ofertas Invisíveis</h1>}
           subtitle="A promoção te encontra. Você não precisa procurar. Descontos que só aparecem quando você está perto da loja."
           crumbs={[{ label: "Início", to: "/" }, { label: "Ofertas Invisíveis" }]}
           compact

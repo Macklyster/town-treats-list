@@ -137,7 +137,8 @@ export default function Leiloes() {
       <main className="container flex-1 space-y-8 py-8">
         <PageHero
           eyebrow="Novo · Leilão reverso"
-          title="Leilões de Oferta"
+          titleAsChild
+          title={<h1>Leilões de Oferta</h1>}
           subtitle="Quem espera mais paga menos. Mas alguém pode reservar antes de você."
           crumbs={[{ label: "Início", to: "/" }, { label: "Leilões" }]}
           compact

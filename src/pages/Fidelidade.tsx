@@ -82,7 +82,8 @@ export default function Fidelidade() {
       <main className="container flex-1 space-y-8 py-8 md:py-10">
         <PageHero
           eyebrow="Programa de fidelidade"
-          title="FlyPontos"
+          titleAsChild
+          title={<h1>FlyPontos</h1>}
           subtitle="Cada loja parceira tem sua carteira de pontos. Compre, avalie, participe e troque por recompensas."
           crumbs={[{ label: "Início", to: "/" }, { label: "Fidelidade" }]}
           actions={

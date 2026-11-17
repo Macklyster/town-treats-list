@@ -16,3 +16,8 @@
 # Revisão SEO — títulos públicos
 - [x] Tornar o título inicial descritivo e explicitar um único H1 nas páginas de cidade e loja.
 - [x] Verificar títulos com dados reais e atualizar o alerta de conteúdo.
+
+# Revisão SEO — páginas de listagem e prévias
+- [x] Explicitar o H1 das cinco listagens públicas usando titleAsChild, preservando o H1 existente na home.
+- [x] Verificar os seis títulos em desktop e celular e atualizar o alerta de conteúdo.
+- [ ] Servir prévias específicas em HTML para ofertas, eventos e lojas — depende de aprovação da migração para SSR; a aplicação Vite atual entrega somente o HTML estático da home aos robôs sociais.

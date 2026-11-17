@@ -79,7 +79,8 @@ export default function Eventos() {
       <main className="container flex-1 space-y-6 py-8">
         <PageHero
           eyebrow="Agenda · Ao vivo"
-          title="Eventos e experiências"
+          titleAsChild
+          title={<h1>Eventos e experiências</h1>}
           subtitle={
             city
               ? `Shows, happy hours, feiras e experiências em ${city.city}.`

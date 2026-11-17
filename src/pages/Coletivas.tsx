@@ -129,7 +129,8 @@ export default function Coletivas() {
       <main className="container flex-1 space-y-8 py-8">
         <PageHero
           eyebrow="Novo · Compra em grupo"
-          title="Ofertas Coletivas"
+          titleAsChild
+          title={<h1>Ofertas Coletivas</h1>}
           subtitle="Compre junto, pague menos. Quanto mais pessoas entram, menor o preço para todo o grupo."
           crumbs={[{ label: "Início", to: "/" }, { label: "Coletivas" }]}
           compact
