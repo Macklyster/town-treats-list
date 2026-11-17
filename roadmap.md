@@ -7,3 +7,8 @@
 - [x] Corrigir e verificar títulos e descrições das imagens.
 - [x] Alinhar os endereços dos sitemaps e robots ao domínio do projeto.
 - [x] Concluir confirmação do Google Search Console e envio do sitemap.
+
+# Revisão SEO — contato e compartilhamento
+- [x] Preservar dados e esclarecer envio pelo WhatsApp sem confirmação prematura.
+- [x] Incluir endereço na prévia de compartilhamento da página inicial.
+- [x] Validar as correções e atualizar os três alertas selecionados.

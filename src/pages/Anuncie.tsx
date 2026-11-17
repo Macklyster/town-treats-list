@@ -91,14 +91,12 @@ const buildFaq = (trialDays: number) => [
 const CONSULTANT_WHATSAPP = "5544997691237";
 
 const Anuncie = () => {
-  const [submitting, setSubmitting] = useState(false);
   const [cycle, setCycle] = useState<"monthly" | "yearly">("monthly");
   const { trialDays } = useTrialSettings();
   const faq = useMemo(() => buildFaq(trialDays), [trialDays]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitting(true);
     const form = e.currentTarget;
     const data = new FormData(form);
     const name = String(data.get("name") ?? "").trim();
@@ -108,23 +106,19 @@ const Anuncie = () => {
     const message = String(data.get("message") ?? "").trim();
 
     const text =
-      `Olá! Quero falar com um consultor da OfertasFly.%0A%0A` +
-      `*Nome:* ${name}%0A` +
-      `*Empresa:* ${company}%0A` +
-      `*E-mail:* ${email}%0A` +
+      `Olá! Quero falar com um consultor da OfertasFly.\n\n` +
+      `*Nome:* ${name}\n` +
+      `*Empresa:* ${company}\n` +
+      `*E-mail:* ${email}\n` +
       `*Telefone/WhatsApp:* ${phone}` +
-      (message ? `%0A%0A*Mensagem:*%0A${message}` : "");
+      (message ? `\n\n*Mensagem:*\n${message}` : "");
 
-    const url = `https://wa.me/${CONSULTANT_WHATSAPP}?text=${text.replace(/ /g, "%20")}`;
+    const url = `https://wa.me/${CONSULTANT_WHATSAPP}?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank", "noopener,noreferrer");
 
-    setTimeout(() => {
-      setSubmitting(false);
-      form.reset();
-      toast.success("Abrindo o WhatsApp...", {
-        description: "Conclua o envio da mensagem para falar com um consultor.",
-      });
-    }, 400);
+    toast.info("Conclua o envio no WhatsApp", {
+      description: "A mensagem ainda não foi enviada. Seus dados permanecem neste formulário.",
+    });
   };
 
   return (
@@ -409,7 +403,7 @@ const Anuncie = () => {
               <SectionHeading
                 eyebrow={<>Contato</>}
                 title="Fale com um consultor"
-                description="Preencha o formulário e nossa equipe entra em contato em até 1 dia útil com a melhor proposta para o seu negócio."
+                description="Preencha seus dados e continue no WhatsApp para enviar a mensagem ao nosso consultor."
               />
               <ul className="space-y-2.5 text-sm text-foreground">
                 {[
@@ -464,11 +458,13 @@ const Anuncie = () => {
                 type="submit"
                 size="lg"
                 className="w-full rounded-full"
-                disabled={submitting}
               >
                 <Send className="h-4 w-4" />
-                {submitting ? "Enviando..." : "Enviar mensagem"}
+                Continuar no WhatsApp
               </Button>
+              <p className="text-sm text-muted-foreground">
+                A mensagem só será enviada quando você confirmar o envio no WhatsApp.
+              </p>
             </form>
           </div>
         </section>
