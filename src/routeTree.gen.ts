@@ -51,6 +51,8 @@ import { Route as PainelLojistaOfertaInvisivelChar123IdChar125RouteImport } from
 import { Route as PainelLojistaOfertaChar123IdChar125RouteImport } from './routes/painel-lojista/oferta/{-$id}'
 import { Route as AdminLojaStoreIdCuponsRouteImport } from './routes/admin/loja/$storeId/cupons'
 import { Route as AdminLojaStoreIdMidiaRouteImport } from './routes/admin/loja/$storeId/midia'
+import { Route as ApiPublicHooksOfferEmailRouteImport } from './routes/api/public/hooks/offer-email'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as AdminLojaStoreIdColetivaChar123IdChar125RouteImport } from './routes/admin/loja/$storeId/coletiva/{-$id}'
 import { Route as AdminLojaStoreIdEventoChar123IdChar125RouteImport } from './routes/admin/loja/$storeId/evento/{-$id}'
 import { Route as AdminLojaStoreIdLeilaoChar123IdChar125RouteImport } from './routes/admin/loja/$storeId/leilao/{-$id}'
@@ -274,6 +276,18 @@ const AdminLojaStoreIdMidiaRoute = AdminLojaStoreIdMidiaRouteImport.update({
   path: '/admin/loja/$storeId/midia',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksOfferEmailRoute =
+  ApiPublicHooksOfferEmailRouteImport.update({
+    id: '/api/public/hooks/offer-email',
+    path: '/api/public/hooks/offer-email',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminLojaStoreIdColetivaChar123IdChar125Route =
   AdminLojaStoreIdColetivaChar123IdChar125RouteImport.update({
     id: '/admin/loja/$storeId/coletiva/{-$id}',
@@ -348,6 +362,8 @@ export interface FileRoutesByFullPath {
   '/ofertas/$cidadeSlug/': typeof OfertasCidadeSlugIndexRoute
   '/admin/loja/$storeId/cupons': typeof AdminLojaStoreIdCuponsRoute
   '/admin/loja/$storeId/midia': typeof AdminLojaStoreIdMidiaRoute
+  '/api/public/hooks/offer-email': typeof ApiPublicHooksOfferEmailRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/admin/loja/$storeId/coletiva/{-$id}': typeof AdminLojaStoreIdColetivaChar123IdChar125Route
   '/admin/loja/$storeId/evento/{-$id}': typeof AdminLojaStoreIdEventoChar123IdChar125Route
   '/admin/loja/$storeId/leilao/{-$id}': typeof AdminLojaStoreIdLeilaoChar123IdChar125Route
@@ -397,6 +413,8 @@ export interface FileRoutesByTo {
   '/ofertas/$cidadeSlug': typeof OfertasCidadeSlugIndexRoute
   '/admin/loja/$storeId/cupons': typeof AdminLojaStoreIdCuponsRoute
   '/admin/loja/$storeId/midia': typeof AdminLojaStoreIdMidiaRoute
+  '/api/public/hooks/offer-email': typeof ApiPublicHooksOfferEmailRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/admin/loja/$storeId/coletiva/{-$id}': typeof AdminLojaStoreIdColetivaChar123IdChar125Route
   '/admin/loja/$storeId/evento/{-$id}': typeof AdminLojaStoreIdEventoChar123IdChar125Route
   '/admin/loja/$storeId/leilao/{-$id}': typeof AdminLojaStoreIdLeilaoChar123IdChar125Route
@@ -447,6 +465,8 @@ export interface FileRoutesById {
   '/ofertas/$cidadeSlug/': typeof OfertasCidadeSlugIndexRoute
   '/admin/loja/$storeId/cupons': typeof AdminLojaStoreIdCuponsRoute
   '/admin/loja/$storeId/midia': typeof AdminLojaStoreIdMidiaRoute
+  '/api/public/hooks/offer-email': typeof ApiPublicHooksOfferEmailRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/admin/loja/$storeId/coletiva/{-$id}': typeof AdminLojaStoreIdColetivaChar123IdChar125Route
   '/admin/loja/$storeId/evento/{-$id}': typeof AdminLojaStoreIdEventoChar123IdChar125Route
   '/admin/loja/$storeId/leilao/{-$id}': typeof AdminLojaStoreIdLeilaoChar123IdChar125Route
@@ -498,6 +518,8 @@ export interface FileRouteTypes {
     | '/ofertas/$cidadeSlug/'
     | '/admin/loja/$storeId/cupons'
     | '/admin/loja/$storeId/midia'
+    | '/api/public/hooks/offer-email'
+    | '/lovable/email/transactional/preview'
     | '/admin/loja/$storeId/coletiva/{-$id}'
     | '/admin/loja/$storeId/evento/{-$id}'
     | '/admin/loja/$storeId/leilao/{-$id}'
@@ -547,6 +569,8 @@ export interface FileRouteTypes {
     | '/ofertas/$cidadeSlug'
     | '/admin/loja/$storeId/cupons'
     | '/admin/loja/$storeId/midia'
+    | '/api/public/hooks/offer-email'
+    | '/lovable/email/transactional/preview'
     | '/admin/loja/$storeId/coletiva/{-$id}'
     | '/admin/loja/$storeId/evento/{-$id}'
     | '/admin/loja/$storeId/leilao/{-$id}'
@@ -596,6 +620,8 @@ export interface FileRouteTypes {
     | '/ofertas/$cidadeSlug/'
     | '/admin/loja/$storeId/cupons'
     | '/admin/loja/$storeId/midia'
+    | '/api/public/hooks/offer-email'
+    | '/lovable/email/transactional/preview'
     | '/admin/loja/$storeId/coletiva/{-$id}'
     | '/admin/loja/$storeId/evento/{-$id}'
     | '/admin/loja/$storeId/leilao/{-$id}'
@@ -646,6 +672,8 @@ export interface RootRouteChildren {
   OfertasCidadeSlugIndexRoute: typeof OfertasCidadeSlugIndexRoute
   AdminLojaStoreIdCuponsRoute: typeof AdminLojaStoreIdCuponsRoute
   AdminLojaStoreIdMidiaRoute: typeof AdminLojaStoreIdMidiaRoute
+  ApiPublicHooksOfferEmailRoute: typeof ApiPublicHooksOfferEmailRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
   AdminLojaStoreIdColetivaChar123IdChar125Route: typeof AdminLojaStoreIdColetivaChar123IdChar125Route
   AdminLojaStoreIdEventoChar123IdChar125Route: typeof AdminLojaStoreIdEventoChar123IdChar125Route
   AdminLojaStoreIdLeilaoChar123IdChar125Route: typeof AdminLojaStoreIdLeilaoChar123IdChar125Route
@@ -949,6 +977,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLojaStoreIdMidiaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/offer-email': {
+      id: '/api/public/hooks/offer-email'
+      path: '/api/public/hooks/offer-email'
+      fullPath: '/api/public/hooks/offer-email'
+      preLoaderRoute: typeof ApiPublicHooksOfferEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/loja/$storeId/coletiva/{-$id}': {
       id: '/admin/loja/$storeId/coletiva/{-$id}'
       path: '/admin/loja/$storeId/coletiva/{-$id}'
@@ -1035,6 +1077,8 @@ const rootRouteChildren: RootRouteChildren = {
   OfertasCidadeSlugIndexRoute: OfertasCidadeSlugIndexRoute,
   AdminLojaStoreIdCuponsRoute: AdminLojaStoreIdCuponsRoute,
   AdminLojaStoreIdMidiaRoute: AdminLojaStoreIdMidiaRoute,
+  ApiPublicHooksOfferEmailRoute: ApiPublicHooksOfferEmailRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
   AdminLojaStoreIdColetivaChar123IdChar125Route:
     AdminLojaStoreIdColetivaChar123IdChar125Route,
   AdminLojaStoreIdEventoChar123IdChar125Route:

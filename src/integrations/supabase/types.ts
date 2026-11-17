@@ -786,6 +786,24 @@ export type Database = {
           },
         ]
       }
+      internal_hook_secrets: {
+        Row: {
+          created_at: string
+          name: string
+          secret: string
+        }
+        Insert: {
+          created_at?: string
+          name: string
+          secret: string
+        }
+        Update: {
+          created_at?: string
+          name?: string
+          secret?: string
+        }
+        Relationships: []
+      }
       loyalty_badges: {
         Row: {
           created_at: string
@@ -1514,6 +1532,24 @@ export type Database = {
           success_count?: number
           title?: string
           url?: string | null
+        }
+        Relationships: []
+      }
+      offer_email_notices: {
+        Row: {
+          created_at: string
+          kind: string
+          offer_id: string
+        }
+        Insert: {
+          created_at?: string
+          kind: string
+          offer_id: string
+        }
+        Update: {
+          created_at?: string
+          kind?: string
+          offer_id?: string
         }
         Relationships: []
       }
