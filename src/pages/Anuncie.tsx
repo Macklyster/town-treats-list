@@ -274,7 +274,7 @@ const Anuncie = () => {
                   onClick={() => setCycle("monthly")}
                   className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
                     cycle === "monthly"
-                      ? "bg-primary text-primary-foreground shadow"
+                      ? "bg-primary text-primary-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -285,7 +285,7 @@ const Anuncie = () => {
                   onClick={() => setCycle("yearly")}
                   className={`relative rounded-full px-4 py-1.5 text-sm font-semibold transition ${
                     cycle === "yearly"
-                      ? "bg-primary text-primary-foreground shadow"
+                      ? "bg-primary text-primary-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >

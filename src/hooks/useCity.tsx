@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, ReactNode, useCallback } from "react";
+import { createContext, startTransition, useContext, useEffect, useMemo, useState, ReactNode, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export type City = { city: string; state: string };
@@ -29,15 +29,25 @@ const readStored = (): City | null => {
 };
 
 export const CityProvider = ({ children }: { children: ReactNode }) => {
-  const [city, setCityState] = useState<City | null>(() => readStored());
+  // Stored city is read after mount so the server-rendered HTML matches the first client render.
+  const [city, setCityState] = useState<City | null>(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [availableCities, setAvailableCities] = useState<City[]>([]);
   const [loadingCities, setLoadingCities] = useState(true);
 
   // Auto-open selector on first visit (unless user dismissed it this session)
   useEffect(() => {
-    if (!city && !sessionStorage.getItem(DISMISS_KEY)) setSelectorOpen(true);
-  }, []); // eslint-disable-line
+    const stored = readStored();
+    if (stored) {
+      // Transition lets pending page sections finish hydrating before the city context changes.
+      startTransition(() => setCityState(stored));
+      return undefined;
+    }
+    if (sessionStorage.getItem(DISMISS_KEY)) return undefined;
+    // Opened after the page finishes hydrating; the modal hides the page from screen readers.
+    const id = window.setTimeout(() => setSelectorOpen(true), 600);
+    return () => window.clearTimeout(id);
+  }, []);
 
   // Load available cities (distinct from approved stores)
   useEffect(() => {

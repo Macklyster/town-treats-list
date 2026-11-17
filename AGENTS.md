@@ -8,3 +8,8 @@
 - Public offer-media reads follow offer approval, validity, and scheduling; public loyalty-tier reads require an approved store with an active program, while existing owner/admin policies preserve editing access.
 - Categories and badge definitions are intentionally public catalogs, not private customer records; keep their public read policies for browsing and FlyPontos descriptions.
 - PageHero uses titleAsChild for route-owned H1 elements, preserving shared heading styles without rendering nested or duplicate main headings.
+- Share previews per city, store, offer and event come from route `loader` + `head()` via `src/lib/route-seo.ts`; crawlers read server-rendered tags, so never move page metadata back to client-only effects.
+- Pages keep react-router call conventions through `src/lib/router-compat.tsx` (its Navigate redirects once per mount to avoid redirect loops); import routing hooks from there, not `react-router-dom`.
+- Former internal edge functions run as app server code in `src/server/handlers` behind `runBackendFunction`/`invokeBackend`; cron, webhook and Deno-only functions stay as backend functions.
+- Browser storage (saved city, location) is read in effects after mount, never in initial state, so server HTML and the first client render match.
+- `exactOptionalPropertyTypes` stays off because the generated Lovable auth integration does not compile under it; all other strict flags stay on.

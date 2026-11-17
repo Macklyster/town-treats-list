@@ -10,10 +10,9 @@ import {
   useSearch as tsSearch,
   useRouter,
   Link as TSLink,
-  Navigate as TSNavigate,
   Outlet as TSOutlet,
 } from "@tanstack/react-router";
-import { useMemo, useCallback, forwardRef, type ComponentProps, type ReactNode } from "react";
+import { useMemo, useCallback, useEffect, useRef, forwardRef, type ComponentProps, type ReactNode } from "react";
 
 // ---------- shared URL parsing ----------
 
@@ -144,9 +143,20 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
 
 // ---------- Navigate ----------
 
+/**
+ * Redirects once per mount. TanStack's <Navigate> re-fires on every new props object,
+ * which loops when the parent re-renders during the pending navigation.
+ */
 export function Navigate({ to, replace, state }: { to: string; replace?: boolean; state?: unknown }) {
-  const { pathname, search, hash } = parseTo(to);
-  return <TSNavigate to={pathname as never} search={search as never} hash={hash} state={state as never} replace={replace} />;
+  const navigate = useNavigate();
+  const done = useRef(false);
+  useEffect(() => {
+    // Only the first target counts: the URL changes before this unmounts, re-rendering with a new `to`.
+    if (done.current) return;
+    done.current = true;
+    navigate(to, { replace: replace ?? false, state });
+  }, [to, replace, state, navigate]);
+  return null;
 }
 
 // ---------- Outlet ----------

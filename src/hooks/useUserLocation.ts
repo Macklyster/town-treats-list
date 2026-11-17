@@ -10,22 +10,19 @@ type State = {
 };
 
 export function useUserLocation() {
-  const [state, setState] = useState<State>(() => {
+  const [state, setState] = useState<State>({ loc: null, loading: false, error: null });
+
+  // Saved location is restored after mount so server and first client render match.
+  useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (
-          parsed &&
-          typeof parsed.lat === "number" &&
-          typeof parsed.lng === "number"
-        ) {
-          return { loc: parsed, loading: false, error: null };
-        }
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed.lat === "number" && typeof parsed.lng === "number") {
+        setState({ loc: parsed, loading: false, error: null });
       }
     } catch {}
-    return { loc: null, loading: false, error: null };
-  });
+  }, []);
 
   const request = useCallback(() => {
     if (!("geolocation" in navigator)) {

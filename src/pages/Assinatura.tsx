@@ -378,7 +378,7 @@ export default function Assinatura() {
                   type="button"
                   onClick={() => setCycle("monthly")}
                   className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
-                    cycle === "monthly" ? "bg-accent text-accent-foreground shadow" : "text-muted-foreground hover:text-foreground"
+                    cycle === "monthly" ? "bg-accent text-accent-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   Mensal
@@ -387,7 +387,7 @@ export default function Assinatura() {
                   type="button"
                   onClick={() => setCycle("yearly")}
                   className={`relative rounded-full px-4 py-1.5 text-sm font-semibold transition ${
-                    cycle === "yearly" ? "bg-accent text-accent-foreground shadow" : "text-muted-foreground hover:text-foreground"
+                    cycle === "yearly" ? "bg-accent text-accent-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   Anual

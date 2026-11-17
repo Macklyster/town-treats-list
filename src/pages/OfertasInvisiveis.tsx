@@ -41,7 +41,7 @@ const InvisibleCard = ({ row }: { row: Row }) => (
   <Link to={`/oferta-invisivel/${row.share_token}`} className="group rounded-lg border bg-background transition hover:shadow-md">
     <div className="relative">
       {row.image_url ? (
-        <img src={row.image_url} alt={row.title} loading="lazy" className="aspect-video w-full rounded-t-lg object-cover blur-sm grayscale" />
+        <img src={row.image_url} alt={row.title} loading="lazy" className="aspect-video w-full rounded-t-lg object-cover blur-xs grayscale" />
       ) : (
         <div className="aspect-video w-full rounded-t-lg bg-muted" />
       )}

@@ -1,0 +1,499 @@
+{
+  "customizations": [
+    {
+      "token": "--accent",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--accent-foreground",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--accent-strong",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--background",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--border",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--card",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--card-foreground",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-beauty-badge",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-beauty-bg",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-beauty-text",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-fashion-badge",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-fashion-bg",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-fashion-text",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-food-badge",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-food-bg",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-food-text",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-health-badge",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-health-bg",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-health-text",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-pet-badge",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-pet-bg",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-pet-text",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-service-badge",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-service-bg",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--cat-service-text",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--charcoal",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--charcoal-foreground",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--closing",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--closing-bg",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--destructive",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--destructive-foreground",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--discount",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--discount-foreground",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--discount-light",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--footer",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--foreground",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--gradient-accent",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--gradient-hero",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--hero-bg",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--hero-fg",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--hero-muted",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--hero-surface",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--hot",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--hot-foreground",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--input",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--muted",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--muted-foreground",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--open",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--open-bg",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--popover",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--popover-foreground",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--primary",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--primary-deep",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--primary-foreground",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--primary-light",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--primary-mid",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--radius",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--ring",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--secondary",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--secondary-foreground",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--shadow-card",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--shadow-pop",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--shadow-soft",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--sidebar-accent",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--sidebar-accent-foreground",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--sidebar-background",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--sidebar-border",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--sidebar-foreground",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--sidebar-primary",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--sidebar-primary-foreground",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--sidebar-ring",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--warning",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--warning-bg",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--warning-border",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--warning-foreground",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--aurora-bg",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--aurora-border",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--aurora-cyan",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--aurora-fg",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--aurora-hot",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--aurora-indigo",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--aurora-muted",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--aurora-success",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--aurora-surface",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--aurora-surface-2",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "--aurora-violet",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "font-display",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "gradient-accent",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "gradient-hero",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "label-eyebrow",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "offers-map-container",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "shadow-card",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "shadow-pop",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "shadow-soft",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "text-body",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "text-caption",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "text-display",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "text-hero",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    },
+    {
+      "token": "theme-aurora",
+      "source": "src/index.css",
+      "reappliedIn": "src/styles.css"
+    }
+  ]
+}

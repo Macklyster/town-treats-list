@@ -60,7 +60,7 @@ export const HomeHeader = () => {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="O que você procura hoje?"
-              className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              className="flex-1 bg-transparent text-sm outline-hidden placeholder:text-muted-foreground"
             />
             <button
               type="submit"
@@ -197,7 +197,7 @@ export const HomeHeader = () => {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Buscar…"
-                className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+                className="min-w-0 flex-1 bg-transparent text-sm outline-hidden"
               />
               <button className="h-9 w-10 shrink-0 rounded-full bg-primary text-primary-foreground grid place-items-center" aria-label="Buscar">
                 <Search className="h-4 w-4" />

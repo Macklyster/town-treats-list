@@ -68,7 +68,7 @@ export const HeroSearch = () => {
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                   placeholder="Busque por pizza, salão, tênis..."
-                  className="h-12 w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
+                  className="h-12 w-full bg-transparent text-base text-foreground outline-hidden placeholder:text-muted-foreground"
                   aria-label="Buscar ofertas"
                 />
               </div>
