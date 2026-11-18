@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { formatSocials } from "@/lib/socials";
 import { copyMarketingText, marketingMessage, whatsappUrl } from "@/lib/marketing-share";
 import { AdminStoreSocials } from "./AdminStoreSocials";
+import { applyMarketingOfferFilters } from "@/lib/marketing-offer-filters";
 
 const SITE = "https://ofertasfly.com.br";
 const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -30,6 +31,7 @@ export function AdminDivulgacao() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [offersError, setOffersError] = useState(false);
   const [openStore, setOpenStore] = useState(false);
   useEffect(() => { const t = setTimeout(() => setDq(q.trim()), 300); return () => clearTimeout(t); }, [q]);
   useEffect(() => { setPage(1); }, [storeId, city, type, dq]);
@@ -41,15 +43,13 @@ export function AdminDivulgacao() {
   useEffect(() => {
     let cancel = false;
     setLoading(true);
-    let qb: any = supabase.from("offers")
-      .select("id,title,promo_price,original_price,type,store:stores!inner(name,city,instagram,facebook,tiktok,website)", { count: "exact" })
-      .eq("status", "approved").gte("ends_at", new Date().toISOString());
-    if (storeId) qb = qb.eq("store_id", storeId);
-    if (city) qb = qb.eq("stores.city", city);
-    if (type) qb = qb.eq("type", type);
-    if (dq) qb = qb.ilike("title", `%${dq.replace(/[%_]/g, "")}%`);
-    qb.order("created_at", { ascending: false }).range(0, page * 12 - 1).then(({ data, count }: any) => {
+    setOffersError(false);
+    const qb = applyMarketingOfferFilters(supabase.from("offers")
+      .select("id,title,promo_price,original_price,type,store:stores!inner(name,city,instagram,facebook,tiktok,website)", { count: "exact" }),
+      { storeId, city, type, title: dq });
+    qb.order("created_at", { ascending: false }).range(0, page * 12 - 1).then(({ data, count, error }) => {
       if (cancel) return;
+      setOffersError(Boolean(error));
       setOffers(data ?? []); setTotal(count ?? 0); setLoading(false);
     });
     return () => { cancel = true; };
@@ -187,14 +187,19 @@ export function AdminDivulgacao() {
           <Input placeholder="Buscar pelo título..." value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar pelo título" />
         </div>
         <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>{loading ? "Carregando..." : `${total} anúncio${total === 1 ? "" : "s"} encontrado${total === 1 ? "" : "s"}`}</span>
+          <span>{loading ? "Carregando..." : offersError ? "Falha ao carregar anúncios" : `${total} anúncio${total === 1 ? "" : "s"} encontrado${total === 1 ? "" : "s"}`}</span>
           {hasFilters && (
             <Button size="sm" variant="ghost" onClick={() => { setStoreId(""); setCity(""); setType(""); setQ(""); }}>
               <X className="mr-1 h-4 w-4" />Limpar filtros
             </Button>
           )}
         </div>
-        {!loading && offerPosts.length === 0 ? (
+        {!loading && offersError ? (
+          <div role="alert" className="flex flex-wrap items-center justify-center gap-3 bg-muted p-6 text-sm">
+            <span>Não foi possível carregar os anúncios. Tente novamente.</span>
+            <Button variant="outline" size="sm" onClick={() => setReload((n) => n + 1)}>Tentar novamente</Button>
+          </div>
+        ) : !loading && offerPosts.length === 0 ? (
           <p className="rounded-md bg-muted p-6 text-center text-sm text-muted-foreground">Nenhum anúncio ativo encontrado com esses filtros.</p>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">{renderCards(offerPosts)}</div>

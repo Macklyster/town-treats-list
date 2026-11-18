@@ -15,3 +15,4 @@
 - `exactOptionalPropertyTypes` stays off because the generated Lovable auth integration does not compile under it; all other strict flags stay on.
 - Offer notification emails are sent by a DB trigger on `offers` that posts to `/api/public/hooks/offer-email` on the stable production URL, authenticated by a secret kept in the service-role-only `internal_hook_secrets` table; `offer_email_notices` dedupes so each offer emails at most once per kind.
 - Admin marketing sharing uses a single complete payload for clipboard and the direct WhatsApp send URL; start clipboard copying during the click without delaying navigation to preserve browser user activation.
+- Admin marketing offer queries use marketing-offer-filters for validity and store filters; keep query errors distinct from empty results so failed reads cannot masquerade as missing ads.
