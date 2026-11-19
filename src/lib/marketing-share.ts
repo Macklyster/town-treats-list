@@ -32,3 +32,16 @@ export async function copyMarketingText(value: string): Promise<void> {
     if (previousFocus instanceof HTMLElement) previousFocus.focus({ preventScroll: true });
   }
 }
+/** True when the device can share the cover image file together with the text. */
+export function canShareImage(nav: Pick<Navigator, "share" | "canShare"> | undefined, file: File | undefined): boolean {
+  if (!nav?.share || !nav.canShare || !file) return false;
+  try { return nav.canShare({ files: [file] }); } catch { return false; }
+}
+
+export async function loadImageFile(url: string, name: string): Promise<File> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("image fetch failed");
+  const blob = await res.blob();
+  const ext = (blob.type.split("/")[1] || "jpg").replace("jpeg", "jpg");
+  return new File([blob], `${name}.${ext}`, { type: blob.type || "image/jpeg" });
+}

@@ -2,20 +2,20 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Copy, Link2, MessageCircle, Share2, ChevronsUpDown, Check, X } from "lucide-react";
+import { Copy, Link2, MessageCircle, Share2, Download, ChevronsUpDown, Check, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { toast } from "sonner";
 import { formatSocials } from "@/lib/socials";
-import { copyMarketingText, marketingMessage, whatsappUrl } from "@/lib/marketing-share";
+import { canShareImage, copyMarketingText, loadImageFile, marketingMessage, whatsappUrl } from "@/lib/marketing-share";
 import { AdminStoreSocials } from "./AdminStoreSocials";
 import { applyMarketingOfferFilters } from "@/lib/marketing-offer-filters";
 
 const SITE = "https://ofertasfly.com.br";
 const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-type Post = { id: string; group: string; title: string; text: string; url: string };
+type Post = { id: string; group: string; title: string; text: string; url: string; image?: string | null };
 
 export function AdminDivulgacao() {
   const [offers, setOffers] = useState<any[]>([]);
@@ -45,7 +45,7 @@ export function AdminDivulgacao() {
     setLoading(true);
     setOffersError(false);
     const qb = applyMarketingOfferFilters(supabase.from("offers")
-      .select("id,title,promo_price,original_price,type,store:stores!inner(name,city,instagram,facebook,tiktok,website)", { count: "exact" }),
+      .select("id,title,image_url,promo_price,original_price,type,offer_media(is_cover,media:media_assets(url,media_type)),store:stores!inner(name,city,instagram,facebook,tiktok,website)", { count: "exact" }),
       { storeId, city, type, title: dq });
     qb.order("created_at", { ascending: false }).range(0, page * 12 - 1).then(({ data, count, error }) => {
       if (cancel) return;
@@ -83,11 +83,27 @@ export function AdminDivulgacao() {
       const price = promo > 0 ? `\n💰 ${orig > promo ? `De ${brl(orig)} por ` : "Por "}${brl(promo)}` : o.type === "brinde" ? "\n🎁 Brinde grátis" : "";
       list.push({ id: o.id, group: o.type === "cupom" ? "Cupom" : o.type === "brinde" ? "Brinde" : "Oferta", title: o.title,
         text: `🔥 ${o.title}\n🏪 ${o.store?.name ?? ""}${o.store?.city ? ` — ${o.store.city}` : ""}${price}${(() => { const s = formatSocials(o.store ?? {}); return s.length ? `\n\n${s.join("\n")}` : ""; })()}\n\nCorre que é por tempo limitado 👇`,
-        url: `${SITE}/oferta/${o.id}` });
+        url: `${SITE}/oferta/${o.id}`,
+        image: (o.offer_media ?? []).find((m: any) => m.is_cover && m.media?.media_type !== "video")?.media?.url ?? o.image_url });
     }
     return list;
   }, [offers]);
 
+  const [files, setFiles] = useState<Record<string, File>>({});
+  useEffect(() => {
+    // Preload covers so sharing starts inside the click without losing user activation.
+    for (const p of offerPosts) {
+      if (!p.image || files[p.id]) continue;
+      loadImageFile(p.image, `oferta-${p.id}`).then((f) => setFiles((m) => ({ ...m, [p.id]: f }))).catch(() => {});
+    }
+  }, [offerPosts]); // eslint-disable-line react-hooks/exhaustive-deps
+  const download = async (p: Post) => {
+    try {
+      const f = files[p.id] ?? await loadImageFile(p.image!, `oferta-${p.id}`);
+      const a = document.createElement("a"); a.href = URL.createObjectURL(f); a.download = f.name; a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    } catch { window.open(p.image!, "_blank"); }
+  };
   const copy = async (value: string, msg: string) => {
     try {
       await copyMarketingText(value);
@@ -110,11 +126,18 @@ export function AdminDivulgacao() {
               <p className="text-xs font-semibold uppercase text-primary">{p.group}</p>
               <h3 className="font-semibold">{p.title}</h3>
             </div>
+            {p.image && <img src={p.image} alt={`Capa: ${p.title}`} loading="lazy" className="h-48 w-full rounded-md bg-muted object-contain" />}
             <pre className="flex-1 whitespace-pre-wrap rounded-md bg-muted p-3 font-sans text-sm">{p.text}{"\n\n"}{p.url}</pre>
             <div className="flex flex-wrap gap-2">
               <Button asChild variant="discount" size="sm">
                 <a href={whatsappUrl(p.text, p.url)} target="_blank" rel="noopener noreferrer"
-                  onClick={() => {
+                  onClick={(e) => {
+                    const f = files[p.id];
+                    if (canShareImage(navigator, f)) {
+                      e.preventDefault();
+                      navigator.share({ files: [f!], text: marketingMessage(p.text, p.url) }).catch(() => {});
+                      return;
+                    }
                     // Start copying during the click; never await before opening WhatsApp.
                     void copyMarketingText(marketingMessage(p.text, p.url)).catch(() => {
                       toast.warning("Se a mensagem não aparecer no WhatsApp, volte e use Copiar texto.");
@@ -123,6 +146,7 @@ export function AdminDivulgacao() {
               </Button>
               <Button size="sm" variant="outline" onClick={() => copy(marketingMessage(p.text, p.url), "Texto copiado")}><Copy className="mr-1 h-4 w-4" />Copiar texto</Button>
               <Button size="sm" variant="outline" onClick={() => copy(p.url, "Link copiado")}><Link2 className="mr-1 h-4 w-4" />Copiar link</Button>
+              {p.image && <Button size="sm" variant="outline" onClick={() => download(p)}><Download className="mr-1 h-4 w-4" />Baixar imagem</Button>}
               <Button size="sm" variant="ghost" onClick={() => share(p)}><Share2 className="mr-1 h-4 w-4" />Compartilhar</Button>
             </div>
           </Card>
