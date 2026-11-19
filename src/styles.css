@@ -84,7 +84,7 @@ html { scroll-padding-top: calc(var(--header-h) + 12px); }
 [data-scroll-anchor] { scroll-margin-top: calc(var(--header-h) + 12px); }
 
 /* Ofertafly Design System
-   Brand: Navy #020522, Charcoal #0F0F0E, Cream #F7F5F0
+   Brand: Purple #8B3EEC (logo), Charcoal #0F0F0E, Cream #F7F5F0
    All colors MUST be HSL.
 */
 :root {
@@ -98,15 +98,15 @@ html { scroll-padding-top: calc(var(--header-h) + 12px); }
     --popover: 0 0% 100%;
     --popover-foreground: 60 4% 6%;
 
-    /* Navy as primary (OfertasFly brand) */
-    --primary: 234 88% 7%;
+    /* Purple as primary (OfertasFly brand — sampled from the logo mark #8B3EEC) */
+    --primary: 265 72% 46%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 234 45% 95%;
-    --primary-mid: 234 58% 27%;
-    --primary-deep: 234 90% 4%;
+    --primary-light: 265 60% 95%;
+    --primary-mid: 265 58% 38%;
+    --primary-deep: 265 70% 14%;
 
-    /* Highlight purple — sampled from the logo mark (#8B3EEC).
-       Used for emphasized text: eyebrows, highlight links, scores, accent icons. */
+    /* Highlight purple — same family as primary, for emphasized text:
+       eyebrows, highlight links, scores, accent icons. */
     --highlight: 265 78% 56%;
     --highlight-strong: 265 66% 42%;
     --highlight-on-dark: 265 88% 74%;
@@ -131,8 +131,8 @@ html { scroll-padding-top: calc(var(--header-h) + 12px); }
     --muted: 43 16% 91%;
     --muted-foreground: 48 4% 51%;
 
-    /* Accent = brand navy (CTAs share primary) */
-    --accent: 234 88% 7%;
+    /* Accent = brand purple (CTAs share primary) */
+    --accent: 265 72% 46%;
     --accent-foreground: 0 0% 100%;
     --accent-strong: 60 4% 6%;
 
@@ -144,7 +144,7 @@ html { scroll-padding-top: calc(var(--header-h) + 12px); }
     /* Charcoal — footer & dark surfaces */
     --charcoal: 60 4% 6%;
     --charcoal-foreground: 0 0% 100%;
-    --footer: 234 88% 7%;
+    --footer: 265 70% 14%;
 
     /* Hot — "Em alta" badge */
     --hot: 0 100% 62%;
@@ -181,24 +181,24 @@ html { scroll-padding-top: calc(var(--header-h) + 12px); }
 
     --border: 43 14% 81%;
     --input: 43 14% 81%;
-    --ring: 234 58% 27%;
+    --ring: 265 58% 38%;
 
     --radius: 0.75rem;
 
-    --gradient-hero: linear-gradient(135deg, hsl(234 58% 27%) 0%, hsl(234 88% 7%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(234 88% 7%) 0%, hsl(234 58% 27%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(265 58% 38%) 0%, hsl(265 70% 14%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(265 70% 14%) 0%, hsl(265 58% 38%) 100%);
     --shadow-card: 0 4px 20px -8px hsl(60 4% 6% / 0.08);
     --shadow-soft: 0 2px 10px -4px hsl(60 4% 6% / 0.06);
     --shadow-pop: 0 16px 40px -12px hsl(60 4% 6% / 0.12);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 234 88% 7%;
+    --sidebar-primary: 265 72% 46%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 43 16% 91%;
     --sidebar-accent-foreground: 60 4% 6%;
     --sidebar-border: 43 14% 81%;
-    --sidebar-ring: 234 58% 27%;
+    --sidebar-ring: 265 58% 38%;
   }
 
 /* Tailwind v3 container behaviour (centered, 2rem padding, 1400px at 2xl). */
@@ -303,7 +303,7 @@ html { scroll-padding-top: calc(var(--header-h) + 12px); }
   --aurora-fg: 225 100% 98%;
   --aurora-muted: 232 22% 68%;
   --aurora-border: 240 30% 30%;
-  --aurora-indigo: 234 58% 27%;
+  --aurora-indigo: 265 72% 46%;
   --aurora-cyan: 187 92% 55%;
   --aurora-violet: 265 84% 66%;
   --aurora-hot: 12 100% 62%;
