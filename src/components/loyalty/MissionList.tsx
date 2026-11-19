@@ -26,7 +26,7 @@ export function MissionList({ missions }: { missions: LoyaltyMission[] }) {
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-start gap-2">
                 {done ? (
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-highlight" />
                 ) : (
                   <Target className="mt-0.5 h-4 w-4 text-muted-foreground" />
                 )}
@@ -38,7 +38,7 @@ export function MissionList({ missions }: { missions: LoyaltyMission[] }) {
                 </div>
               </div>
               <div className="whitespace-nowrap text-right text-xs">
-                <div className="font-semibold text-primary">+{m.reward_points} pts</div>
+                <div className="font-semibold text-highlight">+{m.reward_points} pts</div>
                 <div className="text-muted-foreground">{PERIOD_LABELS[m.period] ?? m.period}</div>
               </div>
             </div>

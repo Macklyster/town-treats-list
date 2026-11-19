@@ -79,7 +79,7 @@ export function FlyScoreCard({ storeId }: Props) {
     <Card className="md:col-span-3">
       <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
         <CardTitle className="flex items-center gap-2">
-          <Award className="h-5 w-5 text-primary" /> Meu FlyScore
+          <Award className="h-5 w-5 text-highlight" /> Meu FlyScore
         </CardTitle>
         <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing || loading}>
           <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
@@ -118,7 +118,7 @@ export function FlyScoreCard({ storeId }: Props) {
                 return (
                   <div key={meta.key} className="space-y-1.5">
                     <div className="flex items-center gap-2 text-sm">
-                      <Icon className="h-4 w-4 text-primary" />
+                      <Icon className="h-4 w-4 text-highlight" />
                       <span className="font-medium text-foreground flex-1">{meta.label}</span>
                       <span className="font-bold text-foreground">{value}%</span>
                     </div>

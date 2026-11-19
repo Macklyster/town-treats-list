@@ -152,7 +152,7 @@ const CityOffers = () => {
               className={`shrink-0 rounded-full border px-4 py-1.5 text-sm transition ${
                 !category
                   ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-card text-foreground hover:border-primary hover:text-primary"
+                  : "border-border bg-card text-foreground hover:border-primary hover:text-highlight"
               }`}
             >
               Todas
@@ -164,7 +164,7 @@ const CityOffers = () => {
                 className={`shrink-0 rounded-full border px-4 py-1.5 text-sm transition ${
                   category?.slug === c.slug
                     ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card text-foreground hover:border-primary hover:text-primary"
+                    : "border-border bg-card text-foreground hover:border-primary hover:text-highlight"
                 }`}
               >
                 {c.name}
@@ -199,7 +199,7 @@ const CityOffers = () => {
 
         {cities.length > 1 && (
           <section className="rounded-3xl border border-border bg-card p-6 shadow-card md:p-8">
-            <div className="flex items-center gap-2 label-eyebrow text-primary">
+            <div className="flex items-center gap-2 label-eyebrow text-highlight">
               <Sparkles className="h-3.5 w-3.5" /> Explore mais cidades
             </div>
             <h2 className="mt-2 font-display text-xl font-medium text-foreground md:text-2xl">
@@ -213,7 +213,7 @@ const CityOffers = () => {
                   <Link
                     key={makeCitySlug(c)}
                     to={`/ofertas/${makeCitySlug(c)}`}
-                    className="rounded-full border border-border bg-background px-3 py-1.5 text-sm text-foreground transition hover:border-primary hover:text-primary"
+                    className="rounded-full border border-border bg-background px-3 py-1.5 text-sm text-foreground transition hover:border-primary hover:text-highlight"
                   >
                     {cityLabel(c)}
                   </Link>

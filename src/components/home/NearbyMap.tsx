@@ -50,7 +50,7 @@ export const NearbyMap = () => {
         ) : (
           <div className="h-full w-full grid place-items-center text-muted-foreground text-sm">
             <div className="text-center">
-              <MapPin className="h-8 w-8 mx-auto mb-2 text-primary" />
+              <MapPin className="h-8 w-8 mx-auto mb-2 text-highlight" />
               Nenhuma empresa geolocalizada {city ? `em ${city.city}` : ""} ainda.
             </div>
           </div>

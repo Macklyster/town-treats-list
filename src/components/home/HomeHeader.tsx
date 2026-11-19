@@ -75,15 +75,15 @@ export const HomeHeader = () => {
         <div className="hidden md:flex items-center gap-2">
           <button
             onClick={openSelector}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-sm text-foreground/80 hover:border-primary hover:text-primary transition"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-sm text-foreground/80 hover:border-primary hover:text-highlight transition"
           >
-            <MapPin className="h-3.5 w-3.5 text-primary" />
+            <MapPin className="h-3.5 w-3.5 text-highlight" />
             {city ? `${city.city} - ${city.state}` : "Cidade"}
           </button>
           <Link
             to={user ? "/favoritos" : "/auth"}
             aria-label="Favoritos"
-            className="grid h-9 w-9 place-items-center rounded-full border border-border text-foreground/70 hover:border-primary hover:text-primary transition"
+            className="grid h-9 w-9 place-items-center rounded-full border border-border text-foreground/70 hover:border-primary hover:text-highlight transition"
           >
             <Heart className="h-4 w-4" />
           </Link>
@@ -174,7 +174,7 @@ export const HomeHeader = () => {
                 `inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition ${
                   isActive
                     ? "bg-primary text-primary-foreground shadow-soft"
-                    : "text-foreground/70 hover:bg-primary-light hover:text-primary"
+                    : "text-foreground/70 hover:bg-primary-light hover:text-highlight"
                 }`
               }
             >
@@ -204,7 +204,7 @@ export const HomeHeader = () => {
               </button>
             </form>
             <button onClick={openSelector} className="inline-flex items-center gap-1.5 self-start rounded-full border border-border px-3 py-1.5 text-sm">
-              <MapPin className="h-3.5 w-3.5 text-primary" />
+              <MapPin className="h-3.5 w-3.5 text-highlight" />
               {city ? `${city.city} - ${city.state}` : "Selecionar cidade"}
             </button>
             <div className="grid grid-cols-2 gap-2">
@@ -224,7 +224,7 @@ export const HomeHeader = () => {
                   onClick={() => setOpen(false)}
                   className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
                 >
-                  <Icon className="h-4 w-4 text-primary" />
+                  <Icon className="h-4 w-4 text-highlight" />
                   {label}
                 </Link>
               ))}
@@ -246,21 +246,21 @@ export const HomeHeader = () => {
                     onClick={() => setOpen(false)}
                     className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
                   >
-                    <UserIcon className="h-4 w-4 text-primary" /> Notificações
+                    <UserIcon className="h-4 w-4 text-highlight" /> Notificações
                   </Link>
                   <Link
                     to="/favoritos"
                     onClick={() => setOpen(false)}
                     className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
                   >
-                    <Heart className="h-4 w-4 text-primary" /> Favoritos
+                    <Heart className="h-4 w-4 text-highlight" /> Favoritos
                   </Link>
                   <Link
                     to="/meus-cupons"
                     onClick={() => setOpen(false)}
                     className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
                   >
-                    <Ticket className="h-4 w-4 text-primary" /> Meus cupons
+                    <Ticket className="h-4 w-4 text-highlight" /> Meus cupons
                   </Link>
                   {isLojista && (
                     <Link
@@ -268,7 +268,7 @@ export const HomeHeader = () => {
                       onClick={() => setOpen(false)}
                       className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
                     >
-                      <Store className="h-4 w-4 text-primary" /> Painel do Lojista
+                      <Store className="h-4 w-4 text-highlight" /> Painel do Lojista
                     </Link>
                   )}
                   {isAdmin && (
@@ -277,7 +277,7 @@ export const HomeHeader = () => {
                       onClick={() => setOpen(false)}
                       className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
                     >
-                      <Shield className="h-4 w-4 text-primary" /> Painel Admin
+                      <Shield className="h-4 w-4 text-highlight" /> Painel Admin
                     </Link>
                   )}
                 </div>

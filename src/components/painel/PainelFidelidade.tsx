@@ -225,7 +225,7 @@ export function PainelFidelidade({ storeId }: { storeId: string }) {
     return (
       <Card>
         <CardContent className="space-y-4 py-12 text-center">
-          <Sparkles className="mx-auto h-10 w-10 text-primary" />
+          <Sparkles className="mx-auto h-10 w-10 text-highlight" />
           <div className="space-y-1">
             <h3 className="text-lg font-semibold">Ative o FlyPontos na sua loja</h3>
             <p className="mx-auto max-w-md text-sm text-muted-foreground">
@@ -246,7 +246,7 @@ export function PainelFidelidade({ storeId }: { storeId: string }) {
       <Card>
         <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <Sparkles className="h-6 w-6 text-primary" />
+            <Sparkles className="h-6 w-6 text-highlight" />
             <div>
               <p className="font-semibold">FlyPontos</p>
               <p className="text-sm text-muted-foreground">
@@ -656,7 +656,7 @@ export function PainelFidelidade({ storeId }: { storeId: string }) {
                       <span className="flex-1 truncate font-medium">{m.name}</span>
                       {m.tier && <Badge variant="outline">{m.tier}</Badge>}
                       <span className="text-muted-foreground">{m.visits_count} visitas</span>
-                      <span className="font-semibold text-primary">{m.points_balance} pts</span>
+                      <span className="font-semibold text-highlight">{m.points_balance} pts</span>
                     </li>
                   ))}
                 </ul>

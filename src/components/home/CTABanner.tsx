@@ -23,7 +23,7 @@ export const CTABanner = () => (
         <div className="flex flex-col sm:flex-row gap-2 shrink-0">
           <Link
             to="/anuncie"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-white text-primary px-5 py-2.5 text-sm font-semibold hover:bg-primary-light transition"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-white text-highlight px-5 py-2.5 text-sm font-semibold hover:bg-primary-light transition"
           >
             <Store className="h-4 w-4" />
             Cadastrar empresa

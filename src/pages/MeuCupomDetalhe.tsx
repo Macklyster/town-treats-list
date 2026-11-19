@@ -101,7 +101,7 @@ export default function MeuCupomDetalhe() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <CardTitle className="flex items-center gap-2 text-lg">
-                      <Ticket className="h-5 w-5 text-primary" />
+                      <Ticket className="h-5 w-5 text-highlight" />
                       {c.title}
                     </CardTitle>
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -141,7 +141,7 @@ export default function MeuCupomDetalhe() {
                 </div>
 
                 {row.redeemed_at ? (
-                  <div className="flex items-center gap-2 rounded-md bg-primary/10 p-3 text-sm text-primary">
+                  <div className="flex items-center gap-2 rounded-md bg-primary/10 p-3 text-sm text-highlight">
                     <CheckCircle2 className="h-4 w-4" />
                     Cupom usado em{" "}
                     {new Date(row.redeemed_at).toLocaleString("pt-BR")}

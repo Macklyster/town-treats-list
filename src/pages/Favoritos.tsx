@@ -98,7 +98,7 @@ export default function Favoritos() {
           <p className="text-muted-foreground">{text}</p>
           <Link
             to={ctaTo}
-            className="mt-4 inline-block text-sm font-medium text-primary hover:underline"
+            className="mt-4 inline-block text-sm font-medium text-highlight hover:text-highlight-strong hover:underline"
           >
             {ctaLabel}
           </Link>
@@ -130,7 +130,7 @@ export default function Favoritos() {
               </p>
               <Link
                 to="/auth"
-                className="mt-4 inline-block text-sm font-medium text-primary hover:underline"
+                className="mt-4 inline-block text-sm font-medium text-highlight hover:text-highlight-strong hover:underline"
               >
                 Entrar
               </Link>

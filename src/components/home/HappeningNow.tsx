@@ -55,7 +55,7 @@ export const HappeningNow = () => {
         action={
           <Link
             to="/eventos"
-            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-primary transition hover:bg-primary hover:text-primary-foreground"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-highlight transition hover:bg-primary hover:text-primary-foreground"
           >
             Ver agenda completa <ArrowRight className="h-3.5 w-3.5" />
           </Link>

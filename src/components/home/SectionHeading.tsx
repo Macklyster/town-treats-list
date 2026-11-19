@@ -23,7 +23,7 @@ export const SectionHeading = ({ eyebrow, title, description, action, align = "l
       className={align === "center" ? "mx-auto max-w-2xl" : "max-w-2xl"}
     >
       {eyebrow && (
-        <span className="mb-1 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
+        <span className="mb-1 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-highlight">
           {eyebrow}
         </span>
       )}

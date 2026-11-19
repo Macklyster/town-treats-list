@@ -56,7 +56,7 @@ export function AISuggestButton({
     <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-2">
-          <Sparkles className="mt-0.5 h-5 w-5 text-primary" />
+          <Sparkles className="mt-0.5 h-5 w-5 text-highlight" />
           <div>
             <p className="text-sm font-semibold">Sugerir com IA</p>
             <p className="text-xs text-muted-foreground">

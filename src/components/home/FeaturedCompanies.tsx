@@ -31,7 +31,7 @@ export const FeaturedCompanies = () => {
         title="Empresas em destaque"
         description="As melhores empresas da cidade, escolhidas para você."
         action={
-          <Link to="/#ofertas" className="hidden md:inline-flex text-sm font-medium text-primary hover:underline">
+          <Link to="/#ofertas" className="hidden md:inline-flex text-sm font-medium text-highlight hover:text-highlight-strong hover:underline">
             Ver todas →
           </Link>
         }

@@ -57,7 +57,7 @@ export const PageHero = ({ eyebrow, title, titleAsChild = false, subtitle, crumb
           )}
 
           {eyebrow && (
-            <span className="label-eyebrow inline-block rounded-full bg-primary/20 px-3 py-1 text-primary-light">
+            <span className="label-eyebrow inline-block rounded-full bg-highlight/25 px-3 py-1 text-highlight-on-dark">
               {eyebrow}
             </span>
           )}

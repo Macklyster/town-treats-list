@@ -34,6 +34,10 @@
   --color-primary-light: hsl(var(--primary-light));
   --color-primary-mid: hsl(var(--primary-mid));
   --color-primary-deep: hsl(var(--primary-deep));
+  --color-highlight: hsl(var(--highlight));
+  --color-highlight-strong: hsl(var(--highlight-strong));
+  --color-highlight-on-dark: hsl(var(--highlight-on-dark));
+  --color-highlight-soft: hsl(var(--highlight-soft));
   --color-secondary: hsl(var(--secondary));
   --color-secondary-foreground: hsl(var(--secondary-foreground));
   --color-muted: hsl(var(--muted));
@@ -100,6 +104,13 @@ html { scroll-padding-top: calc(var(--header-h) + 12px); }
     --primary-light: 234 45% 95%;
     --primary-mid: 234 58% 27%;
     --primary-deep: 234 90% 4%;
+
+    /* Highlight purple — sampled from the logo mark (#8B3EEC).
+       Used for emphasized text: eyebrows, highlight links, scores, accent icons. */
+    --highlight: 265 78% 56%;
+    --highlight-strong: 265 66% 42%;
+    --highlight-on-dark: 265 88% 74%;
+    --highlight-soft: 265 70% 96%;
 
     /* Hero island (dark block inside light page) */
     --hero-bg: 240 15% 8%;

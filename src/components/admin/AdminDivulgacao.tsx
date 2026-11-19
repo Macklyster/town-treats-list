@@ -123,7 +123,7 @@ export function AdminDivulgacao() {
         {list.map((p) => (
           <Card key={p.id} className="flex flex-col gap-3 p-4">
             <div>
-              <p className="text-xs font-semibold uppercase text-primary">{p.group}</p>
+              <p className="text-xs font-semibold uppercase text-highlight">{p.group}</p>
               <h3 className="font-semibold">{p.title}</h3>
             </div>
             {p.image && <img src={p.image} alt={`Capa: ${p.title}`} loading="lazy" className="h-48 w-full rounded-md bg-muted object-contain" />}

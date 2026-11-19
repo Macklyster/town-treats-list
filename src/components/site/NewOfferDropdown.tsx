@@ -31,7 +31,7 @@ export const NewOfferDropdown = ({ isPlus, hasActiveColetiva, hasActiveLeilao, h
       <DropdownMenuContent align="end" className="w-72">
         <DropdownMenuLabel>Tipos de oferta</DropdownMenuLabel>
         <DropdownMenuItem onClick={() => navigate("/painel-lojista/oferta")}>
-          <Tag className="mr-2 h-4 w-4 text-primary" />
+          <Tag className="mr-2 h-4 w-4 text-highlight" />
           <div className="flex flex-col">
             <span className="font-medium">Desconto / Cupom / Brinde</span>
             <span className="text-xs text-muted-foreground">Oferta padrão</span>
@@ -63,7 +63,7 @@ export const NewOfferDropdown = ({ isPlus, hasActiveColetiva, hasActiveLeilao, h
                 : undefined
           }
         >
-          <Users className="mr-2 h-4 w-4 text-primary" />
+          <Users className="mr-2 h-4 w-4 text-highlight" />
           <div className="flex flex-1 flex-col">
             <span className="font-medium flex items-center gap-2">
               OfertasFly Coletiva
@@ -90,7 +90,7 @@ export const NewOfferDropdown = ({ isPlus, hasActiveColetiva, hasActiveLeilao, h
           }}
           title={hasActiveLeilao ? "Você já tem um leilão ativo" : !isPlus ? "Disponível no plano Plus" : undefined}
         >
-          <Gavel className="mr-2 h-4 w-4 text-primary" />
+          <Gavel className="mr-2 h-4 w-4 text-highlight" />
           <div className="flex flex-1 flex-col">
             <span className="font-medium flex items-center gap-2">
               Leilão de Oferta
@@ -115,7 +115,7 @@ export const NewOfferDropdown = ({ isPlus, hasActiveColetiva, hasActiveLeilao, h
           }}
           title={hasActiveInvisivel ? "Você já tem uma oferta invisível ativa" : !isPlus ? "Disponível no plano Plus" : undefined}
         >
-          <EyeOff className="mr-2 h-4 w-4 text-primary" />
+          <EyeOff className="mr-2 h-4 w-4 text-highlight" />
           <div className="flex flex-1 flex-col">
             <span className="font-medium flex items-center gap-2">
               Oferta Invisível
@@ -130,7 +130,7 @@ export const NewOfferDropdown = ({ isPlus, hasActiveColetiva, hasActiveLeilao, h
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => navigate("/painel-lojista/evento")}>
-          <CalendarClock className="mr-2 h-4 w-4 text-primary" />
+          <CalendarClock className="mr-2 h-4 w-4 text-highlight" />
           <div className="flex flex-1 flex-col">
             <span className="font-medium">Evento</span>
             <span className="text-xs text-muted-foreground">

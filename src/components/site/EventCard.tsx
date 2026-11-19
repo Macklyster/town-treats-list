@@ -90,7 +90,7 @@ export const EventCard = ({ event, index = 0 }: { event: UIEventWithStore; index
 
           {(event.venue || event.city) && (
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <MapPin className="h-3.5 w-3.5 text-primary" />
+              <MapPin className="h-3.5 w-3.5 text-highlight" />
               <span className="truncate">
                 {[event.venue, event.city, event.state].filter(Boolean).join(" · ")}
               </span>
@@ -102,7 +102,7 @@ export const EventCard = ({ event, index = 0 }: { event: UIEventWithStore; index
           )}
 
           {event.price_info && (
-            <div className="text-sm font-semibold text-primary">{event.price_info}</div>
+            <div className="text-sm font-semibold text-highlight">{event.price_info}</div>
           )}
         </div>
       </Link>

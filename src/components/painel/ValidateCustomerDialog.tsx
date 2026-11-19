@@ -153,7 +153,7 @@ export function ValidateCustomerDialog({ open, onOpenChange, onDone }: Props) {
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <ScanLine className="h-5 w-5 text-primary" /> Validar cliente
+            <ScanLine className="h-5 w-5 text-highlight" /> Validar cliente
           </DialogTitle>
         </DialogHeader>
 

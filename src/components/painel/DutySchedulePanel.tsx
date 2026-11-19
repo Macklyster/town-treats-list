@@ -87,7 +87,7 @@ export const DutySchedulePanel = ({ storeId }: { storeId: string }) => {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <ShieldPlus className="h-5 w-5 text-primary" /> Plantões
+          <ShieldPlus className="h-5 w-5 text-highlight" /> Plantões
         </CardTitle>
         <p className="text-sm text-muted-foreground">
           Durante o período agendado sua loja aparece com a tag <strong>Aberto (Plantão)</strong>.

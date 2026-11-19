@@ -199,7 +199,7 @@ export const GroupOfferTierEditor = ({ value, onChange, originalPrice = 0 }: Pro
                   {hasBase && (
                     <td
                       className={`py-2 ${
-                        r.pctVsNormal < 0 ? "text-destructive" : r.pctVsNormal > 0 ? "text-primary" : "text-muted-foreground"
+                        r.pctVsNormal < 0 ? "text-destructive" : r.pctVsNormal > 0 ? "text-highlight" : "text-muted-foreground"
                       }`}
                     >
                       {r.pctVsNormal > 0
@@ -235,7 +235,7 @@ export const GroupOfferTierEditor = ({ value, onChange, originalPrice = 0 }: Pro
                     <span>vs normal</span>
                     <span
                       className={`text-right ${
-                        r.pctVsNormal < 0 ? "text-destructive" : r.pctVsNormal > 0 ? "text-primary" : "text-foreground"
+                        r.pctVsNormal < 0 ? "text-destructive" : r.pctVsNormal > 0 ? "text-highlight" : "text-foreground"
                       }`}
                     >
                       {r.pctVsNormal > 0
@@ -266,7 +266,7 @@ export const GroupOfferTierEditor = ({ value, onChange, originalPrice = 0 }: Pro
               Numa oferta normal (-{normalDiscountPct}%), seriam{" "}
               <strong className="text-foreground">{formatBRLNumber(lastNormalRevenueMin)}</strong>.
               Ganho do cliente:{" "}
-              <strong className="text-primary">{formatBRLNumber(Math.max(0, lastGainMin))}</strong>{" "}
+              <strong className="text-highlight">{formatBRLNumber(Math.max(0, lastGainMin))}</strong>{" "}
               a mais de desconto coletivo.
             </div>
           )

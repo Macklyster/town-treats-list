@@ -321,7 +321,7 @@ export default function PainelLojista() {
               <Card className="md:col-span-3">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-primary" /> Sua coletiva ativa
+                    <Sparkles className="h-5 w-5 text-highlight" /> Sua coletiva ativa
                     <Badge variant={activeColetiva.status === "approved" ? "default" : "secondary"}>
                       {activeColetiva.status === "approved" ? "Ativa" : "Aguardando aprovação"}
                     </Badge>
@@ -431,7 +431,7 @@ export default function PainelLojista() {
               <Card className="md:col-span-3">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Gavel className="h-5 w-5 text-primary" /> Seu leilão ativo
+                    <Gavel className="h-5 w-5 text-highlight" /> Seu leilão ativo
                     <Badge variant={activeLeilao.status === "approved" ? "default" : "secondary"}>
                       {activeLeilao.status === "approved" ? "Ativo" : "Aguardando aprovação"}
                     </Badge>
@@ -543,7 +543,7 @@ export default function PainelLojista() {
               <Card className="md:col-span-3">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <EyeOff className="h-5 w-5 text-primary" /> Sua oferta invisível ativa
+                    <EyeOff className="h-5 w-5 text-highlight" /> Sua oferta invisível ativa
                     <Badge variant={activeInvisivel.status === "approved" ? "default" : "secondary"}>
                       {activeInvisivel.status === "approved" ? "Ativa" : "Aguardando aprovação"}
                     </Badge>
@@ -630,7 +630,7 @@ export default function PainelLojista() {
                         <tr key={ev.id} className="hover:bg-muted/30">
                           <td className="px-3 py-3 font-medium text-foreground">
                             <div className="flex items-center gap-2">
-                              <CalendarClock className="h-3.5 w-3.5 text-primary" />
+                              <CalendarClock className="h-3.5 w-3.5 text-highlight" />
                               {ev.title}
                             </div>
                             {ev.created_by_admin && <Badge variant="outline" className="mt-1">Gerenciada pela OfertasFly</Badge>}

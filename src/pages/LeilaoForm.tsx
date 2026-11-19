@@ -383,7 +383,7 @@ export default function LeilaoForm() {
               {ladder.length > 1 && (
                 <div className="rounded-md border bg-muted/30 p-4">
                   <div className="mb-2 flex items-center gap-2 text-sm font-medium">
-                    <TrendingDown className="h-4 w-4 text-primary" />
+                    <TrendingDown className="h-4 w-4 text-highlight" />
                     Pré-visualização da queda de preço
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-3 md:grid-cols-4">

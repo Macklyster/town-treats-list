@@ -49,7 +49,7 @@ const HowItWorks = () => (
   <Card>
     <CardHeader>
       <CardTitle className="flex items-center gap-2">
-        <Sparkles className="h-5 w-5 text-primary" /> Como funciona a OfertasFly Coletiva
+        <Sparkles className="h-5 w-5 text-highlight" /> Como funciona a OfertasFly Coletiva
       </CardTitle>
     </CardHeader>
     <CardContent className="space-y-3 text-sm text-muted-foreground">
@@ -59,19 +59,19 @@ const HowItWorks = () => (
       </p>
       <ul className="grid gap-2 sm:grid-cols-2">
         <li className="flex items-start gap-2">
-          <TrendingDown className="mt-0.5 h-4 w-4 text-primary" />
+          <TrendingDown className="mt-0.5 h-4 w-4 text-highlight" />
           <span>O preço cai automaticamente a cada faixa atingida.</span>
         </li>
         <li className="flex items-start gap-2">
-          <Users className="mt-0.5 h-4 w-4 text-primary" />
+          <Users className="mt-0.5 h-4 w-4 text-highlight" />
           <span>Todos pagam o último preço alcançado pelo grupo.</span>
         </li>
         <li className="flex items-start gap-2">
-          <Clock className="mt-0.5 h-4 w-4 text-primary" />
+          <Clock className="mt-0.5 h-4 w-4 text-highlight" />
           <span>Cada coletiva tem prazo definido pela loja para se completar.</span>
         </li>
         <li className="flex items-start gap-2">
-          <Share2 className="mt-0.5 h-4 w-4 text-primary" />
+          <Share2 className="mt-0.5 h-4 w-4 text-highlight" />
           <span>Compartilhe pelo WhatsApp para destravar preços melhores.</span>
         </li>
       </ul>
@@ -207,14 +207,14 @@ export default function Coletivas() {
                         <span className="truncate">{r.store?.name ?? "Loja"}</span>
                         {r.store?.featured_badge && <StoreFeaturedBadge showLabel={false} />}
                       </div>
-                      <h2 className="line-clamp-2 font-semibold text-foreground group-hover:text-primary">
+                      <h2 className="line-clamp-2 font-semibold text-foreground group-hover:text-highlight">
                         {r.title}
                       </h2>
                       <div className="flex flex-wrap items-baseline gap-2">
                         <span className="text-xs text-muted-foreground line-through">
                           {formatBRLNumber(Number(r.original_price))}
                         </span>
-                        <span className="text-lg font-bold text-primary">
+                        <span className="text-lg font-bold text-highlight">
                           a partir de {formatBRLNumber(minPrice)}
                         </span>
                       </div>

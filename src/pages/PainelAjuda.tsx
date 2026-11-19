@@ -173,7 +173,7 @@ export default function PainelAjuda() {
                   <AccordionItem key={topic.q} value={`${section.id}-${i}`}>
                     <AccordionTrigger className="text-left text-base">
                       <span className="flex items-start gap-2 pr-3">
-                        <HelpCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                        <HelpCircle className="mt-0.5 h-4 w-4 shrink-0 text-highlight" />
                         {topic.q}
                       </span>
                     </AccordionTrigger>

@@ -45,7 +45,7 @@ const HowItWorks = () => (
   <Card>
     <CardHeader>
       <CardTitle className="flex items-center gap-2">
-        <Sparkles className="h-5 w-5 text-primary" /> Como funciona o Leilão de Oferta
+        <Sparkles className="h-5 w-5 text-highlight" /> Como funciona o Leilão de Oferta
       </CardTitle>
     </CardHeader>
     <CardContent className="space-y-3 text-sm text-muted-foreground">
@@ -54,10 +54,10 @@ const HowItWorks = () => (
         Quanto mais você espera, mais barato fica — mas alguém pode reservar antes de você.
       </p>
       <ul className="grid gap-2 sm:grid-cols-2">
-        <li className="flex items-start gap-2"><TrendingDown className="mt-0.5 h-4 w-4 text-primary" /><span>O preço cai automaticamente em intervalos definidos.</span></li>
-        <li className="flex items-start gap-2"><Package className="mt-0.5 h-4 w-4 text-primary" /><span>Cada leilão tem uma quantidade limitada de unidades.</span></li>
-        <li className="flex items-start gap-2"><Gavel className="mt-0.5 h-4 w-4 text-primary" /><span>Quando você reserva, o preço atual fica travado para você.</span></li>
-        <li className="flex items-start gap-2"><Clock className="mt-0.5 h-4 w-4 text-primary" /><span>O leilão acaba quando esgota ou atinge o preço mínimo.</span></li>
+        <li className="flex items-start gap-2"><TrendingDown className="mt-0.5 h-4 w-4 text-highlight" /><span>O preço cai automaticamente em intervalos definidos.</span></li>
+        <li className="flex items-start gap-2"><Package className="mt-0.5 h-4 w-4 text-highlight" /><span>Cada leilão tem uma quantidade limitada de unidades.</span></li>
+        <li className="flex items-start gap-2"><Gavel className="mt-0.5 h-4 w-4 text-highlight" /><span>Quando você reserva, o preço atual fica travado para você.</span></li>
+        <li className="flex items-start gap-2"><Clock className="mt-0.5 h-4 w-4 text-highlight" /><span>O leilão acaba quando esgota ou atinge o preço mínimo.</span></li>
       </ul>
     </CardContent>
   </Card>
@@ -84,7 +84,7 @@ const AuctionCard = ({ row }: { row: Row }) => {
           {row.store?.featured_badge && <StoreFeaturedBadge showLabel={false} />}
           <Badge variant="secondary" className="ml-auto gap-1"><Gavel className="h-3 w-3" /> Leilão</Badge>
         </div>
-        <h2 className="line-clamp-2 font-semibold text-foreground group-hover:text-primary">{row.title}</h2>
+        <h2 className="line-clamp-2 font-semibold text-foreground group-hover:text-highlight">{row.title}</h2>
         <div className="flex items-baseline gap-2">
           <span className="text-xs text-muted-foreground line-through">{formatBRL(Number(row.starting_price))}</span>
           <span className="text-xl font-bold text-accent-strong tabular-nums">{formatBRL(price)}</span>

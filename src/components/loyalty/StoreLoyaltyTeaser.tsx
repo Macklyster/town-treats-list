@@ -45,7 +45,7 @@ export function StoreLoyaltyTeaser({ storeId, storeSlug }: Props) {
       <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
+            <Sparkles className="h-5 w-5 text-highlight" />
             <h3 className="font-semibold">Ganhe pontos aqui — FlyPontos</h3>
           </div>
           {membership ? (

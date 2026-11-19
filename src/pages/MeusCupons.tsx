@@ -117,7 +117,7 @@ export default function MeusCupons() {
                           {new Date(r.created_at).toLocaleDateString("pt-BR")}
                         </span>
                         {r.redeemed_at ? (
-                          <span className="flex items-center gap-1 text-primary">
+                          <span className="flex items-center gap-1 text-highlight">
                             <CheckCircle2 className="h-3 w-3" /> Usado
                           </span>
                         ) : (

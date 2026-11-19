@@ -203,7 +203,7 @@ const Anuncie = () => {
                   <div className="absolute right-4 top-4 text-xs font-semibold text-muted-foreground/60">
                     0{i + 1}
                   </div>
-                  <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-highlight">
                     <Icon className="h-5 w-5" />
                   </div>
                   <h3 className="text-base font-semibold text-foreground">{s.t}</h3>
@@ -341,7 +341,7 @@ const Anuncie = () => {
                         </span>
                       )
                     )}
-                    <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-highlight">
                       <Icon className="h-5 w-5" />
                     </div>
                     <h3 className="text-lg font-semibold text-foreground">{p.name}</h3>
@@ -374,7 +374,7 @@ const Anuncie = () => {
                     <ul className="mt-5 space-y-2.5 text-sm">
                       {p.features.map((f) => (
                         <li key={f} className="flex items-start gap-2">
-                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-highlight" />
                           <span className="text-muted-foreground">{f}</span>
                         </li>
                       ))}
@@ -412,7 +412,7 @@ const Anuncie = () => {
                   "Atendimento humano via WhatsApp",
                 ].map((b) => (
                   <li key={b} className="flex items-center gap-2">
-                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-highlight">
                       <Check className="h-3 w-3" />
                     </span>
                     <span className="text-muted-foreground">{b}</span>

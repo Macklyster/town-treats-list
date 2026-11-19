@@ -182,7 +182,7 @@ export default function OfertaInvisivelPublic() {
                 </p>
                 <ul className="space-y-2">
                   <li className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-primary" />
+                    <MapPin className="h-4 w-4 text-highlight" />
                     <span>
                       Raio: <strong>{offer.radius_meters} m</strong> da loja.
                       {state.distance_meters != null && (
@@ -192,7 +192,7 @@ export default function OfertaInvisivelPublic() {
                     </span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-primary" />
+                    <Clock className="h-4 w-4 text-highlight" />
                     <span>
                       Janela: das <strong>{formatTime(offer.time_start ?? "")}</strong> às <strong>{formatTime(offer.time_end ?? "")}</strong>.
                       {state.in_window === false && <> Volte dentro do horário acima.</>}

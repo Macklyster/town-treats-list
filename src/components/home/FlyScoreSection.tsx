@@ -41,8 +41,8 @@ const NEXT_PILARES = [
 ];
 
 function scoreTone(v: number) {
-  if (v >= 80) return { bar: "bg-primary",              text: "text-primary",              badge: "Excelente" };
-  if (v >= 60) return { bar: "bg-primary/70",           text: "text-primary",              badge: "Bom" };
+  if (v >= 80) return { bar: "bg-primary",              text: "text-highlight",              badge: "Excelente" };
+  if (v >= 60) return { bar: "bg-primary/70",           text: "text-highlight",              badge: "Bom" };
   if (v >= 40) return { bar: "bg-warning-foreground",   text: "text-warning-foreground",   badge: "Regular" };
   return          { bar: "bg-destructive",              text: "text-destructive",          badge: "A melhorar" };
 }
@@ -71,7 +71,7 @@ export const FlyScoreBar = () => {
           <div className="flex-1 min-w-0">
             <div className="flex items-start gap-3">
               <div className="h-10 w-10 shrink-0 rounded-xl bg-primary/10 grid place-items-center">
-                <Award className="h-5 w-5 text-primary" />
+                <Award className="h-5 w-5 text-highlight" />
               </div>
               <div>
                 <h2 className="text-lg font-semibold text-foreground leading-tight">
@@ -82,7 +82,7 @@ export const FlyScoreBar = () => {
                 </p>
                 <button
                   onClick={() => setOpen(true)}
-                  className="mt-1 text-xs font-semibold text-primary hover:underline"
+                  className="mt-1 text-xs font-semibold text-highlight hover:text-highlight-strong hover:underline"
                 >
                   Saiba como funciona
                 </button>
@@ -129,7 +129,7 @@ export const FlyScoreBar = () => {
               >
                 <div className="flex items-center gap-2">
                   <div className="h-8 w-8 rounded-lg bg-primary/10 grid place-items-center shrink-0">
-                    <Icon className="h-4 w-4 text-primary" />
+                    <Icon className="h-4 w-4 text-highlight" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-semibold text-foreground leading-tight">{p.label}</div>
@@ -193,7 +193,7 @@ export const FlyScoreBar = () => {
                 return (
                   <li key={p.key} className="flex items-start gap-3">
                     <div className="h-8 w-8 shrink-0 rounded-lg bg-primary/10 grid place-items-center">
-                      <Icon className="h-4 w-4 text-primary" />
+                      <Icon className="h-4 w-4 text-highlight" />
                     </div>
                     <div>
                       <div className="text-sm font-semibold text-foreground">{p.label}</div>

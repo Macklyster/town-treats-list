@@ -103,7 +103,7 @@ export default function Auth() {
       <main className="flex flex-1 items-center justify-center px-4 py-12">
         <Card className="w-full max-w-md rounded-3xl border-border bg-card shadow-card">
           <CardHeader className="space-y-2 pb-2">
-            <span className="label-eyebrow text-primary">Área do lojista</span>
+            <span className="label-eyebrow text-highlight">Área do lojista</span>
             <h1 className="font-display text-2xl font-medium leading-none">Acesse o OfertasFly</h1>
             <p className="text-sm text-muted-foreground">Entre ou crie sua conta para gerenciar sua loja.</p>
           </CardHeader>

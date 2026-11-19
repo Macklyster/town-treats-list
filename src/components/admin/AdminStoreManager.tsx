@@ -141,7 +141,7 @@ function StoreSheet({ id, onSaved }: { id: string; onSaved: () => void }) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-2">
           <CardTitle>{s.name}</CardTitle>
-          <a href={`/loja/${s.slug}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
+          <a href={`/loja/${s.slug}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm text-highlight hover:text-highlight-strong hover:underline">
             Ver página <ExternalLink className="h-3 w-3" />
           </a>
         </CardHeader>

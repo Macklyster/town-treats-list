@@ -26,7 +26,7 @@ export const SectionCard = ({
       {hasHeader && (
         <header className="flex flex-wrap items-start justify-between gap-4 border-b border-border/60 px-6 pb-4 pt-6 md:px-8">
           <div className="min-w-0">
-            {eyebrow && <div className="label-eyebrow text-primary">{eyebrow}</div>}
+            {eyebrow && <div className="label-eyebrow text-highlight">{eyebrow}</div>}
             {title && (
               <h2 className="mt-1 font-display text-xl font-medium tracking-tight text-foreground md:text-2xl">
                 {title}

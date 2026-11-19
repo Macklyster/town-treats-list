@@ -212,15 +212,15 @@ const OfferDetail = () => {
       <Header />
       <main className="container py-10">
         <nav className="mb-6 flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
-          <Link to="/" className="hover:text-primary">Início</Link>
+          <Link to="/" className="hover:text-highlight">Início</Link>
           {cSlug && (
             <>
               <ChevronRight className="h-3 w-3 opacity-60" />
-              <Link to={`/ofertas/${cSlug}`} className="hover:text-primary">{cLabel}</Link>
+              <Link to={`/ofertas/${cSlug}`} className="hover:text-highlight">{cLabel}</Link>
             </>
           )}
           <ChevronRight className="h-3 w-3 opacity-60" />
-          <Link to={`/loja/${store?.slug ?? ""}`} className="hover:text-primary">{offer.storeName}</Link>
+          <Link to={`/loja/${store?.slug ?? ""}`} className="hover:text-highlight">{offer.storeName}</Link>
           <ChevronRight className="h-3 w-3 opacity-60" />
           <span className="text-foreground">{offer.title}</span>
         </nav>

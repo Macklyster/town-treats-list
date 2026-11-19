@@ -147,7 +147,7 @@ export default function FidelidadeComoFunciona() {
                   <AccordionItem key={topic.q} value={`${section.id}-${i}`}>
                     <AccordionTrigger className="text-left text-base">
                       <span className="flex items-start gap-2 pr-3">
-                        <HelpCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                        <HelpCircle className="mt-0.5 h-4 w-4 shrink-0 text-highlight" />
                         {topic.q}
                       </span>
                     </AccordionTrigger>
@@ -190,7 +190,7 @@ export default function FidelidadeComoFunciona() {
           }
         >
           <div className="flex items-start gap-3 text-sm text-muted-foreground">
-            <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-highlight" />
             <p>
               Lembre-se: cada loja define suas próprias regras de pontos, níveis e recompensas.
               Sempre confira os detalhes na página de fidelidade da loja escolhida.

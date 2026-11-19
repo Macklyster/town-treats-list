@@ -118,7 +118,7 @@ export function CouponRedeemList({ storeId, offerId, includeStoreWide = true }: 
   return (
     <div className="space-y-3">
       <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
-        <Ticket className="h-4 w-4 text-primary" />
+        <Ticket className="h-4 w-4 text-highlight" />
         Cupons disponíveis
       </h3>
       <div className="grid gap-3 sm:grid-cols-2">

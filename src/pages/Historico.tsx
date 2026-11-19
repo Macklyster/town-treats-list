@@ -242,7 +242,7 @@ export default function Historico() {
                 <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                   <div className="flex-1 space-y-3">
                     <div className="flex items-center gap-2">
-                      <Badge className="gap-1 bg-primary/10 text-primary hover:bg-primary/15">
+                      <Badge className="gap-1 bg-primary/10 text-highlight hover:bg-primary/15">
                         <Sparkles className="h-3 w-3" /> Destaque & Plus
                       </Badge>
                       <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
@@ -265,7 +265,7 @@ export default function Historico() {
                         { icon: Sparkles, label: "Percentil e média da sua cidade" },
                       ].map(({ icon: Icon, label }) => (
                         <li key={label} className="flex items-start gap-2 text-sm text-foreground">
-                          <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                          <Icon className="mt-0.5 h-4 w-4 shrink-0 text-highlight" />
                           <span>{label}</span>
                         </li>
                       ))}

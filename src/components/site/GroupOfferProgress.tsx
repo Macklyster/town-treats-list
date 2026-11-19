@@ -74,7 +74,7 @@ export const GroupOfferProgress = ({
 
       <div className="flex items-center justify-between text-sm">
         <div className="inline-flex items-center gap-1.5">
-          <Users className="h-4 w-4 text-primary" />
+          <Users className="h-4 w-4 text-highlight" />
           <span>
             🔥 <strong>{participantsCount}</strong>{" "}
             {participantsCount === 1 ? "pessoa entrou" : "pessoas já entraram"}

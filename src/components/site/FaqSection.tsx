@@ -19,7 +19,7 @@ export const FaqSection = ({
   <Card>
     <CardHeader>
       <CardTitle className="flex items-center gap-2">
-        <HelpCircle className="h-5 w-5 text-primary" /> {title}
+        <HelpCircle className="h-5 w-5 text-highlight" /> {title}
       </CardTitle>
     </CardHeader>
     <CardContent>

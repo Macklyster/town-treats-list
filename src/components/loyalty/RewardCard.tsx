@@ -47,7 +47,7 @@ export function RewardCard({ reward, balance, isMember, onRedeem, busy }: Props)
             </Badge>
           </div>
           <div className="text-right">
-            <div className="text-lg font-bold text-primary">{reward.points_cost}</div>
+            <div className="text-lg font-bold text-highlight">{reward.points_cost}</div>
             <div className="text-xs text-muted-foreground">pontos</div>
           </div>
         </div>

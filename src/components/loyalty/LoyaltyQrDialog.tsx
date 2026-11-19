@@ -61,7 +61,7 @@ export function LoyaltyQrDialog({ open, onOpenChange }: Props) {
       <DialogContent className="max-w-sm">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <QrCode className="h-5 w-5 text-primary" /> Meu QR FlyPontos
+            <QrCode className="h-5 w-5 text-highlight" /> Meu QR FlyPontos
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 text-center">

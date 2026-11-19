@@ -65,7 +65,7 @@ export const PixKeyPanel = ({ storeId }: { storeId: string }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2"><QrCode className="h-5 w-5 text-primary" /> Recebimento via PIX</CardTitle>
+        <CardTitle className="flex items-center gap-2"><QrCode className="h-5 w-5 text-highlight" /> Recebimento via PIX</CardTitle>
         <p className="text-sm text-muted-foreground">
           Nos anúncios com PIX marcado como forma de pagamento, o cliente verá um QR Code com o valor da oferta.
         </p>
@@ -103,7 +103,7 @@ export const PixKeyPanel = ({ storeId }: { storeId: string }) => {
           <Input value={bank} onChange={(e) => setBank(e.target.value)} maxLength={60} placeholder="Ex.: Sicredi, Nubank" />
         </div>
         <div className="flex gap-2 rounded-lg bg-muted p-3 text-sm text-muted-foreground">
-          <ShieldCheck className="h-5 w-5 shrink-0 text-primary" />
+          <ShieldCheck className="h-5 w-5 shrink-0 text-highlight" />
           <span>Só libere o produto após ver o valor entrar no extrato da sua conta. Nunca aceite apenas print de comprovante ou PIX agendado.</span>
         </div>
         <div className="flex gap-2">

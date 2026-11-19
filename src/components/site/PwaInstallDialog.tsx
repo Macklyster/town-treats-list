@@ -81,7 +81,7 @@ export const PwaInstallDialog = () => {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Download className="h-5 w-5 text-primary" />
+            <Download className="h-5 w-5 text-highlight" />
             Instalar o app OfertasFly
           </DialogTitle>
           <DialogDescription>
@@ -94,11 +94,11 @@ export const PwaInstallDialog = () => {
             <p>Para instalar no iPhone/iPad:</p>
             <ol className="space-y-2 pl-1">
               <li className="flex items-start gap-2">
-                <Share className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <Share className="mt-0.5 h-4 w-4 shrink-0 text-highlight" />
                 <span>Toque no botão <strong>Compartilhar</strong> na barra do Safari.</span>
               </li>
               <li className="flex items-start gap-2">
-                <Plus className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <Plus className="mt-0.5 h-4 w-4 shrink-0 text-highlight" />
                 <span>Escolha <strong>Adicionar à Tela de Início</strong>.</span>
               </li>
             </ol>

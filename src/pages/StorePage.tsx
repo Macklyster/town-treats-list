@@ -141,19 +141,19 @@ const StorePage = () => {
             <ul className="grid gap-3 text-sm text-foreground md:grid-cols-3">
               {store.address && (
                 <li className="flex items-start gap-2">
-                  <MapPin className="mt-0.5 h-4 w-4 text-primary" />
+                  <MapPin className="mt-0.5 h-4 w-4 text-highlight" />
                   <span>{store.address}</span>
                 </li>
               )}
               {store.phone && (
                 <li className="flex items-start gap-2">
-                  <Phone className="mt-0.5 h-4 w-4 text-primary" />
+                  <Phone className="mt-0.5 h-4 w-4 text-highlight" />
                   <span>{store.phone}</span>
                 </li>
               )}
               {store.instagram && (
                 <li className="flex items-start gap-2">
-                  <Instagram className="mt-0.5 h-4 w-4 text-primary" />
+                  <Instagram className="mt-0.5 h-4 w-4 text-highlight" />
                   <span>{store.instagram}</span>
                 </li>
               )}

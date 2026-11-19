@@ -134,7 +134,7 @@ export const HomeHero = ({ offers = [] }: { offers?: UIOffer[] }) => {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1 text-white">
               <span className="text-sm font-semibold truncate">{company.name}</span>
-              {company.featured_badge && <BadgeCheck className="h-4 w-4 text-primary-mid shrink-0" />}
+              {company.featured_badge && <BadgeCheck className="h-4 w-4 text-highlight-on-dark shrink-0" />}
             </div>
             <div className="flex items-center gap-1 text-xs text-white/80">
               {company.flyscore != null ? (
@@ -163,13 +163,13 @@ export const HomeHero = ({ offers = [] }: { offers?: UIOffer[] }) => {
         className="relative overflow-hidden rounded-3xl bg-[hsl(var(--hero-bg))] text-[hsl(var(--hero-fg))] p-6 md:p-10"
       >
         <div className="absolute -right-24 -top-24 h-[380px] w-[380px] rounded-full bg-primary/25 blur-3xl" aria-hidden />
-        <div className="absolute -left-24 bottom-0 h-[300px] w-[300px] rounded-full bg-primary-mid/20 blur-3xl" aria-hidden />
+        <div className="absolute -left-24 bottom-0 h-[300px] w-[300px] rounded-full bg-highlight/20 blur-3xl" aria-hidden />
 
         <div className="relative grid gap-8 lg:grid-cols-[1.1fr_1.3fr_0.95fr] lg:items-center">
           {/* Left — copy */}
           <div>
             <h1 className="font-display text-4xl md:text-5xl leading-[1.05] text-[hsl(var(--hero-fg))] break-words">
-              Ofertas, eventos e empresas da <span className="text-primary-mid">sua cidade</span>
+              Ofertas, eventos e empresas da <span className="text-highlight-on-dark">sua cidade</span>
             </h1>
             <p className="mt-4 max-w-sm text-sm text-[hsl(var(--hero-muted))] leading-relaxed">
               Empresas. Serviços. Ofertas. Eventos.<br />Tudo perto de você.
@@ -287,7 +287,7 @@ export const HomeHero = ({ offers = [] }: { offers?: UIOffer[] }) => {
                         </span>
                       )}
                     </div>
-                    <span className="text-xs font-semibold text-primary">Ver oferta →</span>
+                    <span className="text-xs font-semibold text-highlight">Ver oferta →</span>
                   </div>
                   {activeFlashOffers.length > 1 && (
                     <p className="border-t border-border pt-2 text-xs text-muted-foreground">
@@ -309,7 +309,7 @@ export const HomeHero = ({ offers = [] }: { offers?: UIOffer[] }) => {
                   const I = m.icon;
                   return (
                     <li key={m.label} className="flex items-center gap-3">
-                      <div className="h-10 w-10 shrink-0 rounded-xl bg-primary/20 text-primary-mid grid place-items-center">
+                      <div className="h-10 w-10 shrink-0 rounded-xl bg-highlight/20 text-highlight-on-dark grid place-items-center">
                         <I className="h-5 w-5" />
                       </div>
                       <div>

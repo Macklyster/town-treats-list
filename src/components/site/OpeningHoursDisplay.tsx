@@ -60,11 +60,11 @@ export function OpeningHoursDisplay({ value }: Props) {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <Clock className="h-4 w-4 text-primary" />
+        <Clock className="h-4 w-4 text-highlight" />
         <span
           className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
             status.open
-              ? "bg-primary/10 text-primary"
+              ? "bg-primary/10 text-highlight"
               : "bg-muted text-muted-foreground"
           }`}
         >
@@ -93,7 +93,7 @@ export function OpeningHoursDisplay({ value }: Props) {
             >
               <span className="shrink-0">
                 {DAY_LABELS[day]}
-                {isToday && <span className="ml-1 text-[10px] uppercase tracking-wide text-primary">hoje</span>}
+                {isToday && <span className="ml-1 text-[10px] uppercase tracking-wide text-highlight">hoje</span>}
               </span>
               <span className={`text-right tabular-nums ${d.closed ? "text-muted-foreground" : ""}`}>
                 {d.closed

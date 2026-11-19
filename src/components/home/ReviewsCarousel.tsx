@@ -27,7 +27,7 @@ export const ReviewsCarousel = () => {
         title="O que dizem nossos usuários"
         description="Avaliações reais de quem já conhece e recomenda."
         action={
-          <Link to="/#ofertas" className="hidden md:inline-flex text-sm font-medium text-primary hover:underline">
+          <Link to="/#ofertas" className="hidden md:inline-flex text-sm font-medium text-highlight hover:text-highlight-strong hover:underline">
             Ver todas as avaliações →
           </Link>
         }
@@ -47,13 +47,13 @@ export const ReviewsCarousel = () => {
                     {r.author_avatar ? (
                       <img src={r.author_avatar} alt="" className="h-full w-full object-cover" />
                     ) : (
-                      <span className="text-sm font-bold text-primary">{r.author_name[0]?.toUpperCase() ?? "?"}</span>
+                      <span className="text-sm font-bold text-highlight">{r.author_name[0]?.toUpperCase() ?? "?"}</span>
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1">
                       <span className="text-sm font-semibold text-foreground truncate">{r.author_name}</span>
-                      <BadgeCheck className="h-3.5 w-3.5 text-primary shrink-0" />
+                      <BadgeCheck className="h-3.5 w-3.5 text-highlight shrink-0" />
                     </div>
                     <div className="text-[11px] text-muted-foreground">
                       {new Date(r.created_at).toLocaleDateString("pt-BR", { day: "numeric", month: "short" })}

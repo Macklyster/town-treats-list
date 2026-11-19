@@ -66,7 +66,7 @@ export const CompanyCard = ({ company }: { company: UICompany }) => {
             {company.logo_url ? (
               <img src={company.logo_url} alt="" className="h-full w-full object-cover relative z-10" />
             ) : (
-              <span className="text-sm font-bold text-primary relative z-10">
+              <span className="text-sm font-bold text-highlight relative z-10">
                 {company.name.slice(0, 2).toUpperCase()}
               </span>
             )}
@@ -74,7 +74,7 @@ export const CompanyCard = ({ company }: { company: UICompany }) => {
           <div className="min-w-0 flex-1 pt-1">
             <div className="flex items-center gap-1">
               <h3 className="text-[15px] font-semibold text-foreground truncate">{company.name}</h3>
-              <BadgeCheck className="h-4 w-4 shrink-0 text-primary" />
+              <BadgeCheck className="h-4 w-4 shrink-0 text-highlight" />
             </div>
             <p className="text-xs text-muted-foreground mt-0.5 truncate">
               {catName(company.category_slug)}
@@ -97,7 +97,7 @@ export const CompanyCard = ({ company }: { company: UICompany }) => {
           {score > 0 && (
             <>
               <span className="text-muted-foreground">·</span>
-              <span className="font-semibold text-primary">FlyScore {score}</span>
+              <span className="font-semibold text-highlight">FlyScore {score}</span>
             </>
           )}
         </div>

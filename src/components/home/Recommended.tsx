@@ -46,7 +46,7 @@ export const Recommended = () => {
         action={
           <Link
             to="/#ofertas"
-            className="hidden md:inline-flex text-sm font-medium text-primary hover:underline"
+            className="hidden md:inline-flex text-sm font-medium text-highlight hover:text-highlight-strong hover:underline"
           >
             Ver todas →
           </Link>
@@ -67,7 +67,7 @@ export const Recommended = () => {
                   {c.logo_url ? (
                     <img src={c.logo_url} alt="" className="h-full w-full object-cover" />
                   ) : (
-                    <span className="text-sm font-bold text-primary">
+                    <span className="text-sm font-bold text-highlight">
                       {c.name.slice(0, 2).toUpperCase()}
                     </span>
                   )}
@@ -76,7 +76,7 @@ export const Recommended = () => {
                   <div className="flex items-center gap-1">
                     <div className="text-sm font-semibold text-foreground truncate">{c.name}</div>
                     {c.featured_badge && (
-                      <BadgeCheck className="h-3.5 w-3.5 text-primary shrink-0" />
+                      <BadgeCheck className="h-3.5 w-3.5 text-highlight shrink-0" />
                     )}
                   </div>
                   <div className="text-xs text-muted-foreground truncate">
@@ -97,7 +97,7 @@ export const Recommended = () => {
                   </div>
                   <div className="mt-0.5 flex items-center gap-2 text-[11px]">
                     {c.flyscore != null && (
-                      <span className="font-semibold text-primary">FlyScore {c.flyscore}</span>
+                      <span className="font-semibold text-highlight">FlyScore {c.flyscore}</span>
                     )}
                     <span className="text-muted-foreground inline-flex items-center gap-0.5">
                       <MapPin className="h-3 w-3" /> {c.city}

@@ -17,7 +17,7 @@ export const OffersOfTheDay = ({ offers, loading }: { offers: UIOffer[]; loading
         title="Ofertas do dia"
         description="Aproveite as melhores ofertas e descontos da sua cidade."
         action={
-          <Link to="/#ofertas" className="hidden md:inline-flex text-sm font-medium text-primary hover:underline">
+          <Link to="/#ofertas" className="hidden md:inline-flex text-sm font-medium text-highlight hover:text-highlight-strong hover:underline">
             Ver todas as ofertas →
           </Link>
         }
@@ -99,7 +99,7 @@ export const OffersOfTheDay = ({ offers, loading }: { offers: UIOffer[]; loading
                       {o.title}
                     </h3>
                     <div className="mt-2 flex items-baseline gap-2">
-                      <span className="text-lg font-bold text-primary">
+                      <span className="text-lg font-bold text-highlight">
                         {o.promoPrice > 0 ? formatBRL(o.promoPrice) : "Grátis"}
                       </span>
                       {o.originalPrice > 0 && o.promoPrice < o.originalPrice && (

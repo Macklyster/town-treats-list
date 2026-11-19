@@ -24,7 +24,7 @@ export const MerchantCTA = () => {
               <Button asChild variant="accent" size="lg">
                 <Link to="/painel-lojista/loja">Começar grátis</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+              <Button asChild variant="outline" size="lg" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-highlight">
                 <Link to="/anuncie#planos">Ver planos</Link>
               </Button>
             </div>

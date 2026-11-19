@@ -172,24 +172,24 @@ export default function EventoPublic() {
 
               <section className="grid gap-4 rounded-2xl border border-border bg-card p-6 shadow-card sm:grid-cols-2">
                 <div>
-                  <div className="label-eyebrow text-primary">Início</div>
+                  <div className="label-eyebrow text-highlight">Início</div>
                   <div className="mt-1 flex items-center gap-2 text-sm text-foreground">
-                    <Calendar className="h-4 w-4 text-primary" />
+                    <Calendar className="h-4 w-4 text-highlight" />
                     {fmtDateLong(event.starts_at)}
                   </div>
                 </div>
                 <div>
-                  <div className="label-eyebrow text-primary">Término</div>
+                  <div className="label-eyebrow text-highlight">Término</div>
                   <div className="mt-1 flex items-center gap-2 text-sm text-foreground">
-                    <Clock className="h-4 w-4 text-primary" />
+                    <Clock className="h-4 w-4 text-highlight" />
                     {fmtDateLong(event.ends_at)}
                   </div>
                 </div>
                 {(event.venue || event.address) && (
                   <div className="sm:col-span-2">
-                    <div className="label-eyebrow text-primary">Local</div>
+                    <div className="label-eyebrow text-highlight">Local</div>
                     <div className="mt-1 flex items-start gap-2 text-sm text-foreground">
-                      <MapPin className="mt-0.5 h-4 w-4 text-primary" />
+                      <MapPin className="mt-0.5 h-4 w-4 text-highlight" />
                       <span>
                         {event.venue && <strong>{event.venue}</strong>}
                         {event.venue && event.address && " · "}
@@ -203,7 +203,7 @@ export default function EventoPublic() {
                 )}
                 {event.price_info && (
                   <div className="sm:col-span-2">
-                    <div className="label-eyebrow text-primary">Ingresso</div>
+                    <div className="label-eyebrow text-highlight">Ingresso</div>
                     <div className="mt-1 text-sm font-semibold text-foreground">{event.price_info}</div>
                   </div>
                 )}

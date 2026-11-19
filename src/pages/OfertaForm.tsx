@@ -406,7 +406,7 @@ export default function OfertaForm() {
                           checked={checked}
                           onCheckedChange={() => togglePayment(m.id)}
                         />
-                        <Icon className="h-4 w-4 text-primary" />
+                        <Icon className="h-4 w-4 text-highlight" />
                         <span>{m.label}</span>
                       </label>
                     );
@@ -482,7 +482,7 @@ export default function OfertaForm() {
               <div className="rounded-md border p-3">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-start gap-2">
-                    <RefreshCw className="mt-0.5 h-5 w-5 text-primary" />
+                    <RefreshCw className="mt-0.5 h-5 w-5 text-highlight" />
                     <div>
                       <Label className="text-sm">Renovar automaticamente ao vencer</Label>
                       <p className="text-xs text-muted-foreground">
@@ -522,7 +522,7 @@ export default function OfertaForm() {
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-start gap-2">
                     {canSchedule ? (
-                      <CalendarClock className="mt-0.5 h-5 w-5 text-primary" />
+                      <CalendarClock className="mt-0.5 h-5 w-5 text-highlight" />
                     ) : (
                       <Lock className="mt-0.5 h-5 w-5 text-muted-foreground" />
                     )}

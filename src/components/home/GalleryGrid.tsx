@@ -32,7 +32,7 @@ export const GalleryGrid = () => {
         title="Galeria de fotos"
         description="Veja um pouco do que espera por aqui."
         action={
-          <a href="#ofertas" className="hidden md:inline-flex text-sm font-medium text-primary hover:underline">
+          <a href="#ofertas" className="hidden md:inline-flex text-sm font-medium text-highlight hover:text-highlight-strong hover:underline">
             Ver mais fotos →
           </a>
         }

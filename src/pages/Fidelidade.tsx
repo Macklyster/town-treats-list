@@ -107,7 +107,7 @@ export default function Fidelidade() {
         {!user ? (
           <Card>
             <CardContent className="space-y-3 py-10 text-center">
-              <Sparkles className="mx-auto h-10 w-10 text-primary" />
+              <Sparkles className="mx-auto h-10 w-10 text-highlight" />
               <p className="text-muted-foreground">
                 Entre na sua conta para começar a acumular pontos nas lojas parceiras.
               </p>
@@ -121,7 +121,7 @@ export default function Fidelidade() {
             <div className="grid gap-4 sm:grid-cols-3">
               <Card>
                 <CardContent className="flex items-center gap-3 p-5">
-                  <Sparkles className="h-8 w-8 text-primary" />
+                  <Sparkles className="h-8 w-8 text-highlight" />
                   <div>
                     <div className="text-2xl font-bold">{wallet?.total_points ?? 0}</div>
                     <div className="text-xs text-muted-foreground">pontos acumulados</div>
@@ -130,7 +130,7 @@ export default function Fidelidade() {
               </Card>
               <Card>
                 <CardContent className="flex items-center gap-3 p-5">
-                  <Wallet className="h-8 w-8 text-primary" />
+                  <Wallet className="h-8 w-8 text-highlight" />
                   <div>
                     <div className="text-2xl font-bold">
                       {formatCents(wallet?.total_credit_cents ?? 0)}
@@ -141,7 +141,7 @@ export default function Fidelidade() {
               </Card>
               <Card>
                 <CardContent className="flex items-center gap-3 p-5">
-                  <Clock className="h-8 w-8 text-primary" />
+                  <Clock className="h-8 w-8 text-highlight" />
                   <div>
                     <div className="text-2xl font-bold">{wallet?.expiring_points ?? 0}</div>
                     <div className="text-xs text-muted-foreground">expiram em 30 dias</div>
@@ -185,7 +185,7 @@ export default function Fidelidade() {
                             </p>
                           </div>
                           <div className="text-right">
-                            <div className="text-xl font-bold text-primary">
+                            <div className="text-xl font-bold text-highlight">
                               {c.points_balance}
                             </div>
                             <div className="text-xs text-muted-foreground">pontos</div>
@@ -230,7 +230,7 @@ export default function Fidelidade() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Award className="h-5 w-5 text-primary" /> Meus selos
+                    <Award className="h-5 w-5 text-highlight" /> Meus selos
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-wrap gap-2">
@@ -249,7 +249,7 @@ export default function Fidelidade() {
           <CardHeader>
             <CardTitle className="flex flex-wrap items-center justify-between gap-3">
               <span className="flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-primary" /> Ranking do mês
+                <Trophy className="h-5 w-5 text-highlight" /> Ranking do mês
                 {city?.city ? ` — ${city.city}` : ""}
               </span>
               {user && (
@@ -282,7 +282,7 @@ export default function Fidelidade() {
                         <Crown className="h-3 w-3" /> {r.badges}
                       </Badge>
                     )}
-                    <span className="font-semibold text-primary">{r.points} pts</span>
+                    <span className="font-semibold text-highlight">{r.points} pts</span>
                   </li>
                 ))}
               </ol>

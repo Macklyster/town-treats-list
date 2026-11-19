@@ -152,7 +152,7 @@ export default function Eventos({ upcoming = [] }: { upcoming?: SeoEvent[] }) {
         ) : events.length === 0 ? (
           <SectionCard className="text-center">
             <div className="py-8 text-muted-foreground">
-              <CalendarDays className="mx-auto mb-2 h-8 w-8 text-primary" />
+              <CalendarDays className="mx-auto mb-2 h-8 w-8 text-highlight" />
               Nenhum evento encontrado com esses filtros.
               {!city && (
                 <div className="mt-3">

@@ -23,15 +23,15 @@ type Row = GeoOffer & {
 const HowItWorks = () => (
   <Card>
     <CardHeader>
-      <CardTitle className="flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> Como funciona</CardTitle>
+      <CardTitle className="flex items-center gap-2"><Sparkles className="h-5 w-5 text-highlight" /> Como funciona</CardTitle>
     </CardHeader>
     <CardContent className="space-y-3 text-sm text-muted-foreground">
       <p>A <strong className="text-foreground">Oferta Invisível</strong> só aparece quando você está perto da loja. Você não precisa procurar — a promoção te encontra.</p>
       <ul className="grid gap-2 sm:grid-cols-2">
-        <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-primary" /><span>Cada lojista define um raio em torno da loja (50 a 5000 m).</span></li>
-        <li className="flex items-start gap-2"><Clock className="mt-0.5 h-4 w-4 text-primary" /><span>Cada oferta tem janela de horário. Fora dela, fica oculta.</span></li>
-        <li className="flex items-start gap-2"><EyeOff className="mt-0.5 h-4 w-4 text-primary" /><span>Se você sai do raio ou o dia acaba, a oferta some.</span></li>
-        <li className="flex items-start gap-2"><Bell className="mt-0.5 h-4 w-4 text-primary" /><span>Ative notificações para receber alertas perto das lojas.</span></li>
+        <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-highlight" /><span>Cada lojista define um raio em torno da loja (50 a 5000 m).</span></li>
+        <li className="flex items-start gap-2"><Clock className="mt-0.5 h-4 w-4 text-highlight" /><span>Cada oferta tem janela de horário. Fora dela, fica oculta.</span></li>
+        <li className="flex items-start gap-2"><EyeOff className="mt-0.5 h-4 w-4 text-highlight" /><span>Se você sai do raio ou o dia acaba, a oferta some.</span></li>
+        <li className="flex items-start gap-2"><Bell className="mt-0.5 h-4 w-4 text-highlight" /><span>Ative notificações para receber alertas perto das lojas.</span></li>
       </ul>
     </CardContent>
   </Card>
@@ -55,7 +55,7 @@ const InvisibleCard = ({ row }: { row: Row }) => (
         <span className="truncate">{row.store?.name ?? "Loja"}</span>
         {row.store?.featured_badge && <StoreFeaturedBadge showLabel={false} />}
       </div>
-      <h2 className="line-clamp-2 font-semibold text-foreground group-hover:text-primary">{row.title}</h2>
+      <h2 className="line-clamp-2 font-semibold text-foreground group-hover:text-highlight">{row.title}</h2>
       <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> Raio {row.radius_meters} m</span>
         <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {formatTime(row.time_start)}–{formatTime(row.time_end)}</span>
