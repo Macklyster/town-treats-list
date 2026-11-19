@@ -26,6 +26,14 @@ describe("marketing offer filters", () => {
     applyMarketingOfferFilters(next.query, empty, new Date("2026-11-18T03:00:00Z"));
     expect(next.calls).toContainEqual(["or", "valid_until.is.null,valid_until.gte.2026-11-18"]);
   });
+  it("keeps live scheduled offers without an end date, matching the publish rule", () => {
+    const { query, calls } = recordedQuery();
+    applyMarketingOfferFilters(query, empty, new Date("2026-11-18T12:00:00Z"));
+    expect(calls).toContainEqual([
+      "or",
+      "is_scheduled.eq.false,and(scheduled_start_at.lte.2026-11-18T12:00:00.000Z,or(scheduled_end_at.is.null,scheduled_end_at.gt.2026-11-18T12:00:00.000Z))",
+    ]);
+  });
   it("filters cities using the joined store alias", () => {
     const { query, calls } = recordedQuery();
     applyMarketingOfferFilters(query, { ...empty, city: "Douradina" });

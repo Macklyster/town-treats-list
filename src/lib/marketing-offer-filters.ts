@@ -16,7 +16,7 @@ export function applyMarketingOfferFilters<T extends OfferFilterQuery<T>>(
   let result = query.eq("status", "approved")
     .or(`valid_until.is.null,valid_until.gte.${today}`)
     .or(`is_flash.eq.false,flash_ends_at.is.null,flash_ends_at.gt.${timestamp}`)
-    .or(`is_scheduled.eq.false,and(scheduled_start_at.lte.${timestamp},scheduled_end_at.gt.${timestamp})`);
+    .or(`is_scheduled.eq.false,and(scheduled_start_at.lte.${timestamp},or(scheduled_end_at.is.null,scheduled_end_at.gt.${timestamp}))`);
   if (filters.storeId) result = result.eq("store_id", filters.storeId);
   if (filters.city) result = result.eq("store.city", filters.city);
   if (filters.type) result = result.eq("type", filters.type);
