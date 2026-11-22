@@ -24,8 +24,10 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { store_id, offer_id, title, body, url } = await req.json();
-    if (!store_id || !title || !body) {
+    const payload = await req.json().catch(() => ({}));
+    const store_id = typeof payload?.store_id === "string" ? payload.store_id : null;
+    const offer_id = typeof payload?.offer_id === "string" ? payload.offer_id : null;
+    if (!store_id || !offer_id) {
       return new Response(JSON.stringify({ error: "invalid payload" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -51,8 +53,27 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Texto da notificação é gerado no servidor a partir da oferta aprovada da loja
+    const { data: offer } = await admin.from("offers")
+      .select("id, title, promo_price, status, store_id").eq("id", offer_id).maybeSingle();
+    if (!offer || offer.store_id !== store_id || offer.status !== "approved") {
+      return new Response(JSON.stringify({ error: "offer not available" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const clip = (v: string, n: number) => (v.length > n ? v.slice(0, n - 1) + "…" : v);
+    const price = Number(offer.promo_price);
+    const title = clip(`Nova oferta em ${store!.name}`, 80);
+    const body = clip(
+      Number.isFinite(price) && price > 0
+        ? `${offer.title} por R$ ${price.toFixed(2).replace(".", ",")}`
+        : String(offer.title),
+      160,
+    );
+    const url = `/oferta/${offer_id}`;
+
     // Dedup por oferta
-    if (offer_id) {
+    {
       const { data: prev } = await admin.from("notifications_log")
         .select("id").eq("audience", "store_followers")
         .eq("store_id", store_id).eq("offer_id", offer_id).limit(1);
@@ -96,9 +117,9 @@ Deno.serve(async (req) => {
 
     const results = await sendPushBatch(subList, {
       title, body,
-      url: url || (offer_id ? `/oferta/${offer_id}` : "/"),
+      url,
       icon: "/icons/icon-192.png",
-      tag: offer_id ? `offer-${offer_id}` : undefined,
+      tag: `offer-${offer_id}`,
     });
 
     const success = results.filter((r) => r.ok).length;
@@ -109,8 +130,8 @@ Deno.serve(async (req) => {
 
     await admin.from("notifications_log").insert({
       audience: "store_followers",
-      store_id, offer_id: offer_id ?? null, sent_by: userData.user.id,
-      title, body, url: url ?? null,
+      store_id, offer_id, sent_by: userData.user.id,
+      title, body, url,
       recipients_count: subList.length, success_count: success,
     });
 

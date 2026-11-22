@@ -26,8 +26,17 @@ export const handler = async (req: Request): Promise<Response> => {
       apiVersion: "2024-06-20",
       httpClient: Stripe.createFetchHttpClient(),
     });
-    const customers = await stripe.customers.list({ email: userData.user.email, limit: 1 });
-    if (!customers.data[0]) return new Response(JSON.stringify({ error: "no customer" }), { status: 404, headers: corsHeaders });
+    // Usa apenas o cliente Stripe vinculado à assinatura da loja do próprio usuário (RLS),
+    // nunca uma busca por e-mail, que pode não ter sido comprovado.
+    const { data: subRows } = await supabase
+      .from("subscriptions")
+      .select("stripe_customer_id, store:stores!inner(owner_id)")
+      .eq("store.owner_id", userData.user.id)
+      .not("stripe_customer_id", "is", null)
+      .order("updated_at", { ascending: false })
+      .limit(1);
+    const customerId = (subRows?.[0] as any)?.stripe_customer_id as string | undefined;
+    if (!customerId) return new Response(JSON.stringify({ error: "no customer" }), { status: 404, headers: corsHeaders });
 
     const origin = req.headers.get("origin") ?? "http://localhost:5173";
     let body: any = {};
@@ -36,11 +45,14 @@ export const handler = async (req: Request): Promise<Response> => {
     const subscriptionId = body?.subscription_id as string | undefined;
 
     const params: Stripe.BillingPortal.SessionCreateParams = {
-      customer: customers.data[0].id,
+      customer: customerId,
       return_url: `${origin}/painel-lojista/assinatura`,
       locale: "pt-BR" as any,
     };
     if (flow === "cancel" && subscriptionId) {
+      const sub = await stripe.subscriptions.retrieve(subscriptionId);
+      const subCustomer = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+      if (subCustomer !== customerId) return new Response(JSON.stringify({ error: "forbidden" }), { status: 403, headers: corsHeaders });
       params.flow_data = {
         type: "subscription_cancel",
         subscription_cancel: { subscription: subscriptionId },

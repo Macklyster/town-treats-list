@@ -359,6 +359,6 @@ export async function fetchFlyScoreAggregate(): Promise<FlyScoreAggregate> {
 }
 
 export async function recomputeFlyScore(storeId: string): Promise<void> {
-  await supabase.rpc("recompute_flyscore" as any, { _store_id: storeId });
+  await supabase.rpc("recompute_my_flyscore" as any, { _store_id: storeId });
 }
 
