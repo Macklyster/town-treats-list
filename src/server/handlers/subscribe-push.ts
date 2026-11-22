@@ -33,13 +33,28 @@ export const handler = async (req: Request): Promise<Response> => {
       });
     }
 
+    const PUSH_HOSTS = [/^fcm\.googleapis\.com$/, /^updates\.push\.services\.mozilla\.com$/, /\.push\.apple\.com$/, /\.notify\.windows\.com$/, /^push\.services\.mozilla\.com$/];
+    let epUrl: URL;
+    try { epUrl = new URL(String(endpoint)); } catch { epUrl = new URL("invalid:"); }
+    if (epUrl.protocol !== "https:" || !PUSH_HOSTS.some((r) => r.test(epUrl.hostname)) || String(endpoint).length > 1000) {
+      return new Response(JSON.stringify({ error: "invalid subscription" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const admin = createClient(
       env("SUPABASE_URL")!,
       env("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
     // Remove duplicatas para o mesmo endpoint
-    await admin.from("push_subscriptions").delete().eq("endpoint", endpoint);
+    await admin.from("push_subscriptions").delete().eq("endpoint", endpoint).eq("user_id", userData.user.id);
+    const { data: taken } = await admin.from("push_subscriptions").select("id").eq("endpoint", endpoint).limit(1);
+    if (taken && taken.length > 0) {
+      return new Response(JSON.stringify({ ok: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const { error } = await admin.from("push_subscriptions").insert({
       user_id: userData.user.id,
@@ -58,7 +73,7 @@ export const handler = async (req: Request): Promise<Response> => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
-    return new Response(JSON.stringify({ error: String(e) }), {
+    return new Response(JSON.stringify({ error: "internal error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

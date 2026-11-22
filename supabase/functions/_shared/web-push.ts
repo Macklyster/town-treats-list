@@ -6,12 +6,6 @@ const VAPID_PUBLIC = Deno.env.get("VAPID_PUBLIC_KEY")!;
 const VAPID_PRIVATE = Deno.env.get("VAPID_PRIVATE_KEY")!;
 const VAPID_SUBJECT = Deno.env.get("VAPID_SUBJECT") ?? "mailto:contato@ofertasfly.com.br";
 
-console.log("vapid config", {
-  publicPrefix: (VAPID_PUBLIC ?? "").slice(0, 12),
-  publicLength: (VAPID_PUBLIC ?? "").length,
-  privateLength: (VAPID_PRIVATE ?? "").length,
-  subject: VAPID_SUBJECT,
-});
 
 function b64urlToUint8(b64url: string): Uint8Array {
   const pad = "=".repeat((4 - (b64url.length % 4)) % 4);
@@ -167,6 +161,10 @@ export interface SendResult {
 export async function sendPush(sub: PushSub, payload: PushPayload): Promise<SendResult> {
   try {
     const url = new URL(sub.endpoint);
+    const allowed = [/^fcm\.googleapis\.com$/, /^updates\.push\.services\.mozilla\.com$/, /^push\.services\.mozilla\.com$/, /\.push\.apple\.com$/, /\.notify\.windows\.com$/];
+    if (url.protocol !== "https:" || !allowed.some((r) => r.test(url.hostname))) {
+      return { endpoint: sub.endpoint, status: 0, ok: false, remove: true };
+    }
     const audience = `${url.protocol}//${url.host}`;
     const vapidHeaders = await buildVapidHeaders(audience);
     const ua = b64urlToUint8(sub.p256dh);

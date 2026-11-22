@@ -106,7 +106,7 @@ export function ValidateCustomerDialog({ open, onOpenChange, onDone }: Props) {
 
   const handleValidate = async () => {
     const cents = Math.round(Number(String(amount).replace(",", ".")) * 100);
-    if (!/^\d{6}$/.test(code.trim())) return toast.error("O código tem 6 dígitos");
+    if (!/^[A-Z0-9]{6,8}$/.test(code.trim())) return toast.error("Código inválido");
     if (!Number.isFinite(cents) || cents <= 0) return toast.error("Informe o valor da compra");
     const creditCents = Math.max(0, Math.round(Number(String(useCredit || 0).replace(",", ".")) * 100));
     setBusy(true);

@@ -96,12 +96,13 @@ export const handler = async (req: Request): Promise<Response> => {
 
     // reuse customer if known, otherwise look up by email
     let customerId: string | undefined = current?.stripe_customer_id ?? undefined;
-    if (!customerId) {
-      const customers = await stripe.customers.list({ email: user.email!, limit: 1 });
-      customerId = customers.data[0]?.id;
-    }
+    // Never match an existing Stripe customer by e-mail (unverified addresses could hijack billing).
 
-    const origin = req.headers.get("origin") ?? "http://localhost:5173";
+    const ALLOWED_ORIGINS = ["https://ofertasfly.com.br", "https://www.ofertasfly.com.br", "https://ofertasfly.lovable.app"];
+    const reqOrigin = req.headers.get("origin") ?? "";
+    const origin = ALLOWED_ORIGINS.includes(reqOrigin) || /^https:\/\/[a-z0-9-]+\.lovable\.app$/.test(reqOrigin) || /^http:\/\/localhost:\d+$/.test(reqOrigin)
+      ? reqOrigin
+      : "https://ofertasfly.com.br";
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
@@ -153,6 +154,6 @@ export const handler = async (req: Request): Promise<Response> => {
 
   } catch (e) {
     console.error(e);
-    return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: corsHeaders });
+    return new Response(JSON.stringify({ error: "internal error" }), { status: 500, headers: corsHeaders });
   }
 };
