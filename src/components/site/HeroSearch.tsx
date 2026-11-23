@@ -1,3 +1,4 @@
+import { CategoryIcon } from "@/components/site/CategoryIcon";
 import { useNavigate } from "@/lib/router-compat";
 import { MapPin, Search, Plane } from "lucide-react";
 import { useState } from "react";
@@ -82,8 +83,9 @@ export const HeroSearch = () => {
                   key={c.id}
                   type="button"
                   onClick={() => navigate(`/?categoria=${c.slug}#ofertas`)}
-                  className="rounded-full border border-primary-foreground/20 bg-primary-foreground/5 px-3 py-1 text-sm transition-colors hover:bg-accent hover:text-accent-foreground hover:border-accent"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-primary-foreground/20 bg-primary-foreground/5 px-3 py-1 text-sm transition-colors hover:bg-accent hover:text-accent-foreground hover:border-accent"
                 >
+                  <CategoryIcon slug={c.slug} className="h-3.5 w-3.5" />
                   {c.name}
                 </button>
               ))}

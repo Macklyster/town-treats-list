@@ -1,3 +1,4 @@
+import { CategoryIcon } from "@/components/site/CategoryIcon";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams, Navigate } from "@/lib/router-compat";
 import { Header } from "@/components/site/Header";
@@ -131,7 +132,7 @@ const CityOffers = () => {
         <PageHero
           eyebrow={
             <span className="inline-flex items-center gap-1.5">
-              <MapPin className="h-3 w-3" /> {cityName}
+              {category ? <CategoryIcon slug={category.slug} className="h-3 w-3" /> : <MapPin className="h-3 w-3" />} {cityName}
             </span>
           }
           titleAsChild
@@ -161,12 +162,13 @@ const CityOffers = () => {
               <Link
                 key={c.slug}
                 to={`/ofertas/${cidadeSlug}/${c.slug}`}
-                className={`shrink-0 rounded-full border px-4 py-1.5 text-sm transition ${
+                className={`shrink-0 inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm transition ${
                   category?.slug === c.slug
                     ? "border-primary bg-primary text-primary-foreground"
                     : "border-border bg-card text-foreground hover:border-primary hover:text-highlight"
                 }`}
               >
+                <CategoryIcon slug={c.slug} className="h-4 w-4" />
                 {c.name}
               </Link>
             ))}

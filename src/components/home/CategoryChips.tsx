@@ -1,3 +1,4 @@
+import { CategoryIcon } from "@/components/site/CategoryIcon";
 import { Link } from "@/lib/router-compat";
 import { ChevronDown } from "lucide-react";
 import { categories } from "@/data/categories";
@@ -18,8 +19,9 @@ export const CategoryChips = () => {
         <Link
           key={c.name}
           to={`/?categoria=${c.slug}#ofertas`}
-          className="shrink-0 rounded-full border border-border bg-card px-4 py-1.5 text-xs font-medium text-foreground/80 hover:border-primary hover:text-highlight transition-colors"
+          className="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-1.5 text-xs font-medium text-foreground/80 hover:border-primary hover:text-highlight transition-colors"
         >
+          <CategoryIcon slug={c.slug} className="h-3.5 w-3.5" />
           {c.name}
         </Link>
       ))}

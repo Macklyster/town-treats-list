@@ -1,3 +1,4 @@
+import { CategoryIcon } from "@/components/site/CategoryIcon";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "@/lib/router-compat";
 import { OfferCard } from "@/components/site/OfferCard";
@@ -212,7 +213,7 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
               <SelectContent>
                 <SelectItem value="all">Todas</SelectItem>
                 {categories.map((c) => (
-                  <SelectItem key={c.id} value={c.slug}>{c.name}</SelectItem>
+                  <SelectItem key={c.id} value={c.slug}><span className="inline-flex items-center gap-2"><CategoryIcon slug={c.slug} className="h-4 w-4 text-highlight" />{c.name}</span></SelectItem>
                 ))}
               </SelectContent>
             </Select>

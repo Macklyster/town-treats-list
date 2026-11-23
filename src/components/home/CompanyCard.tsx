@@ -1,3 +1,4 @@
+import { CategoryIcon } from "@/components/site/CategoryIcon";
 import { Link } from "@/lib/router-compat";
 import { BadgeCheck, MapPin, Star } from "lucide-react";
 import type { UICompany } from "@/lib/home-api";
@@ -76,7 +77,8 @@ export const CompanyCard = ({ company }: { company: UICompany }) => {
               <h3 className="text-[15px] font-semibold text-foreground truncate">{company.name}</h3>
               <BadgeCheck className="h-4 w-4 shrink-0 text-highlight" />
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5 truncate">
+            <p className="text-xs text-muted-foreground mt-0.5 truncate inline-flex items-center gap-1 max-w-full">
+              <CategoryIcon slug={company.category_slug} className="h-3.5 w-3.5 shrink-0 text-highlight" />
               {catName(company.category_slug)}
             </p>
           </div>

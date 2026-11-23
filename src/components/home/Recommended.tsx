@@ -1,3 +1,4 @@
+import { CategoryIcon } from "@/components/site/CategoryIcon";
 import { useEffect, useState } from "react";
 import { Link } from "@/lib/router-compat";
 import { BadgeCheck, MapPin, Star } from "lucide-react";
@@ -79,7 +80,8 @@ export const Recommended = () => {
                       <BadgeCheck className="h-3.5 w-3.5 text-highlight shrink-0" />
                     )}
                   </div>
-                  <div className="text-xs text-muted-foreground truncate">
+                  <div className="text-xs text-muted-foreground truncate flex items-center gap-1">
+                    <CategoryIcon slug={c.category_slug} className="h-3.5 w-3.5 shrink-0 text-highlight" />
                     {catName(c.category_slug)}
                   </div>
                   <div className="mt-1 flex items-center gap-2 text-xs">
