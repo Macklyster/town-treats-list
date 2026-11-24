@@ -16,6 +16,8 @@ import {
   type EventKind,
   type UIEventWithStore,
 } from "@/lib/events-api";
+import { Link as CityLink } from "@tanstack/react-router";
+import { cityLabel, citySlug, type CityLike } from "@/lib/slug";
 import { EventCard } from "@/components/site/EventCard";
 
 const DATE_FILTERS: { value: EventDateFilter; label: string }[] = [
@@ -43,7 +45,7 @@ export type SeoEvent = {
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", timeZone: "America/Sao_Paulo" });
 
-export default function Eventos({ upcoming = [] }: { upcoming?: SeoEvent[] }) {
+export default function Eventos({ upcoming = [], cities = [] }: { upcoming?: SeoEvent[]; cities?: CityLike[] }) {
   const { city, openSelector } = useCity();
   const [kind, setKind] = useState<EventKind | null>(null);
   const [dateFilter, setDateFilter] = useState<EventDateFilter>("all");
@@ -91,6 +93,13 @@ export default function Eventos({ upcoming = [] }: { upcoming?: SeoEvent[] }) {
             </Button>
           }
         />
+
+        <nav aria-label="Agenda por cidade" className="space-y-3">
+          <h2 className="font-display text-xl">Eventos por cidade</h2>
+          <div className="flex flex-wrap gap-x-5 gap-y-3">
+            {cities.map((item) => <CityLink key={citySlug(item)} to="/eventos/$cidadeSlug" params={{ cidadeSlug: citySlug(item) }} className="text-sm text-highlight hover:underline">{cityLabel(item)}</CityLink>)}
+          </div>
+        </nav>
 
         <SectionCard
           eyebrow="Filtros"

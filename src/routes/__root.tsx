@@ -28,7 +28,6 @@ import appCss from "../styles.css?url";
 const SITE_TITLE = "OfertasFly Locais — As melhores ofertas da sua cidade";
 const SITE_DESCRIPTION =
   "OfertasFly reúne as melhores ofertas, descontos e cupons das lojas da sua cidade. Economize e apoie o comércio local.";
-const SHARE_IMAGE = "https://ofertasfly.com.br/og-image.jpg?v=2";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -47,16 +46,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:url", content: "https://ofertasfly.com.br/" },
       { property: "og:title", content: SITE_TITLE },
       { property: "og:description", content: SITE_DESCRIPTION },
-      { property: "og:image", content: SHARE_IMAGE },
-      { property: "og:image:secure_url", content: SHARE_IMAGE },
-      { property: "og:image:type", content: "image/jpeg" },
-      { property: "og:image:width", content: "1200" },
-      { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "OfertasFly — ofertas locais" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: SITE_TITLE },
       { name: "twitter:description", content: SITE_DESCRIPTION },
-      { name: "twitter:image", content: SHARE_IMAGE },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

@@ -22,6 +22,7 @@ import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ColetivaTokenRouteImport } from './routes/coletiva/$token'
 import { Route as EventoSlugRouteImport } from './routes/evento/$slug'
+import { Route as EventosCidadeSlugRouteImport } from './routes/eventos_/$cidadeSlug'
 import { Route as FidelidadeIndexRouteImport } from './routes/fidelidade/index'
 import { Route as FidelidadeSlugRouteImport } from './routes/fidelidade/$slug'
 import { Route as FidelidadeComoFuncionaRouteImport } from './routes/fidelidade/como-funciona'
@@ -42,6 +43,7 @@ import { Route as PainelLojistaInteligenciaRouteImport } from './routes/painel-l
 import { Route as PainelLojistaLojaRouteImport } from './routes/painel-lojista/loja'
 import { Route as PainelLojistaMidiaRouteImport } from './routes/painel-lojista/midia'
 import { Route as PerfilNotificacoesRouteImport } from './routes/perfil/notificacoes'
+import { Route as ApiPublicEventsSitemapRouteImport } from './routes/api/public/events-sitemap'
 import { Route as OfertasCidadeSlugIndexRouteImport } from './routes/ofertas/$cidadeSlug/index'
 import { Route as OfertasCidadeSlugCategoriaSlugRouteImport } from './routes/ofertas/$cidadeSlug/$categoriaSlug'
 import { Route as PainelLojistaColetivaChar123IdChar125RouteImport } from './routes/painel-lojista/coletiva/{-$id}'
@@ -122,6 +124,11 @@ const ColetivaTokenRoute = ColetivaTokenRouteImport.update({
 const EventoSlugRoute = EventoSlugRouteImport.update({
   id: '/evento/$slug',
   path: '/evento/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventosCidadeSlugRoute = EventosCidadeSlugRouteImport.update({
+  id: '/eventos_/$cidadeSlug',
+  path: '/eventos/$cidadeSlug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FidelidadeIndexRoute = FidelidadeIndexRouteImport.update({
@@ -223,6 +230,11 @@ const PainelLojistaMidiaRoute = PainelLojistaMidiaRouteImport.update({
 const PerfilNotificacoesRoute = PerfilNotificacoesRouteImport.update({
   id: '/perfil/notificacoes',
   path: '/perfil/notificacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicEventsSitemapRoute = ApiPublicEventsSitemapRouteImport.update({
+  id: '/api/public/events-sitemap',
+  path: '/api/public/events-sitemap',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OfertasCidadeSlugIndexRoute = OfertasCidadeSlugIndexRouteImport.update({
@@ -332,6 +344,7 @@ export interface FileRoutesByFullPath {
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/coletiva/$token': typeof ColetivaTokenRoute
   '/evento/$slug': typeof EventoSlugRoute
+  '/eventos/$cidadeSlug': typeof EventosCidadeSlugRoute
   '/fidelidade/$slug': typeof FidelidadeSlugRoute
   '/fidelidade/como-funciona': typeof FidelidadeComoFuncionaRoute
   '/leilao/$token': typeof LeilaoTokenRoute
@@ -353,6 +366,7 @@ export interface FileRoutesByFullPath {
   '/meus-cupons/': typeof MeusCuponsIndexRoute
   '/ofertas/': typeof OfertasIndexRoute
   '/painel-lojista/': typeof PainelLojistaIndexRoute
+  '/api/public/events-sitemap': typeof ApiPublicEventsSitemapRoute
   '/ofertas/$cidadeSlug/$categoriaSlug': typeof OfertasCidadeSlugCategoriaSlugRoute
   '/painel-lojista/coletiva/{-$id}': typeof PainelLojistaColetivaChar123IdChar125Route
   '/painel-lojista/evento/{-$id}': typeof PainelLojistaEventoChar123IdChar125Route
@@ -383,6 +397,7 @@ export interface FileRoutesByTo {
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/coletiva/$token': typeof ColetivaTokenRoute
   '/evento/$slug': typeof EventoSlugRoute
+  '/eventos/$cidadeSlug': typeof EventosCidadeSlugRoute
   '/fidelidade/$slug': typeof FidelidadeSlugRoute
   '/fidelidade/como-funciona': typeof FidelidadeComoFuncionaRoute
   '/leilao/$token': typeof LeilaoTokenRoute
@@ -404,6 +419,7 @@ export interface FileRoutesByTo {
   '/meus-cupons': typeof MeusCuponsIndexRoute
   '/ofertas': typeof OfertasIndexRoute
   '/painel-lojista': typeof PainelLojistaIndexRoute
+  '/api/public/events-sitemap': typeof ApiPublicEventsSitemapRoute
   '/ofertas/$cidadeSlug/$categoriaSlug': typeof OfertasCidadeSlugCategoriaSlugRoute
   '/painel-lojista/coletiva/{-$id}': typeof PainelLojistaColetivaChar123IdChar125Route
   '/painel-lojista/evento/{-$id}': typeof PainelLojistaEventoChar123IdChar125Route
@@ -435,6 +451,7 @@ export interface FileRoutesById {
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/coletiva/$token': typeof ColetivaTokenRoute
   '/evento/$slug': typeof EventoSlugRoute
+  '/eventos_/$cidadeSlug': typeof EventosCidadeSlugRoute
   '/fidelidade/$slug': typeof FidelidadeSlugRoute
   '/fidelidade/como-funciona': typeof FidelidadeComoFuncionaRoute
   '/leilao/$token': typeof LeilaoTokenRoute
@@ -456,6 +473,7 @@ export interface FileRoutesById {
   '/meus-cupons/': typeof MeusCuponsIndexRoute
   '/ofertas/': typeof OfertasIndexRoute
   '/painel-lojista/': typeof PainelLojistaIndexRoute
+  '/api/public/events-sitemap': typeof ApiPublicEventsSitemapRoute
   '/ofertas/$cidadeSlug/$categoriaSlug': typeof OfertasCidadeSlugCategoriaSlugRoute
   '/painel-lojista/coletiva/{-$id}': typeof PainelLojistaColetivaChar123IdChar125Route
   '/painel-lojista/evento/{-$id}': typeof PainelLojistaEventoChar123IdChar125Route
@@ -488,6 +506,7 @@ export interface FileRouteTypes {
     | '/termos-de-uso'
     | '/coletiva/$token'
     | '/evento/$slug'
+    | '/eventos/$cidadeSlug'
     | '/fidelidade/$slug'
     | '/fidelidade/como-funciona'
     | '/leilao/$token'
@@ -509,6 +528,7 @@ export interface FileRouteTypes {
     | '/meus-cupons/'
     | '/ofertas/'
     | '/painel-lojista/'
+    | '/api/public/events-sitemap'
     | '/ofertas/$cidadeSlug/$categoriaSlug'
     | '/painel-lojista/coletiva/{-$id}'
     | '/painel-lojista/evento/{-$id}'
@@ -539,6 +559,7 @@ export interface FileRouteTypes {
     | '/termos-de-uso'
     | '/coletiva/$token'
     | '/evento/$slug'
+    | '/eventos/$cidadeSlug'
     | '/fidelidade/$slug'
     | '/fidelidade/como-funciona'
     | '/leilao/$token'
@@ -560,6 +581,7 @@ export interface FileRouteTypes {
     | '/meus-cupons'
     | '/ofertas'
     | '/painel-lojista'
+    | '/api/public/events-sitemap'
     | '/ofertas/$cidadeSlug/$categoriaSlug'
     | '/painel-lojista/coletiva/{-$id}'
     | '/painel-lojista/evento/{-$id}'
@@ -590,6 +612,7 @@ export interface FileRouteTypes {
     | '/termos-de-uso'
     | '/coletiva/$token'
     | '/evento/$slug'
+    | '/eventos_/$cidadeSlug'
     | '/fidelidade/$slug'
     | '/fidelidade/como-funciona'
     | '/leilao/$token'
@@ -611,6 +634,7 @@ export interface FileRouteTypes {
     | '/meus-cupons/'
     | '/ofertas/'
     | '/painel-lojista/'
+    | '/api/public/events-sitemap'
     | '/ofertas/$cidadeSlug/$categoriaSlug'
     | '/painel-lojista/coletiva/{-$id}'
     | '/painel-lojista/evento/{-$id}'
@@ -642,6 +666,7 @@ export interface RootRouteChildren {
   TermosDeUsoRoute: typeof TermosDeUsoRoute
   ColetivaTokenRoute: typeof ColetivaTokenRoute
   EventoSlugRoute: typeof EventoSlugRoute
+  EventosCidadeSlugRoute: typeof EventosCidadeSlugRoute
   FidelidadeSlugRoute: typeof FidelidadeSlugRoute
   FidelidadeComoFuncionaRoute: typeof FidelidadeComoFuncionaRoute
   LeilaoTokenRoute: typeof LeilaoTokenRoute
@@ -663,6 +688,7 @@ export interface RootRouteChildren {
   MeusCuponsIndexRoute: typeof MeusCuponsIndexRoute
   OfertasIndexRoute: typeof OfertasIndexRoute
   PainelLojistaIndexRoute: typeof PainelLojistaIndexRoute
+  ApiPublicEventsSitemapRoute: typeof ApiPublicEventsSitemapRoute
   OfertasCidadeSlugCategoriaSlugRoute: typeof OfertasCidadeSlugCategoriaSlugRoute
   PainelLojistaColetivaChar123IdChar125Route: typeof PainelLojistaColetivaChar123IdChar125Route
   PainelLojistaEventoChar123IdChar125Route: typeof PainelLojistaEventoChar123IdChar125Route
@@ -772,6 +798,13 @@ declare module '@tanstack/react-router' {
       path: '/evento/$slug'
       fullPath: '/evento/$slug'
       preLoaderRoute: typeof EventoSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eventos_/$cidadeSlug': {
+      id: '/eventos_/$cidadeSlug'
+      path: '/eventos/$cidadeSlug'
+      fullPath: '/eventos/$cidadeSlug'
+      preLoaderRoute: typeof EventosCidadeSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fidelidade/': {
@@ -914,6 +947,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PerfilNotificacoesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/events-sitemap': {
+      id: '/api/public/events-sitemap'
+      path: '/api/public/events-sitemap'
+      fullPath: '/api/public/events-sitemap'
+      preLoaderRoute: typeof ApiPublicEventsSitemapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ofertas/$cidadeSlug/': {
       id: '/ofertas/$cidadeSlug/'
       path: '/ofertas/$cidadeSlug'
@@ -1042,6 +1082,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermosDeUsoRoute: TermosDeUsoRoute,
   ColetivaTokenRoute: ColetivaTokenRoute,
   EventoSlugRoute: EventoSlugRoute,
+  EventosCidadeSlugRoute: EventosCidadeSlugRoute,
   FidelidadeSlugRoute: FidelidadeSlugRoute,
   FidelidadeComoFuncionaRoute: FidelidadeComoFuncionaRoute,
   LeilaoTokenRoute: LeilaoTokenRoute,
@@ -1063,6 +1104,7 @@ const rootRouteChildren: RootRouteChildren = {
   MeusCuponsIndexRoute: MeusCuponsIndexRoute,
   OfertasIndexRoute: OfertasIndexRoute,
   PainelLojistaIndexRoute: PainelLojistaIndexRoute,
+  ApiPublicEventsSitemapRoute: ApiPublicEventsSitemapRoute,
   OfertasCidadeSlugCategoriaSlugRoute: OfertasCidadeSlugCategoriaSlugRoute,
   PainelLojistaColetivaChar123IdChar125Route:
     PainelLojistaColetivaChar123IdChar125Route,

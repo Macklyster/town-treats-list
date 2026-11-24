@@ -16,3 +16,7 @@
 - Offer notification emails are sent by a DB trigger on `offers` that posts to `/api/public/hooks/offer-email` on the stable production URL, authenticated by a secret kept in the service-role-only `internal_hook_secrets` table; `offer_email_notices` dedupes so each offer emails at most once per kind.
 - Admin marketing sharing uses a single complete payload for clipboard and the direct WhatsApp send URL; start clipboard copying during the click without delaying navigation to preserve browser user activation.
 - Admin marketing offer queries use marketing-offer-filters for validity and store filters; keep query errors distinct from empty results so failed reads cannot masquerade as missing ads.
+
+- Local event agendas use an un-nested city route and a shared public Query cache; the URL city always wins over saved device location so Google and visitors see the same city.
+- Public local SEO reads run through loadLocalSeo with a sessionless publishable client and explicit public projections; event/business JSON-LD belongs in route head only to prevent hydration duplicates.
+- The public events sitemap derives cities from approved stores and visible events and omits lastmod without an authoritative page timestamp.

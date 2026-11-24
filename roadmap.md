@@ -20,4 +20,8 @@
 # Revisão SEO — páginas de listagem e prévias
 - [x] Explicitar o H1 das cinco listagens públicas usando titleAsChild, preservando o H1 existente na home.
 - [x] Verificar os seis títulos em desktop e celular e atualizar o alerta de conteúdo.
-- [ ] Servir prévias específicas em HTML para ofertas, eventos e lojas — depende de aprovação da migração para SSR; a aplicação Vite atual entrega somente o HTML estático da home aos robôs sociais.
+- [x] Servir prévias específicas em HTML para ofertas, eventos e lojas após a migração para SSR.
+# Busca local — eventos e lojas
+- [x] Criar páginas de eventos por cidade com conteúdo e títulos próprios.
+- [x] Preparar dados estruturados de eventos e lojas no HTML inicial, sem duplicação (eventos ativos indisponíveis para verificação real).
+- [x] Incluir cidades de eventos em sitemap e validar Douradina e loja real no navegador; os eventos atuais estão encerrados.

@@ -1,9 +1,10 @@
 import { Link } from "@/lib/router-compat";
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Flame, Music, Store as StoreIcon, PartyPopper, Tag } from "lucide-react";
+import type { PublicAgendaEvent } from "@/lib/local-seo";
 import { StoreAvatar } from "@/components/site/StoreAvatar";
 import { StoreFeaturedBadge } from "@/components/site/StoreFeaturedBadge";
-import type { EventKind, UIEventWithStore } from "@/lib/events-api";
+import type { EventKind } from "@/lib/events-api";
 
 const KIND_META: Record<EventKind, { Icon: any; label: string }> = {
   happy_hour: { Icon: Flame, label: "Happy Hour" },
@@ -18,7 +19,7 @@ const fmtDate = (iso: string) =>
 const fmtTime = (iso: string) =>
   new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
-export const EventCard = ({ event, index = 0 }: { event: UIEventWithStore; index?: number }) => {
+export const EventCard = ({ event, index = 0 }: { event: PublicAgendaEvent; index?: number }) => {
   const meta = KIND_META[event.kind];
   const Icon = meta.Icon;
   const cover = event.cover_url || event.image_url;

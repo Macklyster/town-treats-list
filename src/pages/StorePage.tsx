@@ -17,7 +17,7 @@ import {
   fetchOffersByStoreId,
   UIOffer,
 } from "@/lib/offers-api";
-import { absoluteUrl, citySlug, cityLabel } from "@/lib/slug";
+import { citySlug, cityLabel } from "@/lib/slug";
 import { useDutyUntil, formatDutyDate } from "@/lib/duty-api";
 import { StoreLoyaltyTeaser } from "@/components/loyalty/StoreLoyaltyTeaser";
 
@@ -60,37 +60,6 @@ const StorePage = () => {
   const title = `${store.name} — Ofertas em ${cityObj.city ? cityLabel(cityObj) : "sua cidade"} | OfertasFly`;
   const description = (store.description || `${store.name} no OfertasFly: ofertas, cupons e descontos em ${cityObj.city || "sua cidade"}.`).slice(0, 160);
 
-  const localBusiness = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    name: store.name,
-    image: store.logo_url || store.cover_url || undefined,
-    url: absoluteUrl(path),
-    telephone: store.phone || undefined,
-    address: store.address
-      ? {
-          "@type": "PostalAddress",
-          streetAddress: store.address,
-          addressLocality: store.city || undefined,
-          addressRegion: store.state || undefined,
-          addressCountry: "BR",
-        }
-      : undefined,
-    areaServed: store.city || undefined,
-  };
-
-  const breadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Início", item: absoluteUrl("/") },
-      ...(cSlug
-        ? [{ "@type": "ListItem", position: 2, name: cityLabel(cityObj), item: absoluteUrl(`/ofertas/${cSlug}`) }]
-        : []),
-      { "@type": "ListItem", position: cSlug ? 3 : 2, name: store.name, item: absoluteUrl(path) },
-    ],
-  };
-
   const crumbs = [
     { label: "Início", to: "/" },
     ...(cSlug ? [{ label: cityLabel(cityObj), to: `/ofertas/${cSlug}` }] : []),
@@ -120,7 +89,6 @@ const StorePage = () => {
         description={description}
         path={path}
         image={store.cover_url || store.logo_url}
-        jsonLd={[localBusiness, breadcrumb]}
       />
       <Header />
       <main className="container space-y-10 py-8 md:py-10">

@@ -19,3 +19,5 @@ Disallow: /inteligencia
 
 Sitemap: https://ofertasfly.com.br/sitemap.xml
 Sitemap: https://ougpesguavrqbeethbjl.supabase.co/functions/v1/sitemap
+
+Sitemap: https://ofertasfly.com.br/api/public/events-sitemap

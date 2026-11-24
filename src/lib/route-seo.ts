@@ -1,4 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
+import { loadLocalSeo } from "@/lib/local-seo.functions";
+import { businessSchema, eventSchema, breadcrumbs, jsonLdScripts } from "@/lib/local-seo";
 import { categories } from "@/data/categories";
 import { absoluteUrl, cityLabel, citySlug, matchCityFromSlug, type CityLike } from "@/lib/slug";
 
@@ -10,6 +12,8 @@ export type PageMeta = {
   image?: string | null;
   type?: "website" | "product" | "article" | "profile";
   noindex?: boolean;
+  jsonLd?: object[];
+  omitDefaultImage?: boolean;
 };
 
 export const DEFAULT_SHARE_IMAGE = "https://ofertasfly.com.br/og-image.jpg?v=2";
@@ -29,7 +33,7 @@ export function buildHead(meta: PageMeta | null | undefined) {
   const title = clampTitle(meta.title);
   const description = clampDescription(meta.description);
   const url = absoluteUrl(meta.path);
-  const image = meta.image || DEFAULT_SHARE_IMAGE;
+  const image = meta.image || (meta.omitDefaultImage ? null : DEFAULT_SHARE_IMAGE);
   const og = meta.type === "product" || meta.type === "profile" ? "website" : meta.type ?? "website";
   return {
     meta: [
@@ -40,15 +44,18 @@ export function buildHead(meta: PageMeta | null | undefined) {
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:url", content: url },
-      { property: "og:image", content: image },
-      { property: "og:image:secure_url", content: image },
-      { property: "og:image:alt", content: title },
+      ...(image ? [
+        { property: "og:image", content: image },
+        { property: "og:image:secure_url", content: image },
+        { property: "og:image:alt", content: title },
+      ] : []),
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
-      { name: "twitter:image", content: image },
+      ...(image ? [{ name: "twitter:image", content: image }] : []),
     ],
     links: [{ rel: "canonical", href: url }],
+    ...(meta.jsonLd ? { scripts: jsonLdScripts(meta.jsonLd) } : {}),
   };
 }
 
@@ -96,14 +103,8 @@ export async function offerMeta(id: string): Promise<PageMeta | null> {
 
 export async function storeMeta(slug: string): Promise<PageMeta | null> {
   return safe(async () => {
-    const { data } = await supabase
-      .from("stores")
-      .select("name,slug,description,city,state,logo_url,cover_url")
-      .eq("slug", slug)
-      .eq("approved", true)
-      .maybeSingle();
-    if (!data) return null;
-    const store = data as any;
+    const { store } = await loadLocalSeo({ data: { type: "store", slug } });
+    if (!store) return null;
     const city: CityLike | null = store.city ? { city: store.city, state: store.state ?? "" } : null;
     const place = city ? cityLabel(city) : "sua cidade";
     return {
@@ -114,6 +115,11 @@ export async function storeMeta(slug: string): Promise<PageMeta | null> {
       path: `/loja/${store.slug}`,
       image: store.cover_url || store.logo_url,
       type: "profile",
+      jsonLd: [businessSchema(store), breadcrumbs([
+        { name: "Início", path: "/" },
+        ...(city ? [{ name: cityLabel(city), path: `/ofertas/${citySlug(city)}` }] : []),
+        { name: store.name, path: `/loja/${store.slug}` },
+      ])],
     };
   });
 }
@@ -175,17 +181,20 @@ export async function cityMeta(cidadeSlug: string, categoriaSlug?: string): Prom
 
 export async function eventMeta(slug: string): Promise<PageMeta | null> {
   return safe(async () => {
-    const { data, error } = await supabase.rpc("event_by_slug" as any, { p_slug: slug });
-    const payload = data as any;
-    if (error || !payload?.found) return null;
-    const ev = payload.event as any;
+    const { events } = await loadLocalSeo({ data: { type: "event", slug } });
+    const ev = events[0];
+    if (!ev) return null;
     const when = ev.starts_at ? new Date(ev.starts_at).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" }) : "";
     return {
       title: `${ev.title}${ev.city ? ` — ${ev.city}` : ""} | OfertasFly`,
       description: ev.description || `Evento${ev.city ? ` em ${ev.city}` : ""}${when ? ` em ${when}` : ""}. Veja detalhes no OfertasFly.`,
       path: `/evento/${ev.slug ?? slug}`,
-      image: ev.cover_url,
+      image: ev.cover_url || ev.image_url,
       type: "article",
+      jsonLd: [eventSchema(ev), breadcrumbs([
+        { name: "Início", path: "/" }, { name: "Eventos", path: "/eventos" },
+        { name: ev.title, path: `/evento/${ev.slug}` },
+      ])],
     };
   });
 }

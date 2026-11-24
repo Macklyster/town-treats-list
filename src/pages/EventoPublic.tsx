@@ -52,29 +52,6 @@ export default function EventoPublic() {
 
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
 
-  const jsonLd = useMemo(() => {
-    if (!event) return undefined;
-    return {
-      "@context": "https://schema.org",
-      "@type": "Event",
-      name: event.title,
-      startDate: event.starts_at,
-      endDate: event.ends_at,
-      eventStatus: "https://schema.org/EventScheduled",
-      eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-      description: event.description ?? undefined,
-      image: event.cover_url || event.image_url || undefined,
-      location: {
-        "@type": "Place",
-        name: event.venue ?? event.store?.name ?? event.city,
-        address: [event.address, event.city, event.state].filter(Boolean).join(", "),
-      },
-      organizer: event.store
-        ? { "@type": "Organization", name: event.store.name }
-        : undefined,
-    };
-  }, [event]);
-
   if (loading) {
     return (
       <div className="flex min-h-screen flex-col">
@@ -120,7 +97,6 @@ export default function EventoPublic() {
         }
         path={`/evento/${event.slug}`}
         image={cover ?? undefined}
-        jsonLd={jsonLd}
       />
       <Header />
       <main className="container flex-1 space-y-6 py-8">

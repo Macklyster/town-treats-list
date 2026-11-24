@@ -1,27 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Eventos, { type SeoEvent } from "@/pages/Eventos";
-import { supabase } from "@/integrations/supabase/client";
+import Eventos from "@/pages/Eventos";
+import { loadLocalSeo } from "@/lib/local-seo.functions";
 import { buildHead } from "@/lib/route-seo";
 import { absoluteUrl } from "@/lib/slug";
 
-async function loadUpcoming(): Promise<SeoEvent[]> {
-  try {
-    const { data } = await supabase
-      .from("events")
-      .select("slug,title,description,starts_at,ends_at,city,state,venue,address,cover_url,image_url")
-      .eq("status", "approved")
-      .gt("ends_at", new Date().toISOString())
-      .order("starts_at", { ascending: true })
-      .limit(20);
-    return (data ?? []) as SeoEvent[];
-  } catch (error) {
-    console.error("eventos loader", error);
-    return [];
-  }
-}
-
 export const Route = createFileRoute("/eventos")({
-  loader: async () => ({ events: await loadUpcoming() }),
+  loader: () => loadLocalSeo({ data: { type: "agenda" } }),
   head: ({ loaderData }) => {
     const events = loaderData?.events ?? [];
     const first = events.find((e) => e.cover_url || e.image_url);
@@ -68,10 +52,12 @@ export const Route = createFileRoute("/eventos")({
       scripts: [{ type: "application/ld+json", children: JSON.stringify(jsonLd) }],
     };
   },
+  errorComponent: () => <main className="container py-16" role="alert">Não foi possível carregar os eventos. Tente novamente em alguns instantes.</main>,
+  notFoundComponent: () => <main className="container py-16">Agenda não encontrada.</main>,
   component: EventosRoute,
 });
 
 function EventosRoute() {
-  const { events } = Route.useLoaderData();
-  return <Eventos upcoming={events} />;
+  const { events, cities } = Route.useLoaderData();
+  return <Eventos upcoming={events} cities={cities} />;
 }
