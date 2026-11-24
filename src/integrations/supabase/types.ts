@@ -2654,6 +2654,7 @@ export type Database = {
         Returns: undefined
       }
       store_has_ai_assist: { Args: { p_store_id: string }; Returns: boolean }
+      store_has_paid_plan: { Args: { p_store_id: string }; Returns: boolean }
       store_intelligence: {
         Args: { p_days?: number; p_store_id: string }
         Returns: Json

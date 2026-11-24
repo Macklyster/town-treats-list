@@ -35,6 +35,7 @@ import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
 import { PLAN_CATALOG } from "@/data/plans";
 import { AiAddonCard } from "@/components/painel/AiAddonCard";
+import { ManagedOffersAddonCard } from "@/components/painel/ManagedOffersAddonCard";
 
 type Plan = {
   id: string;
@@ -531,6 +532,7 @@ export default function Assinatura() {
             })}
           </div>
           {storeId && <AiAddonCard storeId={storeId} />}
+          {storeId && <ManagedOffersAddonCard storeId={storeId} />}
           </>
         )}
       </main>

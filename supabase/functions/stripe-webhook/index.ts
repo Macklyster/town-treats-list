@@ -34,12 +34,12 @@ Deno.serve(async (req) => {
   const upsertSub = async (sub: Stripe.Subscription, meta?: Record<string, string>) => {
     const m = { ...(sub.metadata ?? {}), ...(meta ?? {}) };
     const store_id = m.store_id;
-    if (m.addon === "ai_assist") {
+    if (m.addon === "ai_assist" || m.addon === "managed_offers") {
       if (!store_id) return;
       await supabase.from("store_addons").upsert(
         {
           store_id,
-          addon: "ai_assist",
+          addon: m.addon,
           stripe_customer_id: sub.customer as string,
           stripe_subscription_id: sub.id,
           status: sub.status,
@@ -81,6 +81,15 @@ Deno.serve(async (req) => {
       },
       { onConflict: "stripe_subscription_id" }
     );
+    // Managed offers requires a paid plan: when the store drops to free/canceled, end the add-on at period end.
+    const { data: paid } = await supabase.rpc("store_has_paid_plan", { p_store_id: store_id });
+    if (!paid) {
+      const { data: addons } = await supabase.from("store_addons").select("stripe_subscription_id")
+        .eq("store_id", store_id).eq("addon", "managed_offers").in("status", ["active", "trialing"]).eq("cancel_at_period_end", false);
+      for (const a of addons ?? []) {
+        if (a.stripe_subscription_id) await stripe.subscriptions.update(a.stripe_subscription_id, { cancel_at_period_end: true }).catch((e) => console.error("[stripe-webhook] addon cancel", e));
+      }
+    }
   };
 
   try {

@@ -25,7 +25,7 @@ export const handler = async (req: Request): Promise<Response> => {
 
     const reqBody = await req.json();
     const { plan_id, store_id, cycle: rawCycle } = reqBody;
-    if (reqBody.addon === "ai_assist") return await addonCheckout(req, supabase, user, String(store_id ?? ""));
+    if (reqBody.addon === "ai_assist" || reqBody.addon === "managed_offers") return await addonCheckout(req, supabase, user, String(store_id ?? ""), reqBody.addon);
     const cycle: "monthly" | "yearly" = rawCycle === "yearly" ? "yearly" : "monthly";
     if (!plan_id || !store_id) return new Response(JSON.stringify({ error: "missing fields" }), { status: 400, headers: corsHeaders });
 
@@ -160,21 +160,32 @@ export const handler = async (req: Request): Promise<Response> => {
   }
 };
 
-const ADDON_AI_PRICE_CENTS = 1900;
+const ADDONS = {
+  ai_assist: { cents: 1900, name: "OfertasFly - Assistente de IA", rpc: "store_has_ai_assist", owned: "Sua loja já tem o Assistente de IA.", anchor: "addon=1" },
+  managed_offers: { cents: 5900, name: "OfertasFly - Ofertas Gerenciadas", rpc: null, owned: "Sua loja já tem o serviço de Ofertas Gerenciadas.", anchor: "addon=managed" },
+} as const;
 
-async function addonCheckout(req: Request, supabase: any, user: { id: string; email?: string }, store_id: string): Promise<Response> {
+async function addonCheckout(req: Request, supabase: any, user: { id: string; email?: string }, store_id: string, addon: keyof typeof ADDONS): Promise<Response> {
+  const cfg = ADDONS[addon];
   const h = { ...corsHeaders, "Content-Type": "application/json" };
   const { data: store } = await supabase.from("stores").select("id,owner_id").eq("id", store_id).maybeSingle();
   if (!store || store.owner_id !== user.id) return new Response(JSON.stringify({ error: "invalid" }), { status: 403, headers: h });
-  const { data: has } = await supabase.rpc("store_has_ai_assist", { p_store_id: store_id });
-  if (has) return new Response(JSON.stringify({ error: "Sua loja já tem o Assistente de IA." }), { status: 400, headers: h });
+  if (addon === "managed_offers") {
+    const { data: paid } = await supabase.rpc("store_has_paid_plan", { p_store_id: store_id });
+    if (!paid) return new Response(JSON.stringify({ error: "Disponível apenas para planos Starter, Destaque e Plus." }), { status: 403, headers: h });
+    const { data: existing } = await supabase.from("store_addons").select("id").eq("store_id", store_id).eq("addon", "managed_offers").in("status", ["active", "trialing"]).limit(1);
+    if (existing?.length) return new Response(JSON.stringify({ error: cfg.owned }), { status: 400, headers: h });
+  } else {
+    const { data: has } = await supabase.rpc("store_has_ai_assist", { p_store_id: store_id });
+    if (has) return new Response(JSON.stringify({ error: cfg.owned }), { status: 400, headers: h });
+  }
   const { data: subs } = await supabase.from("subscriptions").select("stripe_customer_id").eq("store_id", store_id).not("stripe_customer_id", "is", null).limit(1);
   const customerId: string | undefined = subs?.[0]?.stripe_customer_id ?? undefined;
   const stripe = new Stripe(env("STRIPE_SECRET_KEY")!, { apiVersion: "2024-06-20", httpClient: Stripe.createFetchHttpClient() });
   const reqOrigin = req.headers.get("origin") ?? "";
   const origin = /^https:\/\/(www\.)?ofertasfly\.com\.br$/.test(reqOrigin) || /^https:\/\/[a-z0-9-]+\.lovable\.app$/.test(reqOrigin) || /^http:\/\/localhost:\d+$/.test(reqOrigin)
     ? reqOrigin : "https://ofertasfly.com.br";
-  const meta = { user_id: user.id, store_id, addon: "ai_assist" };
+  const meta = { user_id: user.id, store_id, addon };
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
@@ -182,15 +193,15 @@ async function addonCheckout(req: Request, supabase: any, user: { id: string; em
     line_items: [{
       price_data: {
         currency: "brl",
-        product_data: { name: "OfertasFly - Assistente de IA" },
-        unit_amount: ADDON_AI_PRICE_CENTS,
+        product_data: { name: cfg.name },
+        unit_amount: cfg.cents,
         recurring: { interval: "month" },
       },
       quantity: 1,
     }],
     metadata: meta,
     subscription_data: { metadata: meta },
-    success_url: `${origin}/painel-lojista/assinatura?addon=1`,
+    success_url: `${origin}/painel-lojista/assinatura?${cfg.anchor}`,
     cancel_url: `${origin}/painel-lojista/assinatura?checkout_canceled=1`,
   });
   return new Response(JSON.stringify({ url: session.url }), { headers: h });
