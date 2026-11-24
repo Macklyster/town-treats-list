@@ -1,0 +1,2 @@
+ALTER TABLE public.store_addons DROP CONSTRAINT IF EXISTS store_addons_addon_check;
+ALTER TABLE public.store_addons ADD CONSTRAINT store_addons_addon_check CHECK (addon IN ('ai_assist','managed_offers'));

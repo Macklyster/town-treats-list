@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
     const store_id = m.store_id;
     if (m.addon === "ai_assist" || m.addon === "managed_offers") {
       if (!store_id) return;
-      await supabase.from("store_addons").upsert(
+      const { error: addonErr } = await supabase.from("store_addons").upsert(
         {
           store_id,
           addon: m.addon,
@@ -48,6 +48,10 @@ Deno.serve(async (req) => {
         },
         { onConflict: "stripe_subscription_id" }
       );
+      if (addonErr) {
+        console.error("[stripe-webhook] addon upsert failed", addonErr);
+        throw new Error(`addon upsert failed: ${addonErr.message}`);
+      }
       return;
     }
     let plan_id = m.plan_id;
@@ -68,7 +72,7 @@ Deno.serve(async (req) => {
       console.warn("[stripe-webhook] skipping upsert, missing store_id/plan_id", { store_id, plan_id, sub: sub.id });
       return;
     }
-    await supabase.from("subscriptions").upsert(
+    const { error: subErr } = await supabase.from("subscriptions").upsert(
       {
         store_id,
         plan_id,
@@ -81,6 +85,10 @@ Deno.serve(async (req) => {
       },
       { onConflict: "stripe_subscription_id" }
     );
+    if (subErr) {
+      console.error("[stripe-webhook] subscription upsert failed", subErr);
+      throw new Error(`subscription upsert failed: ${subErr.message}`);
+    }
     // Managed offers requires a paid plan: when the store drops to free/canceled, end the add-on at period end.
     const { data: paid } = await supabase.rpc("store_has_paid_plan", { p_store_id: store_id });
     if (!paid) {
