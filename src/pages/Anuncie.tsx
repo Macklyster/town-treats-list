@@ -25,10 +25,35 @@ import {
   Rocket,
   ClipboardList,
   MessagesSquare,
-  TrendingUp, Layers } from "lucide-react";
+  TrendingUp, Layers, Users } from "lucide-react";
 import { toast } from "sonner";
 import { PLAN_CATALOG } from "@/data/plans";
 import { formatBRL } from "@/lib/format";
+
+const ADDONS = [
+  {
+    icon: Sparkles,
+    name: "Assistente de IA",
+    price: "R$ 19",
+    badge: "Incluso nos planos Destaque e Plus",
+    features: [
+      "Sugere título, descrição e palavras-chave para seus anúncios",
+      "Funciona em ofertas, Coletivas, Leilões e Ofertas Invisíveis",
+      "Para os planos Grátis e Starter, contrate como adicional",
+    ],
+  },
+  {
+    icon: Users,
+    name: "Ofertas Gerenciadas pela equipe OfertasFly",
+    price: "R$ 59",
+    badge: "Para os planos Starter, Destaque e Plus",
+    features: [
+      "Nossa equipe cadastra e mantém suas ofertas, cupons e imagens",
+      "Ideal para quem não tem tempo de cadastrar anúncios",
+      "Não disponível no plano Grátis",
+    ],
+  },
+];
 
 const plans = PLAN_CATALOG.map((p) => ({
   slug: p.slug,
@@ -222,6 +247,11 @@ const Anuncie = () => {
               title="Planos para todo tipo de negócio"
               description="Escolha o plano ideal e ajuste quando quiser."
             />
+            <p className="-mt-4 mb-6 text-center text-sm">
+              <a href="#servicos" className="font-semibold text-highlight hover:underline">
+                Conheça os serviços adicionais →
+              </a>
+            </p>
 
             {/* Banner Trial */}
             {cycle === "monthly" && (
@@ -399,6 +429,65 @@ const Anuncie = () => {
                 );
               })}
             </div>
+          </div>
+        </section>
+
+        {/* Serviços adicionais */}
+        <section id="servicos" className="container py-10 md:py-14">
+          <SectionHeading
+            align="center"
+            eyebrow={<>Serviços adicionais</>}
+            title="Turbine seu plano com serviços extras"
+            description="Contrate só o que precisar, direto na sua assinatura."
+          />
+          <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2">
+            {ADDONS.map((a) => (
+              <div key={a.name} className="flex flex-col rounded-3xl border border-border bg-card p-6 shadow-xs md:p-8">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-highlight-soft">
+                    <a.icon className="h-5 w-5 text-highlight" />
+                  </span>
+                  <h3 className="text-lg font-bold text-foreground">{a.name}</h3>
+                </div>
+                <p className="mt-4 text-3xl font-extrabold text-foreground">
+                  {a.price}<span className="text-sm font-medium text-muted-foreground">/mês</span>
+                </p>
+                <span className="mt-2 inline-block w-fit rounded-full bg-highlight-soft px-3 py-1 text-xs font-semibold text-highlight">
+                  {a.badge}
+                </span>
+                <ul className="mt-5 flex-1 space-y-2.5 text-sm">
+                  {a.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-highlight" />
+                      <span className="text-muted-foreground">{f}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-6 flex flex-col gap-2 sm:flex-row">
+                  <Button asChild className="flex-1 rounded-full">
+                    <a href="/painel-lojista/assinatura">Contratar</a>
+                  </Button>
+                  <Button asChild variant="outline" className="flex-1 rounded-full">
+                    <a href="#contato">Falar com um consultor</a>
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mx-auto mt-8 max-w-5xl rounded-3xl bg-secondary/60 p-6 md:p-8">
+            <h3 className="text-center text-lg font-bold text-foreground">Como contratar</h3>
+            <ol className="mt-5 grid gap-4 md:grid-cols-3">
+              {[
+                "Escolha um plano e crie sua conta de lojista.",
+                "No Painel do Lojista, abra a página Assinatura.",
+                "Ative o serviço no cartão dele. Cancele quando quiser pelo portal de pagamento.",
+              ].map((step, i) => (
+                <li key={step} className="flex items-start gap-3">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">{i + 1}</span>
+                  <span className="text-sm text-muted-foreground">{step}</span>
+                </li>
+              ))}
+            </ol>
           </div>
         </section>
 
