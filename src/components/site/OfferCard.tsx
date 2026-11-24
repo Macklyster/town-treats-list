@@ -16,7 +16,7 @@ export const OfferCard = ({ offer, socialProof }: { offer: UIOffer; socialProof?
     <Link
       to={`/oferta/${offer.id}`}
       className={`group flex flex-col overflow-hidden rounded-2xl bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-pop ${
-        offer.isFlash ? "ring-2 ring-destructive/60" : ""
+        offer.isFlash ? "ring-2 ring-destructive/60" : offer.featured ? "ring-2 ring-primary/60" : ""
       }`}
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">

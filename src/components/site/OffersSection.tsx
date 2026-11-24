@@ -113,7 +113,7 @@ export const OffersSection = ({ offers: providedOffers, loading: providedLoading
         const db = b.distanceKm ?? Infinity;
         return da - db;
       });
-    } else l = [...l].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    } else l = [...l].sort((a, b) => Number(b.featured) - Number(a.featured) || b.createdAt.localeCompare(a.createdAt));
     return l;
   }, [allWithDistance, q, cat, type, sort, userLoc]);
 

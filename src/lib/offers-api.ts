@@ -82,6 +82,7 @@ export const fetchOffers = async (filter?: CityFilter): Promise<UIOffer[]> => {
     .from("offers")
     .select("*, store:stores!inner(name,slug,city,state,logo_url,featured_badge,latitude,longitude)")
     .eq("status", "approved")
+    .order("featured", { ascending: false })
     .order("created_at", { ascending: false });
   if (filter?.city) {
     query = query.eq("store.city", filter.city);
@@ -126,6 +127,7 @@ export const fetchOffersByStoreId = async (storeId: string): Promise<UIOffer[]> 
     .select("*, store:stores!inner(name,slug,city,state,logo_url,featured_badge,latitude,longitude)")
     .eq("status", "approved")
     .eq("store_id", storeId)
+    .order("featured", { ascending: false })
     .order("created_at", { ascending: false });
   return filterActiveFlash(data ?? []).map(mapRow);
 };
