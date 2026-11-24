@@ -17,6 +17,7 @@ import { ImageUploader } from "@/components/site/ImageUploader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useManagedStore } from "@/hooks/useManagedStore";
+import { AISuggestButton } from "@/components/site/AISuggestButton";
 import { useSubscription } from "@/hooks/useSubscription";
 import {
   fetchActiveGeoOfferForStore,
@@ -316,6 +317,15 @@ export default function OfertaInvisivelForm() {
           <Card>
             <CardHeader><CardTitle>Conteúdo da oferta</CardTitle></CardHeader>
             <CardContent className="space-y-4">
+              <AISuggestButton
+                category_slug={form.category_slug}
+                original_price={form.original_price}
+                current_title={form.title}
+                image_url={form.image_url}
+                storeId={storeId}
+                offerType="invisivel"
+                onApply={(p) => setForm((f) => ({ ...f, ...(p.title !== undefined ? { title: p.title } : {}), ...(p.description !== undefined ? { description: p.description } : {}), ...(p.promo_price !== undefined ? { promo_price: p.promo_price } : {}) }))}
+              />
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <Label>Título</Label>

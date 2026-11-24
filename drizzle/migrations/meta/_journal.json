@@ -141,6 +141,13 @@
       "when": 1795481061783,
       "tag": "0019_create_seo_overrides",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1795481604461,
+      "tag": "0020_ai_assist_addon",
+      "breakpoints": true
     }
   ]
 }

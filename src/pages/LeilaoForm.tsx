@@ -16,6 +16,7 @@ import { ImageUploader } from "@/components/site/ImageUploader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useManagedStore } from "@/hooks/useManagedStore";
+import { AISuggestButton } from "@/components/site/AISuggestButton";
 import { useSubscription } from "@/hooks/useSubscription";
 import {
   fetchActiveAuctionForStore,
@@ -304,6 +305,16 @@ export default function LeilaoForm() {
           <Card>
             <CardHeader><CardTitle>Detalhes</CardTitle></CardHeader>
             <CardContent className="space-y-4">
+              <AISuggestButton
+                category_slug={form.category_slug}
+                original_price={form.starting_price}
+                current_title={form.title}
+                image_url={form.image_url}
+                storeId={storeId}
+                offerType="leilao"
+                priceLabel="Preço mínimo sugerido"
+                onApply={(p) => setForm((f) => ({ ...f, ...(p.title !== undefined ? { title: p.title } : {}), ...(p.description !== undefined ? { description: p.description } : {}), ...(p.promo_price !== undefined && p.promo_price < f.starting_price ? { min_price: p.promo_price } : {}) }))}
+              />
               <div className="grid gap-2">
                 <Label htmlFor="title">Título *</Label>
                 <Input id="title" value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Ex: Última pizza do dia" />

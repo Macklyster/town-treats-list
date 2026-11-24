@@ -1,8 +1,9 @@
 import { invokeBackend } from "@/lib/invoke-backend";
 import { useState } from "react";
-import { Sparkles, Loader2, Check } from "lucide-react";
+import { Sparkles, Loader2, Check, Lock } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { useAiAssist } from "@/hooks/useAiAssist";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export type OfferSuggestion = {
@@ -20,6 +21,10 @@ interface Props {
   current_title?: string;
   image_url?: string;
   store_name?: string;
+  storeId?: string | null;
+  offerType?: "offer" | "coletiva" | "leilao" | "invisivel";
+  priceLabel?: string;
+  showPrice?: boolean;
   onApply: (patch: { title?: string; description?: string; promo_price?: number }) => void;
 }
 
@@ -29,8 +34,13 @@ export function AISuggestButton({
   current_title,
   image_url,
   store_name,
+  storeId,
+  offerType = "offer",
+  priceLabel = "Preço promocional sugerido",
+  showPrice = true,
   onApply,
 }: Props) {
+  const ai = useAiAssist(storeId);
   const [loading, setLoading] = useState(false);
   const [s, setS] = useState<OfferSuggestion | null>(null);
   const disabled = !category_slug || !(original_price > 0) || loading;
@@ -39,18 +49,39 @@ export function AISuggestButton({
     setLoading(true);
     setS(null);
     const { data, error } = await invokeBackend("suggest-offer", {
-      body: { category_slug, original_price, current_title, image_url, store_name },
+      body: { category_slug, original_price, current_title, image_url, store_name, store_id: storeId ?? null, offer_type: offerType },
     });
     setLoading(false);
     if (error) {
       const status = (error as any).context?.status;
-      if (status === 429) toast.error("Muitas solicitações. Tente novamente em instantes.");
+      if ((error as any).message === "ai_upgrade_required") toast.error("O Assistente de IA está nos planos Destaque e Plus ou no adicional de R$ 19/mês.");
+      else if (status === 429) toast.error("Muitas solicitações. Tente novamente em instantes.");
       else if (status === 402) toast.error("Créditos de IA esgotados.");
       else toast.error((error as any).message || "Falha ao gerar sugestão");
       return;
     }
     setS(data as OfferSuggestion);
   };
+
+  if (!ai.loading && !ai.allowed) {
+    return (
+      <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
+        <div className="flex items-start gap-2">
+          <Lock className="mt-0.5 h-5 w-5 text-highlight" />
+          <div className="flex-1">
+            <p className="text-sm font-semibold">Sugerir com IA</p>
+            <p className="text-xs text-muted-foreground">
+              Título, descrição e preço prontos em segundos. Incluído nos planos Destaque e Plus, ou contrate o adicional por R$ 19/mês.
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Button asChild size="sm" variant="accent"><Link to="/painel-lojista/assinatura">Fazer upgrade</Link></Button>
+              <Button asChild size="sm" variant="outline"><Link to="/painel-lojista/assinatura" hash="ia">Contratar IA por R$ 19/mês</Link></Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
@@ -94,8 +125,9 @@ export function AISuggestButton({
               <Check className="h-3 w-3" /> Aplicar descrição
             </Button>
           </div>
+          {showPrice && (
           <div>
-            <p className="text-xs font-medium text-muted-foreground">Preço promocional sugerido</p>
+            <p className="text-xs font-medium text-muted-foreground">{priceLabel}</p>
             <p className="text-sm font-semibold">
               R$ {s.suggested_promo_price.toFixed(2)}{" "}
               <span className="text-xs text-muted-foreground">({s.discount_pct}% OFF)</span>
@@ -105,12 +137,13 @@ export function AISuggestButton({
               <Check className="h-3 w-3" /> Aplicar preço
             </Button>
           </div>
+          )}
           {s.reasoning && (
             <p className="text-xs italic text-muted-foreground">💡 {s.reasoning}</p>
           )}
           <Button type="button" size="sm" variant="accent" className="w-full"
             onClick={() => {
-              onApply({ title: s.title, description: s.description, promo_price: s.suggested_promo_price });
+              onApply({ title: s.title, description: s.description, ...(showPrice ? { promo_price: s.suggested_promo_price } : {}) });
               toast.success("Tudo aplicado!");
             }}>
             <Check className="h-4 w-4" /> Aplicar tudo

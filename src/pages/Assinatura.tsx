@@ -34,6 +34,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
 import { PLAN_CATALOG } from "@/data/plans";
+import { AiAddonCard } from "@/components/painel/AiAddonCard";
 
 type Plan = {
   id: string;
@@ -136,6 +137,7 @@ export default function Assinatura() {
       }
     }
     if (params.get("canceled")) toast.info("Solicitação de cancelamento processada.");
+    if (params.get("addon")) toast.success("Assistente de IA contratado! A liberação leva alguns segundos.");
     if (params.get("checkout_canceled")) toast.info("Checkout cancelado. Nenhuma cobrança foi feita.");
     if (params.get("success") || params.get("canceled")) {
       let tries = 0;
@@ -528,6 +530,7 @@ export default function Assinatura() {
               );
             })}
           </div>
+          {storeId && <AiAddonCard storeId={storeId} />}
           </>
         )}
       </main>

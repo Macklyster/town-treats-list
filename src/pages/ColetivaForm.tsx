@@ -16,6 +16,7 @@ import { GroupOfferTierEditor } from "@/components/site/GroupOfferTierEditor";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useManagedStore } from "@/hooks/useManagedStore";
+import { AISuggestButton } from "@/components/site/AISuggestButton";
 import { useSubscription } from "@/hooks/useSubscription";
 import {
   fetchActiveGroupOfferForStore,
@@ -307,6 +308,16 @@ export default function ColetivaForm() {
               <CardTitle>Detalhes da oferta</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <AISuggestButton
+                category_slug={form.category_slug}
+                original_price={form.original_price}
+                current_title={form.title}
+                image_url={form.image_url}
+                storeId={storeId}
+                offerType="coletiva"
+                showPrice={false}
+                onApply={(p) => setForm((f) => ({ ...f, ...(p.title !== undefined ? { title: p.title } : {}), ...(p.description !== undefined ? { description: p.description } : {}) }))}
+              />
               <div className="grid gap-2">
                 <Label htmlFor="title">Título *</Label>
                 <Input

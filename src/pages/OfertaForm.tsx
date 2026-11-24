@@ -317,6 +317,7 @@ export default function OfertaForm() {
                 original_price={form.original_price}
                 current_title={form.title}
                 image_url={form.image_url}
+                storeId={storeId}
                 onApply={(patch) =>
                   setForm((f) => ({
                     ...f,

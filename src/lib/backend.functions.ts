@@ -15,6 +15,7 @@ const HANDLERS = {
   "subscribe-push": () => import("@/server/handlers/subscribe-push"),
   "unsubscribe-push": () => import("@/server/handlers/unsubscribe-push"),
   "suggest-offer": () => import("@/server/handlers/suggest-offer"),
+  "suggest-seo": () => import("@/server/handlers/suggest-seo"),
 } as const;
 
 export type BackendFunctionName = keyof typeof HANDLERS;

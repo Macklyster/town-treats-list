@@ -34,6 +34,22 @@ Deno.serve(async (req) => {
   const upsertSub = async (sub: Stripe.Subscription, meta?: Record<string, string>) => {
     const m = { ...(sub.metadata ?? {}), ...(meta ?? {}) };
     const store_id = m.store_id;
+    if (m.addon === "ai_assist") {
+      if (!store_id) return;
+      await supabase.from("store_addons").upsert(
+        {
+          store_id,
+          addon: "ai_assist",
+          stripe_customer_id: sub.customer as string,
+          stripe_subscription_id: sub.id,
+          status: sub.status,
+          current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
+          cancel_at_period_end: !!sub.cancel_at_period_end,
+        },
+        { onConflict: "stripe_subscription_id" }
+      );
+      return;
+    }
     let plan_id = m.plan_id;
 
     // A plan swap done inside the Stripe billing portal doesn't update metadata,

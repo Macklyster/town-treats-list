@@ -1,10 +1,14 @@
 import { env } from "../env";
 import { createClient } from "@supabase/supabase-js";
+import { AiError, checkAiAccess, generateJson } from "../ai";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+const json = (b: unknown, status = 200) =>
+  new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
 export const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -37,18 +41,19 @@ export const handler = async (req: Request): Promise<Response> => {
     const body = await req.json();
     const category_slug = String(body.category_slug ?? "").trim();
     const original_price = Number(body.original_price ?? 0);
-    const image_url = body.image_url ? String(body.image_url) : null;
-    const current_title = body.current_title ? String(body.current_title) : null;
-    const store_name = body.store_name ? String(body.store_name) : null;
+    const image_url = body.image_url ? String(body.image_url).slice(0, 500) : null;
+    const current_title = body.current_title ? String(body.current_title).slice(0, 200) : null;
+    const store_name = body.store_name ? String(body.store_name).slice(0, 120) : null;
+    const store_id = body.store_id ? String(body.store_id) : null;
+    const offer_type = ["offer", "coletiva", "leilao", "invisivel"].includes(body.offer_type) ? body.offer_type : "offer";
+
+    const access = await checkAiAccess(supabase, userData.user.id, store_id);
+    if (!access.ok) return json({ error: access.error }, access.status);
 
     if (!category_slug || !(original_price > 0)) {
-      return new Response(
-        JSON.stringify({ error: "category_slug e original_price são obrigatórios" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+      return json({ error: "category_slug e original_price são obrigatórios" }, 400);
     }
 
-    // Fetch top offers in same category by views/contacts in last 60 days
     const since = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString();
     const { data: topOffers } = await supabase
       .from("offers")
@@ -58,7 +63,6 @@ export const handler = async (req: Request): Promise<Response> => {
       .order("popularity", { ascending: false })
       .limit(20);
 
-    // Score by clicks
     const ids = (topOffers ?? []).map((o) => o.id);
     let scored: any[] = topOffers ?? [];
     if (ids.length > 0) {
@@ -87,93 +91,49 @@ export const handler = async (req: Request): Promise<Response> => {
       }`;
     }).join("\n");
 
-    const systemPrompt = `Você é um copywriter especialista em ofertas locais brasileiras para o site OfertasFly.
-Sua missão é gerar título, descrição e preço promocional otimizados para conversão (cliques no WhatsApp).
-Use linguagem direta, pt-BR, sem emojis no título. Descrição curta (até 200 caracteres), persuasiva, sem promessas falsas.
-Considere o desconto típico de ofertas de sucesso da mesma categoria.`;
+    const kindHint: Record<string, string> = {
+      offer: "Oferta comum. O preço sugerido é o preço promocional.",
+      coletiva: "Compra coletiva: o preço cai conforme mais pessoas entram. Destaque a vantagem de chamar amigos. O preço sugerido é o melhor preço da última faixa.",
+      leilao: "Leilão reverso: o preço começa alto e cai com o tempo até um mínimo. Crie urgência. O preço sugerido é o preço mínimo do leilão.",
+      invisivel: "Oferta invisível: só aparece para quem está perto da loja. Destaque a exclusividade de quem passa por perto. O preço sugerido é o preço promocional.",
+    };
 
-    const userPrompt = `Categoria: ${category_slug}
+    const s = await generateJson<{ title: string; description: string; suggested_promo_price: number; discount_pct: number; reasoning: string }>({
+      schemaName: "suggest_offer",
+      instructions: `Você é um copywriter especialista em ofertas locais brasileiras para o site OfertasFly.
+Gere título (até 80 caracteres, sem emojis), descrição (até 200 caracteres, persuasiva, sem promessas falsas) e preço sugerido otimizados para conversão (cliques no WhatsApp), em pt-BR.
+Considere o desconto típico de ofertas de sucesso da mesma categoria. A justificativa tem 1 frase.`,
+      input: `Tipo: ${kindHint[offer_type]}
+Categoria: ${category_slug}
 Preço original informado: R$ ${original_price.toFixed(2)}
-${current_title ? `Título atual (apenas referência): ${current_title}\n` : ""}${store_name ? `Loja: ${store_name}\n` : ""}${image_url ? `Imagem: ${image_url}\n` : ""}
+${current_title ? `Título atual (referência): ${current_title}\n` : ""}${store_name ? `Loja: ${store_name}\n` : ""}${image_url ? `Imagem: ${image_url}\n` : ""}
 Top ofertas de sucesso desta categoria:
-${examples || "(sem dados ainda — use bom senso de mercado)"}
-
-Gere a melhor sugestão.`;
-
-    const LOVABLE_API_KEY = env("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY ausente");
-
-    const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
+${examples || "(sem dados ainda — use bom senso de mercado)"}`,
+      schema: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          description: { type: "string" },
+          suggested_promo_price: { type: "number" },
+          discount_pct: { type: "number" },
+          reasoning: { type: "string" },
+        },
+        required: ["title", "description", "suggested_promo_price", "discount_pct", "reasoning"],
+        additionalProperties: false,
       },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-        tools: [{
-          type: "function",
-          function: {
-            name: "suggest_offer",
-            description: "Retorna sugestão de título, descrição e preço promocional",
-            parameters: {
-              type: "object",
-              properties: {
-                title: { type: "string", description: "Título da oferta, max 80 caracteres" },
-                description: { type: "string", description: "Descrição persuasiva, max 200 caracteres" },
-                suggested_promo_price: { type: "number", description: "Preço promocional sugerido em reais" },
-                discount_pct: { type: "number", description: "Percentual de desconto" },
-                reasoning: { type: "string", description: "Justificativa curta (1 frase)" },
-              },
-              required: ["title", "description", "suggested_promo_price", "discount_pct", "reasoning"],
-              additionalProperties: false,
-            },
-          },
-        }],
-        tool_choice: { type: "function", function: { name: "suggest_offer" } },
-      }),
     });
 
-    if (aiResp.status === 429) {
-      return new Response(
-        JSON.stringify({ error: "Muitas solicitações. Tente novamente em instantes." }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    }
-    if (aiResp.status === 402) {
-      return new Response(
-        JSON.stringify({ error: "Créditos de IA esgotados. Adicione créditos em Configurações." }),
-        { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    }
-    if (!aiResp.ok) {
-      const t = await aiResp.text();
-      console.error("AI gateway error", aiResp.status, t);
-      throw new Error("Falha ao gerar sugestão");
-    }
-
-    const aiData = await aiResp.json();
-    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) throw new Error("Resposta inválida do modelo");
-    const args = JSON.parse(toolCall.function.arguments);
-
-    return new Response(
-      JSON.stringify({
-        title: String(args.title ?? "").slice(0, 140),
-        description: String(args.description ?? "").slice(0, 500),
-        suggested_promo_price: Number(args.suggested_promo_price ?? 0),
-        discount_pct: Number(args.discount_pct ?? 0),
-        reasoning: String(args.reasoning ?? ""),
-        examples_used: scored.length,
-      }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
+    return json({
+      title: String(s.title ?? "").slice(0, 140),
+      description: String(s.description ?? "").slice(0, 500),
+      suggested_promo_price: Math.min(Number(s.suggested_promo_price ?? 0), original_price),
+      discount_pct: Number(s.discount_pct ?? 0),
+      reasoning: String(s.reasoning ?? ""),
+      examples_used: scored.length,
+    });
   } catch (e) {
     console.error("suggest-offer error:", e);
+    if (e instanceof AiError) return json({ error: e.message }, e.status);
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },

@@ -2002,6 +2002,53 @@ export type Database = {
         }
         Relationships: []
       }
+      store_addons: {
+        Row: {
+          addon: string
+          cancel_at_period_end: boolean
+          created_at: string
+          current_period_end: string | null
+          id: string
+          status: string
+          store_id: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          addon: string
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          status?: string
+          store_id: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          addon?: string
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          status?: string
+          store_id?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_addons_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_duty_schedules: {
         Row: {
           active: boolean
@@ -2606,6 +2653,7 @@ export type Database = {
         Args: { p_days: number; p_store_id: string }
         Returns: undefined
       }
+      store_has_ai_assist: { Args: { p_store_id: string }; Returns: boolean }
       store_intelligence: {
         Args: { p_days?: number; p_store_id: string }
         Returns: Json

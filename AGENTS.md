@@ -20,3 +20,4 @@
 - Local event agendas use an un-nested city route and a shared public Query cache; the URL city always wins over saved device location so Google and visitors see the same city.
 - Public local SEO reads run through loadLocalSeo with a sessionless publishable client and explicit public projections; event/business JSON-LD belongs in route head only to prevent hydration duplicates.
 - The public events sitemap derives cities from approved stores and visible events and omits lastmod without an authoritative page timestamp.
+- AI assist access (admin, Destaque/Plus, or ai_assist add-on) is enforced server-side by `checkAiAccess` + `store_has_ai_assist`; `useAiAssist` is only a UI hint, so locked UI can never be the security boundary.

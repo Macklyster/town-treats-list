@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { Sparkles, Loader2 } from "lucide-react";
+import { invokeBackend } from "@/lib/invoke-backend";
 import { fillCity, type SeoEntityType } from "@/lib/seo-overrides";
 
 type Entity = { key: string; name: string; path: string };
@@ -46,6 +48,19 @@ export function AdminSeo() {
   const [city, setCity] = useState("");
   const [form, setForm] = useState({ title: "", description: "", keywords: "", image_url: "" });
   const [saving, setSaving] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiSug, setAiSug] = useState<{ title: string; description: string; keywords: string[] } | null>(null);
+  useEffect(() => { setAiSug(null); }, [selected?.key, type, city]);
+
+  const suggest = async () => {
+    if (!selected) return;
+    setAiLoading(true);
+    setAiSug(null);
+    const { data, error } = await invokeBackend("suggest-seo", { body: { entity_type: type, entity_key: selected.key, city: type === "category" ? city.trim() : "" } });
+    setAiLoading(false);
+    if (error) { toast.error(error.message || "Falha ao gerar sugestão"); return; }
+    setAiSug(data);
+  };
 
   const reloadRows = async () => {
     const { data } = await supabase.from("seo_overrides").select("*");
@@ -114,6 +129,26 @@ export function AdminSeo() {
               <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Ex.: Douradina" />
               <p className="mt-1 text-xs text-muted-foreground">Use {"{cidade}"} no texto para inserir o nome da cidade automaticamente.</p></div>
           )}
+          <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
+            <div className="flex items-center justify-between gap-3">
+              <p className="flex items-center gap-2 text-sm font-semibold"><Sparkles className="h-4 w-4 text-highlight" /> Sugerir com IA</p>
+              <Button type="button" size="sm" variant="accent" onClick={suggest} disabled={aiLoading}>
+                {aiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}{aiLoading ? "Gerando..." : "Gerar"}
+              </Button>
+            </div>
+            {aiSug && (
+              <div className="mt-3 space-y-2 rounded-md border bg-background p-3 text-sm">
+                <div><p className="text-xs text-muted-foreground">Título ({aiSug.title.length}/60)</p><p className="font-medium">{aiSug.title}</p>
+                  <Button type="button" size="sm" variant="outline" className="mt-1 h-7" onClick={() => setForm((f) => ({ ...f, title: aiSug.title }))}>Aplicar título</Button></div>
+                <div><p className="text-xs text-muted-foreground">Descrição ({aiSug.description.length}/160)</p><p>{aiSug.description}</p>
+                  <Button type="button" size="sm" variant="outline" className="mt-1 h-7" onClick={() => setForm((f) => ({ ...f, description: aiSug.description }))}>Aplicar descrição</Button></div>
+                <div><p className="text-xs text-muted-foreground">Palavras-chave</p><p>{aiSug.keywords.join(", ")}</p>
+                  <Button type="button" size="sm" variant="outline" className="mt-1 h-7" onClick={() => setForm((f) => ({ ...f, keywords: aiSug.keywords.join(", ") }))}>Aplicar palavras-chave</Button></div>
+                <Button type="button" size="sm" variant="accent" className="w-full" onClick={() => setForm((f) => ({ ...f, title: aiSug.title, description: aiSug.description, keywords: aiSug.keywords.join(", ") }))}>Aplicar tudo</Button>
+                <p className="text-[11px] text-muted-foreground">Revise e clique em Salvar para publicar.</p>
+              </div>
+            )}
+          </div>
           <div><label className="text-sm font-medium">Título no Google</label>
             <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Vazio = automático" />
             <p className={`text-xs ${form.title.length > 60 ? "text-destructive" : "text-muted-foreground"}`}>{form.title.length}/60{form.title.length > 60 && " — longo demais, o Google vai cortar"}</p>
