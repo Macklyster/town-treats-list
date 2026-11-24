@@ -100,9 +100,13 @@ export const handler = async (req: Request): Promise<Response> => {
 
     const s = await generateJson<{ title: string; description: string; suggested_promo_price: number; discount_pct: number; reasoning: string }>({
       schemaName: "suggest_offer",
-      instructions: `Você é um copywriter especialista em ofertas locais brasileiras para o site OfertasFly.
-Gere título (até 80 caracteres, sem emojis), descrição (até 200 caracteres, persuasiva, sem promessas falsas) e preço sugerido otimizados para conversão (cliques no WhatsApp), em pt-BR.
-Considere o desconto típico de ofertas de sucesso da mesma categoria. A justificativa tem 1 frase.`,
+      instructions: `Você é um especialista sênior em Marketing e Vendas (comercial) e copywriter de ofertas locais brasileiras para o site OfertasFly.
+Escreva em pt-BR, otimizado para conversão (cliques no WhatsApp e visitas à loja).
+TÍTULO (até 80 caracteres, sem emojis): chamativo e direto, destaca o produto e seu principal benefício (preço, desconto, novidade, qualidade).
+DESCRIÇÃO (até 200 caracteres): persuasiva; desperte necessidade e desejo, mostre benefícios e o prazer/uso no dia a dia, use urgência positiva ("aproveite", "garanta o seu") e termine com chamada para ação.
+PROIBIDO: qualquer texto que gere dúvida, medo, culpa, insegurança ou ansiedade; perguntas negativas; tom alarmista ("vai se arrepender", "corra risco"); alertas de saúde; sarcasmo; comparações negativas com concorrentes.
+Nunca invente fatos, garantias, brindes ou prazos não informados; sem promessas falsas.
+Considere o desconto típico de ofertas de sucesso da mesma categoria para o preço sugerido. A justificativa tem 1 frase.`,
       input: `Tipo: ${kindHint[offer_type]}
 Categoria: ${category_slug}
 Preço original informado: R$ ${original_price.toFixed(2)}
