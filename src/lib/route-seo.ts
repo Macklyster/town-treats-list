@@ -2,6 +2,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { loadLocalSeo } from "@/lib/local-seo.functions";
 import { businessSchema, eventSchema, breadcrumbs, jsonLdScripts } from "@/lib/local-seo";
 import { categories } from "@/data/categories";
+import { loadSeoOverrides } from "@/lib/seo-overrides.functions";
+import { applySeoOverride, pickOverride, type SeoEntityType } from "@/lib/seo-overrides";
 import { absoluteUrl, cityLabel, citySlug, matchCityFromSlug, type CityLike } from "@/lib/slug";
 
 /** Social/search metadata for one public page, rendered into the server HTML head. */
@@ -14,7 +16,23 @@ export type PageMeta = {
   noindex?: boolean;
   jsonLd?: object[];
   omitDefaultImage?: boolean;
+  keywords?: string[];
 };
+
+async function withOverride(meta: PageMeta | null, type: SeoEntityType, key: string, city?: string, label?: string): Promise<PageMeta | null> {
+  if (!meta) return meta;
+  try {
+    const rows = await loadSeoOverrides({ data: { type, key } });
+    const o = pickOverride(rows as any[], city);
+    const next = applySeoOverride(meta, o, label);
+    if (o?.image_url) next.omitDefaultImage = false;
+    if (next.keywords?.length && next.jsonLd?.[0]) next.jsonLd = [{ ...(next.jsonLd[0] as object), keywords: next.keywords.join(", ") }, ...next.jsonLd.slice(1)];
+    return next;
+  } catch (e) {
+    console.error("seo override", e);
+    return meta;
+  }
+}
 
 export const DEFAULT_SHARE_IMAGE = "https://ofertasfly.com.br/og-image.jpg?v=2";
 
@@ -39,6 +57,7 @@ export function buildHead(meta: PageMeta | null | undefined) {
     meta: [
       { title },
       { name: "description", content: description },
+      ...(meta.keywords?.length ? [{ name: "keywords", content: meta.keywords.join(", ") }] : []),
       ...(meta.noindex ? [{ name: "robots", content: "noindex,nofollow" }] : []),
       { property: "og:type", content: og },
       { property: "og:title", content: title },
@@ -69,6 +88,10 @@ const safe = async <T,>(fn: () => Promise<T>): Promise<T | null> => {
 };
 
 export async function offerMeta(id: string): Promise<PageMeta | null> {
+  return withOverride(await offerMetaAuto(id), "offer", id);
+}
+
+async function offerMetaAuto(id: string): Promise<PageMeta | null> {
   return safe(async () => {
     const { data } = await supabase
       .from("offers")
@@ -102,6 +125,10 @@ export async function offerMeta(id: string): Promise<PageMeta | null> {
 }
 
 export async function storeMeta(slug: string): Promise<PageMeta | null> {
+  return withOverride(await storeMetaAuto(slug), "store", slug);
+}
+
+async function storeMetaAuto(slug: string): Promise<PageMeta | null> {
   return safe(async () => {
     const { store } = await loadLocalSeo({ data: { type: "store", slug } });
     if (!store) return null;
@@ -163,14 +190,15 @@ export async function cityMeta(cidadeSlug: string, categoriaSlug?: string): Prom
     const label = cityLabel(city);
     const n = `${count} oferta${count === 1 ? "" : "s"}`;
     const base = `/ofertas/${citySlug(city)}`;
-    return category
-      ? {
+    if (category) {
+      return withOverride({
           title: `${category.name} em ${label} — Ofertas e Cupons | OfertasFly`,
           description: `${n} de ${category.name.toLowerCase()} em ${label}. Descontos, cupons e brindes do comércio local no OfertasFly.`,
           path: `${base}/${category.slug}`,
           image,
-        }
-      : {
+        }, "category", category.slug, city.city, label);
+    }
+    return {
           title: `Ofertas em ${label} — Cupons e Descontos | OfertasFly`,
           description: `Encontre as melhores ofertas, cupons e descontos em ${label}. ${n} ativa${count === 1 ? "" : "s"} do comércio local.`,
           path: base,
@@ -180,6 +208,10 @@ export async function cityMeta(cidadeSlug: string, categoriaSlug?: string): Prom
 }
 
 export async function eventMeta(slug: string): Promise<PageMeta | null> {
+  return withOverride(await eventMetaAuto(slug), "event", slug);
+}
+
+async function eventMetaAuto(slug: string): Promise<PageMeta | null> {
   return safe(async () => {
     const { events } = await loadLocalSeo({ data: { type: "event", slug } });
     const ev = events[0];

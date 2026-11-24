@@ -1960,6 +1960,48 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_overrides: {
+        Row: {
+          city: string
+          created_at: string
+          description: string | null
+          entity_key: string
+          entity_type: string
+          id: string
+          image_url: string | null
+          keywords: string[]
+          title: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          city?: string
+          created_at?: string
+          description?: string | null
+          entity_key: string
+          entity_type: string
+          id?: string
+          image_url?: string | null
+          keywords?: string[]
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          description?: string | null
+          entity_key?: string
+          entity_type?: string
+          id?: string
+          image_url?: string | null
+          keywords?: string[]
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       store_duty_schedules: {
         Row: {
           active: boolean

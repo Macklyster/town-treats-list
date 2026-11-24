@@ -134,6 +134,13 @@
       "when": 1795387970359,
       "tag": "0018_security_hardening_batch",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1795481061783,
+      "tag": "0019_create_seo_overrides",
+      "breakpoints": true
     }
   ]
 }

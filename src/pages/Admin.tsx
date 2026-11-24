@@ -43,6 +43,7 @@ import { AdminLeiloes } from "@/components/admin/AdminLeiloes";
 import { AdminOfertasInvisiveis } from "@/components/admin/AdminOfertasInvisiveis";
 import { AdminMedia } from "@/components/admin/AdminMedia";
 import { AdminDivulgacao } from "@/components/admin/AdminDivulgacao";
+import { AdminSeo } from "@/components/admin/AdminSeo";
 import { AdminEventos } from "@/components/admin/AdminEventos";
 import { AdminManagedOffers } from "@/components/admin/AdminManagedOffers";
 import { useSearchParams } from "@/lib/router-compat";
@@ -139,6 +140,7 @@ export default function Admin() {
       { value: "categories", label: "Categorias", count: categories.length },
       { value: "notifications", label: "Notificações", count: notificationCount },
       { value: "divulgacao", label: "Divulgação" },
+      { value: "seo", label: "SEO" },
       { value: "reviews", label: "Avaliações", count: reviewCount },
       { value: "settings", label: "Configurações" },
     ] },
@@ -740,6 +742,9 @@ export default function Admin() {
 
 
 
+          <TabsContent value="seo" className="mt-6">
+            <AdminSeo />
+          </TabsContent>
           <TabsContent value="divulgacao" className="mt-6">
             <AdminDivulgacao />
           </TabsContent>
