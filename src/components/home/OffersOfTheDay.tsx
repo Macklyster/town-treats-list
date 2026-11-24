@@ -62,13 +62,15 @@ export const OffersOfTheDay = ({ offers, loading }: { offers: UIOffer[]; loading
                   ? { label: "Leilão", cls: "bg-primary text-primary-foreground" }
                   : o.isFlash
                     ? { label: "⚡ Relâmpago", cls: "bg-accent text-accent-foreground" }
-                    : null;
+                    : o.featured
+                      ? { label: "★ Destaque", cls: "bg-primary text-primary-foreground" }
+                      : null;
 
               return (
                 <Link
                   key={o.id}
                   to={href}
-                  className="group shrink-0 w-[240px] snap-start rounded-2xl overflow-hidden bg-card border border-border shadow-soft hover:shadow-card hover:-translate-y-0.5 transition-all"
+                  className={`group shrink-0 w-[240px] snap-start rounded-2xl overflow-hidden bg-card border shadow-soft ${o.featured ? "border-highlight ring-2 ring-highlight/40" : "border-border"} hover:shadow-card hover:-translate-y-0.5 transition-all`}
                 >
                   <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                     <img

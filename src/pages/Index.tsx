@@ -29,7 +29,9 @@ const Index = () => {
       fetchActiveAuctionsAsUIOffers(city ?? undefined),
     ]).then(([base, group, auctions]) => {
       const merged = [...base, ...group, ...auctions].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        (a, b) =>
+          Number(!!b.featured) - Number(!!a.featured) ||
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
       setOffers(merged);
       setLoading(false);
