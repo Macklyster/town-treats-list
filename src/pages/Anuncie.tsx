@@ -25,8 +25,7 @@ import {
   Rocket,
   ClipboardList,
   MessagesSquare,
-  TrendingUp,
-} from "lucide-react";
+  TrendingUp, Layers } from "lucide-react";
 import { toast } from "sonner";
 import { PLAN_CATALOG } from "@/data/plans";
 import { formatBRL } from "@/lib/format";
@@ -301,7 +300,8 @@ const Anuncie = () => {
             </div>
 
             <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-              {plans.map((p) => {
+              {plans.map((p, idx) => {
+                const prevName = idx > 0 ? plans[idx - 1]?.name : undefined;
                 const Icon = p.icon;
                 const isFree = p.slug === "gratis";
                 const yearlyAvailable = !isFree && !!p.priceCentsYearly;
@@ -372,6 +372,12 @@ const Anuncie = () => {
                       </div>
                     )}
                     <ul className="mt-5 space-y-2.5 text-sm">
+                      {prevName && (
+                        <li className="flex items-start gap-2 font-semibold text-foreground">
+                          <Layers className="mt-0.5 h-4 w-4 shrink-0 text-highlight" />
+                          <span>Tudo do plano {prevName}, mais:</span>
+                        </li>
+                      )}
                       {p.features.map((f) => (
                         <li key={f} className="flex items-start gap-2">
                           <Check className="mt-0.5 h-4 w-4 shrink-0 text-highlight" />

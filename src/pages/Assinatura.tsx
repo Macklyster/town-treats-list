@@ -1,7 +1,7 @@
 import { invokeBackend } from "@/lib/invoke-backend";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "@/lib/router-compat";
-import { Check, Loader2, AlertTriangle, Gift, Shield, Sparkles, XCircle } from "lucide-react";
+import { Check, Loader2, AlertTriangle, Gift, Shield, Sparkles, XCircle, Layers } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { PageHero } from "@/components/site/PageHero";
@@ -405,7 +405,8 @@ export default function Assinatura() {
             </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {PLAN_CATALOG.map((catalog) => {
+            {PLAN_CATALOG.map((catalog, idx) => {
+              const prevName = idx > 0 ? PLAN_CATALOG[idx - 1]?.name : undefined;
               const isFreePlan = catalog.slug === "gratis";
               const dbPlan = plans.find((p) => p.slug === catalog.slug);
               const paidActive = sub && ["active", "trialing"].includes(sub.status);
@@ -478,6 +479,12 @@ export default function Assinatura() {
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2 text-sm">
+                      {prevName && (
+                        <li className="flex items-start gap-2 font-semibold text-foreground">
+                          <Layers className="mt-0.5 h-4 w-4 shrink-0 text-highlight" />
+                          <span>Tudo do plano {prevName}, mais:</span>
+                        </li>
+                      )}
                       {catalog.features.map((f) => (
                         <li key={f} className="flex items-start gap-2">
                           <Check className="mt-0.5 h-4 w-4 text-accent-strong" /> {f}
